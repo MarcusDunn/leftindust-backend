@@ -1,0 +1,26 @@
+{
+  "name": "gladio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js localhost 4000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/gateway": "latest",
+    "apollo-server": "latest",
+    "firebase": "latest",
+    "graphql": "latest",
+    "graphql-request": "latest"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "jest": "latest"
+  },
+  "jest": {
+    "testRegex": "/test/.*"
+  }
+}
