@@ -4,3 +4,6 @@ This is a project containing all microservices within the backend, its structure
 everything is JVM based (such as Gladio). 
 
 you can find details on individual services by reading the README in the module root 
+
+this is currently UNSTABLE, tests do NOT run, and the federated data graphql is subject to change. Over the coming week
+I will be transitioning all actions to this repository and eventually containerizing the entire backend.
