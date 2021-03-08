@@ -1,0 +1,24 @@
+graphql:
+  packages:
+    - "com.leftindust.mediq.graphql"
+  federation:
+    enabled: true
+
+spring:
+  main:
+    web-application-type: reactive
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    show-sql: true
+  liquibase:
+    change-log: classpath:dbchangelog.xml
+    enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/mediq
+    username: mediq
+    password: mediq

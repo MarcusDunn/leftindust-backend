@@ -1,0 +1,61 @@
+package com.leftindust.mediq.dao
+
+import com.leftindust.mediq.dao.entity.EmergencyContact
+import com.leftindust.mediq.dao.entity.Patient
+import com.leftindust.mediq.dao.entity.enums.Relationship
+import com.leftindust.mediq.dao.entity.enums.Sex
+import com.leftindust.mediq.helper.FakeAuth
+import kotlinx.coroutines.runBlocking
+import org.hibernate.SessionFactory
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
+import unwrap
+import unwrapFailure
+
+@Transactional
+@SpringBootTest
+internal class ContactDaoTest(
+    @Autowired private val contactDao: ContactDao
+) {
+
+    @Autowired
+    private lateinit var sessionFactory: SessionFactory
+
+    private val session
+        get() = sessionFactory.currentSession
+
+    @Test
+    fun getByPatient() {
+
+        val patient = Patient(
+            pid = 12,
+            firstName = "Marcus",
+            lastName = "Dunn",
+            sex = Sex.Male
+        )
+
+        val contact = EmergencyContact(
+            cid = 12,
+            patient = patient,
+            firstName = "Dan",
+            lastName = "Shervershani",
+            relationship = Relationship.Sibling,
+        )
+        patient.contacts = setOf(contact)
+        session.save(patient)
+        session.save(contact)
+
+        val result = runBlocking { contactDao.getByPatient(patient.pid, FakeAuth.Valid.Token) }
+
+        assertEquals(result.unwrap(), listOf(contact))
+    }
+
+    @Test
+    fun `getByPatient with non-existing patient`() {
+        val result = runBlocking { contactDao.getByPatient(0, FakeAuth.Valid.Token).unwrapFailure() }
+        assert(result is DoesNotExist)
+    }
+}
