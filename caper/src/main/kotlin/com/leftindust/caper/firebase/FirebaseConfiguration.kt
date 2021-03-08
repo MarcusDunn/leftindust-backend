@@ -9,7 +9,7 @@ import java.io.File
 
 @Configuration
 class FirebaseConfiguration {
-    private final val serviceAccountKeyPath = "caper/src/main/resources/serviceAccountKey.json"
+    private final val serviceAccountKeyPath = "/home/marcus/IdeaProjects/leftindust-backend/caper/src/main/resources/serviceAccountKey.json"
 
     @Bean
     fun firebase(): FirebaseApp {

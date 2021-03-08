@@ -27,7 +27,7 @@ class ApplicationConfig {
     companion object {
 
         object FireBaseConfig {
-            const val SERVICE_ACCOUNT_KEY_PATH = "mockingbird/src/main/resources/serviceAccountKey.json"
+            const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/serviceAccountKey.json"
             const val DATABASE_URL = "https://mediq-backend.firebaseio.com"
         }
 
@@ -40,7 +40,7 @@ class ApplicationConfig {
         }
 
         object IcdApiConfig {
-            const val USERNAME_PASSWORD_PATH = "mockingbird/src/main/resources/IcdClient.json"
+            const val USERNAME_PASSWORD_PATH = "src/main/resources/IcdClient.json"
         }
 
         object HibernateConfig {
