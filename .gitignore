@@ -1,4 +1,4 @@
-/gladio/node_modules/
-/mockingbird/build/
+/**/node_modules/
+/**/build/
 /build/
 /.gradle/
