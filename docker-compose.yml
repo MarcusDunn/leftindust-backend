@@ -1,0 +1,47 @@
+services:
+  mockingbird-postgres:
+    container_name: mockingbird-postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: mediq
+      POSTGRES_USER: mediq
+      POSTGRES_PASSWORD: mediq
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U mediq" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mockingbird:
+    container_name: mockingbird
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
+      - SPRING_DATASOURCE_USERNAME=mediq
+      - SPRING_DATASOURCE_PASSWORD=mediq
+    build:
+      context: .
+      dockerfile: mockingbird.Dockerfile
+    depends_on:
+      mockingbird-postgres:
+        condition: service_healthy
+  #  condor:
+  #    network_mode: bridge
+  #    build:
+  #      context: .
+  #      dockerfile: condor.Dockerfile
+  #  caper:
+  #    network_mode: bridge
+  #    build:
+  #      context: .
+  #      dockerfile: caper.Dockerfile
+#  gladio:
+#    ports:
+#      - 4000
+#    build:
+#      context: .
+#      dockerfile: gladio.Dockerfile
+#    depends_on:
+#      - mockingbird
