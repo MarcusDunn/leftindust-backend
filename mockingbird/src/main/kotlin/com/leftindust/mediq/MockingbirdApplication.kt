@@ -8,12 +8,12 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 @EnableConfigurationProperties
-class MediqApplication
+class MockingbirdApplication
 
 /**
  * Entry point into the application, starts doing the spring magic
  * @param args command line arguments
  */
 fun main(args: Array<String>) {
-    runApplication<MediqApplication>(*args)
+    runApplication<MockingbirdApplication>(*args)
 }
