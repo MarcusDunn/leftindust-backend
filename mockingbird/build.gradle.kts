@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.spring")
+    kotlin("plugin.jpa")
 
     // spring
     id("org.springframework.boot") version "2.3.4.RELEASE"
