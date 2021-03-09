@@ -33,8 +33,8 @@ const server = new ApolloServer({
         },
         debug: true,
         serviceList: [
-            {name: "mockingbird", url: "http://localhost:8080/graphql"},
-            {name: "condor", url: "http://localhost:8081/graphql"},
+            {name: "mockingbird", url: `${process.env.MOCKINGBIRD_URL}/graphql`},
+            // {name: "condor", url: "http://localhost:8081/graphql"},
         ],
     }),
     subscriptions: false
