@@ -17,4 +17,4 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Mockingbird Integration Tests
-        run: docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build
+        run: docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
