@@ -2,9 +2,9 @@
   "name": "gladio",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js localhost 4000",
+    "start": "node src/index.js localhost 4000",
     "test": "jest"
   },
   "keywords": [],

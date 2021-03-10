@@ -1,4 +1,4 @@
-const server = require("src/server")
+const {server} = require("./server")
 
 server.listen().then(({url}) => {
     console.log(`🚀 Server ready at ${url}`);
