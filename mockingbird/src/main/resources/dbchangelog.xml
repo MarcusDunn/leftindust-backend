@@ -791,10 +791,6 @@
         </addColumn>
     </changeSet>
     <changeSet id="1614147952552" author="marcus">
-        <!--        This runs on test embedded databases for testing purposes-->
-        <preConditions onFail="CONTINUE">
-            <dbms type="h2"/>
-        </preConditions>
         <sql>INSERT INTO mediq_user (id, unique_id, settings_json, settings_version) VALUES (0, 'admin', '{}', 1)</sql>
     </changeSet>
     <changeSet author="marcus (generated)" id="1614904279196-1">
