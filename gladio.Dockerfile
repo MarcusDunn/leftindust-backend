@@ -3,4 +3,4 @@ WORKDIR /usr/app
 COPY ./gladio .
 RUN npm install
 EXPOSE 4000
-ENTRYPOINT ["npm", "start"]
+CMD ["npm", "start"]

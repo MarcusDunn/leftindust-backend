@@ -1,0 +1,40 @@
+services:
+  mockingbird-postgres:
+    environment:
+      POSTGRES_DB: mediq
+      POSTGRES_USER: mediq
+      POSTGRES_PASSWORD: mediq
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U mediq" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mockingbird:
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
+      - SPRING_DATASOURCE_USERNAME=mediq
+      - SPRING_DATASOURCE_PASSWORD=mediq
+    build:
+      context: .
+      dockerfile: mockingbird.Dockerfile
+    depends_on:
+      mockingbird-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8080/sdl" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  gladio:
+    environment:
+      - MOCKINGBIRD_URL=http://mockingbird:8080
+    ports:
+      - 4000:4000
+    build:
+      context: .
+      dockerfile: gladio.Dockerfile
+    command: ["npm", "test"]
+    depends_on:
+      mockingbird:
+        condition: service_healthy
