@@ -8,7 +8,10 @@ data class GraphQLTimeExample(
     val unixSeconds: LongFilter? = null,
     val unixMilliSeconds: LongFilter? = null,
 ) {
-    fun <T> toPredicate(criteriaQuery: CriteriaBuilder, itemRoot: Root<T>, field: String): List<Predicate> {
-        TODO("Not yet implemented")
+    fun <T> toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<T>, field: String): List<Predicate> {
+        return listOfNotNull(
+            unixSeconds?.toPredicate(criteriaBuilder, itemRoot, field),
+            unixMilliSeconds?.toPredicate(criteriaBuilder, itemRoot, field),
+        ).flatten()
     }
 }
