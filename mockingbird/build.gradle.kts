@@ -1,7 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.api.tasks.testing.logging.TestLogEvent.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -100,14 +96,6 @@ configurations {
     }
 }
 
-// koltin compiler args
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
-    }
-}
-
 project.the<SourceSetContainer>()["main"]
 
 // liquibase plugin config
@@ -130,14 +118,30 @@ liquibase {
 }
 
 
+// test properties
 tasks.withType<Test> {
     useJUnitPlatform()
 
     testLogging {
-        events(FAILED, STANDARD_ERROR, SKIPPED)
-        exceptionFormat = FULL
+        events(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+        )
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showExceptions = true
         showCauses = true
         showStackTraces = true
+    }
+
+    failFast = true
+}
+
+// koltin compiler args
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        useIR = true
+        jvmTarget = "${JavaVersion.VERSION_1_8}"
+        allWarningsAsErrors = true
     }
 }
