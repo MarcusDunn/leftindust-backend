@@ -1,3 +1,0 @@
-# Caper
-
-An authorization service
