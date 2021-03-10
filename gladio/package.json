@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js localhost 4000"
+    "start": "node index.js localhost 4000",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
