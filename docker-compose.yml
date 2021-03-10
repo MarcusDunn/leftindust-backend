@@ -25,7 +25,7 @@ services:
       test: [ "CMD-SHELL", "curl localhost:8080/sdl" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
   gladio:
     environment:
       - MOCKINGBIRD_URL=http://mockingbird:8080
