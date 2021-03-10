@@ -24,6 +24,7 @@ dependencies {
     val biweeklyVersion = "0.6.6"
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "3.10.1"
+    val coroutinesVersion = "1.4.3"
 
 
     // spring
@@ -36,7 +37,7 @@ dependencies {
     // kotlin
     implementation("org.jetbrains.kotlin", "kotlin-reflect")
     implementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
 
     // graphql kotlin
     implementation("com.expediagroup", "graphql-kotlin-spring-server", graphQLKotlinVersion)
