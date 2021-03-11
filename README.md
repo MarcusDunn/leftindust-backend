@@ -1,4 +1,5 @@
 # leftindust-backend
+![integration tests](https://github.com/leftindust/leftindust-backend/actions/workflows/integration-tests.yml/badge.svg)
 
 This is a project containing all microservices within the backend, its structured as a gradle project, although not 
 everything is JVM based (such as Gladio). 
