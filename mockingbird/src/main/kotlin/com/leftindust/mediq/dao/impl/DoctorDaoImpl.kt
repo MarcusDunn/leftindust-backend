@@ -52,6 +52,6 @@ class DoctorDaoImpl(
     }
 
     override suspend fun getByDoctor(did: Int, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
-        return authenticateAndThen(requester, Crud.READ to Tables.Doctor) { doctorRepository.getByDid(did) }
+        return authenticateAndThen(requester, Crud.READ to Tables.Doctor) { doctorRepository.getById(did) }
     }
 }

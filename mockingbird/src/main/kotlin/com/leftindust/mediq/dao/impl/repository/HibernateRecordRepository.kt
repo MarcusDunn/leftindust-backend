@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface HibernateRecordRepository : JpaRepository<MediqRecord, Long> {
     fun getByRid(rid: Int): MediqRecord?
-    fun<T> getAllByPatientId(id: T): List<MediqRecord>
+    fun<PID> getAllByPatientId(pid: PID): List<MediqRecord>
 }

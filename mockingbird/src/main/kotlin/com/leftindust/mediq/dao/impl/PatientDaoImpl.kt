@@ -103,7 +103,7 @@ class PatientDaoImpl(
 
             doctorIds
                 .map {
-                    doctorRepository.getByDid(it.toInt()) ?: return Failure(DoesNotExist())
+                    doctorRepository.getById(it.toLong()) ?: return Failure(DoesNotExist())
                 }
                 .forEach { newPatient.addDoctor(doctor = it) }
 
@@ -165,7 +165,7 @@ class PatientDaoImpl(
         return if (requester has permissions) {
             val patient = patientRepository.getPatientByPid(patientInput.toInt())
                 ?: return Failure(DoesNotExist("patient does not exist"))
-            val doctor = doctorRepository.getByDid(doctorInput.toInt())
+            val doctor = doctorRepository.getById(doctorInput.toLong())
                 ?: return Failure(DoesNotExist("doctor does not exist"))
             return Success(patient.addDoctor(doctor))
         } else {

@@ -86,7 +86,7 @@ class VisitDaoImpl(
         ).map { Action(it) }
 
         return if (requester has requiredPermissions) {
-            val doctor = doctorRepository.getByDid(visitInput.doctorId.toInt())
+            val doctor = doctorRepository.getById(visitInput.doctorId.toInt())
                 ?: return Failure(DoesNotExist("no doc with that did"))
             val patient = patientRepository.getPatientByPid(visitInput.patientId.toInt())
                 ?: return Failure(DoesNotExist("no patient with that pid"))
