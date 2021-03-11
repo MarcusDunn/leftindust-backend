@@ -51,7 +51,7 @@ data class GraphQLVisit(
         return doctorDao
             .getByVisit(vid?.toLong(), authToken)
             .getOrThrow()
-            .let { doctor -> GraphQLDoctor(doctor, authContext) }
+            .let { GraphQLDoctor(it, it.id!!, authContext) } // safe nn assert as we just got from DB
     }
 
     suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient = patientDao

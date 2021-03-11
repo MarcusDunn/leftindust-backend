@@ -51,7 +51,7 @@ data class GraphQLPatient(
         contactDao.getByPatient(pid.toInt(), authToken).getOrThrow().map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =
-        doctorDao.getByPatient(pid.toInt(), authToken).getOrThrow().map { GraphQLDoctor(it, authContext) }
+        doctorDao.getByPatient(pid.toInt(), authToken).getOrThrow().map { GraphQLDoctor(it, it.id!!, authContext) }
 
     suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
         return visitDao.getVisitsForPatientPid(pid.toInt(), authToken)

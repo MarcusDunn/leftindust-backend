@@ -138,9 +138,9 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: Int, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason> {
+    override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
-            val doctor = doctorRepository.getByDid(did) ?: return@authenticateAndThen null
+            val doctor = doctorRepository.getOne(did) ?: return@authenticateAndThen null
             doctorPatientRepository.getAllByDoctorId(doctor.id).map { it.patient }
         }
     }

@@ -50,7 +50,6 @@ class VisitQueryTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "shervershani",
         )

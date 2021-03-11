@@ -26,7 +26,8 @@ data class GraphQLEvent(
         authContext = authContext,
     )
 
-    fun doctor(): GraphQLDoctor = GraphQLDoctor(doctor, authContext)
+    fun doctor(): GraphQLDoctor =
+        GraphQLDoctor(doctor, doctor.id!!, authContext) // safe nn call provided that the event has been persisted
 }
 
 private operator fun DateOrDateTimeProperty.plus(duration: DurationProperty): Timestamp {

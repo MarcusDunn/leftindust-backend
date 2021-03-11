@@ -40,7 +40,6 @@ internal class DoctorQueryTest(
             sex = Sex.Male
         )
         val doctor = Doctor(
-            did = 11,
             firstName = "Dan",
             lastName = "Shervershani",
         )
@@ -54,7 +53,7 @@ internal class DoctorQueryTest(
 
         val result = runBlocking { doctorQuery.getDoctorsByPatient(gqlID(patient.pid), FakeAuth.Valid.Context) }
 
-        assertEquals(listOf(GraphQLDoctor(doctor, FakeAuth.Valid.Context)), result)
+        assertEquals(listOf(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context)), result)
     }
 
     @Test
@@ -81,15 +80,14 @@ internal class DoctorQueryTest(
     @Test
     fun doctor() {
         val doctor = Doctor(
-            did = 12,
             firstName = "Dan",
             lastName = "Shervershani",
         )
-        session.save(doctor)
+        val doctorId = session.save(doctor) as Long
 
-        val result = runBlocking { doctorQuery.doctor(gqlID(doctor.did), FakeAuth.Valid.Context) }
+        val result = runBlocking { doctorQuery.doctor(gqlID(doctorId), FakeAuth.Valid.Context) }
 
-        assertEquals(GraphQLDoctor(doctor, FakeAuth.Valid.Context), result)
+        assertEquals(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context), result)
     }
 
     @Test

@@ -14,13 +14,12 @@ import java.util.*
 
 internal class DoctorTest {
 
-    val yyyyMMdd: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")!!
+    private val yyyyMMdd: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")!!
 
     @Test
     fun `getEventsBetween with no recurrence`() {
         val nineteenSeventy = Timestamp.from(Instant.EPOCH)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Sherman",
             schedule = Schedule(
@@ -57,7 +56,6 @@ internal class DoctorTest {
         val monthly = RecurrenceRule(Recurrence.Builder(Frequency.MONTHLY).build())
 
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Sherman",
             schedule = Schedule(
@@ -95,7 +93,6 @@ internal class DoctorTest {
                 .toLocalDateTime()
         )
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Sherman",
             schedule = Schedule(
@@ -125,7 +122,6 @@ internal class DoctorTest {
     @Test
     fun addPatient() {
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Sherman",
         )

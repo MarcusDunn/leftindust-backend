@@ -11,7 +11,6 @@ class DoctorFaker(seed: Long, private val doctorPatientFaker: DoctorPatientFaker
     private val phoneFaker = PhoneFaker(seed)
 
     override fun create() = Doctor(
-        did = numberFaker(),
         firstName = faker.name.firstName(),
         middleName = faker.lordOfTheRings.characters(),
         lastName = faker.name.lastName(),

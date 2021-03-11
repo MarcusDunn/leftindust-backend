@@ -36,7 +36,6 @@ internal class GraphQLDoctorTest(
     @Test
     fun patients() {
         val doctorEntity = Doctor(
-            did = 12,
             firstName = "Marcus",
             lastName = "Dunn",
         ).also { session.save(it) }
@@ -52,7 +51,7 @@ internal class GraphQLDoctorTest(
         ).also { session.save(it) }
         doctorEntity.patients = setOf(doctorPatient)
         patientEntity.doctors = setOf(doctorPatient)
-        val doctor = GraphQLDoctor(doctorEntity, FakeAuth.Valid.Context)
+        val doctor = GraphQLDoctor(doctorEntity, doctorEntity.id!!, FakeAuth.Valid.Context)
 
         val result = runBlocking { doctor.patients(patientDao) }
 
@@ -62,7 +61,6 @@ internal class GraphQLDoctorTest(
     @Test
     fun visits() {
         val doctorEntity = Doctor(
-            did = 12,
             firstName = "Marcus",
             lastName = "Dunn",
         ).also { session.save(it) }
@@ -79,7 +77,7 @@ internal class GraphQLDoctorTest(
             patient = patientEntity,
             icdFoundationCode = FoundationIcdCode("1"),
         ).also { session.save(it) }
-        val doctor = GraphQLDoctor(doctorEntity, FakeAuth.Valid.Context)
+        val doctor = GraphQLDoctor(doctorEntity, doctorEntity.id!!, FakeAuth.Valid.Context)
 
         val result = runBlocking { doctor.visits(visitDao) }
 
@@ -89,7 +87,6 @@ internal class GraphQLDoctorTest(
     @Test
     fun schedule() {
         val doctorEntity = Doctor(
-            did = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             schedule = Schedule(
@@ -105,7 +102,7 @@ internal class GraphQLDoctorTest(
                 )
             )
         ).also { session.save(it) }
-        val doctor = GraphQLDoctor(doctorEntity, FakeAuth.Valid.Context)
+        val doctor = GraphQLDoctor(doctorEntity, doctorEntity.id!!, FakeAuth.Valid.Context)
 
         val time2020 = GraphQLTime(Timestamp.valueOf("2020-01-01 00:00:00"))
         val time2021 = GraphQLTime(Timestamp.valueOf("2021-01-01 00:00:00"))

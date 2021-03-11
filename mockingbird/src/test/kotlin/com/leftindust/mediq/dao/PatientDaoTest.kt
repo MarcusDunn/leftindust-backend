@@ -8,6 +8,7 @@ import com.leftindust.mediq.dao.entity.Patient
 import com.leftindust.mediq.dao.entity.Visit
 import com.leftindust.mediq.dao.entity.enums.Sex
 import com.leftindust.mediq.extensions.getOrNull
+import com.leftindust.mediq.extensions.gqlID
 import com.leftindust.mediq.extensions.toInt
 import com.leftindust.mediq.graphql.types.icd.FoundationIcdCode
 import com.leftindust.mediq.graphql.types.input.GraphQLPatientInput
@@ -169,11 +170,10 @@ internal class PatientDaoTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Shervershani",
         )
-        session.save(doctor)
+        val doctorID = session.save(doctor) as Long
         val doctorPatient = DoctorPatient(
             doctor = doctor,
             patient = patient,
@@ -182,14 +182,14 @@ internal class PatientDaoTest(
         patient.doctors = setOf(doctorPatient)
         doctor.patients = setOf(doctorPatient)
 
-        val result = runBlocking { patientDao.getByDoctor(doctor.did, FakeAuth.Valid.Token) }
+        val result = runBlocking { patientDao.getByDoctor(doctorID, FakeAuth.Valid.Token) }
 
         assertEquals(result.unwrap(), listOf(patient))
     }
 
     @Test
     fun `getByDoctor when no such doctor exists`() {
-        val result = runBlocking { patientDao.getByDoctor(0, FakeAuth.Valid.Token) }
+        val result = runBlocking { patientDao.getByDoctor(-1, FakeAuth.Valid.Token) }
 
         assert(result.unwrapFailure() is DoesNotExist)
     }
@@ -204,7 +204,6 @@ internal class PatientDaoTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "Shervershani",
         )
@@ -215,18 +214,17 @@ internal class PatientDaoTest(
             timeOfVisit = TimestampFaker(0).create(),
             timeBooked = TimestampFaker(1).create(),
             icdFoundationCode = FoundationIcdCode("1"),
+        )
+        val vistId = session.save(visit) as Long
 
-            )
-        val vid = session.save(visit) as Long
-
-        val result = runBlocking { patientDao.getByVisit(vid, FakeAuth.Valid.Token) }
+        val result = runBlocking { patientDao.getByVisit(vistId, FakeAuth.Valid.Token) }
 
         assertEquals(result.unwrap(), patient)
     }
 
     @Test
     fun `getByVisit when no such visit exists`() {
-        val result = runBlocking { patientDao.getByVisit(0, FakeAuth.Valid.Token) }
+        val result = runBlocking { patientDao.getByVisit(-1, FakeAuth.Valid.Token) }
 
         assert(result.unwrapFailure() is DoesNotExist)
     }
@@ -234,21 +232,22 @@ internal class PatientDaoTest(
     @Test
     fun addDoctorToPatient() {
         val doctor = Doctor(
-            did = 12,
             firstName = "marcus",
             lastName = "dunn",
-        ).also { session.save(it) }
+        )
+        val doctorID = session.save(doctor) as Long
         val patient = Patient(
             pid = 12,
             firstName = "Steve",
             lastName = "O",
             sex = Sex.Male,
-        ).also { session.save(it) }
+        )
+        val patientID = session.save(patient) as Long
 
         val result = runBlocking {
             patientDao.addDoctorToPatient(
-                patientInput = ID(patient.pid.toString()),
-                doctorInput = ID(doctor.did.toString()),
+                patientInput = gqlID(patientID),
+                doctorInput = gqlID(doctorID),
                 FakeAuth.Valid.Token
             )
         }
@@ -293,10 +292,10 @@ internal class PatientDaoTest(
     @Test
     internal fun `addPatient by GraphQLInput`() {
         val doctor = Doctor(
-            did = 12,
             firstName = "Elongated",
             lastName = "Muskrat",
-        ).also { session.save(it) }
+        )
+        val doctorID = session.save(doctor) as Long
 
         val gqlPatient = GraphQLPatientInput(
             pid = OptionalInput.Defined(ID("100")),
@@ -306,19 +305,18 @@ internal class PatientDaoTest(
         )
 
         val result = runBlocking {
-            patientDao.addNewPatient(gqlPatient, doctorIds = listOf(ID("12")), requester = FakeAuth.Valid.Token)
+            patientDao.addNewPatient(gqlPatient, doctorIds = listOf(gqlID(doctorID)), requester = FakeAuth.Valid.Token)
         }
 
         assertEquals(result.unwrap().pid, gqlPatient.pid.getOrNull()!!.toInt())
         assertEquals(result.unwrap().firstName, gqlPatient.firstName.getOrNull())
         assertEquals(result.unwrap().lastName, gqlPatient.lastName.getOrNull())
-        assertEquals(result.unwrap().doctors.first().doctor.did, doctor.did)
+        assertEquals(result.unwrap().doctors.first().doctor.id, doctorID)
     }
 
     @Test
     internal fun `addPatient with invalid GraphQLInput`() {
         Doctor(
-            did = 12,
             firstName = "Elongated",
             lastName = "Muskrat",
         ).let { session.save(it) }

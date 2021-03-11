@@ -19,12 +19,12 @@ class DoctorQuery(
         return doctorDao
             .getByPatient(pid.toInt(), authContext.mediqAuthToken)
             .getOrThrow()
-            .map { GraphQLDoctor(it, authContext) }
+            .map { GraphQLDoctor(it, it.id!!, authContext) } // safe nn assert as we just got it from DB
     }
 
     suspend fun doctor(did: ID, authContext: GraphQLAuthContext): GraphQLDoctor {
         return doctorDao.getByDoctor(did.toInt(), authContext.mediqAuthToken)
             .getOrThrow()
-            .let { GraphQLDoctor(it, authContext) }
+            .let { GraphQLDoctor(it, it.id!!, authContext) }  // safe nn assert as we just got it from DB
     }
 }

@@ -10,6 +10,7 @@ import com.leftindust.mediq.dao.VisitDao
 import com.leftindust.mediq.dao.entity.Doctor
 import com.leftindust.mediq.extensions.gqlID
 import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
 
@@ -28,8 +29,8 @@ data class GraphQLDoctor(
 ) : GraphQLPerson {
     private val authToken = authContext.mediqAuthToken
 
-    constructor(doctor: Doctor, authContext: GraphQLAuthContext) : this(
-        did = gqlID(doctor.did),
+    constructor(doctor: Doctor, id: Long, authContext: GraphQLAuthContext) : this(
+        did = gqlID(id),
         firstName = doctor.firstName,
         middleName = doctor.middleName,
         lastName = doctor.lastName,
@@ -41,14 +42,16 @@ data class GraphQLDoctor(
         address = doctor.address,
         email = doctor.email,
         authContext = authContext
-    )
+    ) {
+        assert(doctor.id == null || doctor.id == id)
+    }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =
-        patientDao.getByDoctor(did.toInt(), authToken).getOrThrow().map { GraphQLPatient(it, authContext) }
+        patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, authContext) }
 
 
     suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
-        return visitDao.getVisitsByDoctor(did.toInt(), authToken)
+        return visitDao.getVisitsByDoctor(did.toLong(), authToken)
             .getOrThrow()
             .map { GraphQLVisit(it, it.id!!, authContext) } // safe nn assertion as we just got from DB
     }

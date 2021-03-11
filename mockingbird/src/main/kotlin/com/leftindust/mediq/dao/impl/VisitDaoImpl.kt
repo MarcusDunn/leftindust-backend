@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityNotFoundException
 
 @Repository
 @Transactional
@@ -61,15 +62,16 @@ class VisitDaoImpl(
     }
 
     override suspend fun getVisitsByDoctor(
-        did: Int,
+        did: Long,
         requester: MediqToken
     ): CustomResult<List<Visit>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Visit) {
-            if (doctorRepository.getByDid(did) != null) {
-                visitRepository.getAllByDoctorDid(did)
-            } else {
-                null
+            try {
+                doctorRepository.getOne(did)
+            } catch (e: EntityNotFoundException) {
+                return Failure(DoesNotExist("doctor with id: $did not found"))
             }
+            visitRepository.getAllByDoctorId(did)
         }
     }
 

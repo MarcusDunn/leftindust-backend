@@ -65,7 +65,6 @@ internal class DoctorDaoTest(
             sex = Sex.Female,
         )
         val doctor = Doctor(
-            did = 12,
             firstName = "Dan",
             lastName = "Shervershani",
         )

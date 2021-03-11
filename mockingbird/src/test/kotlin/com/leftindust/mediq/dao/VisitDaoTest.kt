@@ -40,7 +40,6 @@ internal class VisitDaoTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "shervershani",
         )
@@ -84,7 +83,6 @@ internal class VisitDaoTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "shervershani",
         )
@@ -120,11 +118,10 @@ internal class VisitDaoTest(
         )
         session.save(patient)
         val doctor = Doctor(
-            did = 0,
             firstName = "Dan",
             lastName = "shervershani",
         )
-        session.save(doctor)
+        val doctorID = session.save(doctor) as Long
         val visit = Visit(
             doctor = doctor,
             patient = patient,
@@ -134,7 +131,7 @@ internal class VisitDaoTest(
             )
         session.save(visit)
 
-        val result = runBlocking { visitDao.getVisitsByDoctor(doctor.did, FakeAuth.Valid.Token) }
+        val result = runBlocking { visitDao.getVisitsByDoctor(doctorID, FakeAuth.Valid.Token) }
 
         assertEquals(listOf(visit), result.unwrap())
     }

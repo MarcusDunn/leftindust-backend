@@ -22,8 +22,6 @@ class Doctor(
     homePhone: String? = null,
     @Column(name = "title", nullable = true)
     val title: String? = null,
-    @Column(name = "doctor_id", nullable = false, unique = true)
-    val did: Int,
     @Column(name = "pager_number", nullable = true)
     val pagerNumber: String? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])

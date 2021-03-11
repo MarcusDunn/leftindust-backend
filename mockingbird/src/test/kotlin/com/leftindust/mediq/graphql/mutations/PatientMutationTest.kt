@@ -8,6 +8,7 @@ import com.leftindust.mediq.dao.entity.Patient
 import com.leftindust.mediq.dao.entity.enums.Sex
 import com.leftindust.mediq.extensions.getOrNull
 import com.leftindust.mediq.extensions.getOrThrow
+import com.leftindust.mediq.extensions.gqlID
 import com.leftindust.mediq.graphql.queries.PatientQuery
 import com.leftindust.mediq.graphql.types.GraphQLDoctor
 import com.leftindust.mediq.graphql.types.GraphQLPatient
@@ -44,15 +45,15 @@ internal class PatientMutationTest(
             sex = Sex.Male
         ).also { session.save(it) }
         val doctor = Doctor(
-            did = 12,
             firstName = "Daddy",
             lastName = "Dan",
-        ).also { session.save(it) }
+        )
+        val doctorId = session.save(doctor) as Long
 
         val result = runBlocking {
             patientMutation.addDoctorToPatient(
                 patientById = ID(patient.pid.toString()),
-                doctorById = ID(doctor.did.toString()),
+                doctorById = gqlID(doctorId),
                 FakeAuth.Valid.Context
             )
         }
@@ -73,13 +74,13 @@ internal class PatientMutationTest(
                 sex = Sex.Male
             ).also { session.save(it) }
             val doctor = Doctor(
-                did = 12,
                 firstName = "Daddy",
                 lastName = "Dan",
-            ).also { session.save(it) }
+            )
+            val doctorId = session.save(doctor) as Long
             patientMutation.addDoctorToPatient(
                 patientById = ID(patient.pid.toString()),
-                doctorById = ID(doctor.did.toString()),
+                doctorById = gqlID(doctorId),
                 FakeAuth.Valid.Context
             )
 
@@ -87,7 +88,7 @@ internal class PatientMutationTest(
                 patientQuery.patient(ID(patient.pid.toString()), FakeAuth.Valid.Context)
             }
 
-            assert(result.doctors(doctorDao).contains(GraphQLDoctor(doctor, FakeAuth.Valid.Context))) {
+            assert(result.doctors(doctorDao).contains(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context))) {
                 result.doctors(
                     doctorDao
                 )
@@ -123,7 +124,8 @@ internal class PatientMutationTest(
             sex = OptionalInput.Defined(Sex.Male)
         )
 
-        val result = runBlocking { patientMutation.addPatient(patientInput, graphQLAuthContext = FakeAuth.Valid.Context) }
+        val result =
+            runBlocking { patientMutation.addPatient(patientInput, graphQLAuthContext = FakeAuth.Valid.Context) }
 
         val expected = GraphQLPatient(
             pid = patientInput.pid.getOrThrow(),
