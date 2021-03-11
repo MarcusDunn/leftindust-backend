@@ -1,9 +1,9 @@
-describe("general smoke tests for gladio", () => {
-    const {port, url} = require("./testConfig")
+describe("smoke tests for gladio", () => {
     const {request, gql} = require("graphql-request")
+    const {server, url} = require("../src/server")
 
-    beforeAll(async () => {
-        await require("../src/server").server.listen({port})
+    beforeEach(async () => {
+        await server.listen()
     })
 
     test("jest working", async () => {
@@ -12,7 +12,16 @@ describe("general smoke tests for gladio", () => {
 
     test("server starts", async () => {
 
-        const {mockingbirdIsAlive} = await request(url, gql`{mockingbirdIsAlive}`)
+        const {mockingbirdIsAlive} = await request(url, gql`
+            {
+                mockingbirdIsAlive
+            }
+        `)
+
         expect(mockingbirdIsAlive).toBe(true)
+    })
+
+    afterEach(async () => {
+        await server.stop()
     })
 })

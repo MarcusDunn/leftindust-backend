@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js localhost 4000",
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "jest": "latest"
   },
   "jest": {
+    "testEnvironment": "node",
     "testRegex": "/test/.*"
   }
 }
