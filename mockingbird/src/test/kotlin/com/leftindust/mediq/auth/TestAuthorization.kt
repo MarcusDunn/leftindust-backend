@@ -21,13 +21,10 @@ class TestAuthorization(
     @Autowired private var patientQuery: PatientQuery,
 ) {
 
-
-    private val invalidAuthToken = FakeAuth.Invalid.Token
-
     @Test
     internal suspend fun `test auth fails on invalid token`() {
         val readToPatient = Action(Crud.READ to Tables.Patient)
-        val result = authorizer.getAuthorization(readToPatient, invalidAuthToken)
+        val result = authorizer.getAuthorization(readToPatient, FakeAuth.Invalid.Token)
         assert(result.isDenied())
     }
 
@@ -42,7 +39,7 @@ class TestAuthorization(
 
     @Test
     internal fun `test request rejected for getPatient`() {
-        val authContext = GraphQLAuthContext(mediqAuthToken = invalidAuthToken)
+        val authContext = GraphQLAuthContext(mediqAuthToken = FakeAuth.Invalid.Token)
         assertThrows<GraphQLKotlinException> {
             runBlocking {
                 patientQuery.patient(gqlID(1), authContext)
