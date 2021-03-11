@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -118,16 +120,15 @@ liquibase {
     runList = "main"
 }
 
-
 // test properties
 tasks.withType<Test> {
     useJUnitPlatform()
 
     testLogging {
         events(
-            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
-            org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR,
-            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+            TestLogEvent.FAILED,
+            TestLogEvent.STANDARD_ERROR,
+            TestLogEvent.SKIPPED
         )
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showExceptions = true
