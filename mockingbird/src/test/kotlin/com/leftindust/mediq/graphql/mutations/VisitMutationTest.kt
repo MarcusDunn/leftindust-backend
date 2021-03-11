@@ -45,6 +45,7 @@ internal class VisitMutationTest(
             lastName = "dunn",
         )
         val doctorId = session.save(doctor) as Long
+
         val timeBooked = GraphQLTime(TimestampFaker(100).create())
         val timeOfVisit = GraphQLTime(TimestampFaker(101).create())
         val foundationIcdCode = FoundationIcdCode("2123412")
@@ -52,10 +53,9 @@ internal class VisitMutationTest(
             timeBooked = timeBooked,
             timeOfVisit = timeOfVisit,
             foundationIcdCode = foundationIcdCode,
-            doctorId = gqlID(patient.pid),
-            patientId = gqlID(doctorId),
+            doctorId = gqlID(doctorId),
+            patientId = gqlID(patient.pid),
         )
-
         val result = runBlocking { visitMutation.addVisit(visit, FakeAuth.Valid.Context) }
         val expected = GraphQLVisit(
             vid = result.vid,
@@ -63,9 +63,7 @@ internal class VisitMutationTest(
             timeOfVisit = timeOfVisit,
             foundationIcdCode = foundationIcdCode,
             authContext = FakeAuth.Valid.Context,
-
-
-            )
+        )
 
         assertEquals(expected, result)
     }

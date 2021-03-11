@@ -242,11 +242,11 @@ internal class PatientDaoTest(
             lastName = "O",
             sex = Sex.Male,
         )
-        val patientID = session.save(patient) as Long
+        session.save(patient)
 
         val result = runBlocking {
             patientDao.addDoctorToPatient(
-                patientInput = gqlID(patientID),
+                patientInput = gqlID(patient.pid),
                 doctorInput = gqlID(doctorID),
                 FakeAuth.Valid.Token
             )

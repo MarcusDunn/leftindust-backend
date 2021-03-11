@@ -5,6 +5,7 @@ import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mediq.auth.GraphQLAuthContext
 import com.leftindust.mediq.dao.DoctorDao
 import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.toLong
 import com.leftindust.mediq.graphql.types.GraphQLDoctor
 import org.springframework.stereotype.Component
 
@@ -23,7 +24,7 @@ class DoctorQuery(
     }
 
     suspend fun doctor(did: ID, authContext: GraphQLAuthContext): GraphQLDoctor {
-        return doctorDao.getByDoctor(did.toInt(), authContext.mediqAuthToken)
+        return doctorDao.getByDoctor(did.toLong(), authContext.mediqAuthToken)
             .getOrThrow()
             .let { GraphQLDoctor(it, it.id!!, authContext) }  // safe nn assert as we just got it from DB
     }

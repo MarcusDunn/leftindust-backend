@@ -12,8 +12,8 @@ import com.leftindust.mediq.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mediq.extensions.CustomResult
 import com.leftindust.mediq.extensions.Failure
 import com.leftindust.mediq.extensions.Success
+import com.leftindust.mediq.extensions.getOneOrNull
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,19 +39,20 @@ class DoctorDaoImpl(
 
     override suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.Visit)) {
-            vid ?: return Failure(InvalidArguments("cannot get by null vid"))
-            val visit = try {
-                visitRepository.getOne(vid)
-            } catch (e: JpaObjectRetrievalFailureException) {
-                return Failure(DoesNotExist())
-            }
+            vid
+                ?: return Failure(InvalidArguments("cannot get by null vid"))
+            val visit = visitRepository.getOneOrNull(vid)
+                ?: return Failure(DoesNotExist("cannot find visit with vid: $vid"))
             Success(visit.doctor)
         } else {
-            Failure(NotAuthorized(requester,"cannot READ to Visit"))
+            Failure(NotAuthorized(requester, "cannot READ to Visit"))
         }
     }
 
-    override suspend fun getByDoctor(did: Int, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
-        return authenticateAndThen(requester, Crud.READ to Tables.Doctor) { doctorRepository.getById(did) }
+    override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
+        return authenticateAndThen(requester, Crud.READ to Tables.Doctor) {
+            doctorRepository.getOneOrNull(did)
+                ?: return Failure(DoesNotExist("doctor with did: $did was not found"))
+        }
     }
 }

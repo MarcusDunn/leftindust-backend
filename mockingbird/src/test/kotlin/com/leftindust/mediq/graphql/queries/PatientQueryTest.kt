@@ -187,6 +187,7 @@ class PatientQueryTest(
         val visit = VisitFaker(102).create().apply {
             this.patient = patient
         }
+        println(visit.doctor)
         session.save(visit.doctor)
         session.saveOrUpdate(visit.patient)
         session.save(visit)

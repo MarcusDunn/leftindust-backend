@@ -86,7 +86,7 @@ internal class DoctorDaoTest(
 
     @Test
     fun `getByVisit with non-existing Visit`() {
-        val result = runBlocking { doctorDao.getByVisit(0, FakeAuth.Valid.Token).unwrapFailure() }
+        val result = runBlocking { doctorDao.getByVisit(-1, FakeAuth.Valid.Token).unwrapFailure() }
         assert(result is DoesNotExist) { result }
     }
 }

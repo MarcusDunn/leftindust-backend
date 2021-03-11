@@ -24,6 +24,4 @@ abstract class Person(
     var workPhone: String?,
     @Column(name = "home_phone", nullable = true)
     var homePhone: String?,
-) : AbstractJpaPersistable<Long>() {
-
-}
+) : AbstractJpaPersistable<Long>()

@@ -139,7 +139,7 @@ internal class VisitDaoTest(
 
     @Test
     fun `getVisitsByDoctor with no such visit`() {
-        val result = runBlocking { visitDao.getVisitsByDoctor(0, FakeAuth.Valid.Token) }
+        val result = runBlocking { visitDao.getVisitsByDoctor(-1, FakeAuth.Valid.Token) }
 
         assert(result.unwrapFailure() is DoesNotExist)
     }

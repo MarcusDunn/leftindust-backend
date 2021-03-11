@@ -22,7 +22,10 @@ class RecordDaoImpl(
     @Autowired private val recordRepository: HibernateRecordRepository,
     @Autowired private val patientRepository: HibernatePatientRepository,
 ) : AbstractHibernateDao(authorizer), RecordDao {
-    override suspend fun getRecordByRecordId(rid: Int, requester: MediqToken): CustomResult<MediqRecord, OrmFailureReason> {
+    override suspend fun getRecordByRecordId(
+        rid: Int,
+        requester: MediqToken
+    ): CustomResult<MediqRecord, OrmFailureReason> {
         val readRecords = Action(Crud.READ to Tables.Record)
         return if (requester can readRecords) {
             val record = recordRepository.getByRid(rid) ?: return Failure(DoesNotExist())
@@ -37,8 +40,9 @@ class RecordDaoImpl(
         requester: MediqToken
     ): CustomResult<List<MediqRecord>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Record) {
-            val patient = patientRepository.getPatientByPid(pid) ?: return@authenticateAndThen null
-            recordRepository.getAllByPatientId(patient.id)
+            val patient = patientRepository.getPatientByPid(pid)
+                ?: return Failure(DoesNotExist("patient with pid $pid was not found"))
+            recordRepository.getAllByPatientId(patient.id!!.toLong())
         }
     }
 }

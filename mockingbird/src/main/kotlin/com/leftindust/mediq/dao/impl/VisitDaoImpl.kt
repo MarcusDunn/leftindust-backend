@@ -9,10 +9,7 @@ import com.leftindust.mediq.dao.entity.Visit
 import com.leftindust.mediq.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mediq.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mediq.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mediq.extensions.CustomResult
-import com.leftindust.mediq.extensions.Failure
-import com.leftindust.mediq.extensions.Success
-import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.*
 import com.leftindust.mediq.graphql.types.GraphQLVisitInput
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -45,9 +42,7 @@ class VisitDaoImpl(
     }
 
     override suspend fun getVisitByVid(vid: Long, requester: MediqToken): CustomResult<Visit, OrmFailureReason> {
-        val readVisits = Action(Crud.READ to Tables.Visit)
-
-        return if (requester can readVisits) {
+        return if (requester can (Crud.READ to Tables.Visit)) {
             val visit = try {
                 visitRepository.getOne(vid)
             } catch (e: JpaObjectRetrievalFailureException) {
@@ -67,9 +62,18 @@ class VisitDaoImpl(
     ): CustomResult<List<Visit>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Visit) {
             try {
+                // checks that the doctor actually exists otherwise the `getAllByDoctorId`
+                // will return an empty list if the doctor does not exist
                 doctorRepository.getOne(did)
-            } catch (e: EntityNotFoundException) {
-                return Failure(DoesNotExist("doctor with id: $did not found"))
+            } catch (failure: JpaObjectRetrievalFailureException) {
+                // also note that the javadoc for getOne LIE! if the entity does not exist,
+                // it throws a JpaObjectRetrievalFailureException wrapping a EntityNotFoundException
+                // as opposed to whats documented which is an unwrapped EntityNotFoundException (thus the cause check)
+                if (failure.cause is EntityNotFoundException) {
+                    return Failure(DoesNotExist("doctor with id: $did not found"))
+                } else {
+                    throw failure
+                }
             }
             visitRepository.getAllByDoctorId(did)
         }
@@ -86,10 +90,10 @@ class VisitDaoImpl(
         ).map { Action(it) }
 
         return if (requester has requiredPermissions) {
-            val doctor = doctorRepository.getById(visitInput.doctorId.toInt())
-                ?: return Failure(DoesNotExist("no doc with that did"))
+            val doctor = doctorRepository.getOneOrNull(visitInput.doctorId.toLong())
+                ?: return Failure(DoesNotExist("no doc with did: ${visitInput.doctorId}"))
             val patient = patientRepository.getPatientByPid(visitInput.patientId.toInt())
-                ?: return Failure(DoesNotExist("no patient with that pid"))
+                ?: return Failure(DoesNotExist("no patient with pid ${visitInput.patientId}"))
             Success(visitRepository.save(Visit(visitInput, patient, doctor)))
         } else {
             Failure(NotAuthorized(requester))

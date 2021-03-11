@@ -802,4 +802,10 @@
     <changeSet author="marcus (generated)" id="1614904279196-3">
         <dropColumn columnName="vid" tableName="visit"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1615492167418-3">
+        <addUniqueConstraint columnNames="pid" constraintName="UK_b3ol7245hy7khbqmxu2j0va5c" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1615492167418-5">
+        <dropColumn columnName="doctor_id" tableName="doctor"/>
+    </changeSet>
 </databaseChangeLog>

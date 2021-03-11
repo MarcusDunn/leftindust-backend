@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
+import javax.persistence.EntityNotFoundException
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -103,7 +104,7 @@ class PatientDaoImpl(
 
             doctorIds
                 .map {
-                    doctorRepository.getById(it.toLong()) ?: return Failure(DoesNotExist())
+                    doctorRepository.getOneOrNull(it.toLong()) ?: return Failure(DoesNotExist())
                 }
                 .forEach { newPatient.addDoctor(doctor = it) }
 
@@ -140,7 +141,15 @@ class PatientDaoImpl(
 
     override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
-            val doctor = doctorRepository.getOne(did) ?: return@authenticateAndThen null
+            val doctor = try {
+                doctorRepository.getOne(did)
+            } catch (failure: JpaObjectRetrievalFailureException) {
+                if (failure.cause is EntityNotFoundException) {
+                    return Failure(DoesNotExist("doctor with did $did was not found"))
+                } else {
+                    throw failure
+                }
+            }
             doctorPatientRepository.getAllByDoctorId(doctor.id).map { it.patient }
         }
     }
@@ -165,7 +174,7 @@ class PatientDaoImpl(
         return if (requester has permissions) {
             val patient = patientRepository.getPatientByPid(patientInput.toInt())
                 ?: return Failure(DoesNotExist("patient does not exist"))
-            val doctor = doctorRepository.getById(doctorInput.toLong())
+            val doctor = doctorRepository.getOneOrNull(doctorInput.toLong())
                 ?: return Failure(DoesNotExist("doctor does not exist"))
             return Success(patient.addDoctor(doctor))
         } else {
