@@ -26,10 +26,11 @@ class DoctorDaoImpl(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getByPatient(pid: Int, requester: MediqToken): CustomResult<List<Doctor>, OrmFailureReason> {
+    override suspend fun getByPatient(pid: Long, requester: MediqToken): CustomResult<List<Doctor>, OrmFailureReason> {
 
         return if (requester can (Crud.READ to Tables.Patient)) {
-            val patient = patientRepository.getPatientByPid(pid) ?: return Failure(DoesNotExist())
+            val patient = patientRepository.getOneOrNull(pid)
+                ?: return Failure(DoesNotExist("patient with pid: $pid was not found"))
             val doctors = doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
             Success(doctors)
         } else {

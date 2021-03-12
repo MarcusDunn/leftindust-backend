@@ -32,7 +32,6 @@ internal class RecordDaoTest(
     @Test
     fun getRecordByRecordId() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -64,12 +63,11 @@ internal class RecordDaoTest(
     @Test
     fun getRecordsByPatientPid() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         )
-        session.save(patient)
+        val patientID = session.save(patient) as Long
         val record = MediqRecord(
             rid = 0,
             patient = patient,
@@ -81,7 +79,7 @@ internal class RecordDaoTest(
         )
         session.save(record)
 
-        val result = runBlocking { recordDao.getRecordsByPatientPid(patient.pid, FakeAuth.Valid.Token) }
+        val result = runBlocking { recordDao.getRecordsByPatientPid(patientID, FakeAuth.Valid.Token) }
 
         assertEquals(listOf(record), result.unwrap())
     }
@@ -89,14 +87,13 @@ internal class RecordDaoTest(
     @Test
     fun `getRecordsByPatientPid with no such record`() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         )
-        session.save(patient)
+        val patientID = session.save(patient) as Long
 
-        val result = runBlocking { recordDao.getRecordsByPatientPid(0, FakeAuth.Valid.Token) }
+        val result = runBlocking { recordDao.getRecordsByPatientPid(patientID, FakeAuth.Valid.Token) }
 
         assertEquals(emptyList<MediqRecord>(), result.unwrap())
     }

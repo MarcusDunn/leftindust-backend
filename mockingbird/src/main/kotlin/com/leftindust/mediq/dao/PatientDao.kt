@@ -16,7 +16,7 @@ interface PatientDao {
      * @param pID how the patient is searched for
      * @param requester the token of the user making the request
      */
-    suspend fun getByPID(pID: Int, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
+    suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
 
     /**
      * gets multiple patients from the DB, always tries to return max, but does not that many
@@ -45,10 +45,10 @@ interface PatientDao {
 
     /**
      * removes a patient from the Database. fails if no patient with that pID exists
-     * @param pID the target patient's pID to be removed
+     * @param pid the target patient's pID to be removed
      * @param requester the token of the user making the request
      */
-    suspend fun removePatientByPID(pID: Int, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
+    suspend fun removePatientByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
     suspend fun searchByName(query: String, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
     suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
     suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Patient, OrmFailureReason>

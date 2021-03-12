@@ -25,7 +25,6 @@ class TestPatientDao {
     @Test
     internal fun `test addPatient with valid patient`() {
         val patient = Patient(
-            pid = 11,
             firstName = "John",
             middleName = "Alexander",
             lastName = "Macdonald",
@@ -41,14 +40,14 @@ class TestPatientDao {
     internal fun `test getPatient with valid patient`() {
         runBlocking {
             val patient = Patient(
-                pid = 12,
                 firstName = "Alexander",
                 lastName = "Mackenzie",
                 sex = Sex.Male
             )
-            patientDao.addNewPatient(patient, fakeAuthToken)
+            val patientID = patientDao.addNewPatient(patient, fakeAuthToken)
+                .let { it.unwrap().id!! }
 
-            val result = patientDao.getByPID(patient.pid, fakeAuthToken)
+            val result = patientDao.getByPID(patientID, fakeAuthToken)
 
             assert(result.isSuccess()) { "failed to get a patient from the patientDao" }
         }
@@ -58,14 +57,13 @@ class TestPatientDao {
     @Test
     internal fun `test getPatient return value with valid patient`() {
         val patient = Patient(
-            pid = 23,
             firstName = "Alexander",
             lastName = "Mackenzie",
             sex = Sex.Male
         )
-        runBlocking { patientDao.addNewPatient(patient, fakeAuthToken) }
+        val patientID = runBlocking { patientDao.addNewPatient(patient, fakeAuthToken) }.let { it.unwrap().id!! }
 
-        val result = runBlocking { patientDao.getByPID(patient.pid, fakeAuthToken).unwrap() }
+        val result = runBlocking { patientDao.getByPID(patientID, fakeAuthToken).unwrap() }
 
         assertEquals(result, patient)
 
@@ -87,14 +85,14 @@ class TestPatientDao {
     internal fun `test removePatient returns removed patient`() {
         runBlocking {
             val patient = Patient(
-                pid = 23,
                 firstName = "Robert",
                 lastName = "Borden",
                 sex = Sex.Male
             )
-            patientDao.addNewPatient(patient, fakeAuthToken)
 
-            val result = patientDao.removePatientByPID(patient.pid, fakeAuthToken).unwrap()
+            val patientID = patientDao.addNewPatient(patient, fakeAuthToken).let { it.unwrap().id!! }
+
+            val result = patientDao.removePatientByPID(patientID, fakeAuthToken).unwrap()
 
             assertEquals(result, patient)
         }
@@ -105,15 +103,14 @@ class TestPatientDao {
     internal fun `test removePatient changes result of getPatient`() {
         runBlocking {
             val patient = Patient(
-                pid = 19,
                 firstName = "Arthur",
                 lastName = "Meighen",
                 sex = Sex.Male
             )
-            patientDao.addNewPatient(patient, fakeAuthToken)
-            patientDao.removePatientByPID(patient.pid, fakeAuthToken)
+            val patientPID = patientDao.addNewPatient(patient, fakeAuthToken).let { it.unwrap().id!! }
+            patientDao.removePatientByPID(patientPID, fakeAuthToken)
 
-            val result = runBlocking { patientDao.getByPID(patient.pid, fakeAuthToken).unwrapFailure() }
+            val result = runBlocking { patientDao.getByPID(patientPID, fakeAuthToken).unwrapFailure() }
 
             assert(result is DoesNotExist)
         }

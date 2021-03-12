@@ -29,14 +29,14 @@ class VisitDaoImpl(
     val logger: Logger = LogManager.getLogger()
 
     override suspend fun getVisitsForPatientPid(
-        pid: Int,
+        pid: Long,
         requester: MediqToken
     ): CustomResult<List<Visit>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Visit) {
-            if (patientRepository.getPatientByPid(pid) == null) {
+            if (patientRepository.getOneOrNull(pid) == null) {
                 null
             } else {
-                visitRepository.getAllByPatientPid(pid)
+                visitRepository.getAllByPatientId(pid)
             }
         }
     }
@@ -92,7 +92,7 @@ class VisitDaoImpl(
         return if (requester has requiredPermissions) {
             val doctor = doctorRepository.getOneOrNull(visitInput.doctorId.toLong())
                 ?: return Failure(DoesNotExist("no doc with did: ${visitInput.doctorId}"))
-            val patient = patientRepository.getPatientByPid(visitInput.patientId.toInt())
+            val patient = patientRepository.getOneOrNull(visitInput.patientId.toLong())
                 ?: return Failure(DoesNotExist("no patient with pid ${visitInput.patientId}"))
             Success(visitRepository.save(Visit(visitInput, patient, doctor)))
         } else {

@@ -126,7 +126,6 @@ internal class DoctorTest {
             lastName = "Sherman",
         )
         val patient = Patient(
-            pid = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male

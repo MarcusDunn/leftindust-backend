@@ -23,7 +23,7 @@ data class GraphQLPatientExample(
         if (visits != null) TODO()
         return listOfNotNull(
             personalInformation?.toPredicate(criteriaBuilder, itemRoot),
-            pid?.toPredicate(criteriaBuilder, itemRoot, Patient_.PID),
+            pid?.toPredicate(criteriaBuilder, itemRoot, Patient_.ID),
             dateOfBirth?.toPredicate(criteriaBuilder, itemRoot, Patient_.DATE_OF_BIRTH),
             address?.toPredicate(criteriaBuilder, itemRoot, Patient_.ADDRESS),
             email?.toPredicate(criteriaBuilder, itemRoot, Patient_.EMAIL),

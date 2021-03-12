@@ -9,6 +9,7 @@ import com.leftindust.mediq.dao.PatientDao
 import com.leftindust.mediq.dao.entity.Patient
 import com.leftindust.mediq.extensions.pmap
 import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.toLong
 import com.leftindust.mediq.graphql.types.GraphQLPatient
 import com.leftindust.mediq.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mediq.graphql.types.input.GraphQLRangeInput
@@ -28,9 +29,9 @@ class PatientQuery(
     suspend fun patient(pid: ID, authContext: GraphQLAuthContext): GraphQLPatient {
         val requester = authContext.mediqAuthToken
         val patient = patientDao
-            .getByPID(pid.toInt(), requester)
+            .getByPID(pid.toLong(), requester)
             .getOrThrow()
-        return GraphQLPatient(patient, authContext)
+        return GraphQLPatient(patient, patient.id!!, authContext)
     }
 
     suspend fun patients(
@@ -43,7 +44,7 @@ class PatientQuery(
         return when {
             pids != null -> {
                 pids
-                    .pmap { patientDao.getByPID(it.toInt(), authContext.mediqAuthToken) }
+                    .pmap { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
                     .pmap { it.getOrThrow() }
             }
             else -> {
@@ -54,7 +55,7 @@ class PatientQuery(
                     .getMany(validatedRange.first, validatedRange.last, nnSortedBy, requester)
                     .getOrThrow()
             }
-        }.pmap { GraphQLPatient(it, authContext) }
+        }.pmap { GraphQLPatient(it, it.id!!, authContext) }
 
     }
 
@@ -70,7 +71,7 @@ class PatientQuery(
         return GraphQLPatientGroupedList(
             patientDao.getManyGroupedBySorted(validatedRange.first, validatedRange.last, nnSortedBy, requester)
                 .getOrThrow()
-                .mapValues { entry -> entry.value.map { GraphQLPatient(it, authContext) } }
+                .mapValues { entry -> entry.value.map { GraphQLPatient(it, it.id!!, authContext) } }
         )
     }
 
@@ -79,13 +80,13 @@ class PatientQuery(
         return patientDao
             .searchByName(query, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
-            .map { GraphQLPatient(it, graphQLAuthContext) }
+            .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }
     }
 
     suspend fun searchPatient(example: GraphQLPatientExample, graphQLAuthContext: GraphQLAuthContext): List<GraphQLPatient> {
         return patientDao.searchByExample(example, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
-            .map { GraphQLPatient(it, graphQLAuthContext) }
+            .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }
     }
 
 

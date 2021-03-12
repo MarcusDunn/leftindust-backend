@@ -33,7 +33,6 @@ internal class VisitDaoTest(
     @Test
     fun getVisitsForPatientPid() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -53,7 +52,7 @@ internal class VisitDaoTest(
             )
         session.save(visit)
 
-        val result = runBlocking { visitDao.getVisitsForPatientPid(patient.pid, FakeAuth.Valid.Token) }
+        val result = runBlocking { visitDao.getVisitsForPatientPid(patient.id!!, FakeAuth.Valid.Token) }
 
         assertEquals(listOf(visit), result.unwrap())
     }
@@ -61,14 +60,13 @@ internal class VisitDaoTest(
     @Test
     fun `getVisitsForPatientPid with no such visit`() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         )
         session.save(patient)
 
-        val result = runBlocking { visitDao.getVisitsForPatientPid(patient.pid, FakeAuth.Valid.Token) }
+        val result = runBlocking { visitDao.getVisitsForPatientPid(patient.id!!, FakeAuth.Valid.Token) }
 
         assertEquals(emptyList<Visit>(), result.unwrap())
     }
@@ -76,7 +74,6 @@ internal class VisitDaoTest(
     @Test
     fun getVisitByVid() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -111,7 +108,6 @@ internal class VisitDaoTest(
     @Test
     fun getVisitsByDoctor() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male

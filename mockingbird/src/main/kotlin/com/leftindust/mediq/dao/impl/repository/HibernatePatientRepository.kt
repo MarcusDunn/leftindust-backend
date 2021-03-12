@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 interface HibernatePatientRepository : JpaRepository<Patient, Long> {
-    fun getPatientByPid(pid: Int): Patient?
     fun getAllByFirstNameLikeOrMiddleNameLikeOrLastNameLike(
         firstName: String,
         middleName: String,

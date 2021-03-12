@@ -31,7 +31,6 @@ internal class ContactDaoTest(
     fun getByPatient() {
 
         val patient = Patient(
-            pid = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -45,17 +44,17 @@ internal class ContactDaoTest(
             relationship = Relationship.Sibling,
         )
         patient.contacts = setOf(contact)
-        session.save(patient)
+        val patientID = session.save(patient) as Long
         session.save(contact)
 
-        val result = runBlocking { contactDao.getByPatient(patient.pid, FakeAuth.Valid.Token) }
+        val result = runBlocking { contactDao.getByPatient(patientID, FakeAuth.Valid.Token) }
 
         assertEquals(result.unwrap(), listOf(contact))
     }
 
     @Test
     fun `getByPatient with non-existing patient`() {
-        val result = runBlocking { contactDao.getByPatient(0, FakeAuth.Valid.Token).unwrapFailure() }
+        val result = runBlocking { contactDao.getByPatient(-1, FakeAuth.Valid.Token).unwrapFailure() }
         assert(result is DoesNotExist)
     }
 }

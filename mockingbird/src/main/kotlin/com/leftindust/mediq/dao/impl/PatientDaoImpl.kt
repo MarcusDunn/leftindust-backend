@@ -38,11 +38,11 @@ class PatientDaoImpl(
     @Autowired private val sessionFactory: SessionFactory,
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
-    override suspend fun getByPID(pID: Int, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
+    override suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
         val readToDatabase = Action(Crud.READ to Tables.Patient)
         return readToDatabase.getAuthorization(requester) {
             Success(
-                patientRepository.getPatientByPid(pID)
+                patientRepository.getOneOrNull(pID)
                     ?: return@getAuthorization Failure(DoesNotExist())
             )
         }
@@ -67,7 +67,7 @@ class PatientDaoImpl(
                             .instanceValue(patient)
                             .toString()
                             .first()
-                            .toString()
+                            .toString() // groups by the first character of id or name
                     })
         }
     }
@@ -78,11 +78,7 @@ class PatientDaoImpl(
     ): CustomResult<Patient, OrmFailureReason> {
         val writeToPatient = Action(Crud.CREATE to Tables.Patient)
         return writeToPatient.getAuthorization(requester) {
-            if (patientRepository.getPatientByPid(patient.pid) == null) {
-                Success(patientRepository.save(patient))
-            } else {
-                Failure(AlreadyExists("collision with pid ${patient.pid}"))
-            }
+            Success(patientRepository.save(patient))
         }
     }
 
@@ -101,7 +97,6 @@ class PatientDaoImpl(
             } catch (e: IllegalArgumentException) {
                 return Failure(InvalidArguments(e.message))
             }
-
             doctorIds
                 .map {
                     doctorRepository.getOneOrNull(it.toLong()) ?: return Failure(DoesNotExist())
@@ -115,10 +110,10 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun removePatientByPID(pID: Int, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
+    override suspend fun removePatientByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
         val deletePatient = Action(Crud.DELETE to Tables.Patient)
         return deletePatient.getAuthorization(requester) {
-            val toBeDeleted = patientRepository.getPatientByPid(pID) ?: return@getAuthorization Failure(DoesNotExist())
+            val toBeDeleted = patientRepository.getOneOrNull(pid) ?: return@getAuthorization Failure(DoesNotExist(""))
             patientRepository.delete(toBeDeleted)
             Success(toBeDeleted)
         }
@@ -172,7 +167,7 @@ class PatientDaoImpl(
     ): CustomResult<Patient, OrmFailureReason> {
         val permissions = listOf(Crud.UPDATE to Tables.Doctor, Crud.UPDATE to Tables.Doctor).map { Action(it) }
         return if (requester has permissions) {
-            val patient = patientRepository.getPatientByPid(patientInput.toInt())
+            val patient = patientRepository.getOneOrNull(patientInput.toLong())
                 ?: return Failure(DoesNotExist("patient does not exist"))
             val doctor = doctorRepository.getOneOrNull(doctorInput.toLong())
                 ?: return Failure(DoesNotExist("doctor does not exist"))
@@ -216,8 +211,8 @@ class PatientDaoImpl(
     ): CustomResult<Patient, OrmFailureReason> {
         val updatePatients = Crud.UPDATE to Tables.Patient
         return if (requester can updatePatients) {
-            val pid = patientInput.pid.getOrNull()?.toInt() ?: return Failure(InvalidArguments())
-            val patient = patientRepository.getPatientByPid(pid) ?: return Failure(DoesNotExist())
+            val pid = patientInput.pid.getOrNull() ?: return Failure(InvalidArguments())
+            val patient = patientRepository.getOneOrNull(pid.toLong()) ?: return Failure(DoesNotExist())
             try {
                 patient.setByGqlInput(patientInput)
                 Success(patient)

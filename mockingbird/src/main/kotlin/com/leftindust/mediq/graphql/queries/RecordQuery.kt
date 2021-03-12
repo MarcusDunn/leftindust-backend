@@ -5,6 +5,7 @@ import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mediq.auth.GraphQLAuthContext
 import com.leftindust.mediq.dao.RecordDao
 import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.toLong
 import com.leftindust.mediq.graphql.types.GraphQLRecord
 import org.springframework.stereotype.Component
 
@@ -24,7 +25,7 @@ class RecordQuery(
     suspend fun getRecords(pid: ID, authContext: GraphQLAuthContext): List<GraphQLRecord> {
         val requester = authContext.mediqAuthToken
         return recordDao
-            .getRecordsByPatientPid(pid.toInt(), requester)
+            .getRecordsByPatientPid(pid.toLong(), requester)
             .getOrThrow()
             .map { GraphQLRecord(it, authContext) }
     }

@@ -33,7 +33,6 @@ internal class ContactQueryTest(
     @Test
     fun getContactsByPatient() {
         val patient = Patient(
-            pid = 11,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -47,11 +46,11 @@ internal class ContactQueryTest(
             relationship = Relationship.Sibling
         )
         patient.contacts = setOf(contact)
-        session.save(patient)
+        val patientID = session.save(patient) as Long
         session.save(contact)
 
 
-        val result = runBlocking { contactQuery.getContactsByPatient(gqlID(patient.pid), FakeAuth.Valid.Context) }
+        val result = runBlocking { contactQuery.getContactsByPatient(gqlID(patientID), FakeAuth.Valid.Context) }
 
         assertEquals(listOf(GraphQLEmergencyContact(contact, FakeAuth.Valid.Context)), result)
     }
@@ -66,15 +65,14 @@ internal class ContactQueryTest(
     @Test
     fun `getContactsByPatient with empty contacts`() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         )
-        session.save(patient)
+        val patientID = session.save(patient) as Long
 
 
-        val result = runBlocking { contactQuery.getContactsByPatient(gqlID(patient.pid), FakeAuth.Valid.Context) }
+        val result = runBlocking { contactQuery.getContactsByPatient(gqlID(patientID), FakeAuth.Valid.Context) }
 
         assertEquals(result, emptyList<GraphQLPerson>())
     }

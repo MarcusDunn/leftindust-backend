@@ -33,10 +33,9 @@ internal class DoctorDaoTest(
         get() = sessionFactory.currentSession
 
     @Test
-    // TODO: 2021-02-09 speed up
     fun getByPatient() {
         val patient = PatientFaker(0).create()
-        session.save(patient)
+        val patientID = session.save(patient) as Long
         patient.doctors = DoctorPatientFaker(0).run {
             listOf(create(), create())
                 .onEach { it.patient = patient }
@@ -44,7 +43,7 @@ internal class DoctorDaoTest(
                 .toSet()
         }
 
-        val result = runBlocking { doctorDao.getByPatient(patient.pid, FakeAuth.Valid.Token) }
+        val result = runBlocking { doctorDao.getByPatient(patientID, FakeAuth.Valid.Token) }
 
         assertEquals(result.unwrap().toSet(), patient.doctors.map { it.doctor }.toSet())
     }
@@ -59,7 +58,6 @@ internal class DoctorDaoTest(
     @Test
     fun getByVisit() {
         val patient = Patient(
-            pid = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Female,

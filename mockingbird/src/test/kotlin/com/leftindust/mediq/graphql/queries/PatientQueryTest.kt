@@ -53,9 +53,9 @@ class PatientQueryTest(
         val patient = PatientFaker(102).create()
         session.save(patient)
 
-        val result = runBlocking { patientQuery.patient(gqlID(patient.pid), fakeAuthContext) }
+        val result = runBlocking { patientQuery.patient(gqlID(patient.id!!), fakeAuthContext) }
 
-        assertEquals(GraphQLPatient(patient, fakeAuthContext), result)
+        assertEquals(GraphQLPatient(patient, patient.id!!, fakeAuthContext), result)
     }
 
     @Test
@@ -107,13 +107,19 @@ class PatientQueryTest(
         runBlocking {
             val patientFaker = PatientFaker(102)
             val patients = (0..20).map { patientFaker() }.onEach { session.save(it) }
-            val pids = patients.map { gqlID(it.pid) }
+            val pids = patients.map { gqlID(it.id!!) }
 
             val result = patientQuery.patients(pids = pids, authContext = fakeAuthContext)
 
             assert(
                 result.zip(patients)
-                    .all { (graphQLPatient, patient) -> graphQLPatient == GraphQLPatient(patient, fakeAuthContext) }
+                    .all { (graphQLPatient, patient) ->
+                        graphQLPatient == GraphQLPatient(
+                            patient,
+                            patient.id!!,
+                            fakeAuthContext
+                        )
+                    }
             )
         }
     }
@@ -137,11 +143,11 @@ class PatientQueryTest(
                     fakeAuthContext
                 ).groups[0]
 
-            result.contents.sortedBy { it.pid.value.toInt() }.zip(patients.sortedBy { it.pid })
+            result.contents.sortedBy { it.pid.value.toInt() }.zip(patients.sortedBy { it.id!! })
                 .forEach { (graphQLPatient, patient) ->
                     assertEquals(
                         graphQLPatient,
-                        GraphQLPatient(patient, fakeAuthContext)
+                        GraphQLPatient(patient, patient.id!!, fakeAuthContext)
                     )
                 }
 
@@ -154,9 +160,9 @@ class PatientQueryTest(
         val patient = PatientFaker(102, doctorPatientFaker).create()
         session.save(patient)
 
-        val result = runBlocking { patientQuery.patient(gqlID(patient.pid), fakeAuthContext) }
+        val result = runBlocking { patientQuery.patient(gqlID(patient.id!!), fakeAuthContext) }
         runBlocking {
-            assert(GraphQLPatient(patient, fakeAuthContext).doctors(doctorDao) == result.doctors(doctorDao))
+            assert(GraphQLPatient(patient, patient.id!!, fakeAuthContext).doctors(doctorDao) == result.doctors(doctorDao))
         }
     }
 
@@ -172,7 +178,7 @@ class PatientQueryTest(
         val result = runBlocking { patientQuery.searchPatientsByName("TESTArthur", fakeAuthContext) }
 
         result
-            .zip(listOf(GraphQLPatient(patient, fakeAuthContext)))
+            .zip(listOf(GraphQLPatient(patient, patient.id!!, fakeAuthContext)))
             .forEach { assertEquals(it.first, it.second) }
     }
 
@@ -192,7 +198,7 @@ class PatientQueryTest(
         session.saveOrUpdate(visit.patient)
         session.save(visit)
 
-        val result = runBlocking { patientQuery.patient(gqlID(patient.pid), fakeAuthContext).visits(visitDao) }
+        val result = runBlocking { patientQuery.patient(gqlID(patient.id!!), fakeAuthContext).visits(visitDao) }
 
         assertEquals(result[0], GraphQLVisit(visit, visit.id!!, fakeAuthContext))
     }
@@ -201,28 +207,28 @@ class PatientQueryTest(
     @Test
     fun patient() {
         val patient = Patient(
-            pid = 10,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         )
         session.save(patient)
 
-        val result = runBlocking { patientQuery.patient(gqlID(patient.pid), FakeAuth.Valid.Context) }
+        val result = runBlocking { patientQuery.patient(gqlID(patient.id!!), FakeAuth.Valid.Context) }
 
-        assertEquals(GraphQLPatient(patient, FakeAuth.Valid.Context), result)
+        val expected = GraphQLPatient(patient, patient.id!!, FakeAuth.Valid.Context)
+        assertEquals(expected, result)
     }
 
     @Test
     fun patientsByPids() {
         val patientFaker = PatientFaker(0)
         val patients = (0 until 20).map { patientFaker() }.onEach { session.save(it) }
-        val pids = patients.map { gqlID(it.pid) }
+        val pids = patients.map { gqlID(it.id!!) }
 
         val result = runBlocking { patientQuery.patients(pids = pids, authContext = FakeAuth.Valid.Context) }
 
         assertEquals(
-            patients.map { GraphQLPatient(it, FakeAuth.Valid.Context) }.sortedBy { it.pid.value },
+            patients.map { GraphQLPatient(it, it.id!!, FakeAuth.Valid.Context) }.sortedBy { it.pid.value },
             result.sortedBy { it.pid.value })
     }
 
@@ -245,7 +251,7 @@ class PatientQueryTest(
 
         assertEquals(
             result.sortedBy { it.pid.value },
-            patients.map { GraphQLPatient(it, FakeAuth.Valid.Context) }.sortedBy { it.pid.value })
+            patients.map { GraphQLPatient(it, it.id!!, FakeAuth.Valid.Context) }.sortedBy { it.pid.value })
     }
 
     @Test
@@ -266,14 +272,13 @@ class PatientQueryTest(
 
         assertEquals(
             result.groups.flatMap { it.contents }.sortedBy { it.pid.value },
-            patients.map { GraphQLPatient(it, FakeAuth.Valid.Context) }.sortedBy { it.pid.value })
+            patients.map { GraphQLPatient(it, it.id!!, FakeAuth.Valid.Context) }.sortedBy { it.pid.value })
     }
 
     @Test
     @Disabled("does not work due to session issues")
     fun searchPatientsByName() {
         val patient = Patient(
-            pid = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -282,14 +287,13 @@ class PatientQueryTest(
 
         val result = runBlocking { patientQuery.searchPatientsByName("Marcus", FakeAuth.Valid.Context) }
 
-        assert(result.contains(GraphQLPatient(patient, FakeAuth.Valid.Context)))
+        assert(result.contains(GraphQLPatient(patient, patient.id!!, FakeAuth.Valid.Context)))
     }
 
     @Test
     @Disabled("does not work due to session issues")
     internal fun `searchPatient by simple example`() {
         val patient = Patient(
-            pid = 11,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -308,7 +312,7 @@ class PatientQueryTest(
             )
         }
 
-        assert(result.any { it == GraphQLPatient(patient, FakeAuth.Valid.Context) }) { result }
+        assert(result.any { it == GraphQLPatient(patient, patient.id!!, FakeAuth.Valid.Context) }) { result }
     }
 
     @Test
@@ -316,37 +320,36 @@ class PatientQueryTest(
     fun `searchPatient by complex example`() {
 
         val patient = Patient(
-            pid = 12,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
         ).also { session.save(it) }
         val fakeMarcus = Patient(
-            pid = 21,
             firstName = "Darcus",
             lastName = "Munn",
             sex = Sex.Male
         ).also { session.save(it) }
         val imposter = Patient(
-            pid = 21,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male,
             dateOfBirth = Timestamp.from(Instant.ofEpochSecond(1000000))
         ).also { session.save(it) }
 
-        val result = runBlocking { patientQuery.searchPatient(
-            GraphQLPatientExample(
-                personalInformation = GraphQLPersonExample(
-                    firstName = StringFilter(
-                        includes = "arcu"
+        val result = runBlocking {
+            patientQuery.searchPatient(
+                GraphQLPatientExample(
+                    personalInformation = GraphQLPersonExample(
+                        firstName = StringFilter(
+                            includes = "arcu"
+                        )
                     )
-                )
-            ), FakeAuth.Valid.Context
-        ) }
+                ), FakeAuth.Valid.Context
+            )
+        }
 
         assertEquals(
-            setOf(patient, fakeMarcus, imposter).map { GraphQLPatient(it, FakeAuth.Valid.Context) }.toSet(),
+            setOf(patient, fakeMarcus, imposter).map { GraphQLPatient(it, it.id!!, FakeAuth.Valid.Context) }.toSet(),
             result.toSet()
         )
     }

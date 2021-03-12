@@ -135,8 +135,6 @@ tasks.withType<Test> {
         showCauses = true
         showStackTraces = true
     }
-
-    failFast = true
 }
 
 // koltin compiler args

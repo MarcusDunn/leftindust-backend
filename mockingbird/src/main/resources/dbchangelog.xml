@@ -808,4 +808,7 @@
     <changeSet author="marcus (generated)" id="1615492167418-5">
         <dropColumn columnName="doctor_id" tableName="doctor"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1615505988621-5">
+        <dropColumn columnName="pid" tableName="patient"/>
+    </changeSet>
 </databaseChangeLog>

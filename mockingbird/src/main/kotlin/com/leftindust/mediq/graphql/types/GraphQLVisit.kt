@@ -57,7 +57,7 @@ data class GraphQLVisit(
     suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient = patientDao
         .getByVisit(vid?.toLong(), authToken)
         .getOrThrow()
-        .let { patient -> GraphQLPatient(patient, authContext) }
+        .let { GraphQLPatient(it, it.id!!, authContext) }
 
     fun icd(): GraphQLIcdSimpleEntity {
         TODO()

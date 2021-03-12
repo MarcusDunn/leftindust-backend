@@ -9,7 +9,6 @@ import com.leftindust.mediq.dao.PatientDao
 import com.leftindust.mediq.dao.VisitDao
 import com.leftindust.mediq.dao.entity.Doctor
 import com.leftindust.mediq.extensions.gqlID
-import com.leftindust.mediq.extensions.toInt
 import com.leftindust.mediq.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
@@ -47,7 +46,7 @@ data class GraphQLDoctor(
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =
-        patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, authContext) }
+        patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, it.id!!, authContext) }
 
 
     suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {

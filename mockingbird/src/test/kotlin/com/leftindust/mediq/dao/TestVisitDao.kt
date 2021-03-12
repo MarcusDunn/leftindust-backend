@@ -66,6 +66,7 @@ class TestVisitDao(
     internal fun `test getVisitsForPatient`() {
         val visitFaker = VisitFaker(101)
         val patient = PatientFaker(102).create()
+        val patientID = patientRepository.save(patient).id!!
 
         for (i in 0 until 20) {
             val visit = visitFaker.create()
@@ -73,7 +74,7 @@ class TestVisitDao(
             saveVisitWithCascade(visit)
         }
 
-        val result = runBlocking { dao.getVisitsForPatientPid(patient.pid, fakeAuthToken).unwrap() }
+        val result = runBlocking { dao.getVisitsForPatientPid(patientID, fakeAuthToken).unwrap() }
 
         assertEquals(result.size, 20)
     }

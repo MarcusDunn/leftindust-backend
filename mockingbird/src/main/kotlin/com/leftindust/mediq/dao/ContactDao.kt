@@ -5,5 +5,5 @@ import com.leftindust.mediq.dao.entity.EmergencyContact
 import com.leftindust.mediq.extensions.CustomResult
 
 interface ContactDao {
-    suspend fun getByPatient(pid: Int, requester: MediqToken): CustomResult<List<EmergencyContact>, OrmFailureReason>
+    suspend fun getByPatient(pid: Long, requester: MediqToken): CustomResult<List<EmergencyContact>, OrmFailureReason>
 }

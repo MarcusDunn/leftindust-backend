@@ -19,7 +19,6 @@ class PatientFaker(
     override fun create(): Patient {
         val sex = Sex.values().random(seededRandom.asKotlinRandom())
         return Patient(
-            pid = numberFaker().absoluteValue,
             firstName = faker.name.firstName(),
             middleName = middleNameFaker perhapsNullWithOddsOf 50,
             lastName = faker.name.lastName(),

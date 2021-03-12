@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.io.Serializable
 
 interface HibernateVisitRepository : JpaRepository<Visit, Long> {
-    fun getAllByPatientPid(pid: Int): List<Visit>
-    fun <T> getAllByDoctorId(doctor_id: T): List<Visit>
+    fun getAllByPatientId(pid: Long): List<Visit>
+    fun <T: Serializable> getAllByDoctorId(doctor_id: T): List<Visit>
 }

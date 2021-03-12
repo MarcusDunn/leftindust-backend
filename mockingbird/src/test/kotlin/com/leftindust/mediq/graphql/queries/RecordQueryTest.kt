@@ -4,6 +4,7 @@ import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mediq.dao.entity.MediqRecord
 import com.leftindust.mediq.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mediq.dao.impl.repository.HibernateRecordRepository
+import com.leftindust.mediq.extensions.gqlID
 import com.leftindust.mediq.graphql.types.GraphQLRecord
 import com.leftindust.mediq.helper.FakeAuth
 import com.leftindust.mediq.helper.mocker.PatientFaker
@@ -54,7 +55,7 @@ class RecordQueryTest(
         hibernateRecordRepository.save(record1)
         hibernateRecordRepository.save(record2)
 
-        val result = runBlocking { recordQuery.getRecords(ID(patient.pid.toString()), fakeAuthContext) }
+        val result = runBlocking { recordQuery.getRecords(gqlID(patient.id!!), fakeAuthContext) }
 
         assertEquals(result, listOf(graphQLRecord(record1), graphQLRecord(record2)))
     }

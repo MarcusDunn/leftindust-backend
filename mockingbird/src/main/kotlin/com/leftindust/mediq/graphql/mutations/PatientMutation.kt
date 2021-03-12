@@ -16,15 +16,15 @@ class PatientMutation(
     suspend fun addDoctorToPatient(patientById: ID, doctorById: ID, authContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao.addDoctorToPatient(patientById, doctorById, authContext.mediqAuthToken)
             .getOrThrow()
-            .let { GraphQLPatient(it, authContext) }
+            .let { GraphQLPatient(it, it.id!!, authContext) } // safe nn assert as we just got from DB
     }
 
-    @GraphQLDescription("updates a patient by their pid, only the not null fields are updated")
+    @GraphQLDescription("updates a patient by their pid, only the not null fields are updated, pid MUST be defined")
     suspend fun updatePatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao
             .update(patient, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
-            .let { GraphQLPatient(it, graphQLAuthContext) }
+            .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) } // safe nn assert as we just got from DB
     }
 
     @GraphQLDescription(
@@ -43,6 +43,6 @@ class PatientMutation(
                 requester = graphQLAuthContext.mediqAuthToken
             )
             .getOrThrow()
-            .let { GraphQLPatient(it, graphQLAuthContext) }
+            .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) }  // safe nn assert as we just added from DB
     }
 }

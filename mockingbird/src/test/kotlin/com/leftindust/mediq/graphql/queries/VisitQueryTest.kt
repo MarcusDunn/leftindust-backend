@@ -43,7 +43,6 @@ class VisitQueryTest(
     @Test
     fun getVisitsByPatient() {
         val patient = Patient(
-            pid = 0,
             firstName = "Marcus",
             lastName = "Dunn",
             sex = Sex.Male
@@ -64,7 +63,7 @@ class VisitQueryTest(
             )
         session.save(visit)
 
-        val result = runBlocking { visitQuery.getVisitsByPatient(gqlID(patient.pid), FakeAuth.Valid.Context) }
+        val result = runBlocking { visitQuery.getVisitsByPatient(gqlID(patient.id!!), FakeAuth.Valid.Context) }
 
         assertEquals(listOf(GraphQLVisit(visit, visit.id!!, FakeAuth.Valid.Context)), result)
     }

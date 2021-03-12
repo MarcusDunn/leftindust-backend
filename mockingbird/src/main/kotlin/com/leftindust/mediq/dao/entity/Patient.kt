@@ -8,15 +8,11 @@ import com.leftindust.mediq.extensions.*
 import com.leftindust.mediq.graphql.types.GraphQLPhoneType
 import com.leftindust.mediq.graphql.types.GraphQLTime
 import com.leftindust.mediq.graphql.types.input.GraphQLPatientInput
-import org.hibernate.annotations.NaturalId
 import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity(name = "patient")
 class Patient(
-    @Column(unique = true, nullable = false)
-    @NaturalId(mutable = false)
-    val pid: Int,
     firstName: String,
     middleName: String? = null,
     lastName: String,
@@ -50,9 +46,6 @@ class Patient(
         graphQLPatientInput: GraphQLPatientInput,
         doctors: Set<DoctorPatient>,
     ) : this(
-        pid = graphQLPatientInput.pid
-            .getOrThrow(IllegalArgumentException("pid must be defined when constructing a Patient"))
-            .toInt(),
         firstName = graphQLPatientInput.firstName
             .getOrThrow(IllegalArgumentException("firstName must be defined when constructing a Patient")),
         middleName = graphQLPatientInput.middleName
@@ -87,6 +80,7 @@ class Patient(
         homePhone = graphQLPatientInput.phoneNumbers.getOrNull()
             ?.find { it.type == GraphQLPhoneType.Home }
             ?.number?.toString()
+        assert(graphQLPatientInput.pid is OptionalInput.Undefined) // check that they are not trying to assign primary key on creation
     }
 
     fun addDoctor(doctor: Doctor): Patient {
@@ -97,14 +91,13 @@ class Patient(
     enum class SortableField {
         PID,
         FIRST_NAME,
-
         LAST_NAME,
         ;
 
         val fieldName: String
             get() {
                 return when (this) {
-                    PID -> "pid"
+                    PID -> "id" // TODO: 2021-03-11  
                     FIRST_NAME -> "firstName"
                     LAST_NAME -> "lastName"
                 }
@@ -112,7 +105,7 @@ class Patient(
 
         fun instanceValue(receiver: Patient): Any {
             return when (this) {
-                PID -> receiver.pid
+                PID -> receiver.id!!
                 FIRST_NAME -> receiver.firstName
                 LAST_NAME -> receiver.lastName
             }
@@ -123,7 +116,6 @@ class Patient(
         if (this === other) return true
         if (other !is Patient) return false
 
-        if (pid != other.pid) return false
         if (firstName != other.firstName) return false
         if (middleName != other.middleName) return false
         if (lastName != other.lastName) return false
@@ -142,7 +134,6 @@ class Patient(
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + pid
         result = 31 * result + firstName.hashCode()
         result = 31 * result + (middleName?.hashCode() ?: 0)
         result = 31 * result + lastName.hashCode()
@@ -159,12 +150,13 @@ class Patient(
     }
 
     override fun toString(): String {
-        return "Patient(pid=$pid, firstName='$firstName', middleName=$middleName, lastName='$lastName', dateOfBirth=$dateOfBirth, address=$address, email=$email, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors)"
+        return "Patient(firstName='$firstName', middleName=$middleName, lastName='$lastName', dateOfBirth=$dateOfBirth, address=$address, email=$email, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors)"
     }
 
     @Throws(IllegalArgumentException::class)
     fun setByGqlInput(patientInput: GraphQLPatientInput) {
-        if (pidExistsAndMatches(patientInput)) throw IllegalArgumentException("pid does not match entity")
+        if (patientInput.pid.getOrNull()?.toLong() != this.id!!)
+            throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid.getOrNull()}")
 
         firstName = patientInput.firstName
             .onUndefined(firstName) ?: throw IllegalArgumentException("firstName cannot be set to null")
@@ -210,7 +202,4 @@ class Patient(
 
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
     }
-
-    private fun pidExistsAndMatches(patientInput: GraphQLPatientInput) =
-        patientInput.pid.getOrNull()?.value != pid.toString()
 }

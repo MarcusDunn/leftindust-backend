@@ -40,7 +40,6 @@ internal class GraphQLDoctorTest(
             lastName = "Dunn",
         ).also { session.save(it) }
         val patientEntity = Patient(
-            pid = 0,
             firstName = "Boris",
             lastName = "Vaselchov",
             sex = Sex.Male
@@ -55,7 +54,7 @@ internal class GraphQLDoctorTest(
 
         val result = runBlocking { doctor.patients(patientDao) }
 
-        assertEquals(listOf(GraphQLPatient(patientEntity, FakeAuth.Valid.Context)), result)
+        assertEquals(listOf(GraphQLPatient(patientEntity, patientEntity.id!!, FakeAuth.Valid.Context)), result)
     }
 
     @Test
@@ -65,7 +64,6 @@ internal class GraphQLDoctorTest(
             lastName = "Dunn",
         ).also { session.save(it) }
         val patientEntity = Patient(
-            pid = 0,
             firstName = "Boris",
             lastName = "Vaselchov",
             sex = Sex.Male

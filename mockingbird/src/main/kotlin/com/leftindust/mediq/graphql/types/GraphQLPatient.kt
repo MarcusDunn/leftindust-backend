@@ -12,6 +12,7 @@ import com.leftindust.mediq.dao.entity.enums.Ethnicity
 import com.leftindust.mediq.dao.entity.enums.Sex
 import com.leftindust.mediq.extensions.gqlID
 import com.leftindust.mediq.extensions.toInt
+import com.leftindust.mediq.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("Patient")
@@ -31,13 +32,13 @@ data class GraphQLPatient(
 ) : GraphQLPerson {
     private val authToken = authContext.mediqAuthToken
 
-    constructor(patient: Patient, authContext: GraphQLAuthContext) : this(
+    constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
+        pid = gqlID(id),
         firstName = patient.firstName,
         middleName = patient.middleName,
         lastName = patient.lastName,
         phoneNumbers = listOf(patient.workPhone to GraphQLPhoneType.Work, patient.cellPhone to GraphQLPhoneType.Cell)
             .mapNotNull { (phone, type) -> phone?.let { GraphQLPhoneNumber(it, type) } },
-        pid = gqlID(patient.pid),
         dateOfBirth = patient.dateOfBirth?.let { GraphQLTime(it) },
         address = patient.address,
         email = patient.email,
@@ -45,17 +46,19 @@ data class GraphQLPatient(
         sex = patient.sex,
         ethnicity = patient.ethnicity,
         authContext = authContext,
-    )
+    ) {
+        assert(patient.id == null || patient.id == id)
+    }
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
-        contactDao.getByPatient(pid.toInt(), authToken).getOrThrow().map { GraphQLEmergencyContact(it, authContext) }
+        contactDao.getByPatient(pid.toLong(), authToken).getOrThrow().map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =
-        doctorDao.getByPatient(pid.toInt(), authToken).getOrThrow().map { GraphQLDoctor(it, it.id!!, authContext) }
+        doctorDao.getByPatient(pid.toLong(), authToken).getOrThrow().map { GraphQLDoctor(it, it.id!!, authContext) }
 
     suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
-        return visitDao.getVisitsForPatientPid(pid.toInt(), authToken)
+        return visitDao.getVisitsForPatientPid(pid.toLong(), authToken)
             .getOrThrow()
-            .map { GraphQLVisit(it, it.id!!, authContext) } //safe nn assertion as we just got from DB}
+            .map { GraphQLVisit(it, it.id!!, authContext) } // safe nn assertion as we just got from DB
     }
 }

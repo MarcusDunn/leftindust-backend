@@ -11,6 +11,7 @@ import com.leftindust.mediq.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mediq.extensions.CustomResult
 import com.leftindust.mediq.extensions.Failure
 import com.leftindust.mediq.extensions.Success
+import com.leftindust.mediq.extensions.getOneOrNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -36,11 +37,11 @@ class RecordDaoImpl(
     }
 
     override suspend fun getRecordsByPatientPid(
-        pid: Int,
+        pid: Long,
         requester: MediqToken
     ): CustomResult<List<MediqRecord>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Record) {
-            val patient = patientRepository.getPatientByPid(pid)
+            val patient = patientRepository.getOneOrNull(pid)
                 ?: return Failure(DoesNotExist("patient with pid $pid was not found"))
             recordRepository.getAllByPatientId(patient.id!!.toLong())
         }

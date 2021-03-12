@@ -22,7 +22,6 @@ internal class GraphQLPatientExampleTest {
         runBlocking {
 
             val patient = Patient(
-                pid = 11,
                 firstName = "Marcus",
                 lastName = "Dunn",
                 sex = Sex.Male
@@ -43,7 +42,7 @@ internal class GraphQLPatientExampleTest {
 
             assertEquals(listOf(patient), result.unwrap())
 
-            patientDao.removePatientByPID(patient.pid, FakeAuth.Valid.Token)
+            patientDao.removePatientByPID(patient.id!!, FakeAuth.Valid.Token)
         }
     }
 
@@ -51,7 +50,6 @@ internal class GraphQLPatientExampleTest {
     fun `toSqlConditions no conditions`(@Autowired patientDao: PatientDao) {
         runBlocking {
             val patient = Patient(
-                pid = 11,
                 firstName = "Marcus",
                 lastName = "Dunn",
                 sex = Sex.Male
@@ -62,7 +60,7 @@ internal class GraphQLPatientExampleTest {
 
             assert(result.unwrap().contains(patient)) { result.unwrap() }
 
-            patientDao.removePatientByPID(patient.pid, FakeAuth.Valid.Token)
+            patientDao.removePatientByPID(patient.id!!, FakeAuth.Valid.Token)
         }
     }
 
