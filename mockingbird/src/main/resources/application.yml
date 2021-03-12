@@ -1,6 +1,6 @@
 graphql:
   packages:
-    - "com.leftindust.mediq.graphql"
+    - "com.leftindust.mockingbird.graphql"
   federation:
     enabled: true
 

@@ -44,7 +44,7 @@ class ApplicationConfig {
         }
 
         object HibernateConfig {
-            const val ENTITY_PACKAGE = "com.leftindust.mediq.dao.entity"
+            const val ENTITY_PACKAGE = "com.leftindust.mockingbird.dao.entity"
             const val HBM2DDL_AUTO = "none"
             const val DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         }

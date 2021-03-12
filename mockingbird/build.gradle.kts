@@ -112,7 +112,7 @@ liquibase {
             "username" to "mediq",
             "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",
-            "referenceUrl" to "hibernate:spring:com.leftindust.mediq.dao.entity?" +
+            "referenceUrl" to "hibernate:spring:com.leftindust.leftindust.dao.entity?" +
                     "dialect=org.hibernate.dialect.PostgreSQLDialect&" +
                     "hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&" +
                     "hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
@@ -145,4 +145,8 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "${JavaVersion.VERSION_1_8}"
         allWarningsAsErrors = true
     }
+}
+
+kapt {
+    includeCompileClasspath = false
 }
