@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: mediq
     image: postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U mediq" ]
+      test: [ "CMD-SHELL", "pg_isready -U mediq -d mediq" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,12 +29,34 @@ services:
   gladio:
     environment:
       - MOCKINGBIRD_URL=http://mockingbird:8080
+      - CONDOR_URL=http://condor:8081
     ports:
       - 4000:4000
     build:
       context: .
       dockerfile: gladio.Dockerfile
-    command: ["npm", "test"]
+    command: [ "npm", "test" ]
     depends_on:
       mockingbird:
         condition: service_healthy
+  condor-postgres:
+    environment:
+      POSTGRES_DB: mediq
+      POSTGRES_USER: mediq
+      POSTGRES_PASSWORD: mediq
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U mediq -d mediq" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  condor:
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
+      - SPRING_DATASOURCE_USERNAME=mediq
+      - SPRING_DATASOURCE_PASSWORD=mediq
+    ports:
+      - 8080:8081
+    build:
+      context: .
+      dockerfile: condor.Dockerfile
