@@ -128,8 +128,7 @@ tasks.withType<Test> {
     testLogging {
         events(
             TestLogEvent.FAILED,
-            TestLogEvent.STANDARD_ERROR,
-            TestLogEvent.SKIPPED
+            TestLogEvent.STANDARD_ERROR
         )
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showExceptions = true
