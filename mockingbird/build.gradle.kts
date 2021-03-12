@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
@@ -8,11 +9,11 @@ plugins {
     kotlin("plugin.allopen")
 
     // spring
-    id("org.springframework.boot") version "2.3.4.RELEASE"
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 
     // liquibase
-    id("org.liquibase.gradle") version "2.0.4"
+    id("org.liquibase.gradle")
 }
 
 repositories {
@@ -138,7 +139,7 @@ tasks.withType<Test> {
 }
 
 // koltin compiler args
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
         useIR = true
         jvmTarget = "${JavaVersion.VERSION_1_8}"
