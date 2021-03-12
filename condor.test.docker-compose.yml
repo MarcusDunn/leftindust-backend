@@ -1,0 +1,24 @@
+services:
+  condor-postgres:
+    environment:
+      POSTGRES_DB: mediq
+      POSTGRES_USER: mediq
+      POSTGRES_PASSWORD: mediq
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U mediq -d mediq" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mockingbird:
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
+      - SPRING_DATASOURCE_USERNAME=mediq
+      - SPRING_DATASOURCE_PASSWORD=mediq
+    build:
+      context: .
+      dockerfile: condor.Dockerfile
+    command: [ "gradle", "condor:test" ]
+    depends_on:
+      condor-postgres:
+        condition: service_healthy

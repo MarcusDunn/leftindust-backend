@@ -1,0 +1,15 @@
+package com.leftindust.condor.graphql.queries
+
+import com.expediagroup.graphql.types.operations.Query
+import com.leftindust.condor.graphql.types.CondorStatus
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import javax.sql.DataSource
+
+@Component
+class HealthQuery : Query {
+    fun condorIsAlive(@Autowired dataSource: DataSource) = CondorStatus(
+        isAlive = true,
+        connectedToDatabase = kotlin.runCatching { assert(dataSource.connection.isValid(5)) }.isSuccess
+    )
+}
