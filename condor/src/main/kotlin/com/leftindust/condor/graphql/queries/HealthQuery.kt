@@ -8,8 +8,10 @@ import javax.sql.DataSource
 
 @Component
 class HealthQuery : Query {
-    fun condorIsAlive(@Autowired dataSource: DataSource) = CondorStatus(
-        isAlive = true,
-        connectedToDatabase = kotlin.runCatching { assert(dataSource.connection.isValid(5)) }.isSuccess
-    )
+    fun condorIsAlive(@Autowired dataSource: DataSource): CondorStatus {
+        return CondorStatus(
+            isAlive = true,
+            connectedToDatabase = kotlin.runCatching { assert(dataSource.connection.isValid(5)) }.isSuccess
+        )
+    }
 }
