@@ -15,4 +15,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Gladio Integration Tests
         run: docker-compose -f gladio.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
+  Condor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Gladio Integration Tests
+        run: docker-compose -f condor.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
 
