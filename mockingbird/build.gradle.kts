@@ -67,9 +67,8 @@ dependencies {
     // firebase
     implementation("com.google.firebase", "firebase-admin", firebaseVersion)
 
-    // database drivers (h2 used for testing, postgres at runtime)
+    // database drivers
     implementation("org.postgresql", "postgresql")
-    implementation("com.h2database", "h2")
 
     // liquibase
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
