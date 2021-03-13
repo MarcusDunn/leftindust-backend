@@ -14,20 +14,15 @@ import org.springframework.stereotype.Service
  * @property authorizationDao handles all interaction with the user permissions stored in the DB
  */
 @Service
-internal class AuthorizerImpl : Authorizer {
-    val logger = LogManager.getLogger()
-
-    @Autowired
-    private lateinit var authorizationDao: AuthorizationDao
-
+internal class AuthorizerImpl(
+    @Autowired private val authorizationDao: AuthorizationDao
+) : Authorizer {
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
         return (authorizationDao
             .getRolesForUserByUid(user.uid ?: return Authorization.Denied)
             .getOrNull() ?: return Authorization.Denied)
             .map { it.action }
             .contains(action)
-            .or(user.uid == "admin") // used for testing, remove for production or when I find a nice way to login
-            .or(user.isVerified())
             .toAuthorization()
     }
 
