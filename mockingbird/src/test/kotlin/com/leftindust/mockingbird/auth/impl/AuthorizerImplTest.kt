@@ -1,9 +1,6 @@
 package com.leftindust.mockingbird.auth.impl
 
-import com.leftindust.mockingbird.auth.Crud.READ
 import com.leftindust.mockingbird.dao.AuthorizationDao
-import com.leftindust.mockingbird.dao.Tables.Patient
-import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.Success
 import io.mockk.coEvery
@@ -24,22 +21,41 @@ internal class AuthorizerImplTest {
     private lateinit var authorizationDao: AuthorizationDao
 
     @Test
-    fun getAuthorization() {
-        val readToPatients = mockk<Action> {
-            every { referencedTableName } returns Patient
-            every { permissionType } returns READ
-        }
-
+    fun `get authorization when user has subset of required permissions`() {
         coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns Success(listOf(
             mockk {
-                every { readToPatients } returns readToPatients
+                every { action.isSuperset(any()) } returns false
             }
         ))
 
+        val authorizer = AuthorizerImpl(authorizationDao)
+
         val actual = runBlocking {
-            AuthorizerImpl(authorizationDao).getAuthorization(readToPatients, mockk {
-                every { uid } returns "marcus"
-            })
+            authorizer.getAuthorization(
+                action = mockk(),
+                user = mockk("marcus user") { every { uid } returns "marcus" })
+        }
+
+        assertEquals(Authorization.Denied, actual)
+
+        coVerify { authorizationDao.getRolesForUserByUid("marcus") }
+    }
+
+    @Test
+    fun `get authorization when user has superset of required permissions`() {
+
+        coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns Success(listOf(
+            mockk("superset") {
+                every { action.isSuperset(any()) } returns true
+            }
+        ))
+
+        val authorizer = AuthorizerImpl(authorizationDao)
+
+        val actual = runBlocking {
+            authorizer.getAuthorization(
+                action = mockk("subset"),
+                user = mockk("marcus user") { every { uid } returns "marcus" })
         }
 
         assertEquals(Authorization.Allowed, actual)

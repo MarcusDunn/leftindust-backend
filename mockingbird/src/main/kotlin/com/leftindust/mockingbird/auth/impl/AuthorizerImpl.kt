@@ -20,7 +20,7 @@ internal class AuthorizerImpl(
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
         return (getRoles(user) ?: return Authorization.Denied)
             .map { it.action }
-            .contains(action)
+            .any { it.isSuperset(action) }
             .toAuthorization()
     }
 
