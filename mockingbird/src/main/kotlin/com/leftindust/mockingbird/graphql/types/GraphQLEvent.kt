@@ -16,7 +16,7 @@ data class GraphQLEvent(
     private val authContext: GraphQLAuthContext,
     private val doctor: Doctor
 ) {
-    constructor(event: Doctor.MediqVEvent, authContext: GraphQLAuthContext) : this(
+    constructor(event: Doctor.DocVEvent, authContext: GraphQLAuthContext) : this(
         eid = ID(event.uid.toString()),
         doctor = event.doctor,
         title = event.summary.value,
