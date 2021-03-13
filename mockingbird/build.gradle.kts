@@ -124,6 +124,8 @@ liquibase {
 tasks.withType<Test> {
     useJUnitPlatform()
 
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
+
     testLogging {
         events(
             TestLogEvent.FAILED,
