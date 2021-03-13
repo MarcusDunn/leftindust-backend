@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger
  * @returns a MediqToken instance
  */
 class MediqFireBaseToken constructor(token: String?) : MediqToken {
-    val logger: Logger = LogManager.getLogger()
+    private val logger: Logger = LogManager.getLogger()
 
     private val firebase: FirebaseToken? = try {
         FirebaseAuth.getInstance().verifyIdToken(token)
