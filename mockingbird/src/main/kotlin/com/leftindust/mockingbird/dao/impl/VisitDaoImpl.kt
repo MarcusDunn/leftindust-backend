@@ -21,12 +21,12 @@ import javax.persistence.EntityNotFoundException
 @Repository
 @Transactional
 class VisitDaoImpl(
+    authorizer: Authorizer,
     private val visitRepository: HibernateVisitRepository,
     private val doctorRepository: HibernateDoctorRepository,
     private val patientRepository: HibernatePatientRepository,
-    authorizer: Authorizer,
 ) : VisitDao, AbstractHibernateDao(authorizer) {
-    val logger: Logger = LogManager.getLogger()
+    private val logger: Logger = LogManager.getLogger()
 
     override suspend fun getVisitsForPatientPid(
         pid: Long,
