@@ -12,31 +12,8 @@ import org.apache.logging.log4j.LogManager
  * @property S inner type holding the reason for the failure, generally a String
  */
 sealed class CustomResult<out S, out F> {
-
-    /**
-     * determines weather the result is [Success]
-     * @returns a boolean denoting weather the [CustomResult] is an instance of [Success]
-     */
     fun isSuccess() = this is Success
-
-
-    /**
-     * determines weather the result is [Failure]
-     * @returns a boolean denoting weather the [CustomResult] is an instance of [Failure]
-     */
     fun isFailure() = this is Failure
-
-    /**
-     * applies a function to a [Success] instance of a [CustomResult], returning the [Failure] otherwise
-     * @param ifSuccess the function applied to the success value
-     * @returns the result of [ifSuccess] on the [Success] value
-     */
-    fun <T> bubbleUpFailure(ifSuccess: (S) -> T): CustomResult<T, F> {
-        return when (this) {
-            is Success -> Success(ifSuccess(this.value))
-            is Failure -> Failure(this.reason)
-        }
-    }
 
     fun getOrThrow(onFailure: (failure: F) -> Throwable = { CustomResultException("called getOrThrow on failure $it") }): S {
         return when (this) {
