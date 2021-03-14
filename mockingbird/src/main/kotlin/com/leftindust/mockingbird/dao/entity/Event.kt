@@ -18,6 +18,4 @@ class Event(
     @Column(name = "recurrence_rule")
     @Convert(converter = RecurrenceConverter::class)
     val recurrenceRule: RecurrenceRule?
-) : AbstractJpaPersistable<Long>() {
-
-}
+) : AbstractJpaPersistable<Long>()
