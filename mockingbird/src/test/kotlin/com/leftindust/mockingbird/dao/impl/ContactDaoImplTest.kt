@@ -21,7 +21,7 @@ internal class ContactDaoImplTest {
         val emergencyContact = mockk<EmergencyContact>()
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { patientRepository.getOne(any()) } returns mockk() {
+        every { patientRepository.getOne(any()) } returns mockk {
             every { contacts } returns setOf(emergencyContact)
         }
 
