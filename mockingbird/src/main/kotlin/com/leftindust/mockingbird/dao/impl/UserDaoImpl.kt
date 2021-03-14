@@ -32,22 +32,12 @@ class UserDaoImpl(
 
 
     override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
-        val user = userRepository.getUserByUniqueId(uid)
-
-        val isPermitted = run {
-            val requiredPermission = Action(
-                referencedTableName = Tables.User,
-                permissionType = Crud.READ,
-                rowId = user?.id
-            )
-            requester can requiredPermission
-        }
-
-        return if (isPermitted) {
-            user ?: return Failure(DoesNotExist())
+        return if (requester can (Crud.READ to Tables.User)) {
+            val user = userRepository.getUserByUniqueId(uid)
+                ?: return Failure(DoesNotExist("user with uid $uid not found"))
             Success(user)
         } else {
-            Failure(NotAuthorized(requester,  "not authorized to Read to that specific Patient"))
+            Failure(NotAuthorized(requester, "not authorized to Read to that specific Patient"))
         }
     }
 
@@ -95,7 +85,10 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun addUser(user: GraphQLUserInput, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
+    override suspend fun addUser(
+        user: GraphQLUserInput,
+        requester: MediqToken
+    ): CustomResult<MediqUser, OrmFailureReason> {
         val mediqUser = MediqUser(
             uniqueId = user.uid,
             group = user.group_id?.let { groupRepository.getByGid(it.toLong()) },
@@ -107,7 +100,11 @@ class UserDaoImpl(
         return addUser(mediqUser, requester)
     }
 
-    override suspend fun getUsers(from: Int, to: Int, requester: MediqToken): CustomResult<List<MediqUser>, OrmFailureReason> {
+    override suspend fun getUsers(
+        from: Int,
+        to: Int,
+        requester: MediqToken
+    ): CustomResult<List<MediqUser>, OrmFailureReason> {
         val size = to - from
         val page = to / size - 1
         return authenticateAndThen(requester, Crud.READ to Tables.User) {
