@@ -46,6 +46,4 @@ class UserFetcher(
             Failure(NotAuthorized(requester, "cannot read bulk users"))
         }
     }
-
-
 }
