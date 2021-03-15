@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class VisitMutation(
-    @Autowired private val visitDao: VisitDao
+    private val visitDao: VisitDao
 ) : Mutation {
     suspend fun addVisit(visit: GraphQLVisitInput, graphQLAuthContext: GraphQLAuthContext): GraphQLVisit {
         return visitDao.addVisit(visit, graphQLAuthContext.mediqAuthToken)
