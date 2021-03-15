@@ -4,6 +4,7 @@ import com.expediagroup.graphql.annotations.GraphQLDescription
 import com.expediagroup.graphql.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
+import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.NotAuthorized
 import com.leftindust.mockingbird.dao.UserDao
@@ -91,8 +92,13 @@ to true (defaults to false)"""
             .getOrThrow()
         val nnRange = range ?: GraphQLRangeInput()
         val validatedRange = nnRange.validateAndGetOrDefault()
-        return users
-            .take(validatedRange.last)
+
+        val returnedUsers = emptyList<ExportedUserRecord>().toMutableList()
+        users.takeWhile { returnedUsers.size < validatedRange.last }
+            .filter { userDao.getUserByUid(it.uid, graphQLAuthContext.mediqAuthToken).isSuccess() == filterRegistered }
+            .forEach { returnedUsers.add(it) }
+
+        return returnedUsers
             .drop(validatedRange.first)
             .map { GraphQLFirebaseInfo(it) }
     }
