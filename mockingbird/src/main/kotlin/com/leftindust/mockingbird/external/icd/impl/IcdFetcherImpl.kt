@@ -36,7 +36,7 @@ class IcdFetcherImpl(
         const val GRANT_TYPE = "client_credentials"
     }
 
-    var currentToken: String? = null
+    private var currentToken: String? = null
 
     override suspend fun search(
         query: String,
@@ -245,7 +245,7 @@ class IcdFetcherImpl(
         }
     }
 
-    suspend fun <T> getTokenAndBubbleUpError(handleSuccess: suspend (String) -> CustomResult<T, HttpFailure>): CustomResult<T, HttpFailure> {
+    private suspend fun <T> getTokenAndBubbleUpError(handleSuccess: suspend (String) -> CustomResult<T, HttpFailure>): CustomResult<T, HttpFailure> {
         return when (val token = getToken()) {
             is Success -> try {
                 handleSuccess(token.value)
