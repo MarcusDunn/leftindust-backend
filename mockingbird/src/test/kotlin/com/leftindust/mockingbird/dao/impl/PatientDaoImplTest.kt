@@ -79,28 +79,6 @@ internal class PatientDaoImplTest {
     }
 
     @Test
-    fun searchByName() {
-        val mockkPatient = mockk<Patient>()
-        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every {
-            patientRepository.getAllByFirstNameLikeOrMiddleNameLikeOrLastNameLike(
-                "Marc",
-                "Marc",
-                "Marc"
-            )
-        } returns listOf(mockkPatient)
-
-        val patientDaoImpl = PatientDaoImpl(
-            authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, visitRepository, sessionFactory
-        )
-
-        val actual = runBlocking { patientDaoImpl.searchByName("Marc", mockk()) }.getOrThrow()
-
-        assertEquals(listOf(mockkPatient), actual)
-    }
-
-    @Test
     fun getByDoctor() {
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
