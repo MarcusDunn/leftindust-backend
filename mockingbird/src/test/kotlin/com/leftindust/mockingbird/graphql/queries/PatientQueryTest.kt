@@ -80,7 +80,7 @@ internal class PatientQueryTest {
             every { cellPhone } returns null
             every { workPhone } returns null
         }
-        coEvery { patientDao.searchByName("hello", any()) } returns mockk() {
+        coEvery { patientDao.searchByExample(any(), any()) } returns mockk {
             every { getOrThrow() } returns listOf(mockkPatient)
         }
         val patientQuery = PatientQuery(patientDao)

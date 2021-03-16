@@ -60,7 +60,8 @@ interface PatientDao {
 
     suspend fun searchByExample(
         example: GraphQLPatientExample,
-        requester: MediqToken
+        requester: MediqToken,
+        strict: Boolean = true,
     ): CustomResult<List<Patient>, OrmFailureReason>
 
     suspend fun getMany(

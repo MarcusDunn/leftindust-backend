@@ -11,6 +11,8 @@ import com.leftindust.mockingbird.extensions.parallelMap
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
+import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.stereotype.Component
 
@@ -76,12 +78,24 @@ class PatientQuery(
 
     suspend fun searchPatientsByName(query: String, graphQLAuthContext: GraphQLAuthContext): List<GraphQLPatient> {
         return patientDao
-            .searchByName(query, graphQLAuthContext.mediqAuthToken)
+            .searchByExample(
+                GraphQLPatientExample(
+                    GraphQLPersonExample(
+                        firstName = StringFilter(includes = query),
+                        middleName = StringFilter(includes = query),
+                        lastName = StringFilter(includes = query),
+                    )
+                ),
+                graphQLAuthContext.mediqAuthToken
+            )
             .getOrThrow()
             .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }
     }
 
-    suspend fun searchPatient(example: GraphQLPatientExample, graphQLAuthContext: GraphQLAuthContext): List<GraphQLPatient> {
+    suspend fun searchPatient(
+        example: GraphQLPatientExample,
+        graphQLAuthContext: GraphQLAuthContext
+    ): List<GraphQLPatient> {
         return patientDao.searchByExample(example, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
             .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }

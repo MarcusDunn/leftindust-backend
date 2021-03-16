@@ -179,15 +179,19 @@ class PatientDaoImpl(
 
     override suspend fun searchByExample(
         example: GraphQLPatientExample,
-        requester: MediqToken
+        requester: MediqToken,
+        strict: Boolean
     ): CustomResult<List<Patient>, OrmFailureReason> {
         val entityManager: EntityManager = sessionFactory.createEntityManager()!!
         val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder!!
         val criteriaQuery: CriteriaQuery<Patient> = criteriaBuilder.createQuery(Patient::class.java)!!
         val itemRoot: Root<Patient> = criteriaQuery.from(Patient::class.java)!!
-
-        val finalPredicate: Predicate =
-            criteriaBuilder.and(*example.toPredicate(criteriaBuilder, itemRoot).toTypedArray())
+        val arrayOfPredicates = example.toPredicate(criteriaBuilder, itemRoot).toTypedArray()
+        val finalPredicate: Predicate = if (strict) {
+            criteriaBuilder.and(*arrayOfPredicates)
+        } else {
+            criteriaBuilder.or(*arrayOfPredicates)
+        }
         criteriaQuery.select(itemRoot).where(finalPredicate)
         return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
