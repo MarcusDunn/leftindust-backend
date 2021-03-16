@@ -10,7 +10,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  mockingbird:
+  condor:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
       - SPRING_DATASOURCE_USERNAME=mediq
