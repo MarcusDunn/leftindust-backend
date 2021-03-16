@@ -20,3 +20,16 @@ jobs:
           java-version: 11
       - name: Build with Gradle
         run: ./gradlew mockingbird:build
+  Condor:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build with Gradle
+        run: ./gradlew condor:build
