@@ -3,19 +3,19 @@ name: Integration Tests
 on: [ push, workflow_dispatch]
 
 jobs:
-  Mockingbird:
+  Mockingbird Integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Gladio Integration Tests
         run: docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
-  Gladio:
+  Gladio Integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Gladio Integration Tests
         run: docker-compose -f gladio.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
-  Condor:
+  Condor Integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
