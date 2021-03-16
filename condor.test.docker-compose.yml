@@ -18,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: condor.Dockerfile
-    command: [ "gradle", "condor:test" ]
+    command: [ "gradle", "condor:integrationTest" ]
     depends_on:
       condor-postgres:
         condition: service_healthy
