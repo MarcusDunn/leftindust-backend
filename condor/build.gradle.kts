@@ -22,6 +22,9 @@ dependencies {
 
     // spring
     implementation("org.springframework.boot", "spring-boot-starter")
+    implementation("org.springframework.boot", "spring-boot-starter-jdbc")
+
+    // graphql-kotlin
     implementation("com.expediagroup", "graphql-kotlin-spring-server", graphQLKotlinVersion)
 
 
