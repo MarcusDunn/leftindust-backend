@@ -37,6 +37,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
+    testImplementation("io.mockk", "mockk", "1.10.6")
+
 }
 
 // kotlin compiler args
@@ -50,6 +52,13 @@ tasks.withType<KotlinCompile> {
 
 // test properties
 tasks.withType<Test> {
+    useJUnitPlatform {
+        excludeTags("Integration")
+    }
+
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
+
+
     testLogging {
         events(
             TestLogEvent.FAILED,
@@ -59,5 +68,13 @@ tasks.withType<Test> {
         showExceptions = true
         showCauses = true
         showStackTraces = true
+    }
+}
+
+val integrationTest = task<Test>("integrationTest") {
+    // may need to make this single threaded.
+
+    useJUnitPlatform {
+        includeTags("Integration")
     }
 }

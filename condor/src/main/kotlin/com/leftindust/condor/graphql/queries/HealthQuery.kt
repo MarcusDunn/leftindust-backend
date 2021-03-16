@@ -12,7 +12,11 @@ class HealthQuery : Query {
     fun condorIsAlive(@GraphQLIgnore @Autowired dataSource: DataSource): CondorStatus {
         return CondorStatus(
             isAlive = true,
-            connectedToDatabase = kotlin.runCatching { assert(dataSource.connection.isValid(5)) }.isSuccess
+            connectedToDatabase = try {
+                dataSource.connection.isValid(5)
+            } catch (e: Throwable) {
+                false
+            }
         )
     }
 }
