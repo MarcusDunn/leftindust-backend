@@ -59,9 +59,6 @@ tasks.withType<Test> {
         excludeTags("Integration")
     }
 
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
-
-
     testLogging {
         events(
             TestLogEvent.FAILED,
