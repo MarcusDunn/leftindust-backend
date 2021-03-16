@@ -122,7 +122,9 @@ liquibase {
 
 // test properties
 tasks.withType<Test> {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("Integration")
+    }
 
     maxParallelForks = Runtime.getRuntime().availableProcessors()
 
@@ -135,6 +137,12 @@ tasks.withType<Test> {
         showExceptions = true
         showCauses = true
         showStackTraces = true
+    }
+}
+
+val integrationTest = task<Test>("integrationTest") {
+    useJUnitPlatform {
+        includeTags("Integration")
     }
 }
 
