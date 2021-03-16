@@ -1,11 +1,15 @@
 package com.leftindust.mockingbird.graphql.queries
 
+import com.expediagroup.graphql.scalars.ID
 import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
+import com.leftindust.mockingbird.dao.entity.MediqUser
+import com.leftindust.mockingbird.dao.entity.UserSettings
 import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.firebase.UserFetcher
+import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -17,13 +21,35 @@ import org.junit.jupiter.api.Test
 internal class UserQueryTest {
     private val userDao = mockk<UserDao>()
     private val firebaseFetcher = mockk<UserFetcher>()
+    private val graphQLAuthContext = mockk<GraphQLAuthContext>()
 
     @Test
     fun user() {
+        val user = mockk<MediqUser> {
+            every { uniqueId } returns "uid"
+            every { group } returns null
+            every { settings } returns UserSettings(1, "{}")
+        }
+        coEvery { userDao.getUserByUid("uid", any()) } returns Success(user)
+        val userQuery = UserQuery(userDao, firebaseFetcher)
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+
+        val result = runBlocking { userQuery.user(ID("uid"), graphQLAuthContext) }
+        assertEquals(GraphQLUser(user, graphQLAuthContext), result)
     }
 
     @Test
     fun users() {
+        val user = mockk<MediqUser> {
+            every { uniqueId } returns "uid"
+            every { group } returns null
+            every { settings } returns UserSettings(1, "{}")
+        }
+        coEvery { userDao.getUsers(0, 3, any()) } returns Success(listOf(user))
+        val userQuery = UserQuery(userDao, firebaseFetcher)
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        val result = runBlocking { userQuery.users(GraphQLRangeInput(0, 3), graphQLAuthContext = graphQLAuthContext) }
+        assertEquals(listOf(GraphQLUser(user, graphQLAuthContext)), result)
     }
 
     @Test
@@ -51,36 +77,10 @@ internal class UserQueryTest {
 
         val userQuery = UserQuery(userDao, firebaseFetcher)
 
-        val graphQLAuthContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk()
-        }
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
 
         val result = runBlocking { userQuery.firebaseUsers(GraphQLRangeInput(0, 4), true, graphQLAuthContext) }
 
         assertEquals(4, result.size)
     }
-
-//    @Test
-//    fun `firebaseUsers when not all users are registered`() {
-//        val userRecords = (0 until 4).map { mockk<ExportedUserRecord>(relaxed = true) }
-//
-//        coEvery { firebaseFetcher.getUsers(any()) } returns mockk {
-//            every { getOrThrow(any()) } returns mockk {
-//                every { iterator() } returns mockk {
-//                    every { hasNext() } returnsMany listOf(true, true, true, true, false)
-//                    every { next() } returnsMany userRecords
-//                }
-//            }
-//        }
-//
-//        val userQuery = UserQuery(userDao, firebaseFetcher)
-//
-//        val graphQLAuthContext = mockk<GraphQLAuthContext>() {
-//            every { mediqAuthToken } returns mockk()
-//        }
-//
-//        val result = runBlocking { userQuery.firebaseUsers(GraphQLRangeInput(0, 4), true, graphQLAuthContext) }
-//
-//        assertEquals(userRecords.map { GraphQLFirebaseInfo(it) }, result)
-//    }
 }
