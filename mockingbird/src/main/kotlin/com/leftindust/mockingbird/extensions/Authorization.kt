@@ -8,17 +8,9 @@ enum class Authorization {
     Denied,
 }
 
-/**
- * convenience function for associating Authorization to boolean
- */
 fun Authorization.isAllowed(): Boolean {
     return when (this) {
         Authorization.Allowed -> true
         Authorization.Denied -> false
     }
 }
-
-/**
- * convenience function for associating Authorization to boolean
- */
-fun Authorization.isDenied() = !this.isAllowed()

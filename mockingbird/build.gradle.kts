@@ -86,7 +86,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-
+    testImplementation("io.mockk", "mockk", "1.10.6")
     // faker
     testImplementation("io.github.serpro69:kotlin-faker:1.6.0")
 }
@@ -123,6 +123,8 @@ liquibase {
 // test properties
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
 
     testLogging {
         events(

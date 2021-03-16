@@ -11,7 +11,9 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPerson
 import org.springframework.stereotype.Component
 
 @Component
-class ContactQuery(private val contactDao: ContactDao) : Query {
+class ContactQuery(
+    private val contactDao: ContactDao
+) : Query {
     @Throws(GraphQLKotlinException::class)
     suspend fun getContactsByPatient(pid: ID, authContext: GraphQLAuthContext): List<GraphQLPerson> {
         return contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PatientMutation(
-    val patientDao: PatientDao,
+    private val patientDao: PatientDao,
 ) : Mutation {
     suspend fun addDoctorToPatient(patientById: ID, doctorById: ID, authContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao.addDoctorToPatient(patientById, doctorById, authContext.mediqAuthToken)

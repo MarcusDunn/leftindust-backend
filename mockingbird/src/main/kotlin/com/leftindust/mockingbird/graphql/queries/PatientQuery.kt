@@ -7,7 +7,7 @@ import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.extensions.pmap
+import com.leftindust.mockingbird.extensions.parallelMap
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
@@ -42,8 +42,8 @@ class PatientQuery(
         return when {
             pids != null -> {
                 pids
-                    .pmap { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
-                    .pmap { it.getOrThrow() }
+                    .parallelMap { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
+                    .parallelMap { it.getOrThrow() }
             }
             else -> {
                 val validatedRange = (range ?: GraphQLRangeInput()).validateAndGetOrDefault()
@@ -53,7 +53,7 @@ class PatientQuery(
                     .getMany(validatedRange.first, validatedRange.last, nnSortedBy, requester)
                     .getOrThrow()
             }
-        }.pmap { GraphQLPatient(it, it.id!!, authContext) }
+        }.parallelMap { GraphQLPatient(it, it.id!!, authContext) }
 
     }
 
@@ -99,7 +99,7 @@ class PatientQuery(
         })
 
         @GraphQLName("PatientLabeledGroup")
-        class GraphQLLabeledGroup(
+        data class GraphQLLabeledGroup(
             val groupName: String,
             val contents: List<GraphQLPatient>,
         )

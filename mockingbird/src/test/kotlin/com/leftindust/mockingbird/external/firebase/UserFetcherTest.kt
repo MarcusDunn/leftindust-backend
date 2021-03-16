@@ -1,30 +1,49 @@
 package com.leftindust.mockingbird.external.firebase
 
-import com.leftindust.mockingbird.helper.FakeAuth
+import com.google.firebase.auth.ExportedUserRecord
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserRecord
+import com.leftindust.mockingbird.auth.Authorizer
+import com.leftindust.mockingbird.extensions.Authorization
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import unwrap
 
-@SpringBootTest
-@Tag("firebase")
-internal class UserFetcherTest(
-    @Autowired private val userFetcher: UserFetcher,
-) {
+internal class UserFetcherTest {
+    private val authorizer = mockk<Authorizer>()
+    private val firebaseAuth = mockk<FirebaseAuth>()
 
     @Test
     fun getUserInfo() {
-        val result = runBlocking { userFetcher.getUserInfo("c9LCrndzlCah2gFlX6evBEPI4zp2", FakeAuth.Valid.Token) }
+        val mockkUser = mockk<UserRecord>()
 
-        assert(result.getOrNull()!!.email == "marcus.s.dunn@gmail.com")
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+        every { firebaseAuth.getUser("uid") } returns mockkUser
+
+        val userFetcher = UserFetcher(authorizer, firebaseAuth)
+
+        val result = runBlocking { userFetcher.getUserInfo("uid", mockk()) }.getOrThrow()
+
+        assertEquals(mockkUser, result)
     }
 
     @Test
     fun getUsers() {
-        val result = runBlocking { userFetcher.getUsers(FakeAuth.Valid.Token) }
+        val mockkIterable = mockk<MutableIterable<ExportedUserRecord>>()
 
-        assert(result.unwrap().any {it.email == "marcus.s.dunn@gmail.com"})
+        every { firebaseAuth.listUsers(null) } returns mockk {
+            every { iterateAll() } returns mockkIterable
+        }
+
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val userFetcher = UserFetcher(authorizer, firebaseAuth)
+
+        val result = runBlocking { userFetcher.getUsers(mockk()) }.getOrThrow()
+
+        assertEquals(mockkIterable, result)
     }
 }

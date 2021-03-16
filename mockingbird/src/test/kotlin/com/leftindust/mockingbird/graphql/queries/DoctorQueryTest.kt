@@ -1,99 +1,70 @@
 package com.leftindust.mockingbird.graphql.queries
 
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.entity.Doctor
-import com.leftindust.mockingbird.dao.entity.DoctorPatient
-import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.extensions.CustomResultException
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
-import com.leftindust.mockingbird.helper.FakeAuth
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.hibernate.Session
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-internal class DoctorQueryTest(
-    @Autowired private val doctorQuery: DoctorQuery
-) {
-
-    @Autowired
-    lateinit var sessionFactory: SessionFactory
-
-    private val session: Session
-        get() = sessionFactory.currentSession
-
+internal class DoctorQueryTest {
+    private val doctorDao = mockk<DoctorDao>()
+    private val authContext = mockk<GraphQLAuthContext>()
 
     @Test
     fun getDoctorsByPatient() {
-        val patient = Patient(
-            firstName = "Marcus",
-            lastName = "Dunn",
-            sex = Sex.Male
-        )
-        val doctor = Doctor(
-            firstName = "Dan",
-            lastName = "Shervershani",
-        )
-        session.save(patient)
-        session.save(doctor)
-        val doctorPatient = DoctorPatient(
-            patient = patient,
-            doctor = doctor,
-        )
-        session.save(doctorPatient)
-
-        val result = runBlocking { doctorQuery.getDoctorsByPatient(gqlID(patient.id!!), FakeAuth.Valid.Context) }
-
-        assertEquals(listOf(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context)), result)
-    }
-
-    @Test
-    fun `getDoctorsByPatient with no such patient`() {
-        assertThrows(CustomResultException::class.java) {
-            runBlocking { doctorQuery.getDoctorsByPatient(gqlID(0), FakeAuth.Valid.Context) }
+        val mockkDoctor = mockk<Doctor>(relaxed = true) {
+            every { id } returns 2000
+            every { workPhone } returns null
+            every { cellPhone } returns null
+            every { pagerNumber } returns null
+            every { homePhone } returns null
         }
-    }
 
-    @Test
-    fun `getDoctorsByPatient with no doctors`() {
-        val patient = Patient(
-            firstName = "Marcus",
-            lastName = "Dunn",
-            sex = Sex.Male
-        )
-        session.save(patient)
+        every { authContext.mediqAuthToken } returns mockk()
 
-        val result = runBlocking { doctorQuery.getDoctorsByPatient(gqlID(patient.id!!), FakeAuth.Valid.Context) }
-        assertEquals(emptyList<GraphQLDoctor>(), result)
+        val graphQLDoctor = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, authContext)
+
+        coEvery { doctorDao.getByPatient(1000, authContext.mediqAuthToken) } returns mockk() {
+            every { getOrThrow() } returns listOf(mockkDoctor)
+        }
+
+        val doctorQuery = DoctorQuery(doctorDao)
+
+        val result = runBlocking { doctorQuery.getDoctorsByPatient(gqlID(1000), authContext) }
+
+        assertEquals(listOf(graphQLDoctor), result)
     }
 
     @Test
     fun doctor() {
-        val doctor = Doctor(
-            firstName = "Dan",
-            lastName = "Shervershani",
-        )
-        val doctorId = session.save(doctor) as Long
-
-        val result = runBlocking { doctorQuery.doctor(gqlID(doctorId), FakeAuth.Valid.Context) }
-
-        assertEquals(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context), result)
-    }
-
-    @Test
-    fun `doctor with no such doctor`() {
-        val exception = assertThrows(CustomResultException::class.java) {
-            runBlocking { doctorQuery.doctor(gqlID(0), FakeAuth.Valid.Context) }
+        val mockkDoctor = mockk<Doctor>(relaxed = true) {
+            every { id } returns 2000
+            every { workPhone } returns null
+            every { cellPhone } returns null
+            every { pagerNumber } returns null
+            every { homePhone } returns null
         }
 
-        assert(exception.message!!.contains("DoesNotExist"))
+        every { authContext.mediqAuthToken } returns mockk()
+
+        val graphQLDoctor = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, authContext)
+
+        coEvery { doctorDao.getByDoctor(1000, any()) } returns mockk {
+            every { getOrThrow() } returns mockkDoctor
+        }
+
+        val doctorQuery = DoctorQuery(doctorDao)
+
+        val result = runBlocking { doctorQuery.doctor(gqlID(1000), authContext) }
+
+        assertEquals(graphQLDoctor, result)
+
+
     }
 }

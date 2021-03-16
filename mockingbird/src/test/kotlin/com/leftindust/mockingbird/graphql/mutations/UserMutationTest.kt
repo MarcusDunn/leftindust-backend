@@ -1,141 +1,73 @@
 package com.leftindust.mockingbird.graphql.mutations
 
-import com.expediagroup.graphql.scalars.ID
-import com.google.gson.JsonObject
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.entity.UserSettings
-import com.leftindust.mockingbird.extensions.CustomResultException
-import com.leftindust.mockingbird.graphql.types.GraphQLJsonObject
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
-import com.leftindust.mockingbird.helper.FakeAuth
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-internal class UserMutationTest(
-    @Autowired private val userMutation: UserMutation
-) {
-
-    @Autowired
-    private lateinit var sessionFactory: SessionFactory
-
-    private val session
-        get() = sessionFactory.currentSession
+internal class UserMutationTest {
+    private val userDao = mockk<UserDao>()
+    private val authContext = mockk<GraphQLAuthContext>()
 
 
     @Test
     fun setUserSettings() {
-        val user = MediqUser(
-            uniqueId = "TEST uniqueId",
-            settings = UserSettings(1)
-        )
-        session.save(user)
-        val newSettings = JsonObject().apply {
-            addProperty("name", "settings")
-        }
-
-        val result =
-            runBlocking {
-                userMutation.setUserSettings(
-                    ID(user.uniqueId),
-                    GraphQLUser.Settings(1, GraphQLJsonObject(newSettings)),
-                    FakeAuth.Valid.Context
-                )
+        val mockkUser = mockk<MediqUser>(relaxed = true) {
+            every { settings } returns mockk {
+                every { version } returns 1
+                every { settingsJSON } returns "{}"
             }
-
-        assertEquals(newSettings.toString(), result.settings!!.settings.json)
-    }
-
-
-    @Test
-    fun `setUserSettings persists`() {
-        val user = MediqUser(
-            uniqueId = "TEST uniqueId",
-            settings = UserSettings(1)
-        )
-        val id = session.save(user)
-        val newSettings = JsonObject().apply {
-            addProperty("name", "settings")
-        }.toString()
-        runBlocking {
-            userMutation.setUserSettings(
-                ID(user.uniqueId),
-                GraphQLUser.Settings(1, GraphQLJsonObject(newSettings)),
-                FakeAuth.Valid.Context
-            )
         }
 
-        val newUser = session.get(MediqUser::class.java, id)
+        every { authContext.mediqAuthToken } returns mockk()
 
-        assertEquals(newSettings, newUser.settings.settingsJSON)
-    }
-
-    @Test
-    fun `setUserSettings with no such user`() {
-        val exception = assertThrows(CustomResultException::class.java) {
-            val settingsJson = GraphQLJsonObject(JsonObject().toString())
-            val newSettings = GraphQLUser.Settings(1, settingsJson)
-            runBlocking { userMutation.setUserSettings(ID("DOES NOT EXIST"), newSettings, FakeAuth.Valid.Context) }
+        val mockkSettings = mockk<GraphQLUser.Settings>() {
+            every { settings } returns mockk {
+                every { json } returns "{}"
+                every { version } returns 2
+            }
+        }
+        coEvery { userDao.setUserSettingsByUid(any(), any(), any(), any()) } returns mockk() {
+            every { getOrThrow() } returns mockkUser
         }
 
-        assert(exception.message!!.contains("DoesNotExist"))
+        val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
+
+        val userMutation = UserMutation(userDao)
+
+        val result = runBlocking { userMutation.setUserSettings(mockk(), mockkSettings, authContext) }
+
+        assertEquals(mockkGraphQLUser, result)
     }
 
     @Test
     fun addUser() {
-        val user = GraphQLUserInput(
-            uid = "TEST NEW USER",
-            group_id = null,
-            settings_version = 1,
-            settings = GraphQLJsonObject(
-                json = JsonObject().toString()
-            ),
-        )
-
-        val expected = GraphQLUser(
-            uid = user.uid,
-            group = null,
-            settings = GraphQLUser.Settings(
-                version = 1,
-                settings = GraphQLJsonObject(
-                    json = JsonObject().toString()
-                )
-            ),
-            authContext = FakeAuth.Valid.Context,
-        )
-        val result = runBlocking { userMutation.addUser(user, FakeAuth.Valid.Context) }
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `addUser with already existing user`() {
-        val user = MediqUser(
-            uniqueId = "TEST NEW USER",
-            settings = UserSettings(1)
-        )
-        session.save(user)
-        val gqlUser = GraphQLUserInput(
-            uid = "TEST NEW USER",
-            group_id = null,
-            settings_version = 1,
-            settings = GraphQLJsonObject(
-                json = JsonObject().toString()
-            ),
-        )
-
-        val exception = assertThrows(CustomResultException::class.java) {
-            runBlocking { userMutation.addUser(gqlUser, FakeAuth.Valid.Context) }
+        val mockkUser = mockk<MediqUser>(relaxed = true) {
+            every { settings } returns mockk {
+                every { version } returns 1
+                every { settingsJSON } returns "{}"
+            }
         }
 
-        assert(exception.message!!.contains("AlreadyExists"))
+        every { authContext.mediqAuthToken } returns mockk()
+
+        val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
+
+        coEvery { userDao.addUser(any<GraphQLUserInput>(), any()) } returns mockk {
+            every { getOrThrow() } returns mockkUser
+        }
+
+        val userMutation = UserMutation(userDao)
+
+        val result = runBlocking { userMutation.addUser(mockk(), authContext) }
+
+        assertEquals(mockkGraphQLUser, result)
     }
 }

@@ -1,74 +1,73 @@
 package com.leftindust.mockingbird.graphql.queries
 
-import com.expediagroup.graphql.exceptions.GraphQLKotlinException
-import com.leftindust.mockingbird.helper.FakeAuth
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.external.icd.IcdFetcher
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
-internal class IcdQueryTest(
-    @Autowired private val icdQuery: IcdQuery
-) {
+internal class IcdQueryTest {
+    private val client = mockk<IcdFetcher>()
+    private val authContext = mockk<GraphQLAuthContext>()
 
     @Test
     fun searchIcd() {
-        runBlocking {
-            val result = icdQuery.searchIcd("Polio", authContext = FakeAuth.Valid.Context)
-            assert(result.destinationEntities!!.isNotEmpty())
+        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>()
+
+        coEvery { client.search(any(), any(), any()) } returns mockk {
+            every { getOrThrow() } returns mockkIcdSearchResult
         }
 
-    }
-
-    @Test
-    fun `searchIcd with empty string`() {
-        assertThrows(GraphQLKotlinException::class.java) {
-            runBlocking {
-                icdQuery.searchIcd("", authContext = FakeAuth.Valid.Context)
-            }
+        every { authContext.mediqAuthToken } returns mockk {
+            every { isVerified() } returns true
         }
-    }
 
-    @Test
-    fun `searchIcd with no-result string`() {
-        runBlocking {
-            val result = icdQuery.searchIcd("WEEWOOWEEWOO", authContext = FakeAuth.Valid.Context)
-            assert(result.destinationEntities!!.isEmpty()) { result.destinationEntities!! }
-        }
-    }
+        val icdQuery = IcdQuery(client)
 
-    @Test
-    fun `findIcdDetails with invalid icd code`() {
-        assertThrows(GraphQLKotlinException::class.java) {
-            runBlocking {
-                icdQuery.icd("WEE WOO WEE WOO", FakeAuth.Valid.Context)
-            }
-        }
-    }
+        val result = runBlocking { icdQuery.searchIcd("hello!", authContext = authContext) }
 
-    @Test
-    internal fun `test searchIcd returns at least one title`() {
-        runBlocking {
-            val result = icdQuery.searchIcd("Covid", authContext = FakeAuth.Valid.Context)
-            assert(result.destinationEntities!!.any { it.title() != null })
-        }
-    }
-
-    @Test
-    fun icd() {
-        runBlocking {
-            val result = icdQuery.icd("1201727099", FakeAuth.Valid.Context)
-            assert(result.title!!.value!!.contains("Narcolepsy")) { result.title!! }
-        }
+        assertEquals(mockkIcdSearchResult, result)
     }
 
     @Test
     fun searchIcdLinearization() {
-        runBlocking {
-            val result = icdQuery.searchIcdLinearization("aids", "2020-09", "mms", false, FakeAuth.Valid.Context)
-            assert(result.destinationEntities!!.all { it.theCode != null })
+        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>()
+
+        coEvery { client.linearizationSearch(any(), any(), any(), any())} returns mockk() {
+            every { getOrThrow() } returns mockkIcdSearchResult
         }
+
+        val icdQuery = IcdQuery(client)
+
+        every { authContext.mediqAuthToken } returns mockk {
+            every { isVerified() } returns true
+        }
+
+        val result = runBlocking { icdQuery.searchIcdLinearization("hello!", authContext = authContext) }
+
+        assertEquals(mockkIcdSearchResult, result)
+    }
+
+    @Test
+    fun icd() {
+        val mockkIcdFoundationEntity = mockk<GraphQLIcdFoundationEntity>()
+        val icdQuery = IcdQuery(client)
+
+        coEvery { client.getDetails(any()) } returns mockk {
+            every { getOrThrow() } returns mockkIcdFoundationEntity
+        }
+
+        every { authContext.mediqAuthToken } returns mockk {
+            every { isVerified() } returns true
+        }
+
+        val result = runBlocking { icdQuery.icd("hello!", authContext = authContext) }
+
+        assertEquals(mockkIcdFoundationEntity, result)
     }
 }

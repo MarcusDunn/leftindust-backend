@@ -3,9 +3,9 @@ package com.leftindust.mockingbird.auth.impl
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.AuthorizationDao
+import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.extensions.Authorization
-import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -14,21 +14,22 @@ import org.springframework.stereotype.Service
  * @property authorizationDao handles all interaction with the user permissions stored in the DB
  */
 @Service
-internal class AuthorizerImpl : Authorizer {
-    val logger = LogManager.getLogger()
-
-    @Autowired
-    private lateinit var authorizationDao: AuthorizationDao
-
+internal class AuthorizerImpl(
+    @Autowired private val authorizationDao: AuthorizationDao
+) : Authorizer {
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
-        return (authorizationDao
-            .getRolesForUserByUid(user.uid ?: return Authorization.Denied)
-            .getOrNull() ?: return Authorization.Denied)
+        return (getRoles(user) ?: return Authorization.Denied)
             .map { it.action }
-            .contains(action)
-            .or(user.uid == "admin") // used for testing, remove for production or when I find a nice way to login
-            .or(user.isVerified())
+            .any { it.isSuperset(action) }
             .toAuthorization()
+    }
+
+    private suspend fun getRoles(user: MediqToken): List<AccessControlList>? {
+        return user.uid?.let { uid ->
+            authorizationDao
+                .getRolesForUserByUid(uid)
+                .getOrNull()
+        }
     }
 
     private fun Boolean.toAuthorization() = if (this) Authorization.Allowed else Authorization.Denied

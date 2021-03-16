@@ -44,22 +44,22 @@ class Action(
     )
 
     infix fun isSuperset(action: Action): Boolean {
-        return referencedTableName eqOrRhsIsNull action.referencedTableName &&
-                permissionType eqOrRhsIsNull action.permissionType &&
-                startTime gtOrRhsIsNull action.startTime &&
-                endTime ltOrRhsIsNull action.endTime &&
-                rowId eqOrRhsIsNull action.rowId &&
-                columnName eqOrRhsIsNull action.columnName
+        return referencedTableName eqOrLhsIsNull action.referencedTableName &&
+                permissionType eqOrLhsIsNull action.permissionType &&
+                startTime gtOrLhsIsNull action.startTime &&
+                endTime ltOrLhsIsNull action.endTime &&
+                rowId eqOrLhsIsNull action.rowId &&
+                columnName eqOrLhsIsNull action.columnName
     }
 
-    private infix fun <T> T.eqOrRhsIsNull(rhs: T) = this == rhs || this == null
+    private infix fun <T> T.eqOrLhsIsNull(rhs: T) = this == rhs || this == null
 
-    private infix fun Timestamp?.ltOrRhsIsNull(rhs: Timestamp?): Boolean {
-        return this?.time == rhs?.time || rhs == null || (this?.time ?: return false) < rhs.time
+    private infix fun Timestamp?.ltOrLhsIsNull(rhs: Timestamp?): Boolean {
+        return this?.time == rhs?.time || this == null || this.time < rhs?.time ?: return false
     }
 
-    private infix fun Timestamp?.gtOrRhsIsNull(rhs: Timestamp?): Boolean {
-        return this?.time == rhs?.time || rhs == null || (this?.time ?: return false) < rhs.time
+    private infix fun Timestamp?.gtOrLhsIsNull(rhs: Timestamp?): Boolean {
+        return this?.time == rhs?.time || this == null || this.time < rhs?.time ?: return false
     }
 }
 

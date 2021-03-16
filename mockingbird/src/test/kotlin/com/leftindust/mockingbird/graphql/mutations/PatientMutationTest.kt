@@ -1,161 +1,97 @@
 package com.leftindust.mockingbird.graphql.mutations
 
-import com.expediagroup.graphql.execution.OptionalInput
-import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.entity.Doctor
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.extensions.getOrNull
-import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.queries.PatientQuery
-import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
-import com.leftindust.mockingbird.helper.FakeAuth
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
 
-@SpringBootTest
-@Transactional
-internal class PatientMutationTest(
-    @Autowired private val patientMutation: PatientMutation,
-    @Autowired private val patientQuery: PatientQuery,
-) {
-
-    @Autowired
-    private lateinit var sessionFactory: SessionFactory
-
-    private val session
-        get() = sessionFactory.currentSession
+internal class PatientMutationTest {
+    private val authContext = mockk<GraphQLAuthContext>()
+    private val patientDao = mockk<PatientDao>()
 
 
     @Test
     fun addDoctorToPatient() {
-        val patient = Patient(
-            firstName = "Marcus",
-            lastName = "Dunn",
-            sex = Sex.Male
-        )
-        val patientID = session.save(patient) as Long
-        val doctor = Doctor(
-            firstName = "Daddy",
-            lastName = "Dan",
-        )
-        val doctorId = session.save(doctor) as Long
-
-        val result = runBlocking {
-            patientMutation.addDoctorToPatient(
-                patientById = gqlID(patientID),
-                doctorById = gqlID(doctorId),
-                FakeAuth.Valid.Context
-            )
+        val mockkPatient = mockk<Patient>(relaxed = true) {
+            every { id } returns 1000
+            every { homePhone } returns null
+            every { cellPhone } returns null
+            every { workPhone } returns null
         }
 
-        val expected = GraphQLPatient(patient, patientID, FakeAuth.Valid.Context)
-
-        assertEquals(expected, result)
-    }
-
-
-    @Test
-    fun `addDoctorToPatient persists`(@Autowired doctorDao: DoctorDao) {
-        runBlocking {
-            val patient = Patient(
-                firstName = "Marcus",
-                lastName = "Dunn",
-                sex = Sex.Male
-            )
-            val patientID = session.save(patient) as Long
-            val doctor = Doctor(
-                firstName = "Daddy",
-                lastName = "Dan",
-            )
-            val doctorId = session.save(doctor) as Long
-            patientMutation.addDoctorToPatient(
-                patientById = gqlID(patientID),
-                doctorById = gqlID(doctorId),
-                FakeAuth.Valid.Context
-            )
-
-            val result = runBlocking {
-                patientQuery.patient(gqlID(patientID), FakeAuth.Valid.Context)
-            }
-
-            assert(result.doctors(doctorDao).contains(GraphQLDoctor(doctor, doctor.id!!, FakeAuth.Valid.Context))) {
-                result.doctors(
-                    doctorDao
-                )
-            }
+        coEvery { patientDao.addDoctorToPatient(any(), any(), any()) } returns mockk() {
+            every { getOrThrow() } returns mockkPatient
         }
+
+        every { authContext.mediqAuthToken } returns mockk()
+
+        val patientMutation = PatientMutation(patientDao)
+
+        val result = runBlocking { patientMutation.addDoctorToPatient(gqlID(1000), gqlID(2000), authContext) }
+
+        val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
+
+        assertEquals(graphQLPatient, result)
     }
 
     @Test
     fun updatePatient() {
-        val patient = Patient(
-            firstName = "hello",
-            lastName = "world",
-            sex = Sex.Male
-        ).also { session.save(it) }
-        val patientInput = GraphQLPatientInput(
-            pid = OptionalInput.Defined(gqlID(patient.id!!)),
-            firstName = OptionalInput.Defined("Marcus")
-        )
+        val mockkPatient = mockk<Patient>(relaxed = true) {
+            every { id } returns 1000
+            every { homePhone } returns null
+            every { cellPhone } returns null
+            every { workPhone } returns null
+        }
 
-        val result = runBlocking { patientMutation.updatePatient(patientInput, FakeAuth.Valid.Context) }
+        every { authContext.mediqAuthToken } returns mockk()
 
-        assertEquals(result.firstName, patientInput.firstName.getOrNull())
-        assertEquals(result.lastName, patient.lastName)
+        val mockkGraphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
+
+        coEvery { patientDao.update(any(), any()) } returns mockk {
+            every { getOrThrow() } returns mockkPatient
+        }
+
+        val patientMutation = PatientMutation(patientDao)
+
+        val mockkGqlPatientInput = mockk<GraphQLPatientInput>()
+
+        val result = runBlocking { patientMutation.updatePatient(mockkGqlPatientInput, authContext) }
+
+        assertEquals(mockkGraphQLPatient, result)
     }
 
     @Test
     fun addPatient() {
-        val patientInput = GraphQLPatientInput(
-            firstName = OptionalInput.Defined("Marcus"),
-            lastName = OptionalInput.Defined("Dunn"),
-            sex = OptionalInput.Defined(Sex.Male)
-        )
-
-        val result =
-            runBlocking { patientMutation.addPatient(patientInput, graphQLAuthContext = FakeAuth.Valid.Context) }
-
-        val expected = GraphQLPatient(
-            pid = result.pid,
-            firstName = patientInput.firstName.getOrThrow(),
-            lastName = patientInput.lastName.getOrThrow(),
-            sex = patientInput.sex.getOrThrow(),
-            authContext = FakeAuth.Valid.Context,
-        )
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `addPatient persists`() {
-        val patientInput = GraphQLPatientInput(
-            firstName = OptionalInput.Defined("Marcus"),
-            lastName = OptionalInput.Defined("Dunn"),
-            sex = OptionalInput.Defined(Sex.Male)
-
-        )
-        val patient = runBlocking { patientMutation.addPatient(patientInput, graphQLAuthContext = FakeAuth.Valid.Context) }
-
-        val result = runBlocking {
-            patientQuery.patient(patient.pid, FakeAuth.Valid.Context)
+        val mockkPatient = mockk<Patient>(relaxed = true) {
+            every { id } returns 1000
+            every { homePhone } returns null
+            every { cellPhone } returns null
+            every { workPhone } returns null
         }
 
-        val expected = GraphQLPatient(
-            pid = result.pid,
-            firstName = patientInput.firstName.getOrThrow(),
-            lastName = patientInput.lastName.getOrThrow(),
-            sex = patientInput.sex.getOrThrow(),
-            authContext = FakeAuth.Valid.Context,
-        )
-        assertEquals(expected, result)
+        every { authContext.mediqAuthToken } returns mockk()
+
+        val mockkGraphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
+
+
+        coEvery { patientDao.addNewPatient(any(), any(), any()) } returns mockk {
+            every { getOrThrow() } returns mockkPatient
+        }
+
+        val patientMutation = PatientMutation(patientDao)
+
+        val mockkGqlPatientInput = mockk<GraphQLPatientInput>()
+
+        val result = runBlocking { patientMutation.addPatient(mockkGqlPatientInput, mockk(), authContext) }
+
+        assertEquals(mockkGraphQLPatient, result)
     }
 }
