@@ -99,7 +99,7 @@ class PatientQuery(
         })
 
         @GraphQLName("PatientLabeledGroup")
-        class GraphQLLabeledGroup(
+        data class GraphQLLabeledGroup(
             val groupName: String,
             val contents: List<GraphQLPatient>,
         )
