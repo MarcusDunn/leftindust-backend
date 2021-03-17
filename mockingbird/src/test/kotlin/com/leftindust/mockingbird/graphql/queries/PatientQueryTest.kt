@@ -57,25 +57,6 @@ internal class PatientQueryTest {
     }
 
     @Test
-    fun patientsGrouped() {
-        val mockkPatient = mockk<Patient>(relaxed = true) {
-            every { id } returns 1000L
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
-        }
-        coEvery { patientDao.getManyGroupedBySorted(0, 3, any(), any()) } returns mockk() {
-            every { getOrThrow() } returns mapOf("a" to listOf(mockkPatient, mockkPatient, mockkPatient))
-        }
-        every { authContext.mediqAuthToken } returns mockk()
-        val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
-        val patientQuery = PatientQuery(patientDao)
-        val result = runBlocking { patientQuery.patientsGrouped(GraphQLRangeInput(0, 3), authContext = authContext) }
-        val expected = PatientQuery.GraphQLPatientGroupedList(mapOf("a" to (0 until 3).map { graphQLPatient }))
-        assertEquals(expected, result)
-    }
-
-    @Test
     fun searchPatientsByName() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L

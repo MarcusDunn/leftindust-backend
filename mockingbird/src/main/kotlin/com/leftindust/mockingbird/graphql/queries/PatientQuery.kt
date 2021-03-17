@@ -68,39 +68,4 @@ class PatientQuery(
             else -> throw GraphQLKotlinException("invalid arguments")
         }.map { GraphQLPatient(it, it.id!!, authContext) }
     }
-
-    @Throws(GraphQLKotlinException::class)
-    suspend fun patientsGrouped(
-        range: GraphQLRangeInput? = null,
-        sortedBy: Patient.SortableField? = null,
-        authContext: GraphQLAuthContext
-    ): GraphQLPatientGroupedList {
-        val requester = authContext.mediqAuthToken
-        val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
-        val nnSortedBy = sortedBy ?: Patient.SortableField.PID
-        return GraphQLPatientGroupedList(
-            patientDao.getManyGroupedBySorted(validatedRange.first, validatedRange.last, nnSortedBy, requester)
-                .getOrThrow()
-                .mapValues { entry -> entry.value.map { GraphQLPatient(it, it.id!!, authContext) } }
-        )
-    }
-
-
-    @GraphQLName("PatientGroupedList")
-    data class GraphQLPatientGroupedList(val groups: List<GraphQLLabeledGroup>) {
-
-        constructor(map: Map<String, List<GraphQLPatient>>) : this(map.entries.map {
-            GraphQLLabeledGroup(
-                it.key,
-                it.value,
-            )
-        })
-
-        @GraphQLName("PatientLabeledGroup")
-        data class GraphQLLabeledGroup(
-            val groupName: String,
-            val contents: List<GraphQLPatient>,
-        )
-    }
-
 }
