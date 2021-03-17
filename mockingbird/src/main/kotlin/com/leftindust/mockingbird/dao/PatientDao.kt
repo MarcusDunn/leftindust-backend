@@ -49,7 +49,6 @@ interface PatientDao {
      * @param requester the token of the user making the request
      */
     suspend fun removePatientByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
-    suspend fun searchByName(query: String, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
     suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
     suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
     suspend fun addDoctorToPatient(

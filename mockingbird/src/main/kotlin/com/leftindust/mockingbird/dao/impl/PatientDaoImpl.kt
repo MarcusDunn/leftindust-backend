@@ -119,21 +119,6 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun searchByName(
-        query: String,
-        requester: MediqToken
-    ): CustomResult<List<Patient>, OrmFailureReason> {
-        return if (requester can (Crud.READ to Tables.Patient)) {
-            if (query.isNotBlankAndOnlyAlpha()) {
-                Success(searchForName(query))
-            } else {
-                Failure(InvalidArguments("query sting must not be empty all chars must match [a-zA-Z]"))
-            }
-        } else {
-            Failure(NotAuthorized(requester, "cannot ${Crud.READ to Tables.Patient}"))
-        }
-    }
-
     override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
             val doctor = try {
