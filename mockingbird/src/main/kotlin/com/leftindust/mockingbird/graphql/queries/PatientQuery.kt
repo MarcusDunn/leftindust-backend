@@ -28,6 +28,7 @@ class PatientQuery(
     suspend fun patients(
         range: GraphQLRangeInput? = null,
         pids: List<ID>? = null,
+        example: GraphQLPatientExample? = null,
         sortedBy: Patient.SortableField? = null,
         authContext: GraphQLAuthContext
     ): List<GraphQLPatient> {
