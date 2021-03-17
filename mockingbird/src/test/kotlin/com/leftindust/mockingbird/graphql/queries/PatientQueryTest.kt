@@ -112,12 +112,12 @@ internal class PatientQueryTest {
             every { workPhone } returns null
         }
         every { authContext.mediqAuthToken } returns mockk()
-        coEvery { patientDao.searchByExample(any(), any()) } returns mockk() {
+        coEvery { patientDao.searchByExample(any(), any()) } returns mockk {
             every { getOrThrow() } returns listOf(mockkPatient)
         }
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val patientQuery = PatientQuery(patientDao)
-        val result = runBlocking { patientQuery.searchPatient(mockk(), authContext) }
+        val result = runBlocking { patientQuery.patients(example = mockk(), authContext = authContext) }
         assertEquals(listOf(graphQLPatient), result)
     }
 }

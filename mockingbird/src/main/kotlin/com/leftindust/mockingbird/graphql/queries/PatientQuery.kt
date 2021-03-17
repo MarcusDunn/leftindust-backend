@@ -85,15 +85,6 @@ class PatientQuery(
         )
     }
 
-    suspend fun searchPatient(
-        example: GraphQLPatientExample,
-        graphQLAuthContext: GraphQLAuthContext
-    ): List<GraphQLPatient> {
-        return patientDao.searchByExample(example, graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
-            .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }
-    }
-
 
     @GraphQLName("PatientGroupedList")
     data class GraphQLPatientGroupedList(val groups: List<GraphQLLabeledGroup>) {
