@@ -11,6 +11,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
+import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -19,6 +22,8 @@ import kotlinx.coroutines.runBlocking
 import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.function.Predicate
+import javax.persistence.criteria.CriteriaQuery
 
 internal class PatientDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -76,6 +81,45 @@ internal class PatientDaoImplTest {
         val actual = runBlocking { patientDaoImpl.removePatientByPID(1000L, mockk()) }.getOrThrow()
 
         assertEquals(mockkPatient, actual)
+    }
+
+    @Test
+    fun searchByName() {
+        val mockkPatient = mockk<Patient>()
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+        every { sessionFactory.createEntityManager() } returns mockk {
+            every { createQuery(any<CriteriaQuery<Patient>>()) } returns mockk {
+                every { resultList } returns listOf(mockkPatient)
+            }
+            every { criteriaBuilder } returns mockk {
+                every { or(*anyVararg()) } returns mockk()
+                every { like(any(), any<String>()) } returns mockk()
+                every { createQuery(Patient::class.java) } returns mockk {
+                    every { select(any()) } returns mockk {
+                        every { where(*anyVararg()) } returns mockk()
+                    }
+                    every { from(Patient::class.java) } returns mockk(relaxed = true)
+                }
+            }
+        }
+        val patientDaoImpl = PatientDaoImpl(
+            authorizer, patientRepository, doctorRepository,
+            doctorPatientRepository, visitRepository, sessionFactory
+        )
+
+        val actual = runBlocking {
+            patientDaoImpl.searchByExample(
+                GraphQLPatientExample(
+                    GraphQLPersonExample(
+                        firstName = StringFilter(includes = "marc"),
+                        middleName = StringFilter(includes = "marc"),
+                        lastName = StringFilter(includes = "marc")
+                    )
+                ), mockk(), strict = false
+            )
+        }.getOrThrow()
+
+        assertEquals(listOf(mockkPatient), actual)
     }
 
     @Test
