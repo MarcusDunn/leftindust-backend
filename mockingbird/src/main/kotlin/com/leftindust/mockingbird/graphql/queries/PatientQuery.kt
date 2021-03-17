@@ -24,15 +24,6 @@ import org.springframework.stereotype.Component
 class PatientQuery(
     private val patientDao: PatientDao,
 ) : Query {
-    suspend fun patient(
-        pid: ID,
-        authContext: GraphQLAuthContext,
-    ): GraphQLPatient {
-        return patientDao
-            .getByPID(pid.toLong(), authContext.mediqAuthToken)
-            .getOrThrow()
-            .let { GraphQLPatient(it, it.id!!, authContext) }
-    }
 
     suspend fun patients(
         range: GraphQLRangeInput? = null,
