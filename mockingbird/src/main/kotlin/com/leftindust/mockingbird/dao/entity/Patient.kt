@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.execution.OptionalInput
+import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
@@ -8,6 +9,7 @@ import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
 import com.leftindust.mockingbird.graphql.types.GraphQLTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import org.hibernate.Session
 import java.sql.Timestamp
 import javax.persistence.*
 
@@ -41,10 +43,11 @@ class Patient(
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
 ) : Person(firstName, lastName, middleName, dateOfBirth, address, email, cellPhone, workPhone, homePhone) {
+
     @Throws(IllegalArgumentException::class)
     constructor(
         graphQLPatientInput: GraphQLPatientInput,
-        doctors: Set<DoctorPatient>,
+        session: Session
     ) : this(
         firstName = graphQLPatientInput.firstName
             .getOrThrow(IllegalArgumentException("firstName must be defined when constructing a Patient")),
@@ -60,12 +63,12 @@ class Patient(
         email = graphQLPatientInput.email
             .getOrNull(),
         insuranceNumber = graphQLPatientInput.insuranceNumber
-            .getOrNull(),
+            .getOrNull()?.value,
         sex = graphQLPatientInput.sex
             .getOrThrow(IllegalArgumentException("sex must be defined when constructing a Patient")),
         gender = graphQLPatientInput.gender
             .getOrDefault(graphQLPatientInput.sex.getOrNull()!!.toString()),
-        doctors = doctors,
+        doctors = emptySet<DoctorPatient>(), // set after constructor is called
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull()
     ) {
@@ -80,7 +83,19 @@ class Patient(
         homePhone = graphQLPatientInput.phoneNumbers.getOrNull()
             ?.find { it.type == GraphQLPhoneType.Home }
             ?.number?.toString()
-        assert(graphQLPatientInput.pid is OptionalInput.Undefined) // check that they are not trying to assign primary key on creation
+        graphQLPatientInput.doctors
+            .getOrDefault(emptySet())
+            .forEach { did ->
+                addDoctor(
+                    session.get(Doctor::class.java, did.value.toLong())
+                        ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
+                )
+            }
+
+        // check that they are not trying to assign primary key on creation
+        if (graphQLPatientInput.pid !is OptionalInput.Undefined) {
+            throw IllegalArgumentException("cannot assign a pid to a newly created patient, let the server handle that!")
+        }
     }
 
     fun addDoctor(doctor: Doctor): Patient {
@@ -112,46 +127,6 @@ class Patient(
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Patient) return false
-
-        if (firstName != other.firstName) return false
-        if (middleName != other.middleName) return false
-        if (lastName != other.lastName) return false
-        if (dateOfBirth != other.dateOfBirth) return false
-        if (address != other.address) return false
-        if (email != other.email) return false
-        if (cellPhone != other.cellPhone) return false
-        if (workPhone != other.workPhone) return false
-        if (homePhone != other.homePhone) return false
-        if (insuranceNumber != other.insuranceNumber) return false
-        if (contacts != other.contacts) return false
-        if (doctors != other.doctors) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + firstName.hashCode()
-        result = 31 * result + (middleName?.hashCode() ?: 0)
-        result = 31 * result + lastName.hashCode()
-        result = 31 * result + (dateOfBirth?.hashCode() ?: 0)
-        result = 31 * result + (address?.hashCode() ?: 0)
-        result = 31 * result + (email?.hashCode() ?: 0)
-        result = 31 * result + (cellPhone?.hashCode() ?: 0)
-        result = 31 * result + (workPhone?.hashCode() ?: 0)
-        result = 31 * result + (homePhone?.hashCode() ?: 0)
-        result = 31 * result + (insuranceNumber?.hashCode() ?: 0)
-        result = 31 * result + contacts.hashCode()
-        result = 31 * result + doctors.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "Patient(firstName='$firstName', middleName=$middleName, lastName='$lastName', dateOfBirth=$dateOfBirth, address=$address, email=$email, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors)"
-    }
 
     @Throws(IllegalArgumentException::class)
     fun setByGqlInput(patientInput: GraphQLPatientInput) {
@@ -193,7 +168,7 @@ class Patient(
             }
         }
 
-        insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber)
+        insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
 
         sex = patientInput.sex.onUndefined(sex) ?: throw IllegalArgumentException("sex cannot be set to null")
 
@@ -201,5 +176,37 @@ class Patient(
             patientInput.gender.onUndefined(gender) ?: throw IllegalArgumentException("gender cannot be set to null")
 
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as Patient
+
+        if (sex != other.sex) return false
+        if (gender != other.gender) return false
+        if (ethnicity != other.ethnicity) return false
+        if (insuranceNumber != other.insuranceNumber) return false
+        if (contacts != other.contacts) return false
+        if (doctors != other.doctors) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + sex.hashCode()
+        result = 31 * result + gender.hashCode()
+        result = 31 * result + (ethnicity?.hashCode() ?: 0)
+        result = 31 * result + (insuranceNumber?.hashCode() ?: 0)
+        result = 31 * result + contacts.hashCode()
+        result = 31 * result + doctors.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Patient(sex=$sex, gender='$gender', ethnicity=$ethnicity, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors)"
     }
 }

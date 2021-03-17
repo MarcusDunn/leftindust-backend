@@ -69,16 +69,10 @@ class PatientDaoImpl(
         ).map { Action(it) }
         return if (requester has permissions) {
             val newPatient = try {
-                Patient(patient, emptySet())
+                Patient(patient, sessionFactory.currentSession)
             } catch (e: IllegalArgumentException) {
                 return Failure(InvalidArguments(e.message))
             }
-            doctorIds
-                .map {
-                    doctorRepository.getOneOrNull(it.toLong()) ?: return Failure(DoesNotExist())
-                }
-                .forEach { newPatient.addDoctor(doctor = it) }
-
             val savedPatient = patientRepository.save(newPatient)
             Success(savedPatient)
         } else {
