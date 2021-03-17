@@ -31,8 +31,8 @@ internal class PatientQueryTest {
         every { authContext.mediqAuthToken } returns mockk()
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val patientQuery = PatientQuery(patientDao)
-        val result = runBlocking { patientQuery.patient(gqlID(1000), authContext) }
-        assertEquals(graphQLPatient, result)
+        val result = runBlocking { patientQuery.patients(pids = listOf(gqlID(1000)), authContext = authContext) }
+        assertEquals(listOf(graphQLPatient), result)
     }
 
     @Test
