@@ -84,7 +84,7 @@ internal class PatientDaoImplTest {
             doctorPatientRepository, visitRepository, sessionFactory
         )
 
-        val actual = runBlocking { patientDaoImpl.removePatientByPID(1000L, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.removeByPID(1000L, mockk()) }.getOrThrow()
 
         assertEquals(mockkPatient, actual)
     }

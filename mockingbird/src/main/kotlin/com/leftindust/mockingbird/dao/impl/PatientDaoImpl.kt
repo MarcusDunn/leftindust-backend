@@ -69,7 +69,7 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun removePatientByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
+    override suspend fun removeByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
         val deletePatient = Action(Crud.DELETE to Tables.Patient)
         return deletePatient.getAuthorization(requester) {
             val toBeDeleted = patientRepository.getOneOrNull(pid) ?: return@getAuthorization Failure(DoesNotExist(""))
