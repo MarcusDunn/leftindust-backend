@@ -48,30 +48,6 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getManyGroupedBySorted(
-        from: Int,
-        to: Int,
-        sortedBy: Patient.SortableField,
-        requester: MediqToken,
-    ): CustomResult<Map<String, List<Patient>>, OrmFailureReason> {
-        val readToPatient = Action(Crud.READ to Tables.Patient)
-
-        return readToPatient.getAuthorization(requester) {
-            val size = to - from
-            val page = to / size - 1
-            Success(
-                patientRepository
-                    .findAll(PageRequest.of(page, size, Sort.by(sortedBy.fieldName)))
-                    .groupBy { patient ->
-                        sortedBy
-                            .instanceValue(patient)
-                            .toString()
-                            .first()
-                            .toString() // groups by the first character of id or name
-                    })
-        }
-    }
-
     override suspend fun addNewPatient(
         patient: Patient,
         requester: MediqToken
