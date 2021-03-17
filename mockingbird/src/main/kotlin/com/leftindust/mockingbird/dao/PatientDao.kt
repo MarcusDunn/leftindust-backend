@@ -66,7 +66,7 @@ interface PatientDao {
     suspend fun getMany(
         from: Int,
         to: Int,
-        sortedBy: Patient.SortableField,
+        sortedBy: Patient.SortableField = Patient.SortableField.PID,
         requester: MediqToken
     ): CustomResult<List<Patient>, OrmFailureReason>
 

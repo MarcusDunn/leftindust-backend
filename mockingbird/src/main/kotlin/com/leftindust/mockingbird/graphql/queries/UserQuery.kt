@@ -58,7 +58,7 @@ the default arguments are users(RangeInput(0,20))
     ): List<GraphQLUser> {
         return when {
             uniqueIds == null -> {
-                val validatedRange = (range ?: GraphQLRangeInput()).validateAndGetOrDefault()
+                val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
                 userDao
                     .getUsers(validatedRange.first, validatedRange.last, graphQLAuthContext.mediqAuthToken)
                     .getOrThrow()
@@ -90,8 +90,8 @@ to true (defaults to false)"""
         val users = firebaseFetcher
             .getUsers(graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
-        val nnRange = range ?: GraphQLRangeInput()
-        val validatedRange = nnRange.validateAndGetOrDefault()
+        val nnRange = range ?: GraphQLRangeInput(0, 20)
+        val validatedRange = nnRange.toIntRange()
 
         val returnedUsers = emptyList<ExportedUserRecord>().toMutableList()
         users.takeWhile { returnedUsers.size < validatedRange.last }

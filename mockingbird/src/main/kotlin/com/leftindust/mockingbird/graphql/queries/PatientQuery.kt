@@ -7,7 +7,6 @@ import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.extensions.parallelMap
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
@@ -25,13 +24,14 @@ import org.springframework.stereotype.Component
 class PatientQuery(
     private val patientDao: PatientDao,
 ) : Query {
-
-    suspend fun patient(pid: ID, authContext: GraphQLAuthContext): GraphQLPatient {
-        val requester = authContext.mediqAuthToken
-        val patient = patientDao
-            .getByPID(pid.toLong(), requester)
+    suspend fun patient(
+        pid: ID,
+        authContext: GraphQLAuthContext,
+    ): GraphQLPatient {
+        return patientDao
+            .getByPID(pid.toLong(), authContext.mediqAuthToken)
             .getOrThrow()
-        return GraphQLPatient(patient, patient.id!!, authContext)
+            .let { GraphQLPatient(it, it.id!!, authContext) }
     }
 
     suspend fun patients(
@@ -40,23 +40,25 @@ class PatientQuery(
         sortedBy: Patient.SortableField? = null,
         authContext: GraphQLAuthContext
     ): List<GraphQLPatient> {
-
         return when {
-            pids != null -> {
-                pids
-                    .parallelMap { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
-                    .parallelMap { it.getOrThrow() }
+            range != null && sortedBy != null -> {
+                val intRange = range.toIntRange()
+                patientDao.getMany(intRange.first, intRange.last, sortedBy, authContext.mediqAuthToken).getOrThrow()
             }
-            else -> {
-                val validatedRange = (range ?: GraphQLRangeInput()).validateAndGetOrDefault()
-                val nnSortedBy = sortedBy ?: Patient.SortableField.PID
-                val requester = authContext.mediqAuthToken
-                patientDao
-                    .getMany(validatedRange.first, validatedRange.last, nnSortedBy, requester)
-                    .getOrThrow()
+            range != null && sortedBy == null -> {
+                val intRange = range.toIntRange()
+                patientDao.getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken).getOrThrow()
             }
-        }.parallelMap { GraphQLPatient(it, it.id!!, authContext) }
-
+            pids != null && sortedBy != null -> {
+                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
+                    .map { it.getOrThrow() }
+                    .sortedBy { sortedBy.instanceValue(it) }
+            }
+            pids != null && sortedBy == null -> {
+                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }.map { it.getOrThrow() }
+            }
+            else -> throw GraphQLKotlinException("invalid arguments")
+        }.map { GraphQLPatient(it, it.id!!, authContext) }
     }
 
     @Throws(GraphQLKotlinException::class)
@@ -66,7 +68,7 @@ class PatientQuery(
         authContext: GraphQLAuthContext
     ): GraphQLPatientGroupedList {
         val requester = authContext.mediqAuthToken
-        val validatedRange = (range ?: GraphQLRangeInput()).validateAndGetOrDefault()
+        val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
         val nnSortedBy = sortedBy ?: Patient.SortableField.PID
         return GraphQLPatientGroupedList(
             patientDao.getManyGroupedBySorted(validatedRange.first, validatedRange.last, nnSortedBy, requester)

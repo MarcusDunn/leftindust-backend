@@ -103,9 +103,9 @@ class Patient(
                 }
             }
 
-        fun instanceValue(receiver: Patient): Any {
+        fun instanceValue(receiver: Patient): String {
             return when (this) {
-                PID -> receiver.id!!
+                PID -> receiver.id!!.toString()
                 FIRST_NAME -> receiver.firstName
                 LAST_NAME -> receiver.lastName
             }
