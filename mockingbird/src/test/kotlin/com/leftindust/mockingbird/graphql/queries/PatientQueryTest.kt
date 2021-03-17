@@ -5,6 +5,9 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
+import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -85,7 +88,17 @@ internal class PatientQueryTest {
         }
         val patientQuery = PatientQuery(patientDao)
         every { authContext.mediqAuthToken } returns mockk()
-        val result = runBlocking { patientQuery.searchPatientsByName("hello", authContext) }
+        val result = runBlocking {
+            patientQuery.patients(
+                example = GraphQLPatientExample(
+                    personalInformation = GraphQLPersonExample(
+                        firstName = StringFilter(includes = "hello"),
+                        middleName = StringFilter(includes = "hello"),
+                        lastName = StringFilter(includes = "hello")
+                    )
+                ), authContext = authContext
+            )
+        }
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         assertEquals(listOf(graphQLPatient), result)
     }

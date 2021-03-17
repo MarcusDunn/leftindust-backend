@@ -35,11 +35,15 @@ class PatientQuery(
         return when {
             range != null && sortedBy != null -> {
                 val intRange = range.toIntRange()
-                patientDao.getMany(intRange.first, intRange.last, sortedBy, authContext.mediqAuthToken).getOrThrow()
+                patientDao
+                    .getMany(intRange.first, intRange.last, sortedBy, authContext.mediqAuthToken)
+                    .getOrThrow()
             }
             range != null && sortedBy == null -> {
                 val intRange = range.toIntRange()
-                patientDao.getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken).getOrThrow()
+                patientDao
+                    .getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken)
+                    .getOrThrow()
             }
             pids != null && sortedBy != null -> {
                 pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
@@ -47,7 +51,19 @@ class PatientQuery(
                     .sortedBy { sortedBy.instanceValue(it) }
             }
             pids != null && sortedBy == null -> {
-                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }.map { it.getOrThrow() }
+                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
+                    .map { it.getOrThrow() }
+            }
+            example != null && sortedBy != null -> {
+                patientDao
+                    .searchByExample(example, authContext.mediqAuthToken)
+                    .getOrThrow()
+                    .sortedBy { sortedBy.instanceValue(it) }
+            }
+            example != null && sortedBy == null -> {
+                patientDao
+                    .searchByExample(example, authContext.mediqAuthToken)
+                    .getOrThrow()
             }
             else -> throw GraphQLKotlinException("invalid arguments")
         }.map { GraphQLPatient(it, it.id!!, authContext) }
@@ -67,23 +83,6 @@ class PatientQuery(
                 .getOrThrow()
                 .mapValues { entry -> entry.value.map { GraphQLPatient(it, it.id!!, authContext) } }
         )
-    }
-
-
-    suspend fun searchPatientsByName(query: String, graphQLAuthContext: GraphQLAuthContext): List<GraphQLPatient> {
-        return patientDao
-            .searchByExample(
-                GraphQLPatientExample(
-                    GraphQLPersonExample(
-                        firstName = StringFilter(includes = query),
-                        middleName = StringFilter(includes = query),
-                        lastName = StringFilter(includes = query),
-                    )
-                ),
-                graphQLAuthContext.mediqAuthToken
-            )
-            .getOrThrow()
-            .map { GraphQLPatient(it, it.id!!, graphQLAuthContext) }
     }
 
     suspend fun searchPatient(
