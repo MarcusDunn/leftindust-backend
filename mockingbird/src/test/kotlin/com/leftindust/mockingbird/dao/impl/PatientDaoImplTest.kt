@@ -22,7 +22,6 @@ import kotlinx.coroutines.runBlocking
 import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.function.Predicate
 import javax.persistence.criteria.CriteriaQuery
 
 internal class PatientDaoImplTest {
@@ -84,7 +83,7 @@ internal class PatientDaoImplTest {
     }
 
     @Test
-    fun searchByName() {
+    fun `search for a patient by name`() {
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { sessionFactory.createEntityManager() } returns mockk {
