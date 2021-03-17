@@ -12,10 +12,8 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
  */
 interface PatientDao {
     suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
-    suspend fun addNewPatient(patient: Patient, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
     suspend fun addNewPatient(
         patient: GraphQLPatientInput,
-        doctorIds: List<ID> = emptyList(),
         requester: MediqToken
     ): CustomResult<Patient, OrmFailureReason>
     suspend fun removePatientByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>

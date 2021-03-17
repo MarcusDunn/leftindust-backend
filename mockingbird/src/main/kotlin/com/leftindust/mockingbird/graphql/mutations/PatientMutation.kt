@@ -39,7 +39,6 @@ class PatientMutation(
         return patientDao
             .addNewPatient(
                 patient = patient,
-                doctorIds = doctors ?: emptyList(),
                 requester = graphQLAuthContext.mediqAuthToken
             )
             .getOrThrow()

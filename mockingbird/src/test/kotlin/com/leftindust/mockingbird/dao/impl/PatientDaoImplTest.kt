@@ -5,6 +5,7 @@ import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
@@ -50,16 +51,22 @@ internal class PatientDaoImplTest {
 
     @Test
     fun addNewPatient() {
+        val graphQLPatientInput = GraphQLPatientInput(
+            firstName = OptionalInput.Defined("hello"),
+            lastName = OptionalInput.Defined("world"),
+            sex = OptionalInput.Defined(Sex.Male)
+        )
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { patientRepository.save(mockkPatient) } returns mockkPatient
+        every { patientRepository.save(any()) } returns mockkPatient
+        every { sessionFactory.currentSession } returns mockk()
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory
         )
 
-        val actual = runBlocking { patientDaoImpl.addNewPatient(mockkPatient, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }.getOrThrow()
 
         assertEquals(mockkPatient, actual)
     }

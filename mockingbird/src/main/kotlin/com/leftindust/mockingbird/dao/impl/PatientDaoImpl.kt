@@ -49,18 +49,7 @@ class PatientDaoImpl(
     }
 
     override suspend fun addNewPatient(
-        patient: Patient,
-        requester: MediqToken
-    ): CustomResult<Patient, OrmFailureReason> {
-        val writeToPatient = Action(Crud.CREATE to Tables.Patient)
-        return writeToPatient.getAuthorization(requester) {
-            Success(patientRepository.save(patient))
-        }
-    }
-
-    override suspend fun addNewPatient(
         patient: GraphQLPatientInput,
-        doctorIds: List<ID>,
         requester: MediqToken
     ): CustomResult<Patient, OrmFailureReason> {
         val permissions = listOf(
