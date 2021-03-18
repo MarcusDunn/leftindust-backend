@@ -5,4 +5,5 @@ import com.leftindust.mockingbird.extensions.CustomResult
 
 interface AuthorizationDao {
     suspend fun getRolesForUserByUid(uid: String): CustomResult<List<AccessControlList>, OrmFailureReason>
+    suspend fun isAdmin(uid: String): Boolean
 }

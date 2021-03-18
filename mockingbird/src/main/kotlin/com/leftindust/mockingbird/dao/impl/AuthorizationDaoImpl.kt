@@ -1,6 +1,8 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.AuthorizationDao
+import com.leftindust.mockingbird.dao.DoesNotExist
+import com.leftindust.mockingbird.dao.OrmFailureReason
 import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
@@ -21,5 +23,9 @@ class AuthorizationDaoImpl(
         val userPerms = aclRepository.findAllByMediqUser(user)
         val groupPerms = user.group?.let { aclRepository.findAllByGroup(it) } ?: emptyList()
         return Success(userPerms + groupPerms)
+    }
+
+    override suspend fun isAdmin(uid: String): Boolean {
+        return userRepository.getUserByUniqueId(uid)?.group?.name == "admin"
     }
 }

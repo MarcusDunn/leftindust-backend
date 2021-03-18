@@ -811,4 +811,11 @@
     <changeSet author="marcus (generated)" id="1615505988621-5">
         <dropColumn columnName="pid" tableName="patient"/>
     </changeSet>
+    <changeSet id="1615505988622" author="marcus">
+        <insert tableName="mediq_group">
+            <column name="id" value="1"/>
+            <column name="name" value="admin"/>
+            <column name="gid" value="1"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
