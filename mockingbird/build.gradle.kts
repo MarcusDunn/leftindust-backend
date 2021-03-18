@@ -69,6 +69,7 @@ dependencies {
 
     // database drivers
     implementation("org.postgresql", "postgresql")
+    testImplementation("com.h2database", "h2")
 
     // liquibase
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
