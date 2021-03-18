@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery

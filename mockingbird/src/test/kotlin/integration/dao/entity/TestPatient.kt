@@ -39,6 +39,6 @@ class TestPatient {
         assertThrows<IllegalArgumentException> {
             Patient(graphQLPatientInput, session)
         }
-        assertEquals(0, patientRepository.findAll().size)
+        assertEquals(emptyList<Patient>(), patientRepository.findAll())
     }
 }
