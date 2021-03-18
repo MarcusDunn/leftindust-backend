@@ -12,6 +12,7 @@ services:
       retries: 5
   mockingbird:
     environment:
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
       - SPRING_DATASOURCE_USERNAME=mediq
       - SPRING_DATASOURCE_PASSWORD=mediq
@@ -52,6 +53,7 @@ services:
       retries: 5
   condor:
     environment:
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://condor-postgres:5432/mediq
       - SPRING_DATASOURCE_USERNAME=mediq
       - SPRING_DATASOURCE_PASSWORD=mediq
