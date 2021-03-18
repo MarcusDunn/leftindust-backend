@@ -167,15 +167,16 @@ class Patient(
             is OptionalInput.Undefined -> {/* no-op */
             }
         }
-
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
-
-        sex = patientInput.sex.onUndefined(sex) ?: throw IllegalArgumentException("sex cannot be set to null")
-
-        gender =
-            patientInput.gender.onUndefined(gender) ?: throw IllegalArgumentException("gender cannot be set to null")
-
+        sex = patientInput.sex.onUndefined(sex)
+            ?: throw IllegalArgumentException("sex cannot be set to null")
+        gender = patientInput.gender.onUndefined(gender)
+            ?: throw IllegalArgumentException("gender cannot be set to null")
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
+        doctors = when (patientInput.doctors) {
+            is OptionalInput.Undefined -> doctors
+            is OptionalInput.Defined -> TODO("waiting for aidan to need this")
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -207,6 +208,6 @@ class Patient(
     }
 
     override fun toString(): String {
-        return "Patient(sex=$sex, gender='$gender', ethnicity=$ethnicity, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors)"
+        return "Patient(sex=$sex, gender='$gender', ethnicity=$ethnicity, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors) ${super.toString()}"
     }
 }
