@@ -97,22 +97,22 @@ internal class PatientDaoImplTest {
     @Test
     fun `search for a patient by name`() {
         val mockkPatient = mockk<Patient>()
-        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { sessionFactory.createEntityManager() } returns mockk {
-            every { createQuery(any<CriteriaQuery<Patient>>()) } returns mockk {
-                every { resultList } returns listOf(mockkPatient)
-            }
-            every { criteriaBuilder } returns mockk {
-                every { or(*anyVararg()) } returns mockk()
-                every { like(any(), any<String>()) } returns mockk()
-                every { createQuery(Patient::class.java) } returns mockk {
-                    every { select(any()) } returns mockk {
-                        every { where(*anyVararg()) } returns mockk()
-                    }
-                    every { from(Patient::class.java) } returns mockk(relaxed = true)
+        every { entityManager.criteriaBuilder } returns mockk {
+            every { like(any(), any<String>()) } returns mockk()
+            every { or(*anyVararg()) } returns mockk()
+            every { createQuery(Patient::class.java) } returns mockk {
+                every { select(any()) } returns mockk {
+                    every { where(*anyVararg()) } returns mockk()
                 }
+                every { from(Patient::class.java) } returns mockk(relaxed = true)
             }
         }
+        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns mockk() {
+            every { resultList } returns listOf(mockkPatient)
+        }
+
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,

@@ -137,7 +137,6 @@ class PatientDaoImpl(
             criteriaBuilder.or(*arrayOfPredicates)
         }
         criteriaQuery.select(itemRoot).where(finalPredicate)
-        println(patientRepository.findAll())
         return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
 
