@@ -27,6 +27,7 @@ internal class AuthorizerImplTest {
                 every { action.isSuperset(any()) } returns false
             }
         ))
+        coEvery { authorizationDao.isAdmin(any())} returns false
 
         val authorizer = AuthorizerImpl(authorizationDao)
 
@@ -43,6 +44,7 @@ internal class AuthorizerImplTest {
 
     @Test
     fun `get authorization when user has superset of required permissions`() {
+        coEvery { authorizationDao.isAdmin(any())} returns false
 
         coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns Success(listOf(
             mockk("superset") {
