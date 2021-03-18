@@ -1,4 +1,3 @@
-# MAKE SURE ANY CHANGES YOU MAKE HERE IS ALSO APPLIED TO THE APPLICATION.YML IN TESTS
 graphql:
   packages:
     - "com.leftindust.mockingbird.graphql"
@@ -17,9 +16,6 @@ spring:
   liquibase:
     change-log: classpath:dbchangelog.xml
     enabled: true
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5432/mediq
-    username: mediq
-    password: mediq
-# MAKE SURE ANY CHANGES YOU MAKE HERE IS ALSO APPLIED TO THE APPLICATION.YML IN TESTS
+  datasource: # this is overridden by environment variables when tested on push
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:mediq;DB_CLOSE_DELAY=-1
