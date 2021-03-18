@@ -24,4 +24,8 @@ abstract class Person(
     var workPhone: String?,
     @Column(name = "home_phone", nullable = true)
     var homePhone: String?,
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable<Long>() {
+    override fun toString(): String {
+        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, email=$email, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone)"
+    }
+}
