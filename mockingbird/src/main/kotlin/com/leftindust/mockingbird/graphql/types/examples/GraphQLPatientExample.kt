@@ -13,9 +13,9 @@ data class GraphQLPatientExample(
     val address: StringFilter? = null,
     val email: StringFilter? = null,
     val insuranceNumber: StringFilter? = null,
-    val contacts: List<GraphQLEmergencyContactExample>? = null,
-    val doctors: List<GraphQLDoctorExample>? = null,
-    val visits: List<GraphQLVisitExample>? = null
+    val contacts: GraphQLEmergencyContactExample? = null,
+    val doctors: GraphQLDoctorExample? = null,
+    val visits: GraphQLVisitExample? = null,
 ) {
     fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
         if (contacts != null) TODO()
