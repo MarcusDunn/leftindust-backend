@@ -36,6 +36,7 @@ class PatientDaoImpl(
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val sessionFactory: SessionFactory,
+    @Autowired private val entityManager: EntityManager
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
@@ -126,7 +127,6 @@ class PatientDaoImpl(
         requester: MediqToken,
         strict: Boolean
     ): CustomResult<List<Patient>, OrmFailureReason> {
-        val entityManager: EntityManager = sessionFactory.createEntityManager()!!
         val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder!!
         val criteriaQuery: CriteriaQuery<Patient> = criteriaBuilder.createQuery(Patient::class.java)!!
         val itemRoot: Root<Patient> = criteriaQuery.from(Patient::class.java)!!
@@ -137,6 +137,7 @@ class PatientDaoImpl(
             criteriaBuilder.or(*arrayOfPredicates)
         }
         criteriaQuery.select(itemRoot).where(finalPredicate)
+        println(patientRepository.findAll())
         return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
 
@@ -159,8 +160,9 @@ class PatientDaoImpl(
     ): CustomResult<Patient, OrmFailureReason> {
         val updatePatients = Crud.UPDATE to Tables.Patient
         return if (requester can updatePatients) {
-            val pid = patientInput.pid.getOrNull() ?: return Failure(InvalidArguments())
-            val patient = patientRepository.getOneOrNull(pid.toLong()) ?: return Failure(DoesNotExist())
+            val pid = patientInput.pid.getOrNull() ?: return Failure(InvalidArguments("pid must be defined"))
+            val patient = patientRepository.getOneOrNull(pid.toLong())
+                ?: return Failure(DoesNotExist("could not find the patient with pid ${pid.value}"))
             try {
                 patient.setByGqlInput(patientInput)
                 Success(patient)
@@ -170,13 +172,5 @@ class PatientDaoImpl(
         } else {
             Failure(NotAuthorized(requester, "not allowed to $updatePatients"))
         }
-    }
-
-    private fun searchForName(query: String): List<Patient> {
-        return patientRepository.getAllByFirstNameLikeOrMiddleNameLikeOrLastNameLike(query, query, query)
-    }
-
-    private fun String.isNotBlankAndOnlyAlpha(): Boolean {
-        return this.isNotBlank() && this.all { it.isLetter() }
     }
 }
