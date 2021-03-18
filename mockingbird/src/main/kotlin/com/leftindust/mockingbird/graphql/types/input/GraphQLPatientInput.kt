@@ -12,7 +12,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLTime
 data class GraphQLPatientInput(
     val pid: OptionalInput<ID> = OptionalInput.Undefined,
     val firstName: OptionalInput<String> = OptionalInput.Undefined,
-    val middleName: OptionalInput<String> = OptionalInput.Undefined,
+    val middleName: OptionalInput<String?> = OptionalInput.Undefined,
     val lastName: OptionalInput<String> = OptionalInput.Undefined,
     val phoneNumbers: OptionalInput<List<GraphQLPhoneNumber>> = OptionalInput.Undefined,
     val dateOfBirth: OptionalInput<GraphQLTime> = OptionalInput.Undefined,
