@@ -824,7 +824,7 @@
         </insert>
         <update tableName="mediq_user">
             <column name="group_id" value="1"/>
-            <where>uid='admin'</where>
+            <where>unique_id='admin'</where>
         </update>
     </changeSet>
 </databaseChangeLog>
