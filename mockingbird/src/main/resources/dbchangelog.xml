@@ -794,7 +794,6 @@
         <insert tableName="mediq_user">
             <column name="id" value="0"/>
             <column name="unique_id" value="admin"/>
-            <column name="group_id" value="1"/>
             <column name="settings_json" value="{}"/>
             <column name="settings_version" value="1"/>
         </insert>
@@ -823,5 +822,9 @@
             <column name="name" value="admin"/>
             <column name="gid" value="1"/>
         </insert>
+        <update tableName="mediq_user">
+            <column name="group_id" value="1"/>
+            <where>uid='admin'</where>
+        </update>
     </changeSet>
 </databaseChangeLog>
