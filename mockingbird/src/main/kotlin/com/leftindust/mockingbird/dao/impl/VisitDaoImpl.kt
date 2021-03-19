@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 import javax.persistence.EntityNotFoundException
 
 @Repository
@@ -26,6 +27,7 @@ class VisitDaoImpl(
     private val visitRepository: HibernateVisitRepository,
     private val doctorRepository: HibernateDoctorRepository,
     private val patientRepository: HibernatePatientRepository,
+    private val entityManager: EntityManager,
 ) : VisitDao, AbstractHibernateDao(authorizer) {
     private val logger: Logger = LogManager.getLogger()
 
@@ -106,6 +108,10 @@ class VisitDaoImpl(
         strict: Boolean,
         requester: MediqToken
     ): CustomResult<List<Visit>, OrmFailureReason> {
-        TODO("Not yet implemented")
+        return if (requester can (Crud.READ to Tables.Patient)) {
+            searchByGqlExample(entityManager, example, strict)
+        } else {
+            Failure(NotAuthorized(requester, "cannot read to patients"))
+        }
     }
 }

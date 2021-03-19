@@ -12,7 +12,6 @@ import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLExample
 import org.apache.logging.log4j.LogManager
 import javax.persistence.EntityManager
-import javax.persistence.criteria.Predicate
 
 abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
     suspend fun <T> Action.getAuthorization(
@@ -39,7 +38,7 @@ abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
         val criteriaQuery = criteriaBuilder.createQuery(T::class.java)
         val itemRoot = criteriaQuery.from(T::class.java)
         val arrayOfPredicates = example.toPredicate(criteriaBuilder, itemRoot).toTypedArray()
-        val finalPredicate: Predicate = if (strict) {
+        val finalPredicate = if (strict) {
             criteriaBuilder.and(*arrayOfPredicates)
         } else {
             criteriaBuilder.or(*arrayOfPredicates)

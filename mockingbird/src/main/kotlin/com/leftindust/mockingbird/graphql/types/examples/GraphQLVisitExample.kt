@@ -1,23 +1,30 @@
 package com.leftindust.mockingbird.graphql.types.examples
 
 import com.expediagroup.graphql.annotations.GraphQLIgnore
-import com.expediagroup.graphql.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.Visit
+import com.leftindust.mockingbird.dao.entity.Visit_
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 data class GraphQLVisitExample(
-    val vid: OptionalInput<StringFilter> = OptionalInput.Undefined,
-    val timeBooked: OptionalInput<GraphQLTimeExample> = OptionalInput.Undefined,
-    val timeOfVisit: OptionalInput<GraphQLTimeExample> = OptionalInput.Undefined,
-    val title: OptionalInput<StringFilter> = OptionalInput.Undefined,
-    val description: OptionalInput<StringFilter> = OptionalInput.Undefined,
-    val icdFoundationCode: OptionalInput<StringFilter> = OptionalInput.Undefined,
+    val vid: StringFilter? = null,
+    val timeBooked: GraphQLTimeExample? = null,
+    val timeOfVisit: GraphQLTimeExample? = null,
+    val title: StringFilter? = null,
+    val description: StringFilter? = null,
+    val icdFoundationCode: StringFilter? = null,
 ) : @GraphQLIgnore GraphQLExample<Visit> {
 
     @GraphQLIgnore
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Visit>): List<Predicate> {
-        TODO()
+        return listOfNotNull(
+            vid?.toPredicate(criteriaBuilder, itemRoot, Visit_.ID),
+            timeBooked?.toPredicate(criteriaBuilder, itemRoot, Visit_.TIME_BOOKED),
+            timeOfVisit?.toPredicate(criteriaBuilder, itemRoot, Visit_.TIME_OF_VISIT),
+            title?.toPredicate(criteriaBuilder, itemRoot, Visit_.TITLE),
+            description?.toPredicate(criteriaBuilder, itemRoot, Visit_.DESCRIPTION),
+            icdFoundationCode?.toPredicate(criteriaBuilder, itemRoot, "icdFoundationCode"),
+        ).flatten()
     }
 }
