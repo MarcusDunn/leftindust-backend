@@ -65,7 +65,7 @@ internal class VisitQueryTest {
     }
 
     @Test
-    fun `get visit by pid and dic strict`() {
+    fun `get visit by pid and did strict`() {
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val mockkVisit1 = mockk<Visit>(relaxed = true) {
             every { id } returns 1000
@@ -110,7 +110,7 @@ internal class VisitQueryTest {
     }
 
     @Test
-    fun `get visit by pid and dic not strict`() {
+    fun `get visit by pid and did not strict`() {
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val mockkVisit1 = mockk<Visit>(relaxed = true) {
             every { id } returns 8001

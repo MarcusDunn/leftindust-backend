@@ -11,6 +11,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
@@ -98,5 +99,13 @@ class VisitDaoImpl(
         } else {
             Failure(NotAuthorized(requester))
         }
+    }
+
+    override suspend fun getByExample(
+        example: GraphQLVisitExample,
+        strict: Boolean,
+        requester: MediqToken
+    ): CustomResult<List<Visit>, OrmFailureReason> {
+        TODO("Not yet implemented")
     }
 }

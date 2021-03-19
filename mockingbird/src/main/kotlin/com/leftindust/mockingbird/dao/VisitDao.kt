@@ -15,7 +15,5 @@ interface VisitDao {
         example: GraphQLVisitExample,
         strict: Boolean = true,
         requester: MediqToken
-    ): CustomResult<List<Visit>, OrmFailureReason> {
-        TODO("Not yet implemented")
-    }
+    ): CustomResult<List<Visit>, OrmFailureReason>
 }
