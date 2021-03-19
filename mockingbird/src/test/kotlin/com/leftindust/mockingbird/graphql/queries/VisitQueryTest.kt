@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -104,6 +105,8 @@ internal class VisitQueryTest {
         }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit2, mockkVisit2.id!!, graphQLAuthContext)), result)
+
+        coVerify { visitDao.getVisitsForPatientPid(any(), any()) }
     }
 
     @Test
@@ -147,5 +150,27 @@ internal class VisitQueryTest {
                 .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) },
             result
         )
+
+        coVerify { visitDao.getVisitsByDoctor(any(), any()) }
+        coVerify { visitDao.getVisitsForPatientPid(any(), any()) }
+
+    }
+
+    @Test
+    fun `search visits by example`() {
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        val mockkVisit = mockk<Visit>(relaxed = true) {
+            every { id } returns 1000
+        }
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        coEvery { visitDao.getByExample(any(), any(), any()) } returns Success(listOf(mockkVisit))
+
+        val visitQuery = VisitQuery(visitDao)
+
+        val result = runBlocking { visitQuery.visits(example = mockk(), graphQLAuthContext = graphQLAuthContext) }
+
+        assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
+
+        coVerify { visitDao.getByExample(any(), any(), any()) }
     }
 }
