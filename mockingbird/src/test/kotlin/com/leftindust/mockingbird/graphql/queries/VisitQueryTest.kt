@@ -34,7 +34,7 @@ internal class VisitQueryTest {
     fun `get visits by doctor`() {
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val mockkVisit = mockk<Visit>(relaxed = true) {
-            every { id } returns 2000
+            every { id } returns 1000
         }
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         coEvery { visitDao.getVisitsByDoctor(2000, any()) } returns Success(listOf(mockkVisit))
@@ -42,6 +42,22 @@ internal class VisitQueryTest {
         val visitQuery = VisitQuery(visitDao)
 
         val result = runBlocking { visitQuery.visits(did = gqlID(2000), graphQLAuthContext = graphQLAuthContext) }
+
+        assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
+    }
+
+    @Test
+    fun `get visit by vids`() {
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        val mockkVisit = mockk<Visit>(relaxed = true) {
+            every { id } returns 1000
+        }
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        coEvery { visitDao.getVisitByVid(3000, any()) } returns Success(mockkVisit)
+
+        val visitQuery = VisitQuery(visitDao)
+
+        val result = runBlocking { visitQuery.visits(vids = listOf(gqlID(3000)), graphQLAuthContext = graphQLAuthContext) }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
     }

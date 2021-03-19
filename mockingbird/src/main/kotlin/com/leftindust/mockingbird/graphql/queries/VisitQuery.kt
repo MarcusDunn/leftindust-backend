@@ -14,8 +14,19 @@ import org.springframework.stereotype.Controller
 class VisitQuery(
     @Autowired private val visitDao: VisitDao
 ) : Query {
-    suspend fun visits(pid: ID? = null, did: ID? = null, graphQLAuthContext: GraphQLAuthContext): List<GraphQLVisit> {
+    suspend fun visits(
+        vids: List<ID>? = null,
+        pid: ID? = null,
+        did: ID? = null,
+        strict: Boolean = true,
+        graphQLAuthContext: GraphQLAuthContext
+    ): List<GraphQLVisit> {
         return when {
+            vids != null -> vids.map { vid ->
+                visitDao
+                    .getVisitByVid(vid.toLong(), graphQLAuthContext.mediqAuthToken)
+                    .getOrThrow()
+            }
             pid != null -> visitDao
                 .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
