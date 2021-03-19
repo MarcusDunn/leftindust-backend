@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.examples
 
+import com.expediagroup.graphql.annotations.GraphQLIgnore
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.Patient_
 import javax.persistence.criteria.CriteriaBuilder
@@ -16,8 +17,8 @@ data class GraphQLPatientExample(
     val contacts: GraphQLEmergencyContactExample? = null,
     val doctors: GraphQLDoctorExample? = null,
     val visits: GraphQLVisitExample? = null,
-) {
-    fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
+) : @GraphQLIgnore GraphQLExample<Patient> {
+    override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
         if (contacts != null) TODO()
         if (doctors != null) TODO()
         if (visits != null) TODO()

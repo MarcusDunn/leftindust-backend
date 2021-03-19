@@ -9,7 +9,10 @@ import com.leftindust.mockingbird.dao.OrmFailureReason
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLExample
 import org.apache.logging.log4j.LogManager
+import javax.persistence.EntityManager
+import javax.persistence.criteria.Predicate
 
 abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
     suspend fun <T> Action.getAuthorization(
@@ -18,8 +21,31 @@ abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
     ): CustomResult<T, OrmFailureReason> {
         return when (authorizer.getAuthorization(this, requester)) {
             Authorization.Allowed -> onAuthorized()
-            Authorization.Denied -> Failure(NotAuthorized(requester, "no permission to ${this.permissionType.name} to ${this.referencedTableName}"))
+            Authorization.Denied -> Failure(
+                NotAuthorized(
+                    requester,
+                    "no permission to ${this.permissionType.name} to ${this.referencedTableName}"
+                )
+            )
         }
+    }
+
+    inline fun <reified T, EX : GraphQLExample<T>> searchByGqlExample(
+        entityManager: EntityManager,
+        example: EX,
+        strict: Boolean
+    ): Success<MutableList<T>> {
+        val criteriaBuilder = entityManager.criteriaBuilder
+        val criteriaQuery = criteriaBuilder.createQuery(T::class.java)
+        val itemRoot = criteriaQuery.from(T::class.java)
+        val arrayOfPredicates = example.toPredicate(criteriaBuilder, itemRoot).toTypedArray()
+        val finalPredicate: Predicate = if (strict) {
+            criteriaBuilder.and(*arrayOfPredicates)
+        } else {
+            criteriaBuilder.or(*arrayOfPredicates)
+        }
+        criteriaQuery.select(itemRoot).where(finalPredicate)
+        return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
 
     suspend infix fun MediqToken.has(actions: List<Action>): Boolean {

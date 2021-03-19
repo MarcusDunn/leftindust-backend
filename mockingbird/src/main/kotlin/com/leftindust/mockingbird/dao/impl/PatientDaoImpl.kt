@@ -21,10 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.EntityNotFoundException
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
 
 @Transactional
@@ -127,17 +123,11 @@ class PatientDaoImpl(
         requester: MediqToken,
         strict: Boolean
     ): CustomResult<List<Patient>, OrmFailureReason> {
-        val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder!!
-        val criteriaQuery: CriteriaQuery<Patient> = criteriaBuilder.createQuery(Patient::class.java)!!
-        val itemRoot: Root<Patient> = criteriaQuery.from(Patient::class.java)!!
-        val arrayOfPredicates = example.toPredicate(criteriaBuilder, itemRoot).toTypedArray()
-        val finalPredicate: Predicate = if (strict) {
-            criteriaBuilder.and(*arrayOfPredicates)
+        return if (requester can (Crud.READ to Tables.Patient)) {
+            searchByGqlExample(entityManager, example, strict)
         } else {
-            criteriaBuilder.or(*arrayOfPredicates)
+            Failure(NotAuthorized(requester, "cannot read to patient"))
         }
-        criteriaQuery.select(itemRoot).where(finalPredicate)
-        return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
 
     override suspend fun getMany(
