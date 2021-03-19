@@ -27,6 +27,21 @@ class VisitQuery(
                     .getVisitByVid(vid.toLong(), graphQLAuthContext.mediqAuthToken)
                     .getOrThrow()
             }
+            pid != null && did != null && strict -> {
+                visitDao
+                    .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
+                    .getOrThrow()
+                    .filter { it.doctor.id!! == did.toLong() }
+            }
+            pid != null && did != null && !strict -> {
+                val patientVisits = visitDao
+                    .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
+                    .getOrThrow()
+                val doctorVisits = visitDao
+                    .getVisitsByDoctor(did.toLong(), graphQLAuthContext.mediqAuthToken)
+                    .getOrThrow()
+                (patientVisits + doctorVisits).toSet()
+            }
             pid != null -> visitDao
                 .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
