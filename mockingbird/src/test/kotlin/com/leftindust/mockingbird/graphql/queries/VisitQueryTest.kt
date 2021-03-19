@@ -19,21 +19,30 @@ internal class VisitQueryTest {
 
     @Test
     fun getVisitsByPatient() {
-        every {graphQLAuthContext.mediqAuthToken} returns mockk()
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val mockkVisit = mockk<Visit>(relaxed = true) {
             every { id } returns 2000
         }
         coEvery { visitDao.getVisitsForPatientPid(1000, any()) } returns Success(listOf(mockkVisit))
         val visitQuery = VisitQuery(visitDao)
-        val result = runBlocking { visitQuery.visits(gqlID(1000), graphQLAuthContext) }
+        val result = runBlocking { visitQuery.visits(pid = gqlID(1000), graphQLAuthContext = graphQLAuthContext) }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
     }
 
-//    @Test
-//    fun visits() {
-//        every {graphQLAuthContext.mediqAuthToken} returns mockk()
-//        val visitQuery = VisitQuery(visitDao)
-//        val result = runBlocking { visitQuery.getVisitsByPatient(gqlID(1000), graphQLAuthContext) }
-//    }
+    @Test
+    fun `get visits by doctor`() {
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        val mockkVisit = mockk<Visit>(relaxed = true) {
+            every { id } returns 2000
+        }
+        every { graphQLAuthContext.mediqAuthToken } returns mockk()
+        coEvery { visitDao.getVisitsByDoctor(2000, any()) } returns Success(listOf(mockkVisit))
+
+        val visitQuery = VisitQuery(visitDao)
+
+        val result = runBlocking { visitQuery.visits(did = gqlID(2000), graphQLAuthContext = graphQLAuthContext) }
+
+        assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
+    }
 }

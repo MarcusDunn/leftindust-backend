@@ -14,10 +14,13 @@ import org.springframework.stereotype.Controller
 class VisitQuery(
     @Autowired private val visitDao: VisitDao
 ) : Query {
-    suspend fun visits(pid: ID?, graphQLAuthContext: GraphQLAuthContext): List<GraphQLVisit> {
+    suspend fun visits(pid: ID? = null, did: ID? = null, graphQLAuthContext: GraphQLAuthContext): List<GraphQLVisit> {
         return when {
             pid != null -> visitDao
                 .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
+                .getOrThrow()
+            did != null -> visitDao
+                .getVisitsByDoctor(did.toLong(), graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
             else -> throw GraphQLKotlinException("invalid arguments to visits")
         }.map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
