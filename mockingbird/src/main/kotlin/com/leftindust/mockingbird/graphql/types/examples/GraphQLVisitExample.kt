@@ -13,8 +13,6 @@ data class GraphQLVisitExample(
     val timeOfVisit: OptionalInput<GraphQLTimeExample> = OptionalInput.Undefined,
     val title: OptionalInput<StringFilter> = OptionalInput.Undefined,
     val description: OptionalInput<StringFilter> = OptionalInput.Undefined,
-    val doctor: OptionalInput<GraphQLDoctorExample> = OptionalInput.Undefined,
-    val patient: OptionalInput<GraphQLPatientExample> = OptionalInput.Undefined,
     val icdFoundationCode: OptionalInput<StringFilter> = OptionalInput.Undefined,
 ) : @GraphQLIgnore GraphQLExample<Visit> {
 
