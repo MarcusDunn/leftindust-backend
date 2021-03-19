@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.execution.OptionalInput
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import javax.persistence.EntityManager
 import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Path
 
 internal class VisitDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -102,7 +100,7 @@ internal class VisitDaoImplTest {
     fun getByExample() {
         val mockkVisit = mockk<Visit>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { entityManager.createQuery(any<CriteriaQuery<Visit>>()) } returns mockk() {
+        every { entityManager.createQuery(any<CriteriaQuery<Visit>>()) } returns mockk {
             every { resultList } returns listOf(mockkVisit)
         }
         every { entityManager.criteriaBuilder } returns mockk {

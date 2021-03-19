@@ -107,7 +107,7 @@ internal class PatientDaoImplTest {
                 every { from(Patient::class.java) } returns mockk(relaxed = true)
             }
         }
-        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns mockk() {
+        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns   mockk() {
             every { resultList } returns listOf(mockkPatient)
         }
 
