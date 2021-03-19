@@ -14,14 +14,8 @@ data class GraphQLPatientExample(
     val address: StringFilter? = null,
     val email: StringFilter? = null,
     val insuranceNumber: StringFilter? = null,
-    val contacts: GraphQLEmergencyContactExample? = null,
-    val doctors: GraphQLDoctorExample? = null,
-    val visits: GraphQLVisitExample? = null,
 ) : @GraphQLIgnore GraphQLExample<Patient> {
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
-        if (contacts != null) TODO()
-        if (doctors != null) TODO()
-        if (visits != null) TODO()
         return listOfNotNull(
             personalInformation?.toPredicate(criteriaBuilder, itemRoot),
             pid?.toPredicate(criteriaBuilder, itemRoot, Patient_.ID),
