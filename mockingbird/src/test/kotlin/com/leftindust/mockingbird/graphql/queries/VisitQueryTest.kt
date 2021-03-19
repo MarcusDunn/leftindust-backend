@@ -25,8 +25,15 @@ internal class VisitQueryTest {
         }
         coEvery { visitDao.getVisitsForPatientPid(1000, any()) } returns Success(listOf(mockkVisit))
         val visitQuery = VisitQuery(visitDao)
-        val result = runBlocking { visitQuery.getVisitsByPatient(gqlID(1000), graphQLAuthContext) }
+        val result = runBlocking { visitQuery.visits(gqlID(1000), graphQLAuthContext) }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
     }
+
+//    @Test
+//    fun visits() {
+//        every {graphQLAuthContext.mediqAuthToken} returns mockk()
+//        val visitQuery = VisitQuery(visitDao)
+//        val result = runBlocking { visitQuery.getVisitsByPatient(gqlID(1000), graphQLAuthContext) }
+//    }
 }

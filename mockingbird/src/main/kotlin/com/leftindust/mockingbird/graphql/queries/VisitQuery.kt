@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.queries
 
+import com.expediagroup.graphql.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
@@ -13,13 +14,12 @@ import org.springframework.stereotype.Controller
 class VisitQuery(
     @Autowired private val visitDao: VisitDao
 ) : Query {
-    suspend fun getVisitsByPatient(
-        pid: ID,
-        graphQLAuthContext: GraphQLAuthContext
-    ): List<GraphQLVisit> {
-        val requester = graphQLAuthContext.mediqAuthToken
-        return visitDao.getVisitsForPatientPid(pid.toLong(), requester)
-            .getOrThrow()
-            .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
+    suspend fun visits(pid: ID?, graphQLAuthContext: GraphQLAuthContext): List<GraphQLVisit> {
+        return when {
+            pid != null -> visitDao
+                .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
+                .getOrThrow()
+            else -> throw GraphQLKotlinException("invalid arguments to visits")
+        }.map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
     }
 }
