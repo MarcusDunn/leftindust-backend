@@ -23,7 +23,7 @@ services:
       mockingbird-postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl localhost:8080/sdl" ]
+      test: [ "CMD-SHELL", "curl mockingbird:8080/sdl" ]
       interval: 10s
       timeout: 5s
       retries: 10
