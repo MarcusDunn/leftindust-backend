@@ -791,6 +791,7 @@
         </addColumn>
     </changeSet>
     <changeSet id="1614147952552" author="marcus">
+        <validCheckSum>78f769d6ea37f3dc7e06df2539a588af</validCheckSum>
         <insert tableName="mediq_user">
             <column name="id" value="0"/>
             <column name="unique_id" value="admin"/>

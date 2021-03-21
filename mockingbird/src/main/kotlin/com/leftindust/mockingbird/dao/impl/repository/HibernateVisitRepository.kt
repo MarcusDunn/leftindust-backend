@@ -6,5 +6,5 @@ import java.io.Serializable
 
 interface HibernateVisitRepository : JpaRepository<Visit, Long> {
     fun getAllByPatientId(pid: Long): List<Visit>
-    fun <T: Serializable> getAllByDoctorId(doctor_id: T): List<Visit>
+    fun getAllByDoctorId(did: Long): List<Visit>
 }
