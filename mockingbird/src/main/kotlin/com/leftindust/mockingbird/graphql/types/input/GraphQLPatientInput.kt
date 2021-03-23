@@ -17,10 +17,20 @@ data class GraphQLPatientInput(
     val phoneNumbers: OptionalInput<List<GraphQLPhoneNumber>> = OptionalInput.Undefined,
     val dateOfBirth: OptionalInput<GraphQLTime> = OptionalInput.Undefined,
     val address: OptionalInput<String> = OptionalInput.Undefined,
-    val email: OptionalInput<String> = OptionalInput.Undefined,
+    val emails: OptionalInput<List<String>> = OptionalInput.Undefined, //todo validation
     val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,
     val sex: OptionalInput<Sex> = OptionalInput.Undefined,
     val gender: OptionalInput<String> = OptionalInput.Undefined,
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
     val doctors: OptionalInput<List<ID>> = OptionalInput.Undefined
-)
+) {
+    init {
+        if (emails is OptionalInput.Defined) {
+            if (emails.value?.all { it.contains("@") } == true) {
+                // valid email
+            } else {
+                throw IllegalArgumentException("not a valid email")
+            }
+        }
+    }
+}

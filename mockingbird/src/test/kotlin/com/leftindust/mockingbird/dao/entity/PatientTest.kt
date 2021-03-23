@@ -53,7 +53,7 @@ internal class PatientTest {
             ),
             dateOfBirth = OptionalInput.Defined(GraphQLTime(Timestamp.valueOf("2020-01-02 09:01:15"))),
             address = OptionalInput.Defined("874 West 1st street"),
-            email = OptionalInput.Defined("hello@world.ca"),
+            emails = OptionalInput.Defined(listOf("hello@world.ca")),
             insuranceNumber = OptionalInput.Defined(ID("129112")),
             sex = OptionalInput.Defined(Sex.Male),
             gender = OptionalInput.Defined(Sex.Male.toString()),

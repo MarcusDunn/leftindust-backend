@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.entity.superclasses
 
 import java.sql.Timestamp
 import javax.persistence.Column
+import javax.persistence.ElementCollection
 import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
@@ -16,8 +17,9 @@ abstract class Person(
     var dateOfBirth: Timestamp?,
     @Column(name = "address", nullable = true)
     var address: String?,
+    @ElementCollection
     @Column(name = "email", nullable = true)
-    var email: String?,
+    var emails: List<String>?,
     @Column(name = "cell_phone", nullable = true)
     var cellPhone: String?,
     @Column(name = "work_phone", nullable = true)
@@ -26,6 +28,6 @@ abstract class Person(
     var homePhone: String?,
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {
-        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, email=$email, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone)"
+        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, emails=$emails, cellPhone=$cellPhone, workPhone=$workPhone, homePhone=$homePhone)"
     }
 }

@@ -12,7 +12,7 @@ class Doctor(
     middleName: String? = null,
     dateOfBirth: Timestamp? = null,
     address: String? = null,
-    email: String? = null,
+    emails: List<String>? = null,
     cellPhone: String? = null,
     workPhone: String? = null,
     homePhone: String? = null,
@@ -24,7 +24,7 @@ class Doctor(
     var patients: Set<DoctorPatient> = emptySet(),
     @Embedded
     val schedule: Schedule = Schedule()
-) : Person(firstName, lastName, middleName, dateOfBirth, address, email, cellPhone, workPhone, homePhone) {
+) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, cellPhone, workPhone, homePhone) {
 
     fun addPatient(patient: Patient): Doctor {
         val doctorPatient = DoctorPatient(doctor = this, patient = patient)

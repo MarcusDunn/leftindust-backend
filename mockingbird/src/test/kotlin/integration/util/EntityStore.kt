@@ -12,7 +12,7 @@ object EntityStore {
         lastName = "dunn",
         dateOfBirth = Timestamp.valueOf("2020-01-02 09:01:15"),
         address = "3521 West 1st Street",
-        email = "hello@world.ca",
+        emails = listOf("hello@world.ca"),
         cellPhone = "6632231111",
         workPhone = "1234567890",
         homePhone = "1234567890",

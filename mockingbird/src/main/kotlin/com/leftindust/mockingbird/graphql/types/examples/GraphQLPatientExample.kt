@@ -12,17 +12,28 @@ data class GraphQLPatientExample(
     val pid: StringFilter? = null,
     val dateOfBirth: GraphQLTimeExample? = null,
     val address: StringFilter? = null,
-    val email: StringFilter? = null,
+    val emails: StringListFilter? = null,
     val insuranceNumber: StringFilter? = null,
 ) : @GraphQLIgnore GraphQLExample<Patient> {
+
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
         return listOfNotNull(
             personalInformation?.toPredicate(criteriaBuilder, itemRoot),
             pid?.toPredicate(criteriaBuilder, itemRoot, Patient_.ID),
             dateOfBirth?.toPredicate(criteriaBuilder, itemRoot, Patient_.DATE_OF_BIRTH),
             address?.toPredicate(criteriaBuilder, itemRoot, Patient_.ADDRESS),
-            email?.toPredicate(criteriaBuilder, itemRoot, Patient_.EMAIL),
+            emails?.toPredicate(criteriaBuilder, itemRoot, Patient_.EMAILS),
             insuranceNumber?.toPredicate(criteriaBuilder, itemRoot, Patient_.INSURANCE_NUMBER),
         ).flatten()
+    }
+}
+
+class StringListFilter(
+    val includes: String? = null,
+) {
+    fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>, field: String): List<Predicate> {
+        return listOfNotNull(
+            includes?.let { criteriaBuilder.isMember(it, itemRoot.get(field)) }
+        )
     }
 }

@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
+import com.leftindust.mockingbird.graphql.types.examples.StringListFilter
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -44,7 +45,7 @@ class PatientDaoImplTest {
         // action
         val result = runBlocking {
             patientDao.searchByExample(
-                GraphQLPatientExample(email = StringFilter(eq = "hello@world.ca")),
+                GraphQLPatientExample(emails = StringListFilter(includes = "hello@world.ca")),
                 mockkMediqToken
             )
         }.getOrThrow()

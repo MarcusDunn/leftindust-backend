@@ -828,4 +828,32 @@
             <where>unique_id='admin'</where>
         </update>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-1">
+        <createTable tableName="doctor_emails">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-2">
+        <createTable tableName="patient_emails">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-3">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_emails" constraintName="FKlxdruj5i3nxrwydpj750exk4x" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-4">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_emails" constraintName="FKs5thvuujrajjv2qvtorbmdn3o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-5">
+        <dropColumn columnName="email" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616543256562-6">
+        <dropColumn columnName="email" tableName="patient"/>
+    </changeSet>
 </databaseChangeLog>

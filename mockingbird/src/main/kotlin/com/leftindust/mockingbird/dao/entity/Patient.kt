@@ -20,7 +20,7 @@ class Patient(
     lastName: String,
     dateOfBirth: Timestamp? = null,
     address: String? = null,
-    email: String? = null,
+    emails: List<String>? = null,
     cellPhone: String? = null,
     workPhone: String? = null,
     homePhone: String? = null,
@@ -42,7 +42,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, address, email, cellPhone, workPhone, homePhone) {
+) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, cellPhone, workPhone, homePhone) {
 
     @Throws(IllegalArgumentException::class)
     constructor(
@@ -60,7 +60,7 @@ class Patient(
             ?.unixMilliseconds?.let { Timestamp(it) },
         address = graphQLPatientInput.address
             .getOrNull(),
-        email = graphQLPatientInput.email
+        emails = graphQLPatientInput.emails
             .getOrNull(),
         insuranceNumber = graphQLPatientInput.insuranceNumber
             .getOrNull()?.value,
@@ -144,7 +144,7 @@ class Patient(
 
         dateOfBirth = patientInput.dateOfBirth.onUndefined(onUndefined)?.toTimestamp()
         address = patientInput.address.onUndefined(address)
-        email = patientInput.email.onUndefined(email)
+        emails = patientInput.emails.onUndefined(emails)
 
         when (val phoneNumbers = patientInput.phoneNumbers) {
             is OptionalInput.Defined -> {
