@@ -10,10 +10,7 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.entity.UserSettings
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -91,7 +88,7 @@ class UserDaoImpl(
     ): CustomResult<MediqUser, OrmFailureReason> {
         val mediqUser = MediqUser(
             uniqueId = user.uid,
-            group = user.group_id?.let { groupRepository.getByGid(it.toLong()) },
+            group = user.group_id?.let { groupRepository.getOneOrNull(it.toLong()) },
             settings = UserSettings(
                 version = user.settings_version,
                 settingsJSON = user.settings.json
