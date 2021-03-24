@@ -856,4 +856,7 @@
     <changeSet author="marcus (generated)" id="1616543256562-6">
         <dropColumn columnName="email" tableName="patient"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616618417377-1">
+        <dropColumn columnName="gid" tableName="mediq_group"/>
+    </changeSet>
 </databaseChangeLog>

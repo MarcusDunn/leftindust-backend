@@ -5,6 +5,5 @@ import javax.persistence.Entity
 
 @Entity(name = "mediq_group")
 class MediqGroup(
-    val gid: Long,
     val name: String,
 ) : AbstractJpaPersistable<Long>()
