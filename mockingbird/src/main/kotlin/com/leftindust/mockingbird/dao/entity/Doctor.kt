@@ -40,12 +40,12 @@ class Doctor(
 
     data class DocVEvent(val doctor: Doctor) : VEvent() {
         constructor(doctor: Doctor, it: VEvent) : this(doctor) {
-            this.summary = it.summary
-            this.description = it.description
-            this.dateStart = it.dateStart
-            this.dateEnd = it.dateEnd
-            this.dateTimeStamp = it.dateTimeStamp
-            this.duration = it.duration
+            summary = it.summary
+            description = it.description
+            dateStart = it.dateStart
+            dateEnd = it.dateEnd
+            dateTimeStamp = it.dateTimeStamp
+            duration = it.duration
         }
     }
 }
