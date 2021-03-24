@@ -11,6 +11,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
+import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -43,7 +44,7 @@ class PatientQueryTest {
         runBlocking {
             // Setup
             val patientEntity = run {
-                val patientExample = Patient(firstName = "marcus", lastName = "dunn", sex = Sex.Male)
+                val patientExample = EntityStore.patient()
                 hibernatePatientRepository.save(patientExample)
             }
 
@@ -62,7 +63,7 @@ class PatientQueryTest {
         runBlocking {
             // Setup
             val patientEntity = run {
-                val patientExample = Patient(firstName = "marcus", lastName = "dunn", sex = Sex.Male)
+                val patientExample = EntityStore.patient()
                 hibernatePatientRepository.save(patientExample)
             }
 

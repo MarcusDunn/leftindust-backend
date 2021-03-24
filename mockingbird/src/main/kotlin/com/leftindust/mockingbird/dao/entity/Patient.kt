@@ -18,7 +18,7 @@ class Patient(
     firstName: String,
     middleName: String? = null,
     lastName: String,
-    dateOfBirth: Timestamp? = null,
+    dateOfBirth: Timestamp,
     address: String? = null,
     emails: List<String>? = null,
     cellPhone: String? = null,
@@ -56,8 +56,9 @@ class Patient(
         lastName = graphQLPatientInput.lastName
             .getOrThrow(IllegalArgumentException("lastName must be defined when constructing a Patient")),
         dateOfBirth = graphQLPatientInput.dateOfBirth
-            .getOrNull()
-            ?.unixMilliseconds?.let { Timestamp(it) },
+            .getOrThrow(IllegalArgumentException("date of birth must be defined"))
+            .unixMilliseconds
+            .let { Timestamp(it) },
         address = graphQLPatientInput.address
             .getOrNull(),
         emails = graphQLPatientInput.emails

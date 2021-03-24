@@ -14,7 +14,7 @@ fun <T> OptionalInput<T>.getOrDefault(default: T): T {
     }
 }
 
-fun <T> OptionalInput<T>.getOrThrow(throwable: Throwable = RuntimeException("called getOrThrow and threw")): T {
+fun <T> OptionalInput<T>.getOrThrow(throwable: Throwable = RuntimeException("called getOrThrow on Undefined Input")): T {
     return when (this) {
         is OptionalInput.Defined -> this.value ?: throw throwable
         is OptionalInput.Undefined -> throw throwable

@@ -9,6 +9,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPhoneNumber
 import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
 import com.leftindust.mockingbird.graphql.types.GraphQLTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -21,11 +22,7 @@ internal class PatientTest {
 
     @Test
     fun addDoctor() {
-        val patient = Patient(
-            firstName = "marcus",
-            lastName = "dunn",
-            sex = Sex.Male,
-        )
+        val patient = EntityStore.patient()
 
         val doctor = spyk<Doctor>() {
             patients = emptySet()
