@@ -8,4 +8,5 @@ enum class GraphQLPhoneType {
     Cell,
     Home,
     Pager,
+    Other,
 }

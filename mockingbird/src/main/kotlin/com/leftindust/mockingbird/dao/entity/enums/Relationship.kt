@@ -11,4 +11,5 @@ enum class Relationship {
     Cousin,
     Sibling,
     Partner,
+    Other,
 }

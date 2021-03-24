@@ -90,7 +90,7 @@ internal class PatientMutationTest {
 
         val mockkGqlPatientInput = mockk<GraphQLPatientInput>()
 
-        val result = runBlocking { patientMutation.addPatient(mockkGqlPatientInput, mockk(), authContext) }
+        val result = runBlocking { patientMutation.addPatient(mockkGqlPatientInput, authContext) }
 
         assertEquals(mockkGraphQLPatient, result)
     }
