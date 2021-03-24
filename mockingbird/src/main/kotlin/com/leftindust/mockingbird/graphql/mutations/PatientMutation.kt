@@ -31,11 +31,7 @@ class PatientMutation(
         """adds a new patient and connects them to already existing doctors and contacts
         contacts and doctors default to empty lists"""
     )
-    suspend fun addPatient(
-        patient: GraphQLPatientInput,
-        doctors: List<ID>? = emptyList(),
-        graphQLAuthContext: GraphQLAuthContext
-    ): GraphQLPatient {
+    suspend fun addPatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao
             .addNewPatient(
                 patient = patient,
