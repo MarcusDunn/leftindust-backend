@@ -1,11 +1,9 @@
 package com.leftindust.mockingbird.graphql.types
 
-import biweekly.property.DateOrDateTimeProperty
-import biweekly.property.DurationProperty
 import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.Doctor
-import java.sql.Timestamp
+import com.leftindust.mockingbird.extensions.plus
 
 data class GraphQLEvent(
     val eid: ID,
@@ -28,8 +26,4 @@ data class GraphQLEvent(
 
     fun doctor(): GraphQLDoctor =
         GraphQLDoctor(doctor, doctor.id!!, authContext) // safe nn call provided that the event has been persisted
-}
-
-private operator fun DateOrDateTimeProperty.plus(duration: DurationProperty): Timestamp {
-    return Timestamp(this.value.toInstant().epochSecond * 1000 + duration.value.toMillis())
 }
