@@ -12,8 +12,20 @@ import org.springframework.stereotype.Component
 class DoctorQuery(
     private val doctorDao: DoctorDao,
 ) : Query {
-    suspend fun getDoctorsByPatient(pid: ID, authContext: GraphQLAuthContext
+    suspend fun doctors(
+        dids: List<ID>? = null,
+        pid: ID? = null,
+        authContext: GraphQLAuthContext
     ): List<GraphQLDoctor> {
+        return when {
+            dids != null -> dids
+                .map { doctorDao.getByDoctor(it.toLong(), authContext.mediqAuthToken) }
+                .map { it.getOrThrow() }
+            else -> throw IllegalArgumentException("invalid argument combination to doctors")
+        }.map { GraphQLDoctor(it, it.id!!, authContext) }
+    }
+
+    suspend fun getDoctorsByPatient(pid: ID, authContext: GraphQLAuthContext): List<GraphQLDoctor> {
         return doctorDao
             .getByPatient(pid.toLong(), authContext.mediqAuthToken)
             .getOrThrow()

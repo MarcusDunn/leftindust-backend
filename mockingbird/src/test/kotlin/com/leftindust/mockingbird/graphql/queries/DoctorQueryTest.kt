@@ -2,9 +2,9 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -18,20 +18,16 @@ internal class DoctorQueryTest {
 
     @Test
     fun getDoctorsByPatient() {
-        val mockkDoctor = mockk<Doctor>(relaxed = true) {
-            every { id } returns 2000
-            every { workPhone } returns null
-            every { cellPhone } returns null
-            every { pagerNumber } returns null
-            every { homePhone } returns null
+        val doctor = EntityStore.doctor().apply {
+            id = 2000
         }
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        val graphQLDoctor = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, authContext)
+        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
 
         coEvery { doctorDao.getByPatient(1000, authContext.mediqAuthToken) } returns mockk() {
-            every { getOrThrow() } returns listOf(mockkDoctor)
+            every { getOrThrow() } returns listOf(doctor)
         }
 
         val doctorQuery = DoctorQuery(doctorDao)
@@ -43,20 +39,16 @@ internal class DoctorQueryTest {
 
     @Test
     fun doctor() {
-        val mockkDoctor = mockk<Doctor>(relaxed = true) {
-            every { id } returns 2000
-            every { workPhone } returns null
-            every { cellPhone } returns null
-            every { pagerNumber } returns null
-            every { homePhone } returns null
+        val doctor = EntityStore.doctor().apply {
+            id = 1000
         }
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        val graphQLDoctor = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, authContext)
+        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
 
         coEvery { doctorDao.getByDoctor(1000, any()) } returns mockk {
-            every { getOrThrow() } returns mockkDoctor
+            every { getOrThrow() } returns doctor
         }
 
         val doctorQuery = DoctorQuery(doctorDao)
@@ -64,7 +56,26 @@ internal class DoctorQueryTest {
         val result = runBlocking { doctorQuery.doctor(gqlID(1000), authContext) }
 
         assertEquals(graphQLDoctor, result)
+    }
 
+    @Test
+    internal fun doctors() {
+        val doctor = EntityStore.doctor().apply {
+            id = 1000
+        }
 
+        every { authContext.mediqAuthToken } returns mockk()
+
+        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
+
+        coEvery { doctorDao.getByDoctor(1000, any()) } returns mockk {
+            every { getOrThrow() } returns doctor
+        }
+
+        val doctorQuery = DoctorQuery(doctorDao)
+
+        val result = runBlocking { doctorQuery.doctors(dids = listOf(gqlID(1000)), authContext = authContext) }
+
+        assertEquals(listOf(graphQLDoctor), result)
     }
 }
