@@ -32,30 +32,9 @@ internal class DoctorQueryTest {
 
         val doctorQuery = DoctorQuery(doctorDao)
 
-        val result = runBlocking { doctorQuery.getDoctorsByPatient(gqlID(1000), authContext) }
+        val result = runBlocking { doctorQuery.doctors(pid = gqlID(1000), authContext = authContext) }
 
         assertEquals(listOf(graphQLDoctor), result)
-    }
-
-    @Test
-    fun doctor() {
-        val doctor = EntityStore.doctor().apply {
-            id = 1000
-        }
-
-        every { authContext.mediqAuthToken } returns mockk()
-
-        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
-
-        coEvery { doctorDao.getByDoctor(1000, any()) } returns mockk {
-            every { getOrThrow() } returns doctor
-        }
-
-        val doctorQuery = DoctorQuery(doctorDao)
-
-        val result = runBlocking { doctorQuery.doctor(gqlID(1000), authContext) }
-
-        assertEquals(graphQLDoctor, result)
     }
 
     @Test

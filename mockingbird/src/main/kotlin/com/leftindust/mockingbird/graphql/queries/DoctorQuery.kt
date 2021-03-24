@@ -21,20 +21,10 @@ class DoctorQuery(
             dids != null -> dids
                 .map { doctorDao.getByDoctor(it.toLong(), authContext.mediqAuthToken) }
                 .map { it.getOrThrow() }
+            pid != null -> doctorDao
+                .getByPatient(pid.toLong(), authContext.mediqAuthToken)
+                .getOrThrow()
             else -> throw IllegalArgumentException("invalid argument combination to doctors")
         }.map { GraphQLDoctor(it, it.id!!, authContext) }
-    }
-
-    suspend fun getDoctorsByPatient(pid: ID, authContext: GraphQLAuthContext): List<GraphQLDoctor> {
-        return doctorDao
-            .getByPatient(pid.toLong(), authContext.mediqAuthToken)
-            .getOrThrow()
-            .map { GraphQLDoctor(it, it.id!!, authContext) } // safe nn assert as we just got it from DB
-    }
-
-    suspend fun doctor(did: ID, authContext: GraphQLAuthContext): GraphQLDoctor {
-        return doctorDao.getByDoctor(did.toLong(), authContext.mediqAuthToken)
-            .getOrThrow()
-            .let { GraphQLDoctor(it, it.id!!, authContext) }  // safe nn assert as we just got it from DB
     }
 }
