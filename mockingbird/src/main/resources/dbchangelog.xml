@@ -859,4 +859,55 @@
     <changeSet author="marcus (generated)" id="1616618417377-1">
         <dropColumn columnName="gid" tableName="mediq_group"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-1">
+        <createTable tableName="email">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="emailPK"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-2">
+        <addColumn tableName="doctor_emails">
+            <column name="emails_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-3">
+        <addColumn tableName="patient_emails">
+            <column name="emails_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-4">
+        <addPrimaryKey columnNames="doctor_id, emails_id" tableName="doctor_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-5">
+        <addPrimaryKey columnNames="patient_id, emails_id" tableName="patient_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-6">
+        <addUniqueConstraint columnNames="emails_id" constraintName="UK_26c0d0w2ym4w79tkea6j0fqp9" tableName="patient_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-7">
+        <addUniqueConstraint columnNames="emails_id" constraintName="UK_a042t6vbl47n09mkqy34xfb0l" tableName="doctor_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-8">
+        <addForeignKeyConstraint baseColumnNames="emails_id" baseTableName="doctor_emails" constraintName="FK2e9upbtevqfyt8q1bhgg64apk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-9">
+        <addForeignKeyConstraint baseColumnNames="emails_id" baseTableName="patient_emails" constraintName="FKgp89r2an9uly1oswgivnku63j" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-10">
+        <dropColumn columnName="email" tableName="doctor_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616626621463-11">
+        <dropColumn columnName="email" tableName="patient_emails"/>
+    </changeSet>
 </databaseChangeLog>

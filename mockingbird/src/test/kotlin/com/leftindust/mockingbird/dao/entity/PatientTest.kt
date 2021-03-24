@@ -5,9 +5,7 @@ import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.GraphQLPhoneNumber
-import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
-import com.leftindust.mockingbird.graphql.types.GraphQLTime
+import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import integration.util.EntityStore
 import io.mockk.every
@@ -50,7 +48,14 @@ internal class PatientTest {
             ),
             dateOfBirth = OptionalInput.Defined(GraphQLTime(Timestamp.valueOf("2020-01-02 09:01:15"))),
             address = OptionalInput.Defined("874 West 1st street"),
-            emails = OptionalInput.Defined(listOf("hello@world.ca")),
+            emails = OptionalInput.Defined(
+                listOf(
+                    GraphQLEmail(
+                        type = GraphQLEmailType.Personal,
+                        email = "hello@world.ca"
+                    )
+                )
+            ),
             insuranceNumber = OptionalInput.Defined(ID("129112")),
             sex = OptionalInput.Defined(Sex.Male),
             gender = OptionalInput.Defined(Sex.Male.toString()),

@@ -5,8 +5,9 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
+import com.leftindust.mockingbird.graphql.types.examples.GraphQLTimeExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
-import com.leftindust.mockingbird.graphql.types.examples.StringListFilter
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.sql.Timestamp
 import javax.transaction.Transactional
 
 
@@ -45,7 +47,37 @@ class PatientDaoImplTest {
         // action
         val result = runBlocking {
             patientDao.searchByExample(
-                GraphQLPatientExample(emails = StringListFilter(includes = "hello@world.ca")),
+                GraphQLPatientExample(
+                    personalInformation = GraphQLPersonExample(
+                        firstName = StringFilter(eq = "marcus")
+                    )
+                ),
+                mockkMediqToken
+            )
+        }.getOrThrow()
+
+        // assert
+        assertEquals(expected, result.first())
+    }
+
+    @Test
+    internal fun `search by example time`() {
+        // setup
+        val pid = session.save(EntityStore.patient()) as Long
+        val expected = session.get(Patient::class.java, pid)
+        val mockkMediqToken = mockk<MediqToken> {
+            every { uid } returns "admin"
+        }
+
+        // action
+        val result = runBlocking {
+            patientDao.searchByExample(
+                GraphQLPatientExample(
+                    dateOfBirth = GraphQLTimeExample(
+                        beforeUnixMilli = Timestamp.valueOf("2021-01-02 09:01:15").time,
+                        afterUnixMilli = Timestamp.valueOf("2019-01-02 09:01:15").time,
+                    )
+                ),
                 mockkMediqToken
             )
         }.getOrThrow()

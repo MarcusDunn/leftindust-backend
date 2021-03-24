@@ -23,7 +23,7 @@ data class GraphQLDoctor(
     val title: String? = null,
     val dateOfBirth: GraphQLTime? = null,
     val address: String? = null,
-    val emails: List<String>? = null,
+    val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
     private val authToken = authContext.mediqAuthToken
@@ -39,7 +39,7 @@ data class GraphQLDoctor(
         title = doctor.title,
         dateOfBirth = doctor.dateOfBirth?.let { GraphQLTime(it) },
         address = doctor.address,
-        emails = doctor.emails,
+        emails = doctor.emails.toList().map { GraphQLEmail(it) },
         authContext = authContext
     ) {
         assert(doctor.id == null || doctor.id == id)

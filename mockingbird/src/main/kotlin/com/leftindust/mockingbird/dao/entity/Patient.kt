@@ -20,7 +20,7 @@ class Patient(
     lastName: String,
     dateOfBirth: Timestamp,
     address: String? = null,
-    emails: List<String>? = null,
+    emails: Set<Email> = emptySet(),
     cellPhone: String? = null,
     workPhone: String? = null,
     homePhone: String? = null,
@@ -62,7 +62,7 @@ class Patient(
         address = graphQLPatientInput.address
             .getOrNull(),
         emails = graphQLPatientInput.emails
-            .getOrNull(),
+            .getOrNull()?.map { Email(it) }?.toSet() ?: emptySet(),
         insuranceNumber = graphQLPatientInput.insuranceNumber
             .getOrNull()?.value,
         sex = graphQLPatientInput.sex
@@ -145,7 +145,10 @@ class Patient(
 
         dateOfBirth = patientInput.dateOfBirth.onUndefined(onUndefined)?.toTimestamp()
         address = patientInput.address.onUndefined(address)
-        emails = patientInput.emails.onUndefined(emails)
+        emails = when (patientInput.emails) {
+            OptionalInput.Undefined -> emails
+            is OptionalInput.Defined -> patientInput.emails.value?.map { Email(it) }?.toSet() ?: emptySet()
+        }
 
         when (val phoneNumbers = patientInput.phoneNumbers) {
             is OptionalInput.Defined -> {

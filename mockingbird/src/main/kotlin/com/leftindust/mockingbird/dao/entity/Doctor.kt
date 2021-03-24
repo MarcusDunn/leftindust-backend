@@ -12,7 +12,7 @@ class Doctor(
     middleName: String? = null,
     dateOfBirth: Timestamp? = null,
     address: String? = null,
-    emails: List<String>? = null,
+    emails: Set<Email> = emptySet(),
     cellPhone: String? = null,
     workPhone: String? = null,
     homePhone: String? = null,
