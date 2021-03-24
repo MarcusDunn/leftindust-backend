@@ -78,6 +78,7 @@ internal class PatientDaoImplTest {
         assertEquals(mockkPatient, actual)
     }
 
+
     @Test
     fun removePatientByPID() {
         val mockkPatient = mockk<Patient>()

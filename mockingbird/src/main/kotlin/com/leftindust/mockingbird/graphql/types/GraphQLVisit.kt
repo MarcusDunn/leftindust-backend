@@ -48,16 +48,20 @@ data class GraphQLVisit(
 
     private val authToken = authContext.mediqAuthToken
     suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor {
+        val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
         return doctorDao
-            .getByVisit(vid?.toLong(), authToken)
+            .getByVisit(nnVid, authToken)
             .getOrThrow()
-            .let { GraphQLDoctor(it, it.id!!, authContext) } // safe nn assert as we just got from DB
+            .let { GraphQLDoctor(it, it.id!!, authContext) }
     }
 
-    suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient = patientDao
-        .getByVisit(vid?.toLong(), authToken)
-        .getOrThrow()
-        .let { GraphQLPatient(it, it.id!!, authContext) }
+    suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient {
+        val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get patient on visit with null vid")
+        return patientDao
+            .getByVisit(nnVid, authToken)
+            .getOrThrow()
+            .let { GraphQLPatient(it, it.id!!, authContext) }
+    }
 
     fun icd(): GraphQLIcdSimpleEntity {
         TODO()

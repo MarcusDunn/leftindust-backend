@@ -38,10 +38,8 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
+    override suspend fun getByVisit(vid: Long, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.Visit)) {
-            vid
-                ?: return Failure(InvalidArguments("cannot get by null vid"))
             val visit = visitRepository.getOneOrNull(vid)
                 ?: return Failure(DoesNotExist("cannot find visit with vid: $vid"))
             Success(visit.doctor)
