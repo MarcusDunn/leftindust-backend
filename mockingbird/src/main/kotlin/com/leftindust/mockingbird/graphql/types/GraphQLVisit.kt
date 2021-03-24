@@ -5,15 +5,12 @@ import com.expediagroup.graphql.annotations.GraphQLIgnore
 import com.expediagroup.graphql.annotations.GraphQLName
 import com.expediagroup.graphql.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSimpleEntity
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("Visit")
@@ -27,8 +24,7 @@ data class GraphQLVisit(
     private val authContext: GraphQLAuthContext,
     private val foundationIcdCode: FoundationIcdCode
 ) {
-    private val logger: Logger = LogManager.getLogger()
-
+    private val authToken = authContext.mediqAuthToken
 
     // The caller must verify that the Visit entity has been persisted by passing the id explicitly,
     // If you come across a reason to pass a visit back to the frontend that has not been persisted,
@@ -43,23 +39,24 @@ data class GraphQLVisit(
         foundationIcdCode = visit.icdFoundationCode
     ) {
         // runtime check that someone isn't sending inconsistent data
-        if (visit.id != id) throw RuntimeException("inconsistency between visit.id and id")
+        if (visit.id != id) throw RuntimeException("inconsistency between visit.id and id (visit.id: ${visit.id} id: $id)")
     }
 
-    private val authToken = authContext.mediqAuthToken
-    suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor {
+    suspend fun doctor(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLDoctor {
         val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
-        return doctorDao
-            .getByVisit(nnVid, authToken)
+        return visitDao
+            .getVisitByVid(nnVid, authToken)
             .getOrThrow()
+            .doctor
             .let { GraphQLDoctor(it, it.id!!, authContext) }
     }
 
-    suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient {
+    suspend fun patient(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLPatient {
         val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get patient on visit with null vid")
-        return patientDao
-            .getByVisit(nnVid, authToken)
+        return visitDao
+            .getVisitByVid(nnVid, authToken)
             .getOrThrow()
+            .patient
             .let { GraphQLPatient(it, it.id!!, authContext) }
     }
 
