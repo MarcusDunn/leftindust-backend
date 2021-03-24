@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component
 class DoctorQuery(
     private val doctorDao: DoctorDao,
 ) : Query {
-    suspend fun getDoctorsByPatient(
-        pid: ID,
-        authContext: GraphQLAuthContext
+    suspend fun getDoctorsByPatient(pid: ID, authContext: GraphQLAuthContext
     ): List<GraphQLDoctor> {
         return doctorDao
             .getByPatient(pid.toLong(), authContext.mediqAuthToken)
