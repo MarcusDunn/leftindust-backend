@@ -93,7 +93,7 @@ enum class GraphQLMonth {
     }
 }
 
-@GraphQLName("Time Input")
+@GraphQLName("TimeInput")
 @GraphQLDescription("Sum type over time or date")
 data class GraphQLTimeInput(
     val time: GraphQLTime? = null,
