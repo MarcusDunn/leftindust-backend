@@ -25,9 +25,6 @@ internal class PatientQueryTest {
     fun patient() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
         coEvery { patientDao.getByPID(1000, any()) } returns mockk() {
             every { getOrThrow() } returns mockkPatient
@@ -43,9 +40,6 @@ internal class PatientQueryTest {
     fun patients() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
         every { authContext.mediqAuthToken } returns mockk()
         coEvery { patientDao.getMany(0, 5, any(), any()) } returns mockk() {
@@ -61,9 +55,6 @@ internal class PatientQueryTest {
     fun searchPatientsByName() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
         coEvery { patientDao.searchByExample(any(), any()) } returns mockk {
             every { getOrThrow() } returns listOf(mockkPatient)
@@ -89,9 +80,6 @@ internal class PatientQueryTest {
     fun searchPatient() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
         every { authContext.mediqAuthToken } returns mockk()
         coEvery { patientDao.searchByExample(any(), any()) } returns mockk {

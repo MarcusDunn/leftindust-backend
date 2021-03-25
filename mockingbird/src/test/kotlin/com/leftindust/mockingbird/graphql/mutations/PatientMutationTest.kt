@@ -22,9 +22,6 @@ internal class PatientMutationTest {
     fun addDoctorToPatient() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
 
         coEvery { patientDao.addDoctorToPatient(any(), any(), any()) } returns mockk() {
@@ -46,9 +43,6 @@ internal class PatientMutationTest {
     fun updatePatient() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
 
         every { authContext.mediqAuthToken } returns mockk()
@@ -72,15 +66,11 @@ internal class PatientMutationTest {
     fun addPatient() {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000
-            every { homePhone } returns null
-            every { cellPhone } returns null
-            every { workPhone } returns null
         }
 
         every { authContext.mediqAuthToken } returns mockk()
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
-
 
         coEvery { patientDao.addNewPatient(any(), any()) } returns mockk {
             every { getOrThrow() } returns mockkPatient

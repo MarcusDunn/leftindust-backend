@@ -916,4 +916,82 @@
     <changeSet author="marcus (generated)" id="1616705344406-2">
         <addNotNullConstraint columnDataType="timestamp" columnName="date_of_birth" tableName="patient" validate="true"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-3">
+        <createTable tableName="doctor_phones">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="phones_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-4">
+        <createTable tableName="patient_phones">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="phones_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-5">
+        <createTable tableName="phone">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="phonePK"/>
+            </column>
+            <column name="number" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-6">
+        <addUniqueConstraint columnNames="phones_id" constraintName="UK_2m7tctxj82u57rq1kudc3j35q" tableName="doctor_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-7">
+        <addUniqueConstraint columnNames="phones_id" constraintName="UK_dduqasi07hatptd27y9k9ttn2" tableName="patient_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-8">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_phones" constraintName="FKp7tduairw51evt15f71fo6on6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-9">
+        <addForeignKeyConstraint baseColumnNames="phones_id" baseTableName="patient_phones" constraintName="FKqk7yerv2b69ouy96go8ekf1we" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-10">
+        <addForeignKeyConstraint baseColumnNames="phones_id" baseTableName="doctor_phones" constraintName="FKs0l29345wohswxx8iy61huilc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-11">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_phones" constraintName="FKsdupbwqgkealyqg29ogt0aql0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-12">
+        <dropColumn columnName="cell_phone" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-13">
+        <dropColumn columnName="cell_phone" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-14">
+        <dropColumn columnName="home_phone" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-15">
+        <dropColumn columnName="home_phone" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-16">
+        <dropColumn columnName="pager_number" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-17">
+        <dropColumn columnName="work_phone" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-18">
+        <dropColumn columnName="work_phone" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-1">
+        <addNotNullConstraint columnDataType="timestamp" columnName="date_of_birth" tableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616707725546-2">
+        <addNotNullConstraint columnDataType="timestamp" columnName="date_of_birth" tableName="patient" validate="true"/>
+    </changeSet>
 </databaseChangeLog>

@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.*
-import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
@@ -21,9 +20,7 @@ class Patient(
     dateOfBirth: Timestamp,
     address: String? = null,
     emails: Set<Email> = emptySet(),
-    cellPhone: String? = null,
-    workPhone: String? = null,
-    homePhone: String? = null,
+    phones: Set<Phone> = emptySet(),
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
     var sex: Sex,
@@ -42,7 +39,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, cellPhone, workPhone, homePhone) {
+) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, phones) {
 
     @Throws(IllegalArgumentException::class)
     constructor(
@@ -72,17 +69,8 @@ class Patient(
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull()
     ) {
-        cellPhone = graphQLPatientInput.phoneNumbers
-            .getOrNull()
-            ?.find { it.type == GraphQLPhoneType.Cell }
-            ?.number?.toString()
-        workPhone = graphQLPatientInput.phoneNumbers
-            .getOrNull()
-            ?.find { it.type == GraphQLPhoneType.Work }
-            ?.number?.toString()
-        homePhone = graphQLPatientInput.phoneNumbers.getOrNull()
-            ?.find { it.type == GraphQLPhoneType.Home }
-            ?.number?.toString()
+        phones = graphQLPatientInput.phoneNumbers.getOrNull()?.map { Phone(it) }?.toSet() ?: emptySet()
+
         graphQLPatientInput.doctors
             .getOrDefault(emptySet())
             .forEach { did ->
@@ -151,25 +139,19 @@ class Patient(
             is OptionalInput.Defined -> patientInput.emails.value?.map { Email(it) }?.toSet() ?: emptySet()
         }
 
-        when (val phoneNumbers = patientInput.phoneNumbers) {
+        phones = when (val gqlNumbers = patientInput.phoneNumbers) {
             is OptionalInput.Defined -> {
-                if (phoneNumbers.value == null) {
-                    cellPhone = null
-                    workPhone = null
-                    homePhone = null
-                } else {
-                    cellPhone = phoneNumbers.value!!
-                        .find { it.type == GraphQLPhoneType.Cell }
-                        .let { if (it == null) null else cellPhone }
-                    workPhone = phoneNumbers.value!!
-                        .find { it.type == GraphQLPhoneType.Work }
-                        .let { if (it == null) null else workPhone }
-                    homePhone = phoneNumbers.value!!
-                        .find { it.type == GraphQLPhoneType.Home }
-                        .let { if (it == null) null else homePhone }
+                when (val value = gqlNumbers.value) {
+                    null -> {
+                        emptySet()
+                    }
+                    else -> {
+                        value.map { Phone(it) }.toSet()
+                    }
                 }
             }
-            is OptionalInput.Undefined -> {/* no-op */
+            is OptionalInput.Undefined -> {
+                phones
             }
         }
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
