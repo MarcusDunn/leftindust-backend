@@ -7,7 +7,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
-import com.leftindust.mockingbird.graphql.types.GraphQLTime
+import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
 import java.sql.Timestamp
@@ -57,8 +57,7 @@ class Patient(
             .getOrThrow(IllegalArgumentException("lastName must be defined when constructing a Patient")),
         dateOfBirth = graphQLPatientInput.dateOfBirth
             .getOrThrow(IllegalArgumentException("date of birth must be defined"))
-            .unixMilliseconds
-            .let { Timestamp(it) },
+            .toTimestamp(),
         address = graphQLPatientInput.address
             .getOrNull(),
         emails = graphQLPatientInput.emails
@@ -141,9 +140,9 @@ class Patient(
         lastName = patientInput.lastName
             .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
 
-        val onUndefined: GraphQLTime? = dateOfBirth?.let { GraphQLTime(it) }
-
-        dateOfBirth = patientInput.dateOfBirth.onUndefined(onUndefined)?.toTimestamp()
+        dateOfBirth = patientInput.dateOfBirth
+            .onUndefined(dateOfBirth?.let { GraphQLTimeInput(it) })
+            ?.toTimestamp()
         address = patientInput.address.onUndefined(address)
         emails = when (patientInput.emails) {
             OptionalInput.Undefined -> emails

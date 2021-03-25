@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.graphql.types.GraphQLEmail
 import com.leftindust.mockingbird.graphql.types.GraphQLPhoneNumber
 import com.leftindust.mockingbird.graphql.types.GraphQLTime
+import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 
 @GraphQLName("PatientInput")
 data class GraphQLPatientInput(
@@ -16,7 +17,7 @@ data class GraphQLPatientInput(
     val middleName: OptionalInput<String?> = OptionalInput.Undefined,
     val lastName: OptionalInput<String> = OptionalInput.Undefined,
     val phoneNumbers: OptionalInput<List<GraphQLPhoneNumber>> = OptionalInput.Undefined,
-    val dateOfBirth: OptionalInput<GraphQLTime> = OptionalInput.Undefined,
+    val dateOfBirth: OptionalInput<GraphQLTimeInput> = OptionalInput.Undefined,
     val address: OptionalInput<String> = OptionalInput.Undefined,
     val emails: OptionalInput<List<GraphQLEmail>> = OptionalInput.Undefined,
     val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,

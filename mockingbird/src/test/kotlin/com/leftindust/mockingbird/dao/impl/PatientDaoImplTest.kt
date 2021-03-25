@@ -13,6 +13,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLTime
+import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
@@ -59,7 +60,7 @@ internal class PatientDaoImplTest {
         val graphQLPatientInput = GraphQLPatientInput(
             firstName = OptionalInput.Defined("hello"),
             lastName = OptionalInput.Defined("world"),
-            dateOfBirth = OptionalInput.Defined(GraphQLTime(Timestamp.valueOf("2020-01-02 09:01:15"))),
+            dateOfBirth = OptionalInput.Defined(GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:01:15"))),
             sex = OptionalInput.Defined(Sex.Male)
         )
         val mockkPatient = mockk<Patient>()
