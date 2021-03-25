@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import biweekly.component.VEvent
+import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -11,10 +12,8 @@ internal class DoctorTest {
 
     @Test
     fun addPatient() {
-        val doctor = Doctor(
-            firstName = "marcus",
-            lastName = "dunn"
-        )
+        val doctor = EntityStore.doctor()
+
         val patient = spyk<Patient>().apply {
             doctors = emptySet()
         }
@@ -30,13 +29,11 @@ internal class DoctorTest {
         val mockkEvent1 = mockk<VEvent>("event1", relaxed = true)
         val mockkEvent2 = mockk<VEvent>("event2", relaxed = true)
 
-        val doctor = Doctor(
-            firstName = "marcus",
-            lastName = "dunn",
+        val doctor = EntityStore.doctor().apply {
             schedule = mockk {
                 every { getEventsBetween(any(), any()) } returns listOf(mockkEvent1, mockkEvent2)
             }
-        )
+        }
         val expected = listOf(Doctor.DocVEvent(doctor, mockkEvent1), Doctor.DocVEvent(doctor, mockkEvent2))
         val result = doctor.getEventsBetween(mockk(), mockk())
 

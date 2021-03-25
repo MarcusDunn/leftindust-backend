@@ -910,4 +910,10 @@
     <changeSet author="marcus (generated)" id="1616626621463-11">
         <dropColumn columnName="email" tableName="patient_emails"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616705344406-1">
+        <addNotNullConstraint columnDataType="timestamp" columnName="date_of_birth" tableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616705344406-2">
+        <addNotNullConstraint columnDataType="timestamp" columnName="date_of_birth" tableName="patient" validate="true"/>
+    </changeSet>
 </databaseChangeLog>

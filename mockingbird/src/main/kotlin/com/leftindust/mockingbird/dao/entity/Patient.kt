@@ -140,10 +140,12 @@ class Patient(
         lastName = patientInput.lastName
             .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
 
-        dateOfBirth = patientInput.dateOfBirth
-            .onUndefined(dateOfBirth?.let { GraphQLTimeInput(it) })
-            ?.toTimestamp()
+        dateOfBirth = (patientInput.dateOfBirth.onUndefined(GraphQLTimeInput(dateOfBirth))
+            ?: throw IllegalArgumentException("date of birth cannot be set to null"))
+            .toTimestamp()
+
         address = patientInput.address.onUndefined(address)
+
         emails = when (patientInput.emails) {
             OptionalInput.Undefined -> emails
             is OptionalInput.Defined -> patientInput.emails.value?.map { Email(it) }?.toSet() ?: emptySet()

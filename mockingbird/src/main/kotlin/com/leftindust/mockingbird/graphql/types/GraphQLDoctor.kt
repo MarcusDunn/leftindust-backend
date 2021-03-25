@@ -37,7 +37,7 @@ data class GraphQLDoctor(
             .map { GraphQLPhoneNumber(it.key ?: return@map null, it.value) }
             .filterNotNull(),
         title = doctor.title,
-        dateOfBirth = doctor.dateOfBirth?.let { GraphQLTime(it) },
+        dateOfBirth = GraphQLTime(doctor.dateOfBirth),
         address = doctor.address,
         emails = doctor.emails.toList().map { GraphQLEmail(it) },
         authContext = authContext

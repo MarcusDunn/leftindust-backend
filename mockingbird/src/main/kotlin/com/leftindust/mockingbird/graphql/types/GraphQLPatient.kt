@@ -38,7 +38,7 @@ data class GraphQLPatient(
         lastName = patient.lastName,
         phoneNumbers = listOf(patient.workPhone to GraphQLPhoneType.Work, patient.cellPhone to GraphQLPhoneType.Cell)
             .mapNotNull { (phone, type) -> phone?.let { GraphQLPhoneNumber(it, type) } },
-        dateOfBirth = patient.dateOfBirth?.let { GraphQLTime(it) },
+        dateOfBirth = GraphQLTime(patient.dateOfBirth),
         address = patient.address,
         emails = patient.emails.map { GraphQLEmail(it) },
         insuranceNumber = patient.insuranceNumber,

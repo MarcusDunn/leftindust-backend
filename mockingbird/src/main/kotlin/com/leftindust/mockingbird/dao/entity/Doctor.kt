@@ -10,7 +10,7 @@ class Doctor(
     firstName: String,
     lastName: String,
     middleName: String? = null,
-    dateOfBirth: Timestamp? = null,
+    dateOfBirth: Timestamp,
     address: String? = null,
     emails: Set<Email> = emptySet(),
     cellPhone: String? = null,
@@ -23,7 +23,7 @@ class Doctor(
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
     @Embedded
-    val schedule: Schedule = Schedule()
+    var schedule: Schedule = Schedule()
 ) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, cellPhone, workPhone, homePhone) {
 
     fun addPatient(patient: Patient): Doctor {

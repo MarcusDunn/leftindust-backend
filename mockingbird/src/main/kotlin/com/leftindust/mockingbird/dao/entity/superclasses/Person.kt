@@ -14,8 +14,8 @@ abstract class Person(
     var lastName: String,
     @Column(name = "middle_name", nullable = true)
     var middleName: String?,
-    @Column(name = "date_of_birth", nullable = true)
-    var dateOfBirth: Timestamp?,
+    @Column(name = "date_of_birth", nullable = false)
+    var dateOfBirth: Timestamp,
     @Column(name = "address", nullable = true)
     var address: String?,
     @OneToMany
