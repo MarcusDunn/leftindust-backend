@@ -106,9 +106,9 @@ liquibase {
         arguments = mapOf(
             "logLevel" to "info",
             "changeLogFile" to "src/main/resources/dbchangelog.xml",
-            "url" to (System.getenv()["SPRING_DATASOURCE_URL"] ?: "jdbc:postgresql://127.0.0.1:5432/mediq"),
-            "username" to (System.getenv()["SPRING_DATASOURCE_USERNAME"] ?: "mediq"),
-            "password" to (System.getenv()["SPRING_DATASOURCE_PASSWORD"] ?: "mediq"),
+            "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
+            "username" to "mediq",
+            "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",
             "referenceUrl" to "hibernate:spring:com.leftindust.mockingbird.dao.entity?" +
                     "dialect=org.hibernate.dialect.PostgreSQLDialect&" +
