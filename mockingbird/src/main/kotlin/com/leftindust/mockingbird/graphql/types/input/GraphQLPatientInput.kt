@@ -3,12 +3,10 @@ package com.leftindust.mockingbird.graphql.types.input
 import com.expediagroup.graphql.annotations.GraphQLName
 import com.expediagroup.graphql.execution.OptionalInput
 import com.expediagroup.graphql.scalars.ID
+import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.graphql.types.GraphQLEmail
-import com.leftindust.mockingbird.graphql.types.GraphQLPhoneNumber
-import com.leftindust.mockingbird.graphql.types.GraphQLTime
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.*
 
 @GraphQLName("PatientInput")
 data class GraphQLPatientInput(
@@ -24,6 +22,7 @@ data class GraphQLPatientInput(
     val sex: OptionalInput<Sex> = OptionalInput.Undefined,
     val gender: OptionalInput<String> = OptionalInput.Undefined,
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
+    val emergencyContact: OptionalInput<List<GraphQLEmergencyContact>> = OptionalInput.Undefined,
     val doctors: OptionalInput<List<ID>> = OptionalInput.Undefined,
 ) {
     init {

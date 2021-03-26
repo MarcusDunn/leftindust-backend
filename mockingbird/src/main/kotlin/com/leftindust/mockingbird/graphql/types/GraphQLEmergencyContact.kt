@@ -20,13 +20,6 @@ data class GraphQLEmergencyContact(
         lastName = emergencyContact.lastName,
         relationship = emergencyContact.relationship,
         authContext = authContext,
-        phoneNumbers = mapOf(
-            emergencyContact.cellNumber to GraphQLPhoneType.Cell,
-            emergencyContact.homeNumber to GraphQLPhoneType.Home,
-            emergencyContact.workNumber to GraphQLPhoneType.Work,
-        )
-            .map { GraphQLPhoneNumber(it.key ?: return@map null, it.value) }
-            .filterNotNull()
+        phoneNumbers = emergencyContact.phones.map { GraphQLPhoneNumber(it) }
     )
 }
-

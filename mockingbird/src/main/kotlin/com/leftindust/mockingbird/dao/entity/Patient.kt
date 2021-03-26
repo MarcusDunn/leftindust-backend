@@ -67,7 +67,7 @@ class Patient(
             .getOrDefault(graphQLPatientInput.sex.getOrNull()!!.toString()),
         doctors = emptySet<DoctorPatient>(), // set after constructor is called
         ethnicity = graphQLPatientInput.ethnicity
-            .getOrNull()
+            .getOrNull(),
     ) {
         phones = graphQLPatientInput.phoneNumbers.getOrNull()?.map { Phone(it) }?.toSet() ?: emptySet()
 
@@ -80,11 +80,18 @@ class Patient(
                 )
             }
 
+        contacts = graphQLPatientInput.emergencyContact
+            .getOrDefault(emptySet())
+            .map { EmergencyContact(it, this) }
+            .toSet()
+
+
         // check that they are not trying to assign primary key on creation
         if (graphQLPatientInput.pid !is OptionalInput.Undefined) {
             throw IllegalArgumentException("cannot assign a pid to a newly created patient, let the server handle that!")
         }
     }
+
 
     fun addDoctor(doctor: Doctor): Patient {
         doctor.addPatient(this)

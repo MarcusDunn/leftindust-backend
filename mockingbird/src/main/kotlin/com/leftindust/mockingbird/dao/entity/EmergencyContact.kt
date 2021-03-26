@@ -2,12 +2,11 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.graphql.types.GraphQLEmergencyContact
 import javax.persistence.*
 
 @Entity(name = "emergency_contact")
 class EmergencyContact(
-    @Column(name = "contact_id", nullable = false, unique = true)
-    val cid: Long,
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     var patient: Patient,
@@ -19,10 +18,17 @@ class EmergencyContact(
     var middleName: String? = null,
     @Column(name = "last_name", nullable = false)
     var lastName: String,
-    @Column(name = "cell_number", nullable = true)
-    var cellNumber: Long? = null,
-    @Column(name = "home_number", nullable = true)
-    var homeNumber: Long? = null,
-    @Column(name = "work_number", nullable = true)
-    var workNumber: Long? = null,
-) : AbstractJpaPersistable<Long>()
+    @Column(name = "phone_numbers")
+    @OneToMany
+    var phones: Set<Phone> = emptySet()
+) : AbstractJpaPersistable<Long>() {
+    constructor(graphQLEmergencyContact: GraphQLEmergencyContact, patient: Patient) : this(
+        patient,
+        graphQLEmergencyContact.relationship,
+        graphQLEmergencyContact.firstName,
+        graphQLEmergencyContact.middleName,
+        graphQLEmergencyContact.lastName,
+        graphQLEmergencyContact.phoneNumbers.map { Phone(it) }.toSet(),
+    )
+}
+
