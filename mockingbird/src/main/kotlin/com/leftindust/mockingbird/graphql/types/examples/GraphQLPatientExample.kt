@@ -21,11 +21,11 @@ data class GraphQLPatientExample(
 
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Patient>): List<Predicate> {
         if (emails != null) TODO()
+        if (address != null) TODO()
         return listOfNotNull(
             personalInformation?.toPredicate(criteriaBuilder, itemRoot),
             pid?.toPredicate(criteriaBuilder, itemRoot, Patient_.ID),
             dateOfBirth?.toPredicate(criteriaBuilder, itemRoot, Patient_.DATE_OF_BIRTH),
-            address?.toPredicate(criteriaBuilder, itemRoot, Patient_.ADDRESS),
             insuranceNumber?.toPredicate(criteriaBuilder, itemRoot, Patient_.INSURANCE_NUMBER),
         ).flatten()
     }

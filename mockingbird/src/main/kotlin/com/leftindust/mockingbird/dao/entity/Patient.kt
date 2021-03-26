@@ -18,7 +18,7 @@ class Patient(
     middleName: String? = null,
     lastName: String,
     dateOfBirth: Timestamp,
-    address: String? = null,
+    addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
     @Column(name = "sex", nullable = false)
@@ -39,7 +39,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, phones) {
+) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones) {
 
     @Throws(IllegalArgumentException::class)
     constructor(
@@ -55,8 +55,8 @@ class Patient(
         dateOfBirth = graphQLPatientInput.dateOfBirth
             .getOrThrow(IllegalArgumentException("date of birth must be defined"))
             .toTimestamp(),
-        address = graphQLPatientInput.address
-            .getOrNull(),
+        addresses = graphQLPatientInput.address
+            .getOrDefault(emptyList()).map { Address(it) }.toSet(),
         emails = graphQLPatientInput.emails
             .getOrNull()?.map { Email(it) }?.toSet() ?: emptySet(),
         insuranceNumber = graphQLPatientInput.insuranceNumber
@@ -139,28 +139,30 @@ class Patient(
             ?: throw IllegalArgumentException("date of birth cannot be set to null"))
             .toTimestamp()
 
-        address = patientInput.address.onUndefined(address)
+        addresses = when (patientInput.address) {
+            OptionalInput.Undefined -> addresses
+            is OptionalInput.Defined -> patientInput.address.value
+                ?.map { Address(it) }
+                ?.toSet()
+                ?: emptySet()
+        }
 
         emails = when (patientInput.emails) {
             OptionalInput.Undefined -> emails
-            is OptionalInput.Defined -> patientInput.emails.value?.map { Email(it) }?.toSet() ?: emptySet()
+            is OptionalInput.Defined -> patientInput.emails.value
+                ?.map { Email(it) }
+                ?.toSet()
+                ?: emptySet()
         }
 
-        phones = when (val gqlNumbers = patientInput.phoneNumbers) {
-            is OptionalInput.Defined -> {
-                when (val value = gqlNumbers.value) {
-                    null -> {
-                        emptySet()
-                    }
-                    else -> {
-                        value.map { Phone(it) }.toSet()
-                    }
-                }
-            }
-            is OptionalInput.Undefined -> {
-                phones
-            }
+        phones = when (patientInput.phoneNumbers) {
+            OptionalInput.Undefined -> phones
+            is OptionalInput.Defined -> patientInput.phoneNumbers.value
+                ?.map { Phone(it) }
+                ?.toSet()
+                ?: emptySet()
         }
+
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex.onUndefined(sex)
             ?: throw IllegalArgumentException("sex cannot be set to null")

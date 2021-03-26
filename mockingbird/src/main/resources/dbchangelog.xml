@@ -1028,4 +1028,62 @@
     <changeSet author="marcus (generated)" id="1616776011426-9">
         <dropColumn columnName="work_number" tableName="emergency_contact"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-1">
+        <createTable tableName="address">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="addressPK"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-2">
+        <createTable tableName="doctor_addresses">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="addresses_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-3">
+        <createTable tableName="patient_addresses">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="addresses_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-4">
+        <addUniqueConstraint columnNames="addresses_id" constraintName="UK_9ndsh82vhmjlqakp0x7bnpbgm" tableName="doctor_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-5">
+        <addUniqueConstraint columnNames="addresses_id" constraintName="UK_t17nugb8ef0anw2nfvh1o5t8o" tableName="patient_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-6">
+        <addForeignKeyConstraint baseColumnNames="addresses_id" baseTableName="doctor_addresses" constraintName="FK7qwjv92nrhxmuk3e8xotjmy22" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-7">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_addresses" constraintName="FK8g6cnyfr6xp6shupww7xy5nqt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-8">
+        <addForeignKeyConstraint baseColumnNames="addresses_id" baseTableName="patient_addresses" constraintName="FKjv6bes562cestniy5vlrgafj5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-9">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_addresses" constraintName="FKjwtcw03e0n2uo8jnes9ve3rco" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-10">
+        <dropColumn columnName="address" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616777434680-11">
+        <dropColumn columnName="address" tableName="patient"/>
+    </changeSet>
 </databaseChangeLog>

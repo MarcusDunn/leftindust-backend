@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.entity.superclasses
 
+import com.leftindust.mockingbird.dao.entity.Address
 import com.leftindust.mockingbird.dao.entity.Email
 import com.leftindust.mockingbird.dao.entity.Phone
 import java.sql.Timestamp
@@ -17,14 +18,14 @@ abstract class Person(
     var middleName: String?,
     @Column(name = "date_of_birth", nullable = false)
     var dateOfBirth: Timestamp,
-    @Column(name = "address", nullable = true)
-    var address: String?,
+    @OneToMany
+    var addresses: Set<Address> = emptySet(),
     @OneToMany
     var emails: Set<Email> = emptySet(),
     @OneToMany
     var phones: Set<Phone> = emptySet(),
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {
-        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, emails=$emails, phones=$phones)"
+        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, addresses=$addresses, emails=$emails, phones=$phones)"
     }
 }

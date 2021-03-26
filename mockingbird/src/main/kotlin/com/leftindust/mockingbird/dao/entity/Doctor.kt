@@ -11,7 +11,7 @@ class Doctor(
     lastName: String,
     middleName: String? = null,
     dateOfBirth: Timestamp,
-    address: String? = null,
+    addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
     @Column(name = "title", nullable = true)
@@ -20,7 +20,7 @@ class Doctor(
     var patients: Set<DoctorPatient> = emptySet(),
     @Embedded
     var schedule: Schedule = Schedule()
-) : Person(firstName, lastName, middleName, dateOfBirth, address, emails, phones) {
+) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones) {
 
     fun addPatient(patient: Patient): Doctor {
         val doctorPatient = DoctorPatient(doctor = this, patient = patient)

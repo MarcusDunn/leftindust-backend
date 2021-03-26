@@ -22,7 +22,7 @@ data class GraphQLDoctor(
     override val phoneNumbers: List<GraphQLPhoneNumber>,
     val title: String? = null,
     val dateOfBirth: GraphQLTime? = null,
-    val address: String? = null,
+    val addresses: List<GraphQLAddress> = emptyList(),
     val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
@@ -36,7 +36,7 @@ data class GraphQLDoctor(
         phoneNumbers = doctor.phones.map { GraphQLPhoneNumber(it) },
         title = doctor.title,
         dateOfBirth = GraphQLTime(doctor.dateOfBirth),
-        address = doctor.address,
+        addresses = doctor.addresses.map { GraphQLAddress(it) },
         emails = doctor.emails.map { GraphQLEmail(it) },
         authContext = authContext
     ) {
