@@ -47,7 +47,7 @@ internal class PatientTest {
                 )
             ),
             dateOfBirth = OptionalInput.Defined(GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:01:15"))),
-            address = OptionalInput.Defined(listOf(GraphQLAddress(
+            addresses = OptionalInput.Defined(listOf(GraphQLAddress(
                 addressType = GraphQLAddressType.Home,
                         address = "874 West 1st street",
                         postalCode = "y7h1p4",))),

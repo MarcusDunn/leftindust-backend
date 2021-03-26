@@ -16,7 +16,7 @@ data class GraphQLPatientInput(
     val lastName: OptionalInput<String> = OptionalInput.Undefined,
     val phoneNumbers: OptionalInput<List<GraphQLPhoneNumber>> = OptionalInput.Undefined,
     val dateOfBirth: OptionalInput<GraphQLTimeInput> = OptionalInput.Undefined,
-    val address: OptionalInput<List<GraphQLAddress>> = OptionalInput.Undefined,
+    val addresses: OptionalInput<List<GraphQLAddress>> = OptionalInput.Undefined,
     val emails: OptionalInput<List<GraphQLEmail>> = OptionalInput.Undefined,
     val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,
     val sex: OptionalInput<Sex> = OptionalInput.Undefined,

@@ -55,7 +55,7 @@ class Patient(
         dateOfBirth = graphQLPatientInput.dateOfBirth
             .getOrThrow(IllegalArgumentException("date of birth must be defined"))
             .toTimestamp(),
-        addresses = graphQLPatientInput.address
+        addresses = graphQLPatientInput.addresses
             .getOrDefault(emptyList()).map { Address(it) }.toSet(),
         emails = graphQLPatientInput.emails
             .getOrNull()?.map { Email(it) }?.toSet() ?: emptySet(),
@@ -139,9 +139,9 @@ class Patient(
             ?: throw IllegalArgumentException("date of birth cannot be set to null"))
             .toTimestamp()
 
-        addresses = when (patientInput.address) {
+        addresses = when (patientInput.addresses) {
             OptionalInput.Undefined -> addresses
-            is OptionalInput.Defined -> patientInput.address.value
+            is OptionalInput.Defined -> patientInput.addresses.value
                 ?.map { Address(it) }
                 ?.toSet()
                 ?: emptySet()
