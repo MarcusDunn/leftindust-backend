@@ -12,6 +12,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("Patient")
@@ -19,7 +20,7 @@ data class GraphQLPatient(
     override val firstName: String,
     override val middleName: String? = null,
     override val lastName: String,
-    override val phoneNumbers: List<GraphQLPhoneNumber> = emptyList(),
+    override val phones: List<GraphQLPhone> = emptyList(),
     val pid: ID,
     val dateOfBirth: GraphQLTime? = null,
     val addresses: List<GraphQLAddress> = emptyList(),
@@ -32,11 +33,11 @@ data class GraphQLPatient(
     private val authToken = authContext.mediqAuthToken
 
     constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
-        pid = gqlID(id),
+        pid = gqlID(id).also { LogManager.getLogger().trace(patient) },
         firstName = patient.firstName,
         middleName = patient.middleName,
         lastName = patient.lastName,
-        phoneNumbers = patient.phones.map { GraphQLPhoneNumber(it) },
+        phones = patient.phones.map { GraphQLPhone(it) },
         dateOfBirth = GraphQLTime(patient.dateOfBirth),
         addresses = patient.addresses.map { GraphQLAddress(it) },
         emails = patient.emails.map { GraphQLEmail(it) },

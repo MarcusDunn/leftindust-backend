@@ -28,7 +28,7 @@ class EmergencyContact(
         graphQLEmergencyContact.firstName,
         graphQLEmergencyContact.middleName,
         graphQLEmergencyContact.lastName,
-        graphQLEmergencyContact.phoneNumbers.map { Phone(it) }.toSet(),
+        graphQLEmergencyContact.phones.map { Phone(it) }.toSet(),
     )
 }
 

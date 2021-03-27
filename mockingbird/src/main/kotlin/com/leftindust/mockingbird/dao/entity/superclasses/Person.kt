@@ -4,9 +4,7 @@ import com.leftindust.mockingbird.dao.entity.Address
 import com.leftindust.mockingbird.dao.entity.Email
 import com.leftindust.mockingbird.dao.entity.Phone
 import java.sql.Timestamp
-import javax.persistence.Column
-import javax.persistence.MappedSuperclass
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @MappedSuperclass
 abstract class Person(
@@ -18,11 +16,11 @@ abstract class Person(
     var middleName: String?,
     @Column(name = "date_of_birth", nullable = false)
     var dateOfBirth: Timestamp,
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     var addresses: Set<Address> = emptySet(),
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     var emails: Set<Email> = emptySet(),
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     var phones: Set<Phone> = emptySet(),
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {

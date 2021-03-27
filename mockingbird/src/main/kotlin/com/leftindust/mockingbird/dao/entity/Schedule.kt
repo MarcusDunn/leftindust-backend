@@ -31,7 +31,6 @@ class Schedule(
                     .getDateIterator(latest(from.toDate(), event.startTime.toDate()), utc)
                     .iterator()
                     .asSequence()
-                    .onEach { println("yeet" + beforeOrEquals(it, to.toDate())) }
                     .takeWhile { beforeOrEquals(it, to.toDate()) }
                     .map { mediqEventAtDate(event, it) }
             }

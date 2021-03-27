@@ -69,7 +69,11 @@ class Patient(
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull(),
     ) {
-        phones = graphQLPatientInput.phoneNumbers.getOrNull()?.map { Phone(it) }?.toSet() ?: emptySet()
+        phones = graphQLPatientInput.phoneNumbers
+            .getOrNull()
+            ?.map { Phone(it) }
+            ?.toSet()
+            ?: emptySet()
 
         graphQLPatientInput.doctors
             .getOrDefault(emptySet())

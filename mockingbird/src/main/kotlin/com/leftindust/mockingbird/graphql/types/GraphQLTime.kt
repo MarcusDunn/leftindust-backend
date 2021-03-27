@@ -9,7 +9,6 @@ import java.time.*
 
 @GraphQLName("UtcTime")
 data class GraphQLTime(
-    val unixSeconds: Long,
     val unixMilliseconds: Long,
 ) {
 
@@ -39,7 +38,6 @@ data class GraphQLTime(
     fun toTimestamp() = Timestamp(unixMilliseconds)
 
     constructor(instant: Instant) : this(
-        unixSeconds = instant.epochSecond,
         unixMilliseconds = instant.toEpochMilli()
     )
 

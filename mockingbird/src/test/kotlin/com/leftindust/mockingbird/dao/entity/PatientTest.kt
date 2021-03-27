@@ -1,12 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.expediagroup.graphql.execution.OptionalInput
-import com.expediagroup.graphql.scalars.ID
-import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
-import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.*
-import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +8,6 @@ import io.mockk.spyk
 import org.hibernate.Session
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.sql.Timestamp
 
 internal class PatientTest {
 
@@ -34,37 +27,13 @@ internal class PatientTest {
 
     @Test
     internal fun `create by GraphQLPatientInput`() {
-        val graphQLPatientInput = GraphQLPatientInput(
-            firstName = OptionalInput.Defined("marcus"),
-            middleName = OptionalInput.Defined("elliot"),
-            lastName = OptionalInput.Defined("dunn"),
-            phoneNumbers = OptionalInput.Defined(
-                listOf(
-                    GraphQLPhoneNumber(
-                        number = 7789913091,
-                        type = GraphQLPhoneType.Home
-                    )
-                )
-            ),
-            dateOfBirth = OptionalInput.Defined(GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:01:15"))),
-            addresses = OptionalInput.Defined(listOf(GraphQLAddress(
-                addressType = GraphQLAddressType.Home,
-                        address = "874 West 1st street",
-                        postalCode = "y7h1p4",))),
-            emails = OptionalInput.Defined(
-                listOf(
-                    GraphQLEmail(
-                        type = GraphQLEmailType.Personal,
-                        email = "hello@world.ca"
-                    )
-                )
-            ),
-            insuranceNumber = OptionalInput.Defined(ID("129112")),
-            sex = OptionalInput.Defined(Sex.Male),
-            gender = OptionalInput.Defined(Sex.Male.toString()),
-            ethnicity = OptionalInput.Defined(Ethnicity.White),
-            doctors = OptionalInput.Defined(listOf(gqlID(23), gqlID(55))),
-        )
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk {
+                every { uid } returns "admin"
+            }
+        }
+
+        val graphQLPatientInput = EntityStore.graphQLPatientInput(authContext)
         val mockkSession = mockk<Session>() {
             every { get(Doctor::class.java, 23L) } returns mockk() {
                 every { addPatient(any()) } returns mockk()
@@ -73,7 +42,7 @@ internal class PatientTest {
                 every { addPatient(any()) } returns mockk()
             }
         }
-        val result = Patient(graphQLPatientInput, mockkSession)
-        println(result)
+
+        Patient(graphQLPatientInput, mockkSession)
     }
 }

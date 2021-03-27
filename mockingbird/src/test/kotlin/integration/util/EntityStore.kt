@@ -1,11 +1,14 @@
 package integration.util
 
+import com.expediagroup.graphql.execution.OptionalInput
+import com.expediagroup.graphql.scalars.ID
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
+import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.graphql.types.GraphQLAddressType
-import com.leftindust.mockingbird.graphql.types.GraphQLEmailType
-import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
+import com.leftindust.mockingbird.graphql.types.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import java.sql.Timestamp
 
 object EntityStore {
@@ -48,5 +51,70 @@ object EntityStore {
         title = "sir",
         patients = emptySet(),
         schedule = Schedule(),
+    )
+
+    fun graphQLPatientInput(authContext: GraphQLAuthContext) = GraphQLPatientInput(
+        firstName = OptionalInput.Defined("aydan"),
+        middleName = OptionalInput.Defined("javascript"),
+        lastName = OptionalInput.Defined("gaite"),
+        phoneNumbers = OptionalInput.Defined(
+            listOf(
+                GraphQLPhone(
+                    number = 11111111,
+                    type = GraphQLPhoneType.Work,
+                )
+            )
+
+        ),
+        dateOfBirth = OptionalInput.Defined(
+            GraphQLTimeInput(
+                date = GraphQLDate(
+                    day = 12,
+                    month = GraphQLMonth.Apr,
+                    year = 1948
+                )
+            )
+        ),
+        addresses = OptionalInput.Defined(
+            listOf(
+                GraphQLAddress(
+                    addressType = GraphQLAddressType.Home,
+                    address = "6732 main st",
+                    postalCode = "h221234"
+                )
+            )
+        ),
+        emails = OptionalInput.Defined(
+            listOf(
+                GraphQLEmail(
+                    type = GraphQLEmailType.School,
+                    email = "hello@mars.ca",
+                )
+            )
+        ),
+        insuranceNumber = OptionalInput.Defined(ID("111111111")),
+        sex = OptionalInput.Defined(Sex.Male),
+        ethnicity = OptionalInput.Defined(Ethnicity.AmericanAboriginal),
+        emergencyContact = OptionalInput.Defined(
+            listOf(
+                GraphQLEmergencyContact(
+                    firstName = "mom firstName",
+                    middleName = "mom middleName",
+                    lastName = "mom lastName",
+                    relationship = Relationship.Parent,
+                    phones = listOf(
+                        GraphQLPhone(
+                            number = 111111111,
+                            type = GraphQLPhoneType.Work,
+                        ),
+                        GraphQLPhone(
+                            number = 223223222,
+                            type = GraphQLPhoneType.Home,
+                        ),
+                    ),
+                    authContext = authContext
+                )
+            )
+        ),
     )
 }

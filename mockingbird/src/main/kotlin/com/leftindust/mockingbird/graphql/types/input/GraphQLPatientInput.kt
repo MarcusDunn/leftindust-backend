@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.graphql.types.input
 import com.expediagroup.graphql.annotations.GraphQLName
 import com.expediagroup.graphql.execution.OptionalInput
 import com.expediagroup.graphql.scalars.ID
-import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.graphql.types.*
@@ -14,7 +13,7 @@ data class GraphQLPatientInput(
     val firstName: OptionalInput<String> = OptionalInput.Undefined,
     val middleName: OptionalInput<String?> = OptionalInput.Undefined,
     val lastName: OptionalInput<String> = OptionalInput.Undefined,
-    val phoneNumbers: OptionalInput<List<GraphQLPhoneNumber>> = OptionalInput.Undefined,
+    val phoneNumbers: OptionalInput<List<GraphQLPhone>> = OptionalInput.Undefined,
     val dateOfBirth: OptionalInput<GraphQLTimeInput> = OptionalInput.Undefined,
     val addresses: OptionalInput<List<GraphQLAddress>> = OptionalInput.Undefined,
     val emails: OptionalInput<List<GraphQLEmail>> = OptionalInput.Undefined,

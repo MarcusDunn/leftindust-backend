@@ -7,5 +7,5 @@ interface GraphQLPerson {
     val firstName: String
     val middleName: String?
     val lastName: String
-    val phoneNumbers: List<GraphQLPhoneNumber>
+    val phones: List<GraphQLPhone>
 }

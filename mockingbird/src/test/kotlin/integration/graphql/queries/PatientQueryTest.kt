@@ -2,8 +2,6 @@ package integration.graphql.queries
 
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
@@ -76,6 +74,24 @@ class PatientQueryTest {
                         )
                     ), authContext = mockkAuthContext
                 )
+
+            // assert
+            val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
+            assertEquals(listOf(expected), patients)
+        }
+    }
+
+    @Test
+    internal fun getPatientPhones() {
+        runBlocking {
+            // Setup
+            val patientEntity = run {
+                val patientExample = EntityStore.patient()
+                hibernatePatientRepository.save(patientExample)
+            }
+
+            // action
+            val patients = patientQuery.patients(pids = listOf(gqlID(patientEntity.id!!)), authContext = mockkAuthContext)
 
             // assert
             val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
