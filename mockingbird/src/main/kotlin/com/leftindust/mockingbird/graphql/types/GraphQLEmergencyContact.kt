@@ -20,6 +20,6 @@ data class GraphQLEmergencyContact(
         lastName = emergencyContact.lastName,
         relationship = emergencyContact.relationship,
         authContext = authContext,
-        phones = emergencyContact.phones.map { GraphQLPhone(it) }
+        phones = emergencyContact.phone.map { GraphQLPhone(it) }
     )
 }

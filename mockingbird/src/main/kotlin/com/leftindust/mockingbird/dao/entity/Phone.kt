@@ -8,7 +8,7 @@ import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
-@Entity
+@Entity(name = "phone")
 class Phone(
     @Column(name = "number", nullable = false)
     var number: Long,

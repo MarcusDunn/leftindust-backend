@@ -16,14 +16,14 @@ abstract class Person(
     var middleName: String?,
     @Column(name = "date_of_birth", nullable = false)
     var dateOfBirth: Timestamp,
-    @OneToMany(fetch = FetchType.EAGER)
-    var addresses: Set<Address> = emptySet(),
-    @OneToMany(fetch = FetchType.EAGER)
-    var emails: Set<Email> = emptySet(),
-    @OneToMany(fetch = FetchType.EAGER)
-    var phones: Set<Phone> = emptySet(),
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var address: Set<Address> = emptySet(),
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var email: Set<Email> = emptySet(),
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var phone: Set<Phone> = emptySet(),
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {
-        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, addresses=$addresses, emails=$emails, phones=$phones)"
+        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, addresses=$address, emails=$email, phones=$phone)"
     }
 }

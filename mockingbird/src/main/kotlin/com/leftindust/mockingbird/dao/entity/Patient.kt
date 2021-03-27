@@ -69,7 +69,7 @@ class Patient(
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull(),
     ) {
-        phones = graphQLPatientInput.phoneNumbers
+        phone = graphQLPatientInput.phoneNumbers
             .getOrNull()
             ?.map { Phone(it) }
             ?.toSet()
@@ -143,24 +143,24 @@ class Patient(
             ?: throw IllegalArgumentException("date of birth cannot be set to null"))
             .toTimestamp()
 
-        addresses = when (patientInput.addresses) {
-            OptionalInput.Undefined -> addresses
+        address = when (patientInput.addresses) {
+            OptionalInput.Undefined -> address
             is OptionalInput.Defined -> patientInput.addresses.value
                 ?.map { Address(it) }
                 ?.toSet()
                 ?: emptySet()
         }
 
-        emails = when (patientInput.emails) {
-            OptionalInput.Undefined -> emails
+        email = when (patientInput.emails) {
+            OptionalInput.Undefined -> email
             is OptionalInput.Defined -> patientInput.emails.value
                 ?.map { Email(it) }
                 ?.toSet()
                 ?: emptySet()
         }
 
-        phones = when (patientInput.phoneNumbers) {
-            OptionalInput.Undefined -> phones
+        phone = when (patientInput.phoneNumbers) {
+            OptionalInput.Undefined -> phone
             is OptionalInput.Defined -> patientInput.phoneNumbers.value
                 ?.map { Phone(it) }
                 ?.toSet()
