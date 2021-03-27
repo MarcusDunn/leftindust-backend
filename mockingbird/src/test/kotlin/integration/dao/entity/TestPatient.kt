@@ -1,7 +1,7 @@
 package integration.dao.entity
 
-import com.expediagroup.graphql.execution.OptionalInput
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.execution.OptionalInput
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Sex

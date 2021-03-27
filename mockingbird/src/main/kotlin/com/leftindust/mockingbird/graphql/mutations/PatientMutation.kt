@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.graphql.mutations
 
-import com.expediagroup.graphql.annotations.GraphQLDescription
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao

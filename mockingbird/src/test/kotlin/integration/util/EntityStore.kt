@@ -1,7 +1,7 @@
 package integration.util
 
-import com.expediagroup.graphql.execution.OptionalInput
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.execution.OptionalInput
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity

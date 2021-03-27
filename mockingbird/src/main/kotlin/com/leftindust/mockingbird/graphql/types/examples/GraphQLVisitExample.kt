@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.examples
 
-import com.expediagroup.graphql.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.entity.Visit_
 import javax.persistence.criteria.CriteriaBuilder

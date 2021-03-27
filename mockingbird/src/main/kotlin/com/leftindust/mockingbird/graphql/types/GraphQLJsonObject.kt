@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types
 
-import com.expediagroup.graphql.annotations.GraphQLName
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.google.gson.JsonObject
 
 @GraphQLName("JsonObject")

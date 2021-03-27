@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
-import com.expediagroup.graphql.annotations.GraphQLName
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 
 @GraphQLName("Icd10Entity")
 data class GraphQLIcd10Entity(

@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
-import com.expediagroup.graphql.annotations.GraphQLName
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 
 @GraphQLName("IcdLinearizationEntity")
 data class GraphQLIcdLinearizationEntity(

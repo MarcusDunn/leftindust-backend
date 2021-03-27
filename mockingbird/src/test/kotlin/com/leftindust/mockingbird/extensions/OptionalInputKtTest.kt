@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.extensions
 
-import com.expediagroup.graphql.execution.OptionalInput
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

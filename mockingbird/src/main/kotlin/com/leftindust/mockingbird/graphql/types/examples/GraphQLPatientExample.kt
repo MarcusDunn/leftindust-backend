@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.examples
 
-import com.expediagroup.graphql.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.leftindust.mockingbird.dao.entity.Email_
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.Patient_

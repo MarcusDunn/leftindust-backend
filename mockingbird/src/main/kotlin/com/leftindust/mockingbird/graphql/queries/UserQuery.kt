@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.graphql.queries
 
-import com.expediagroup.graphql.annotations.GraphQLDescription
-import com.expediagroup.graphql.exceptions.GraphQLKotlinException
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
+import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext

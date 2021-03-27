@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.extensions
 
-import com.expediagroup.graphql.execution.OptionalInput
+import com.expediagroup.graphql.generator.execution.OptionalInput
 
 /**
  * convenience function to turn graphql kotlin optional input types to a default value

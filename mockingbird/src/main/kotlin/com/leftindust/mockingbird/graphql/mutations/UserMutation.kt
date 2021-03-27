@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.mutations
 
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Mutation
 import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext

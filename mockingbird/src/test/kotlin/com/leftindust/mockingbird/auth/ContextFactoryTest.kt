@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.auth
 import com.leftindust.mockingbird.auth.impl.VerifiedFirebaseToken
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -19,8 +18,7 @@ internal class ContextFactoryTest {
                 request = mockk {
                     every { method } returns HttpMethod.POST
                     every { headers["mediq-auth-token"] } returns listOf("123456")
-                },
-                response = mockk()
+                }
             )
         }
         assertEquals(actual, GraphQLAuthContext(VerifiedFirebaseToken("123456")))

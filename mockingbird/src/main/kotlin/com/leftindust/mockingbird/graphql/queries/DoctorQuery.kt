@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.queries
 
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao

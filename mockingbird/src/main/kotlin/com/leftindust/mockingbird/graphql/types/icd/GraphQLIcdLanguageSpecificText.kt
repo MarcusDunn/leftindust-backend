@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
-import com.expediagroup.graphql.annotations.GraphQLName
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.external.icd.impl.IcdLanguageSpecificText
 
 @GraphQLName("IcdLanguageSpecificText")

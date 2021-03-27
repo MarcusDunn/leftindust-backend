@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.graphql.types.input
 
-import com.expediagroup.graphql.annotations.GraphQLName
-import com.expediagroup.graphql.execution.OptionalInput
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.expediagroup.graphql.generator.execution.OptionalInput
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.graphql.types.*

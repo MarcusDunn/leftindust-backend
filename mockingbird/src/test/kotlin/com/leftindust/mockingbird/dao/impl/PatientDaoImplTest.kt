@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.execution.OptionalInput
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.execution.OptionalInput
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
@@ -12,7 +12,6 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.GraphQLTime
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
@@ -112,7 +111,7 @@ internal class PatientDaoImplTest {
                 every { from(Patient::class.java) } returns mockk(relaxed = true)
             }
         }
-        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns   mockk() {
+        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns mockk() {
             every { resultList } returns listOf(mockkPatient)
         }
 

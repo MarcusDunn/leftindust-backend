@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.extensions
 
-import com.expediagroup.graphql.exceptions.GraphQLKotlinException
+import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import org.apache.logging.log4j.LogManager
 
 /**

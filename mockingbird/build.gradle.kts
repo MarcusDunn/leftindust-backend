@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    val graphQLKotlinVersion = "4.0.0-alpha.10"
+    val graphQLKotlinVersion = "4.0.0-alpha.17"
     val ktorVersion = "1.5.0"
     val biweeklyVersion = "0.6.6"
     val firebaseVersion = "7.0.1"
@@ -52,13 +52,6 @@ dependencies {
 
     // biweekly
     implementation("net.sf.biweekly", "biweekly", biweeklyVersion)
-
-    // graphql kotlin client currently has an issue with 2.12, forcing this fixes it for now
-    implementation("com.fasterxml.jackson.core:jackson-databind") {
-        version {
-            strictly("2.11.1")
-        }
-    }
 
     // hibernate model code generation
     implementation("org.hibernate:hibernate-jpamodelgen:5.4.12.Final")

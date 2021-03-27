@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-/**
- * This class is intentionally not marked as @Transactional in order to target a bug that only existed when there was
- * no session open. As a result all tests MUST clean up after themselves.
- */
+/*
+  This class is intentionally *not* marked as @Transactional in order to target a bug that only existed when there was
+  no session open. As a result all tests MUST clean up after themselves.
+*/
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @Tag("Integration")
@@ -35,7 +35,8 @@ class PatientMutationTest(
         }
         val patientInput = EntityStore.graphQLPatientInput(authContext)
         val result = runBlocking { patientMutation.addPatient(patientInput, authContext) }
-        assertEquals(1, patientRepository.findAll().size)
+        assertEquals(true, patientRepository.findById(result.pid.toLong()).isPresent)
         patientRepository.delete(patientRepository.getOne(result.pid.toLong()))
+        assertEquals(false, patientRepository.findById(result.pid.toLong()).isPresent)
     }
 }

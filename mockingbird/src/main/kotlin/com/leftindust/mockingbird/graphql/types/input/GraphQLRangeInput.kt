@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.graphql.types.input
 
-import com.expediagroup.graphql.annotations.GraphQLIgnore
-import com.expediagroup.graphql.annotations.GraphQLName
-import com.expediagroup.graphql.exceptions.GraphQLKotlinException
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 
 @GraphQLName("RangeInput")
 data class GraphQLRangeInput(

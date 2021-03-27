@@ -1,9 +1,9 @@
 package com.leftindust.mockingbird.graphql.types
 
 import biweekly.util.ICalDate
-import com.expediagroup.graphql.annotations.GraphQLDescription
-import com.expediagroup.graphql.annotations.GraphQLIgnore
-import com.expediagroup.graphql.annotations.GraphQLName
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import java.sql.Timestamp
 import java.time.*
 

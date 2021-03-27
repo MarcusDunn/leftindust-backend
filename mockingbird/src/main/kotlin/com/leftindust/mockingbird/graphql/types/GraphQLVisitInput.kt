@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.graphql.types
 
-import com.expediagroup.graphql.annotations.GraphQLDescription
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 
 data class GraphQLVisitInput(

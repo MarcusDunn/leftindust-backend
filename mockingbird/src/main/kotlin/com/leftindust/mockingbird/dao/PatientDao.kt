@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.dao
 
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.extensions.CustomResult
@@ -16,6 +16,7 @@ interface PatientDao {
         patient: GraphQLPatientInput,
         requester: MediqToken
     ): CustomResult<Patient, OrmFailureReason>
+
     suspend fun removeByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
     suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
     suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
@@ -24,16 +25,22 @@ interface PatientDao {
         doctorInput: ID,
         requester: MediqToken
     ): CustomResult<Patient, OrmFailureReason>
+
     suspend fun searchByExample(
         example: GraphQLPatientExample,
         requester: MediqToken,
         strict: Boolean = true,
     ): CustomResult<List<Patient>, OrmFailureReason>
+
     suspend fun getMany(
         from: Int,
         to: Int,
         sortedBy: Patient.SortableField = Patient.SortableField.PID,
         requester: MediqToken
     ): CustomResult<List<Patient>, OrmFailureReason>
-    suspend fun update(patientInput: GraphQLPatientInput, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
+
+    suspend fun update(
+        patientInput: GraphQLPatientInput,
+        requester: MediqToken
+    ): CustomResult<Patient, OrmFailureReason>
 }

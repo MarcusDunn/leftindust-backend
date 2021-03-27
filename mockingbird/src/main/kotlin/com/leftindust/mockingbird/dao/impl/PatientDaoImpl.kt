@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken

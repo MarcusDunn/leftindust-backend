@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.examples
 
-import com.expediagroup.graphql.scalars.ID
+import com.expediagroup.graphql.generator.scalars.ID
 
 data class GraphQLDoctorExample(
     val did: ID? = null,
