@@ -18,9 +18,8 @@ class EmergencyContact(
     var middleName: String? = null,
     @Column(name = "last_name", nullable = false)
     var lastName: String,
-    @Column(name = "phone_numbers")
-    @OneToMany
-    var phones: Set<Phone> = emptySet()
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var phone: Set<Phone> = emptySet()
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLEmergencyContact: GraphQLEmergencyContact, patient: Patient) : this(
         patient,
