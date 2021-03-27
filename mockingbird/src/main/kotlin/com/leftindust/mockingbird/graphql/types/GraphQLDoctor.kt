@@ -33,11 +33,11 @@ data class GraphQLDoctor(
         firstName = doctor.firstName,
         middleName = doctor.middleName,
         lastName = doctor.lastName,
-        phones = doctor.phones.map { GraphQLPhone(it) },
+        phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
         dateOfBirth = GraphQLTime(doctor.dateOfBirth),
-        addresses = doctor.addresses.map { GraphQLAddress(it) },
-        emails = doctor.emails.map { GraphQLEmail(it) },
+        addresses = doctor.address.map { GraphQLAddress(it) },
+        emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
     ) {
         assert(doctor.id == null || doctor.id == id)
