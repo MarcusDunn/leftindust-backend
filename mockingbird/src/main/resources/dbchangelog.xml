@@ -1137,4 +1137,221 @@
     <changeSet author="marcus (generated)" id="1616777434680-11">
         <dropColumn columnName="address" tableName="patient"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-1">
+        <createTable tableName="doctor_address">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-2">
+        <createTable tableName="doctor_email">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-3">
+        <createTable tableName="doctor_phone">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-4">
+        <createTable tableName="patient_address">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-5">
+        <createTable tableName="patient_email">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-6">
+        <createTable tableName="patient_phone">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-7">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_14i0nucacpiaraf22i1isdqt5" tableName="patient_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-8">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_2eusdpc80yqfy4h3mgdvdm0og" tableName="doctor_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-9">
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_9hb8te7y2dgo0o2rf7df3uh4u" tableName="patient_address"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-10">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_b1r6fls3wo602lpghuyqfcgkc" tableName="patient_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-11">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_kjricuojdfn4aif5lgihwdwct" tableName="doctor_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-12">
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_plnygrxm1nd1p78eiu6q18va9" tableName="doctor_address"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-13">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_address" constraintName="FK1df6cs9ahivrta22qji30hnhs" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-14">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_email" constraintName="FK29sbaet85x7k857frak9svbwt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-15">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="patient_email" constraintName="FK6722f75t4iilmpunn4b302cwf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-16">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="doctor_email" constraintName="FK7uxef8upsqo71f596u2v1mwus" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-17">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_phone" constraintName="FKabd8fy0l940wakuwbss93r088" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-18">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="doctor_address" constraintName="FKawnnpcv2yl4q314pg8yw5s0r2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-19">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="patient_address" constraintName="FKew7hqtesa8lq5kfdjckx7fxl9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-20">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="doctor_phone" constraintName="FKgdqj1ckhh58pn16opiiukuwvv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-21">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="patient_phone" constraintName="FKjmi3mpfmf37cmtrl7ppd4prfh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-22">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_email" constraintName="FKq23ug4o2ut08hdvox5bun83a6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-23">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_phone" constraintName="FKqfd8fjrue9vxnd55vkd68p3me" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-24">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_address" constraintName="FKssuovng95msegtbxwjljpahwu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-25">
+        <dropForeignKeyConstraint baseTableName="doctor_emails" constraintName="FK2e9upbtevqfyt8q1bhgg64apk"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-26">
+        <dropForeignKeyConstraint baseTableName="doctor_addresses" constraintName="FK7qwjv92nrhxmuk3e8xotjmy22"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-27">
+        <dropForeignKeyConstraint baseTableName="doctor_addresses" constraintName="FK8g6cnyfr6xp6shupww7xy5nqt"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-28">
+        <dropForeignKeyConstraint baseTableName="patient_emails" constraintName="FKgp89r2an9uly1oswgivnku63j"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-29">
+        <dropForeignKeyConstraint baseTableName="patient_addresses" constraintName="FKjv6bes562cestniy5vlrgafj5"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-30">
+        <dropForeignKeyConstraint baseTableName="patient_addresses" constraintName="FKjwtcw03e0n2uo8jnes9ve3rco"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-31">
+        <dropForeignKeyConstraint baseTableName="patient_emails" constraintName="FKlxdruj5i3nxrwydpj750exk4x"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-32">
+        <dropForeignKeyConstraint baseTableName="patient_phones" constraintName="FKp7tduairw51evt15f71fo6on6"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-33">
+        <dropForeignKeyConstraint baseTableName="patient_phones" constraintName="FKqk7yerv2b69ouy96go8ekf1we"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-34">
+        <dropForeignKeyConstraint baseTableName="doctor_phones" constraintName="FKs0l29345wohswxx8iy61huilc"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-35">
+        <dropForeignKeyConstraint baseTableName="doctor_emails" constraintName="FKs5thvuujrajjv2qvtorbmdn3o"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-36">
+        <dropForeignKeyConstraint baseTableName="doctor_phones" constraintName="FKsdupbwqgkealyqg29ogt0aql0"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-37">
+        <dropUniqueConstraint constraintName="UK_26c0d0w2ym4w79tkea6j0fqp9" tableName="patient_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-38">
+        <dropUniqueConstraint constraintName="UK_2m7tctxj82u57rq1kudc3j35q" tableName="doctor_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-39">
+        <dropUniqueConstraint constraintName="UK_9ndsh82vhmjlqakp0x7bnpbgm" tableName="doctor_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-40">
+        <dropUniqueConstraint constraintName="UK_a042t6vbl47n09mkqy34xfb0l" tableName="doctor_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-41">
+        <dropUniqueConstraint constraintName="UK_dduqasi07hatptd27y9k9ttn2" tableName="patient_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-42">
+        <dropUniqueConstraint constraintName="UK_t17nugb8ef0anw2nfvh1o5t8o" tableName="patient_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-43">
+        <dropTable tableName="doctor_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-44">
+        <dropTable tableName="doctor_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-45">
+        <dropTable tableName="doctor_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-46">
+        <dropTable tableName="patient_addresses"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-47">
+        <dropTable tableName="patient_emails"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811138523-48">
+        <dropTable tableName="patient_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-1">
+        <createTable tableName="emergency_contact_phone">
+            <column name="emergency_contact_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-2">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_k1pki3s4ptwoswhlu9g38tqw3" tableName="emergency_contact_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-3">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="emergency_contact_phone" constraintName="FKca13q3h3se45r2bdji3rgc52i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-4">
+        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_phone" constraintName="FKrp70w2pt1fqwhgapoi0f7yq38" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="emergency_contact" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-5">
+        <dropForeignKeyConstraint baseTableName="emergency_contact_phones" constraintName="FKjcnfws2s3cqc8k232apteibri"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-6">
+        <dropForeignKeyConstraint baseTableName="emergency_contact_phones" constraintName="FKlktvo5o4xcbm29ga73aa5cfx8"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-7">
+        <dropUniqueConstraint constraintName="UK_m178rqlg5a5i4y8xh8cg5o6kx" tableName="emergency_contact_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1616811453589-8">
+        <dropTable tableName="emergency_contact_phones"/>
+    </changeSet>
 </databaseChangeLog>
