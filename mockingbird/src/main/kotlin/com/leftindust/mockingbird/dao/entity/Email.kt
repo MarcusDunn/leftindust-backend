@@ -7,7 +7,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 
 
-@Entity
+@Entity(name = "email")
 class Email(
     @Column(name = "type", nullable = false)
     var type: GraphQLEmailType,
