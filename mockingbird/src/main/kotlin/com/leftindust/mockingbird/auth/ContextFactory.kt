@@ -1,25 +1,24 @@
 package com.leftindust.mockingbird.auth
 
 
-import com.expediagroup.graphql.generator.execution.GraphQLContext
-import com.expediagroup.graphql.server.execution.GraphQLContextFactory
+import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContext
+import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContextFactory
 import com.leftindust.mockingbird.auth.impl.VerifiedFirebaseToken
 import org.springframework.http.HttpMethod
-import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.server.ServerRequest
 
 /**
  * Handles turning headers into GraphQLContext
  */
 @Component
-class ContextFactory : GraphQLContextFactory<GraphQLAuthContext, ServerHttpRequest> {
-
-    override suspend fun generateContext(request: ServerHttpRequest): GraphQLAuthContext? {
-        return if (request.method != HttpMethod.OPTIONS) {
-            val token = request.headers["mediq-auth-token"]?.first()
-            GraphQLAuthContext(VerifiedFirebaseToken(token))
+class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
+    override suspend fun generateContext(request: ServerRequest): GraphQLAuthContext? {
+        return if (request.method() == HttpMethod.OPTIONS) {
+            return null
         } else {
-            GraphQLAuthContext(VerifiedFirebaseToken(null))
+            val token = request.headers().firstHeader("mediq-auth-token")
+            GraphQLAuthContext(VerifiedFirebaseToken(token), request)
         }
     }
 }
@@ -28,4 +27,5 @@ class ContextFactory : GraphQLContextFactory<GraphQLAuthContext, ServerHttpReque
  * the mediq specific data returned from the ContextFactory
  * @property mediqAuthToken the authentication token
  */
-data class GraphQLAuthContext(val mediqAuthToken: MediqToken) : GraphQLContext
+data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) :
+    SpringGraphQLContext(request)
