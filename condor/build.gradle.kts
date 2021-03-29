@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     val coroutinesVersion = "1.4.3"
-    val graphQLKotlinVersion = "4.0.0-alpha.15"
+    val graphQLKotlinVersion = "4.0.0-alpha.17"
 
 
     // spring
