@@ -3,23 +3,30 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.GraphQLAddress
 import com.leftindust.mockingbird.graphql.types.GraphQLAddressType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
+import javax.persistence.*
 
 @Entity(name = "address")
 class Address(
     @Enumerated(EnumType.STRING)
-    var type: GraphQLAddressType,
+    @Column(name = "type", nullable = true)
+    var type: GraphQLAddressType?,
     @Column(name = "address", nullable = false)
     var address: String, //todo validation
+    @Column(name = "city", nullable = false)
+    var city: String,
+    @Embedded
+    var countryState: CountryState,
     @Column(name = "postal_code", nullable = false)
     var postalCode: String, //todo validation
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLAddress: GraphQLAddress) : this(
-        graphQLAddress.addressType,
-        graphQLAddress.address,
-        graphQLAddress.postalCode
+        type = graphQLAddress.addressType,
+        address = graphQLAddress.address,
+        city = graphQLAddress.city,
+        countryState = CountryState(
+            country = graphQLAddress.country,
+            province = graphQLAddress.province
+        ),
+        postalCode = graphQLAddress.postalCode,
     )
 }

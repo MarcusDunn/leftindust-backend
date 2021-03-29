@@ -1198,58 +1198,100 @@
         </createTable>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-7">
-        <addUniqueConstraint columnNames="email_id" constraintName="UK_14i0nucacpiaraf22i1isdqt5" tableName="patient_email"/>
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_14i0nucacpiaraf22i1isdqt5"
+                             tableName="patient_email"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-8">
-        <addUniqueConstraint columnNames="email_id" constraintName="UK_2eusdpc80yqfy4h3mgdvdm0og" tableName="doctor_email"/>
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_2eusdpc80yqfy4h3mgdvdm0og"
+                             tableName="doctor_email"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-9">
-        <addUniqueConstraint columnNames="address_id" constraintName="UK_9hb8te7y2dgo0o2rf7df3uh4u" tableName="patient_address"/>
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_9hb8te7y2dgo0o2rf7df3uh4u"
+                             tableName="patient_address"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-10">
-        <addUniqueConstraint columnNames="phone_id" constraintName="UK_b1r6fls3wo602lpghuyqfcgkc" tableName="patient_phone"/>
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_b1r6fls3wo602lpghuyqfcgkc"
+                             tableName="patient_phone"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-11">
-        <addUniqueConstraint columnNames="phone_id" constraintName="UK_kjricuojdfn4aif5lgihwdwct" tableName="doctor_phone"/>
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_kjricuojdfn4aif5lgihwdwct"
+                             tableName="doctor_phone"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-12">
-        <addUniqueConstraint columnNames="address_id" constraintName="UK_plnygrxm1nd1p78eiu6q18va9" tableName="doctor_address"/>
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_plnygrxm1nd1p78eiu6q18va9"
+                             tableName="doctor_address"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-13">
-        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_address" constraintName="FK1df6cs9ahivrta22qji30hnhs" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_address"
+                                 constraintName="FK1df6cs9ahivrta22qji30hnhs" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-14">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_email" constraintName="FK29sbaet85x7k857frak9svbwt" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_email"
+                                 constraintName="FK29sbaet85x7k857frak9svbwt" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-15">
-        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="patient_email" constraintName="FK6722f75t4iilmpunn4b302cwf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="patient_email"
+                                 constraintName="FK6722f75t4iilmpunn4b302cwf" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-16">
-        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="doctor_email" constraintName="FK7uxef8upsqo71f596u2v1mwus" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="doctor_email"
+                                 constraintName="FK7uxef8upsqo71f596u2v1mwus" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-17">
-        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_phone" constraintName="FKabd8fy0l940wakuwbss93r088" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_phone"
+                                 constraintName="FKabd8fy0l940wakuwbss93r088" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-18">
-        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="doctor_address" constraintName="FKawnnpcv2yl4q314pg8yw5s0r2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="doctor_address"
+                                 constraintName="FKawnnpcv2yl4q314pg8yw5s0r2" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-19">
-        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="patient_address" constraintName="FKew7hqtesa8lq5kfdjckx7fxl9" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="patient_address"
+                                 constraintName="FKew7hqtesa8lq5kfdjckx7fxl9" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-20">
-        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="doctor_phone" constraintName="FKgdqj1ckhh58pn16opiiukuwvv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="doctor_phone"
+                                 constraintName="FKgdqj1ckhh58pn16opiiukuwvv" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-21">
-        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="patient_phone" constraintName="FKjmi3mpfmf37cmtrl7ppd4prfh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="patient_phone"
+                                 constraintName="FKjmi3mpfmf37cmtrl7ppd4prfh" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-22">
-        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_email" constraintName="FKq23ug4o2ut08hdvox5bun83a6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_email"
+                                 constraintName="FKq23ug4o2ut08hdvox5bun83a6" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-23">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_phone" constraintName="FKqfd8fjrue9vxnd55vkd68p3me" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_phone"
+                                 constraintName="FKqfd8fjrue9vxnd55vkd68p3me" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-24">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_address" constraintName="FKssuovng95msegtbxwjljpahwu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_address"
+                                 constraintName="FKssuovng95msegtbxwjljpahwu" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811138523-25">
         <dropForeignKeyConstraint baseTableName="doctor_emails" constraintName="FK2e9upbtevqfyt8q1bhgg64apk"/>
@@ -1334,24 +1376,50 @@
         </createTable>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-2">
-        <addUniqueConstraint columnNames="phone_id" constraintName="UK_k1pki3s4ptwoswhlu9g38tqw3" tableName="emergency_contact_phone"/>
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_k1pki3s4ptwoswhlu9g38tqw3"
+                             tableName="emergency_contact_phone"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-3">
-        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="emergency_contact_phone" constraintName="FKca13q3h3se45r2bdji3rgc52i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="emergency_contact_phone"
+                                 constraintName="FKca13q3h3se45r2bdji3rgc52i" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="phone"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-4">
-        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_phone" constraintName="FKrp70w2pt1fqwhgapoi0f7yq38" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="emergency_contact" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_phone"
+                                 constraintName="FKrp70w2pt1fqwhgapoi0f7yq38" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="emergency_contact" validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-5">
-        <dropForeignKeyConstraint baseTableName="emergency_contact_phones" constraintName="FKjcnfws2s3cqc8k232apteibri"/>
+        <dropForeignKeyConstraint baseTableName="emergency_contact_phones"
+                                  constraintName="FKjcnfws2s3cqc8k232apteibri"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-6">
-        <dropForeignKeyConstraint baseTableName="emergency_contact_phones" constraintName="FKlktvo5o4xcbm29ga73aa5cfx8"/>
+        <dropForeignKeyConstraint baseTableName="emergency_contact_phones"
+                                  constraintName="FKlktvo5o4xcbm29ga73aa5cfx8"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-7">
         <dropUniqueConstraint constraintName="UK_m178rqlg5a5i4y8xh8cg5o6kx" tableName="emergency_contact_phones"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1616811453589-8">
         <dropTable tableName="emergency_contact_phones"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617056511543-1">
+        <addColumn tableName="address">
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617056511543-2">
+        <addColumn tableName="address">
+            <column name="country" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617056511543-3">
+        <addColumn tableName="address">
+            <column name="province" type="varchar(255)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

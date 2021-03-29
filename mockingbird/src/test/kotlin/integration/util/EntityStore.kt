@@ -2,7 +2,6 @@ package integration.util
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
@@ -21,6 +20,11 @@ object EntityStore {
         addresses = setOf(
             Address(
                 type = GraphQLAddressType.Home,
+                city = "North Vancouver",
+                countryState = CountryState(
+                    country = GraphQLCountry.Canada,
+                    province = GraphQLCanadianProvince.Alberta
+                ),
                 address = "874 West 1st Street",
                 postalCode = "y7h1p4",
             )
@@ -44,6 +48,11 @@ object EntityStore {
             Address(
                 type = GraphQLAddressType.Home,
                 address = "999 East 7th Drive",
+                city = "West Vancouver",
+                countryState = CountryState(
+                    country = GraphQLCountry.Canada,
+                    province = GraphQLCanadianProvince.NewBrunswick
+                ),
                 postalCode = "y7h1p5",
             )
         ),
@@ -79,11 +88,13 @@ object EntityStore {
             GraphQLAddress(
                 addressType = GraphQLAddressType.Home,
                 address = "6732 main st",
-                postalCode = "h221234"
+                city = "East Vancouver",
+                country = GraphQLCountry.Canada,
+                province = GraphQLCanadianProvince.NewBrunswick,
+                postalCode = "h221234",
             )
         ),
-        emails =
-        listOf(
+        emails = listOf(
             GraphQLEmail(
                 type = GraphQLEmailType.School,
                 email = "hello@mars.ca",
