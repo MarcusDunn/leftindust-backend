@@ -1,8 +1,7 @@
 package com.leftindust.condor.graphql.queries
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
-import com.expediagroup.graphql.types.operations.Query
-import com.leftindust.condor.graphql.types.CondorStatus
+import com.expediagroup.graphql.server.operations.Query
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
@@ -19,4 +18,6 @@ class HealthQuery : Query {
             }
         )
     }
+
+    data class CondorStatus(val isAlive: Boolean, val connectedToDatabase: Boolean)
 }
