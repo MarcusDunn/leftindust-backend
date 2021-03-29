@@ -1422,4 +1422,7 @@
             <column name="province" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1617059620529-1">
+        <dropColumn columnName="record_id" tableName="mediq_record"/>
+    </changeSet>
 </databaseChangeLog>
