@@ -83,8 +83,7 @@ object EntityStore {
                 )
             )
         ),
-        addresses =
-        listOf(
+        addresses = listOf(
             GraphQLAddress(
                 addressType = GraphQLAddressType.Home,
                 address = "6732 main st",
