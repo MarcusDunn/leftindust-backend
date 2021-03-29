@@ -91,7 +91,8 @@ class PatientQueryTest {
             }
 
             // action
-            val patients = patientQuery.patients(pids = listOf(gqlID(patientEntity.id!!)), authContext = mockkAuthContext)
+            val patients =
+                patientQuery.patients(pids = listOf(gqlID(patientEntity.id!!)), authContext = mockkAuthContext)
 
             // assert
             val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
