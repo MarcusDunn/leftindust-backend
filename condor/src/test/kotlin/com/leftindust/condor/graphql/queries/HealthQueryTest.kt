@@ -1,6 +1,5 @@
 package com.leftindust.condor.graphql.queries
 
-import com.leftindust.condor.graphql.types.CondorStatus
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -14,7 +13,7 @@ internal class HealthQueryTest {
         val result = healthQuery.condorIsAlive(mockk())
 
         assertEquals(
-            CondorStatus(
+            HealthQuery.CondorStatus(
                 isAlive = true,
                 connectedToDatabase = false,
             ),
