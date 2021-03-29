@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.entity.MediqRecord
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.extensions.getOneOrNull
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -21,7 +22,7 @@ internal class RecordDaoImplTest {
     fun getRecordByRecordId() {
         val mockkRecord = mockk<MediqRecord>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { recordRepository.getByRid(1000) } returns mockkRecord
+        every { recordRepository.getOneOrNull(1000) } returns mockkRecord
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
@@ -34,7 +35,7 @@ internal class RecordDaoImplTest {
     fun getRecordsByPatientPid() {
         val mockkRecord = mockk<MediqRecord>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { patientRepository.getOne(1000) } returns mockk() {
+        every { patientRepository.getOneOrNull(1000) } returns mockk() {
             every { id } returns 100
         }
         every { recordRepository.getAllByPatientId(100L) } returns listOf(mockkRecord)

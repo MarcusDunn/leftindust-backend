@@ -24,12 +24,12 @@ class RecordDaoImpl(
     @Autowired private val patientRepository: HibernatePatientRepository,
 ) : AbstractHibernateDao(authorizer), RecordDao {
     override suspend fun getRecordByRecordId(
-        rid: Int,
+        rid: Long,
         requester: MediqToken
     ): CustomResult<MediqRecord, OrmFailureReason> {
         val readRecords = Action(Crud.READ to Tables.Record)
         return if (requester can readRecords) {
-            val record = recordRepository.getByRid(rid) ?: return Failure(DoesNotExist())
+            val record = recordRepository.getOneOrNull(rid) ?: return Failure(DoesNotExist())
             Success(record)
         } else {
             Failure(NotAuthorized(requester))

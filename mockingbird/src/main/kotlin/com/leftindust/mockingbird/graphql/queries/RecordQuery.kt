@@ -15,7 +15,7 @@ class RecordQuery(
     suspend fun getRecord(record_id: ID, authContext: GraphQLAuthContext): GraphQLRecord {
         val requester = authContext.mediqAuthToken
         return recordDao
-            .getRecordByRecordId(record_id.toLong().toInt(), requester)
+            .getRecordByRecordId(record_id.toLong(), requester)
             .getOrThrow()
             .let { GraphQLRecord(it, it.id!!, authContext) }
     }
