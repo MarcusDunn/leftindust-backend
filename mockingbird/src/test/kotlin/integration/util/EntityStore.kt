@@ -67,8 +67,7 @@ object EntityStore {
         firstName = OptionalInput.Defined("aydan"),
         middleName = OptionalInput.Defined("javascript"),
         lastName = OptionalInput.Defined("gaite"),
-        phoneNumbers =
-        listOf(
+        phoneNumbers = listOf(
             GraphQLPhone(
                 number = 11111111,
                 type = GraphQLPhoneType.Work,
