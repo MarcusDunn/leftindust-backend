@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -24,15 +25,18 @@ internal class PatientMutationTest {
             every { id } returns 1000
         }
 
-        coEvery { patientDao.addDoctorToPatient(any(), any(), any()) } returns mockk() {
-            every { getOrThrow() } returns mockkPatient
-        }
-
         every { authContext.mediqAuthToken } returns mockk()
+
+        coEvery { patientDao.update(any(), any()) } returns Success(mockkPatient)
 
         val patientMutation = PatientMutation(patientDao)
 
-        val result = runBlocking { patientMutation.addDoctorToPatient(gqlID(1000), gqlID(2000), authContext) }
+        val result = runBlocking {
+            patientMutation.updatePatient(
+                GraphQLPatientInput(doctors = listOf(gqlID(1000))),
+                authContext
+            )
+        }
 
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
 

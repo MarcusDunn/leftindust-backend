@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.graphql.types.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import java.sql.Timestamp
 
@@ -53,7 +54,7 @@ object EntityStore {
         schedule = Schedule(),
     )
 
-    fun graphQLPatientInput(authContext: GraphQLAuthContext) = GraphQLPatientInput(
+    fun graphQLPatientInput() = GraphQLPatientInput(
         firstName = OptionalInput.Defined("aydan"),
         middleName = OptionalInput.Defined("javascript"),
         lastName = OptionalInput.Defined("gaite"),
@@ -92,7 +93,7 @@ object EntityStore {
         sex = OptionalInput.Defined(Sex.Male),
         ethnicity = OptionalInput.Defined(Ethnicity.AmericanAboriginal),
         emergencyContact = listOf(
-            GraphQLEmergencyContact(
+            GraphQLEmergencyContactInput(
                 firstName = "mom firstName",
                 middleName = "mom middleName",
                 lastName = "mom lastName",
@@ -107,7 +108,6 @@ object EntityStore {
                         type = GraphQLPhoneType.Home,
                     ),
                 ),
-                authContext = authContext
             )
         ),
     )

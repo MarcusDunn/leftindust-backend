@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.GraphQLEmergencyContact
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import javax.persistence.*
 
 @Entity(name = "emergency_contact")
@@ -28,6 +29,15 @@ class EmergencyContact(
         graphQLEmergencyContact.middleName,
         graphQLEmergencyContact.lastName,
         graphQLEmergencyContact.phones.map { Phone(it) }.toSet(),
+    )
+
+    constructor(graphQLEmergencyContactInput: GraphQLEmergencyContactInput, patient: Patient) : this(
+        patient,
+        graphQLEmergencyContactInput.relationship,
+        graphQLEmergencyContactInput.firstName,
+        graphQLEmergencyContactInput.middleName,
+        graphQLEmergencyContactInput.lastName,
+        graphQLEmergencyContactInput.phones.map { Phone(it) }.toSet(),
     )
 }
 

@@ -33,7 +33,7 @@ class PatientMutationTest(
                 every { uid } returns "admin"
             }
         }
-        val patientInput = EntityStore.graphQLPatientInput(authContext)
+        val patientInput = EntityStore.graphQLPatientInput()
         val result = runBlocking { patientMutation.addPatient(patientInput, authContext) }
         assertEquals(true, patientRepository.findById(result.pid.toLong()).isPresent)
         patientRepository.delete(patientRepository.getOne(result.pid.toLong()))

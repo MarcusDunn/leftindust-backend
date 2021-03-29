@@ -1,12 +1,18 @@
 package com.leftindust.mockingbird.dao.entity
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.extensions.getOrNull
+import com.leftindust.mockingbird.extensions.getOrThrow
+import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import org.hibernate.Session
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 internal class PatientTest {
@@ -27,13 +33,7 @@ internal class PatientTest {
 
     @Test
     internal fun `create by GraphQLPatientInput`() {
-        val authContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk {
-                every { uid } returns "admin"
-            }
-        }
-
-        val graphQLPatientInput = EntityStore.graphQLPatientInput(authContext)
+        val graphQLPatientInput = EntityStore.graphQLPatientInput()
         val mockkSession = mockk<Session>() {
             every { get(Doctor::class.java, 23L) } returns mockk() {
                 every { addPatient(any()) } returns mockk()
@@ -44,5 +44,19 @@ internal class PatientTest {
         }
 
         Patient(graphQLPatientInput, mockkSession)
+    }
+
+    @Test
+    fun setByGqlInput() {
+        val patient = EntityStore.patient().apply { id = 1 }
+
+        val gqlInput = GraphQLPatientInput(
+            pid = OptionalInput.Defined(gqlID(1)),
+            firstName = OptionalInput.Defined("new name")
+        )
+
+        patient.setByGqlInput(gqlInput, mockk())
+
+        assertEquals(gqlInput.firstName.getOrThrow(), patient.firstName)
     }
 }

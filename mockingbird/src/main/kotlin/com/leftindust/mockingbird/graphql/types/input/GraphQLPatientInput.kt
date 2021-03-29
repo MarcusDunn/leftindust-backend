@@ -30,7 +30,7 @@ data class GraphQLPatientInput(
     val sex: OptionalInput<Sex> = OptionalInput.Undefined,
     val gender: OptionalInput<String> = OptionalInput.Undefined,
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
-    val emergencyContact: List<GraphQLEmergencyContact>? = null,
+    val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
     val doctors: List<ID>? = null,
 ) {
     init {
