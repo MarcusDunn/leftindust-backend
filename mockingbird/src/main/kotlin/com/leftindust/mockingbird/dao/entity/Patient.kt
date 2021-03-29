@@ -82,20 +82,25 @@ class Patient(
             ?.toSet()
             ?: emptySet()
 
-        graphQLPatientInput.doctors
-            .getOrDefault(emptySet())
-            .forEach { did ->
+        if (graphQLPatientInput.doctors != null) {
+            clearDoctors()
+            graphQLPatientInput.doctors.forEach { did ->
                 addDoctor(
                     session.get(Doctor::class.java, did.value.toLong())
                         ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
                 )
             }
-
+        }
 
         // check that they are not trying to assign primary key on creation
-        if (graphQLPatientInput.pid !is OptionalInput.Undefined) {
+        if (graphQLPatientInput.pid is OptionalInput.Defined) {
             throw IllegalArgumentException("cannot assign a pid to a newly created patient, let the server handle that!")
         }
+    }
+
+    private fun clearDoctors() {
+        doctors.forEach { it.doctor.patients = emptySet() }
+        doctors = emptySet() // if any input is given, it overwrites previous doctors
     }
 
 
@@ -130,7 +135,7 @@ class Patient(
 
 
     @Throws(IllegalArgumentException::class)
-    fun setByGqlInput(patientInput: GraphQLPatientInput) {
+    fun setByGqlInput(patientInput: GraphQLPatientInput, session: Session) {
         if (patientInput.pid.getOrNull()?.toLong() != this.id!!)
             throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid.getOrNull()}")
 
@@ -146,19 +151,19 @@ class Patient(
             .toTimestamp()
 
         address = patientInput.addresses
-                ?.map { Address(it) }
-                ?.toSet()
-                ?: emptySet()
+            ?.map { Address(it) }
+            ?.toSet()
+            ?: emptySet()
 
         email = patientInput.emails
-                ?.map { Email(it) }
-                ?.toSet()
-                ?: emptySet()
+            ?.map { Email(it) }
+            ?.toSet()
+            ?: emptySet()
 
         phone = patientInput.phoneNumbers
-                ?.map { Phone(it) }
-                ?.toSet()
-                ?: emptySet()
+            ?.map { Phone(it) }
+            ?.toSet()
+            ?: emptySet()
 
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex.onUndefined(sex)
@@ -167,9 +172,11 @@ class Patient(
             ?: throw IllegalArgumentException("gender cannot be set to null")
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
 
-        doctors = when (patientInput.doctors) {
-            is OptionalInput.Undefined -> doctors
-            is OptionalInput.Defined -> TODO("waiting for aidan to need this")
+        doctors = if (patientInput.doctors == null) emptySet() else {
+            patientInput.doctors.forEach {
+                addDoctor(session.get(Doctor::class.java, it.toLong()))
+            }
+            this.doctors
         }
     }
 

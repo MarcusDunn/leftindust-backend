@@ -204,10 +204,12 @@ internal class PatientDaoImplTest {
     @Test
     fun update() {
         val mockkPatient = mockk<Patient> {
-            every { setByGqlInput(any()) } returns Unit
+            every { setByGqlInput(any(), any()) } returns Unit
         }
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { patientRepository.getOne(100) } returns mockkPatient
+
+        every { sessionFactory.currentSession } returns mockk()
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,

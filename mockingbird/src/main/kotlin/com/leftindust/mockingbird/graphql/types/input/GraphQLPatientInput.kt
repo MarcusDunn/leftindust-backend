@@ -31,7 +31,7 @@ data class GraphQLPatientInput(
     val gender: OptionalInput<String> = OptionalInput.Undefined,
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
     val emergencyContact: List<GraphQLEmergencyContact>? = null,
-    val doctors: OptionalInput<List<ID>> = OptionalInput.Undefined,
+    val doctors: List<ID>? = null,
 ) {
     init {
         if (emails != null) {

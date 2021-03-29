@@ -154,7 +154,7 @@ class PatientDaoImpl(
             val patient = patientRepository.getOneOrNull(pid.toLong())
                 ?: return Failure(DoesNotExist("could not find the patient with pid ${pid.value}"))
             try {
-                patient.setByGqlInput(patientInput)
+                patient.setByGqlInput(patientInput, sessionFactory.currentSession)
                 Success(patient)
             } catch (e: IllegalArgumentException) {
                 Failure(InvalidArguments(e.message))
