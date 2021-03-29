@@ -16,8 +16,8 @@ data class GraphQLRecord(
     private val patient: Patient,
     private val authContext: GraphQLAuthContext,
 ) {
-    constructor(record: MediqRecord, graphQLAuthContext: GraphQLAuthContext) : this(
-        rid = gqlID(record.rid),
+    constructor(record: MediqRecord, id: Long, graphQLAuthContext: GraphQLAuthContext) : this(
+        rid = gqlID(id),
         creationDate = GraphQLTime(record.creationDate),
         type = record.type,
         patient = record.patient,

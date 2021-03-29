@@ -14,11 +14,10 @@ class RecordQuery(
 ) : Query {
     suspend fun getRecord(record_id: ID, authContext: GraphQLAuthContext): GraphQLRecord {
         val requester = authContext.mediqAuthToken
-        val record = recordDao
-            .getRecordByRecordId(record_id.toLong().toInt(), requester) //todo removed rid
+        return recordDao
+            .getRecordByRecordId(record_id.toLong().toInt(), requester)
             .getOrThrow()
-
-        return GraphQLRecord(record, authContext)
+            .let { GraphQLRecord(it, it.id!!, authContext) }
     }
 
     suspend fun getRecords(pid: ID, authContext: GraphQLAuthContext): List<GraphQLRecord> {
@@ -26,6 +25,6 @@ class RecordQuery(
         return recordDao
             .getRecordsByPatientPid(pid.toLong(), requester)
             .getOrThrow()
-            .map { GraphQLRecord(it, authContext) }
+            .map { GraphQLRecord(it, it.id!!, authContext) }
     }
 }

@@ -8,8 +8,6 @@ import javax.persistence.*
 
 @Entity(name = "mediq_record")
 class MediqRecord(
-    @Column(name = "record_id")
-    val rid: Int,
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var patient: Patient,
     @Column(name = "creation_date")
