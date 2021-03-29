@@ -28,7 +28,6 @@ internal class RecordQueryTest {
             every { mediqAuthToken } returns mockk()
         }
 
-
         val result = runBlocking { recordQuery.getRecord(gqlID(1000), mockkAuthContext) }
 
         assertEquals(GraphQLRecord(mockkRecord, mockkRecord.id!!, mockkAuthContext), result)
