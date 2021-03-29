@@ -1,10 +1,11 @@
 package com.leftindust.condor
 
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 
 @Configuration
 class ApplicationConfig {
@@ -17,22 +18,22 @@ class ApplicationConfig {
 
     @Bean
     fun firebase(): FirebaseApp {
+        // dont init twice check
         if (kotlin.runCatching { FirebaseApp.getInstance() }.isSuccess) return FirebaseApp.getInstance()
-        return try {
-            with(FirebaseConfig) {
-                val serviceAccount = FileInputStream(SERVICE_ACCOUNT_KEY_PATH)
-                val options = com.google.firebase.FirebaseOptions.builder()
-                    .setCredentials(com.google.auth.oauth2.GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl(DATABASE_URL)
-                    .build()
-                FirebaseApp.initializeApp(options)
-            }
-        } catch (e: FileNotFoundException) {
-            throw FileNotFoundException(
-                "you are missing serviceAccountKey.json for firebase authentication, this is not" +
-                        "available in the public repository, you must make your own. See " +
-                        "https://firebase.google.com/docs/admin/setup for details."
-            )
+        return with(FirebaseConfig) {
+            val serviceAccount = FileInputStream(SERVICE_ACCOUNT_KEY_PATH)
+            val options = com.google.firebase.FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setDatabaseUrl(DATABASE_URL)
+                .build()
+            FirebaseApp.initializeApp(options)
         }
+    }
+
+    @Bean
+    fun firebaseAuth(): FirebaseAuth {
+        // make sure firebase is initialized
+        firebase()
+        return FirebaseAuth.getInstance()
     }
 }
