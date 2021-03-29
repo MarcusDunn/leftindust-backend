@@ -27,5 +27,4 @@ class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
  * the mediq specific data returned from the ContextFactory
  * @property mediqAuthToken the authentication token
  */
-data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) :
-    SpringGraphQLContext(request)
+data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) : SpringGraphQLContext(request)

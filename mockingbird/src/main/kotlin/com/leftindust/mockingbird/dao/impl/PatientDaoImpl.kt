@@ -55,6 +55,7 @@ class PatientDaoImpl(
         ).map { Action(it) }
         return if (requester has permissions) {
             val newPatient = try {
+                println(patient.phoneNumbers)
                 Patient(patient, sessionFactory.currentSession)
             } catch (e: IllegalArgumentException) {
                 return Failure(InvalidArguments(e.message))

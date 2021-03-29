@@ -57,14 +57,12 @@ object EntityStore {
         firstName = OptionalInput.Defined("aydan"),
         middleName = OptionalInput.Defined("javascript"),
         lastName = OptionalInput.Defined("gaite"),
-        phoneNumbers = OptionalInput.Defined(
-            listOf(
-                GraphQLPhone(
-                    number = 11111111,
-                    type = GraphQLPhoneType.Work,
-                )
+        phoneNumbers =
+        listOf(
+            GraphQLPhone(
+                number = 11111111,
+                type = GraphQLPhoneType.Work,
             )
-
         ),
         dateOfBirth = OptionalInput.Defined(
             GraphQLTimeInput(
@@ -75,45 +73,41 @@ object EntityStore {
                 )
             )
         ),
-        addresses = OptionalInput.Defined(
-            listOf(
-                GraphQLAddress(
-                    addressType = GraphQLAddressType.Home,
-                    address = "6732 main st",
-                    postalCode = "h221234"
-                )
+        addresses =
+        listOf(
+            GraphQLAddress(
+                addressType = GraphQLAddressType.Home,
+                address = "6732 main st",
+                postalCode = "h221234"
             )
         ),
-        emails = OptionalInput.Defined(
-            listOf(
-                GraphQLEmail(
-                    type = GraphQLEmailType.School,
-                    email = "hello@mars.ca",
-                )
+        emails =
+        listOf(
+            GraphQLEmail(
+                type = GraphQLEmailType.School,
+                email = "hello@mars.ca",
             )
         ),
         insuranceNumber = OptionalInput.Defined(ID("111111111")),
         sex = OptionalInput.Defined(Sex.Male),
         ethnicity = OptionalInput.Defined(Ethnicity.AmericanAboriginal),
-        emergencyContact = OptionalInput.Defined(
-            listOf(
-                GraphQLEmergencyContact(
-                    firstName = "mom firstName",
-                    middleName = "mom middleName",
-                    lastName = "mom lastName",
-                    relationship = Relationship.Parent,
-                    phones = listOf(
-                        GraphQLPhone(
-                            number = 111111111,
-                            type = GraphQLPhoneType.Work,
-                        ),
-                        GraphQLPhone(
-                            number = 223223222,
-                            type = GraphQLPhoneType.Home,
-                        ),
+        emergencyContact = listOf(
+            GraphQLEmergencyContact(
+                firstName = "mom firstName",
+                middleName = "mom middleName",
+                lastName = "mom lastName",
+                relationship = Relationship.Parent,
+                phones = listOf(
+                    GraphQLPhone(
+                        number = 111111111,
+                        type = GraphQLPhoneType.Work,
                     ),
-                    authContext = authContext
-                )
+                    GraphQLPhone(
+                        number = 223223222,
+                        type = GraphQLPhoneType.Home,
+                    ),
+                ),
+                authContext = authContext
             )
         ),
     )

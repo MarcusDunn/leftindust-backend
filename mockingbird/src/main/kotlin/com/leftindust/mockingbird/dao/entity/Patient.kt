@@ -55,10 +55,6 @@ class Patient(
         dateOfBirth = graphQLPatientInput.dateOfBirth
             .getOrThrow(IllegalArgumentException("date of birth must be defined"))
             .toTimestamp(),
-        addresses = graphQLPatientInput.addresses
-            .getOrDefault(emptyList()).map { Address(it) }.toSet(),
-        emails = graphQLPatientInput.emails
-            .getOrNull()?.map { Email(it) }?.toSet() ?: emptySet(),
         insuranceNumber = graphQLPatientInput.insuranceNumber
             .getOrNull()?.value,
         sex = graphQLPatientInput.sex
@@ -68,10 +64,21 @@ class Patient(
         doctors = emptySet<DoctorPatient>(), // set after constructor is called
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull(),
-    ) {
-        phone = graphQLPatientInput.phoneNumbers
-            .getOrNull()
+        phones = graphQLPatientInput.phoneNumbers
             ?.map { Phone(it) }
+            ?.toSet()
+            ?: emptySet(),
+        addresses = graphQLPatientInput.addresses
+            ?.map { Address(it) }
+            ?.toSet()
+            ?: emptySet(),
+        emails = graphQLPatientInput.emails
+            ?.map { Email(it) }
+            ?.toSet()
+            ?: emptySet(),
+    ) {
+        contacts = graphQLPatientInput.emergencyContact
+            ?.map { EmergencyContact(it, this) }
             ?.toSet()
             ?: emptySet()
 
@@ -83,11 +90,6 @@ class Patient(
                         ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
                 )
             }
-
-        contacts = graphQLPatientInput.emergencyContact
-            .getOrDefault(emptySet())
-            .map { EmergencyContact(it, this) }
-            .toSet()
 
 
         // check that they are not trying to assign primary key on creation
@@ -143,29 +145,20 @@ class Patient(
             ?: throw IllegalArgumentException("date of birth cannot be set to null"))
             .toTimestamp()
 
-        address = when (patientInput.addresses) {
-            OptionalInput.Undefined -> address
-            is OptionalInput.Defined -> patientInput.addresses.value
+        address = patientInput.addresses
                 ?.map { Address(it) }
                 ?.toSet()
                 ?: emptySet()
-        }
 
-        email = when (patientInput.emails) {
-            OptionalInput.Undefined -> email
-            is OptionalInput.Defined -> patientInput.emails.value
+        email = patientInput.emails
                 ?.map { Email(it) }
                 ?.toSet()
                 ?: emptySet()
-        }
 
-        phone = when (patientInput.phoneNumbers) {
-            OptionalInput.Undefined -> phone
-            is OptionalInput.Defined -> patientInput.phoneNumbers.value
+        phone = patientInput.phoneNumbers
                 ?.map { Phone(it) }
                 ?.toSet()
                 ?: emptySet()
-        }
 
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex.onUndefined(sex)
@@ -173,6 +166,7 @@ class Patient(
         gender = patientInput.gender.onUndefined(gender)
             ?: throw IllegalArgumentException("gender cannot be set to null")
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
+
         doctors = when (patientInput.doctors) {
             is OptionalInput.Undefined -> doctors
             is OptionalInput.Defined -> TODO("waiting for aidan to need this")
