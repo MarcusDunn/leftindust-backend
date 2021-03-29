@@ -18,6 +18,8 @@ repositories {
 dependencies {
     val coroutinesVersion = "1.4.3"
     val graphQLKotlinVersion = "4.0.0-alpha.17"
+    val firebaseVersion = "7.0.1"
+
 
 
     // spring
@@ -26,6 +28,9 @@ dependencies {
 
     // graphql-kotlin
     implementation("com.expediagroup", "graphql-kotlin-spring-server", graphQLKotlinVersion)
+
+    //firebase
+    implementation("com.google.firebase", "firebase-admin", firebaseVersion)
 
 
     // kotlin
@@ -72,8 +77,6 @@ tasks.withType<Test> {
 }
 
 val integrationTest = task<Test>("integrationTest") {
-    // may need to make this single threaded.
-
     useJUnitPlatform {
         includeTags("Integration")
     }
