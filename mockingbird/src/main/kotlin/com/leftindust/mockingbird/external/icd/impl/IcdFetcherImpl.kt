@@ -1,29 +1,21 @@
 package com.leftindust.mockingbird.external.icd.impl
 
-import com.google.gson.JsonParser
+import com.google.gson.JsonObject
 import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.HttpFailure
 import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
-import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 import com.leftindust.mockingbird.external.icd.IcdFetcher
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdMultiVersion
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
+import com.leftindust.mockingbird.graphql.types.icd.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 @Component
@@ -35,8 +27,6 @@ class IcdFetcherImpl(
         const val SCOPE = "icdapi_access"
         const val GRANT_TYPE = "client_credentials"
     }
-
-    private var currentToken: String? = null
 
     override suspend fun search(
         query: String,
@@ -90,7 +80,8 @@ class IcdFetcherImpl(
         flatResults: Boolean,
         token: String
     ): CustomResult<GraphQLIcdSearchResult, HttpFailure> {
-        val url = "https://id.who.int/icd/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
+        val url =
+            "https://id.who.int/icd/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
         return kotlin.runCatching {
             Success(
                 getUrlWithIcdHeaders<GraphQLIcdSearchResult>(url, token)
@@ -194,44 +185,17 @@ class IcdFetcherImpl(
                 setPrettyPrinting()
             }
         }
+        expectSuccess = false
     }
 
-    // TODO: 2021-01-20 figure out how to do this with non-blocking ktor
     private suspend fun getToken(): CustomResult<String, HttpFailure> {
-        if (currentToken != null) {
-            return Success(currentToken!!)
-        }
-        val json = with(URL(TOKEN_ENDPOINT).openConnection() as HttpURLConnection) {
-            doOutput = true
-            requestMethod = "POST"
-            setRequestProperty("API-Version", "v2")
-
-            OutputStreamWriter(outputStream).apply {
-                write("client_id=${config.CLIENT_ID}&client_secret=${config.CLIENT_SECRET}&scope=${SCOPE}&grant_type=${GRANT_TYPE}")
-                flush()
-            }
-
-            if (responseCode != 200) {
-                return Failure(
-                    HttpFailure(
-                        url = TOKEN_ENDPOINT,
-                        responseMessage = responseMessage,
-                        code = responseCode,
-                    )
-                )
-            }
-
-            BufferedReader(InputStreamReader(inputStream)).let {
-                val response = StringBuffer()
-
-                var inputLine = it.readLine()
-                while (inputLine != null) {
-                    response.append(inputLine)
-                    inputLine = it.readLine()
-                }
-                JsonParser.parseString(response.toString()).asJsonObject
-            }
-        }
+        val json = client.post<JsonObject>(TOKEN_ENDPOINT) {
+            header("API-Version", "v2")
+            accept(ContentType.Application.Json)
+            contentType(ContentType.Application.FormUrlEncoded)
+            body =
+                "client_id=${config.CLIENT_ID}&client_secret=${config.CLIENT_SECRET}&scope=${SCOPE}&grant_type=${GRANT_TYPE}"
+        }.asJsonObject
         return Success(json["access_token"].asString)
     }
 
