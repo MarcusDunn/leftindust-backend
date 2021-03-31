@@ -101,7 +101,7 @@ class ApplicationConfig {
     @Bean
     fun icdApiClientConfigBean(): IcdApiClientConfigBean {
         return IcdApiClientConfigBean (
-            BASE_URL = "http://localhost:80/icd",
+            BASE_URL = System.getenv("WHO_ICD_API") ?: "http://localhost:80/icd",
         )
     }
 

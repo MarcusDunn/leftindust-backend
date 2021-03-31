@@ -1,4 +1,13 @@
 services:
+  mockingbird-icd-api:
+    image: whoicd/icd-api
+    environment:
+      - acceptLicense=true
+    healthcheck:
+      test: "apk add curl; curl -X GET \"http://localhost:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
+      interval: 5s
+      timeout: 5s
+      retries: 5
   mockingbird-postgres:
     environment:
       POSTGRES_DB: mediq
@@ -12,6 +21,7 @@ services:
       retries: 5
   mockingbird:
     environment:
+      - WHO_ICD_API=http://icd-api:80/icd
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
       - SPRING_DATASOURCE_USERNAME=mediq
