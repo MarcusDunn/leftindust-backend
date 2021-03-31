@@ -29,3 +29,14 @@ fun WebTestClient.ResponseSpec.verifyError(expectedError: String): WebTestClient
         .jsonPath("$ERRORS_JSON_PATH.[0].message").isEqualTo(expectedError)
         .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
 }
+
+fun <T> timed(name: String? = null, func: () -> T): T {
+    val start = System.currentTimeMillis();
+    val ret = func()
+    if (name == null) {
+        println("time taken: ${System.currentTimeMillis() - start}ms")
+    } else {
+        println("time taken for $name: ${System.currentTimeMillis() - start}ms")
+    }
+    return ret
+}

@@ -4,10 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.ninjasquad.springmockk.MockkBean
-import integration.APPLICATION_JSON_MEDIA_TYPE
-import integration.GRAPHQL_ENDPOINT
-import integration.GRAPHQL_MEDIA_TYPE
-import integration.verifyOnlyDataExists
+import integration.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -35,18 +32,19 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
 
         val query = "searchIcdLinearization"
 
-        testClient.post()
-            .uri(GRAPHQL_ENDPOINT)
-            .accept(APPLICATION_JSON_MEDIA_TYPE)
-            .contentType(GRAPHQL_MEDIA_TYPE)
-            .bodyValue(
-                """query { $query(query: "covid") { 
+        timed(query) {
+            testClient.post()
+                .uri(GRAPHQL_ENDPOINT)
+                .accept(APPLICATION_JSON_MEDIA_TYPE)
+                .contentType(GRAPHQL_MEDIA_TYPE)
+                .bodyValue(
+                    """query { $query(query: "covid") { 
                 |   words { 
                 |       label 
                 |       } 
                 |   } 
                 |} """.trimMargin()
-            ).exchange()
-            .verifyOnlyDataExists(query)
+                ).exchange()
+        }.verifyOnlyDataExists(query)
     }
 }
