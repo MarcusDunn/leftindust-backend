@@ -1,13 +1,10 @@
 services:
   mockingbird-icd-api:
     image: whoicd/icd-api
-    build:
-      context: .
-      args:
-        accept-license: "true"
-        saveAnalytics: "true"
+    environment:
+      - acceptLicense=true
     healthcheck:
-      test: "curl -X GET \"http://localhost/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
+      test: "apk add curl; curl -X GET \"http://localhost:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
       interval: 5s
       timeout: 5s
       retries: 5
