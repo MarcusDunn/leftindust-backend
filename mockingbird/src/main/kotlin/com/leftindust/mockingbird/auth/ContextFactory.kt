@@ -17,7 +17,7 @@ class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
         return if (request.method() == HttpMethod.OPTIONS) {
             return null
         } else {
-            val token = request.headers().firstHeader("mediq-auth-token")
+            val token = request.headers().firstHeader("mediq-auth-token") ?: return null
             GraphQLAuthContext(VerifiedFirebaseToken(token), request)
         }
     }

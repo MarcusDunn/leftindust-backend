@@ -28,13 +28,14 @@ dependencies {
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "3.10.1"
     val coroutinesVersion = "1.4.3"
+    val springBootVersion = "2.4.4"
 
 
     // spring
-    implementation("org.springframework.boot", "spring-boot-starter")
-    implementation("org.springframework.boot", "spring-boot-starter-log4j2")
-    implementation("org.springframework.boot", "spring-boot-starter-jdbc")
-    implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot", "spring-boot-starter", springBootVersion)
+    implementation("org.springframework.boot", "spring-boot-starter-log4j2", springBootVersion)
+    implementation("org.springframework.boot", "spring-boot-starter-jdbc", springBootVersion)
+    implementation("org.springframework.boot", "spring-boot-starter-data-jpa", springBootVersion)
 
 
     // kotlin
@@ -54,8 +55,8 @@ dependencies {
     implementation("net.sf.biweekly", "biweekly", biweeklyVersion)
 
     // hibernate model code generation
-    implementation("org.hibernate:hibernate-jpamodelgen:5.4.12.Final")
-    kapt("org.hibernate:hibernate-jpamodelgen:5.4.12.Final")
+    implementation("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
+    kapt("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
 
     // firebase
     implementation("com.google.firebase", "firebase-admin", firebaseVersion)
@@ -76,11 +77,15 @@ dependencies {
     liquibaseRuntime("net.sf.biweekly", "biweekly", "0.6.6")
     liquibaseRuntime(sourceSets.main.get().output)
 
+    testImplementation("com.expediagroup", "graphql-kotlin-spring-client", graphQLKotlinVersion)
+
     // spring testing
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+        exclude(module = "mockito-core")
     }
-    testImplementation("io.mockk", "mockk", "1.10.6")
+
+    testImplementation("com.ninja-squad", "springmockk", "3.0.1")
 }
 
 // remove logback in favor of slf4j
@@ -134,7 +139,6 @@ val integrationTest = task<Test>("integrationTest") {
     }
 }
 
-// koltin compiler args
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         useIR = true

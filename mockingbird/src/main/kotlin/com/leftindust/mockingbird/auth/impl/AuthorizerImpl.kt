@@ -6,6 +6,8 @@ import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.extensions.Authorization
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -17,12 +19,31 @@ import org.springframework.stereotype.Service
 internal class AuthorizerImpl(
     @Autowired private val authorizationDao: AuthorizationDao
 ) : Authorizer {
+    val logger: Logger = LogManager.getLogger()
+
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
-        if (authorizationDao.isAdmin(user.uid ?: return Authorization.Denied)) return Authorization.Allowed
-        return (getRoles(user) ?: return Authorization.Denied)
-            .map { it.action }
-            .any { it.isSuperset(action) }
-            .toAuthorization()
+        return logAuth(user, action) {
+            if (authorizationDao.isAdmin(
+                    user.uid ?: return@logAuth Authorization.Denied
+                )
+            ) return@logAuth Authorization.Allowed
+            return@logAuth (getRoles(user) ?: return@logAuth Authorization.Denied)
+                .map { it.action }
+                .any { it.isSuperset(action) }
+                .toAuthorization()
+        }
+    }
+
+    private suspend fun logAuth(
+        user: MediqToken,
+        action: Action,
+        function: suspend () -> Authorization
+    ): Authorization {
+        val authorization = function()
+        if (authorization == Authorization.Denied) {
+            logger.warn("denied $user from $action")
+        }
+        return authorization
     }
 
     private suspend fun getRoles(user: MediqToken): List<AccessControlList>? {

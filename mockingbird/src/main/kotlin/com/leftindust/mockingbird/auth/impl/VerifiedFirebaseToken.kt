@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.auth.impl
 
-import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import com.leftindust.mockingbird.auth.MediqToken
@@ -17,7 +16,6 @@ class VerifiedFirebaseToken constructor(
     private val firebaseToken: FirebaseToken? = try {
         verify(token)
     } catch (e: Exception) {
-        logger.error(GraphQLKotlinException("exeption verifying token $token", e))
         null
     }
 
