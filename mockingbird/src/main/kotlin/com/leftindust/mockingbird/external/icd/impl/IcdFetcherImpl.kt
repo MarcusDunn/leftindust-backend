@@ -14,6 +14,7 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -26,6 +27,25 @@ class IcdFetcherImpl(
         const val TOKEN_ENDPOINT = "https://icdaccessmanagement.who.int/connect/token"
         const val SCOPE = "icdapi_access"
         const val GRANT_TYPE = "client_credentials"
+    }
+
+    var currentToken = IcdAuthToken("none", 0)
+
+    private val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = GsonSerializer {
+                setPrettyPrinting()
+            }
+        }
+        expectSuccess = false
+    }
+
+    init {
+        GlobalScope.launch(Dispatchers.IO) {
+            withTimeout(2000) {
+                getToken().getOrThrow()
+            }
+        }
     }
 
     override suspend fun search(
@@ -179,23 +199,21 @@ class IcdFetcherImpl(
         }
     }
 
-    private val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = GsonSerializer {
-                setPrettyPrinting()
-            }
-        }
-        expectSuccess = false
-    }
-
     private suspend fun getToken(): CustomResult<String, HttpFailure> {
+        if (currentToken.expiresAtMillis > System.currentTimeMillis()) return Success(currentToken.access_token)
         val json = client.post<JsonObject>(TOKEN_ENDPOINT) {
             header("API-Version", "v2")
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.FormUrlEncoded)
-            body =
-                "client_id=${config.CLIENT_ID}&client_secret=${config.CLIENT_SECRET}&scope=${SCOPE}&grant_type=${GRANT_TYPE}"
-        }.asJsonObject
+            body = "client_id=${config.CLIENT_ID}" +
+                    "&client_secret=${config.CLIENT_SECRET}" +
+                    "&scope=${SCOPE}" +
+                    "&grant_type=${GRANT_TYPE}"
+        }
+        currentToken = IcdAuthToken(
+            access_token = json["access_token"].asString,
+            expiresAtMillis = System.currentTimeMillis() + (json["expires_in"].asInt * 1000) - 1000 // minus 1000 here to give leeway on getting a new token so we dont make a request that fails because token expired in transit
+        )
         return Success(json["access_token"].asString)
     }
 
@@ -229,4 +247,7 @@ class IcdFetcherImpl(
             )
         }
     }
+
+    data class IcdAuthToken(val access_token: String, val expiresAtMillis: Long)
 }
+

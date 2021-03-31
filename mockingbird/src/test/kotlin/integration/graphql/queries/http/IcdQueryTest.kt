@@ -3,8 +3,12 @@ package integration.graphql.queries.http
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.extensions.timed
 import com.ninjasquad.springmockk.MockkBean
-import integration.*
+import integration.APPLICATION_JSON_MEDIA_TYPE
+import integration.GRAPHQL_ENDPOINT
+import integration.GRAPHQL_MEDIA_TYPE
+import integration.verifyOnlyDataExists
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -32,7 +36,7 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
 
         val query = "searchIcdLinearization"
 
-        timed(query) {
+        timed(query, repeat = 10) {
             testClient.post()
                 .uri(GRAPHQL_ENDPOINT)
                 .accept(APPLICATION_JSON_MEDIA_TYPE)
