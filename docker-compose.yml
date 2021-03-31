@@ -1,4 +1,16 @@
 services:
+  mockingbird-icd-api:
+    image: whoicd/icd-api
+    build:
+      context: .
+      args:
+        accept-license: "true"
+        saveAnalytics: "true"
+    healthcheck:
+      test: "curl -X GET \"http://localhost/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
+      interval: 5s
+      timeout: 5s
+      retries: 5
   mockingbird-postgres:
     environment:
       POSTGRES_DB: mediq
@@ -21,6 +33,8 @@ services:
       dockerfile: mockingbird.Dockerfile
     depends_on:
       mockingbird-postgres:
+        condition: service_healthy
+      mockingbird-icd-api:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl mockingbird:8080/sdl" ]

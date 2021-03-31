@@ -4,8 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.JsonParser
-import com.leftindust.mockingbird.ApplicationConfig.Companion.IcdApiConfig.USERNAME_PASSWORD_PATH
 import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -102,23 +100,9 @@ class ApplicationConfig {
 
     @Bean
     fun icdApiClientConfigBean(): IcdApiClientConfigBean {
-        try {
-            return with(IcdApiConfig) {
-                val jsonParser = JsonParser.parseReader(FileReader(File(USERNAME_PASSWORD_PATH)))
-                val clientId = jsonParser.asJsonObject["clientId"].asString
-                val clientSecret = jsonParser.asJsonObject["clientSecret"].asString
-                IcdApiClientConfigBean(
-                    CLIENT_ID = clientId,
-                    CLIENT_SECRET = clientSecret,
-                )
-            }
-        } catch (e: FileNotFoundException) {
-            throw FileNotFoundException(
-                "in order to initialize IcdApiClient you need a clientId and clientSecret, this is stored in the" +
-                        " json denoted by USERNAME_PASSWORD_PATH ($USERNAME_PASSWORD_PATH) and is not" +
-                        " available in the public repository. One can make their own at `https://icd.who.int/icdapi/"
-            )
-        }
+        return IcdApiClientConfigBean (
+            BASE_URL = "http://localhost:80/icd",
+        )
     }
 
     @Bean(name = ["entityManagerFactory"])
