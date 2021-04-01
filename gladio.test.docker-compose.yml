@@ -4,7 +4,7 @@ services:
     environment:
       - acceptLicense=true
     healthcheck:
-      test: "apk add curl; curl -X GET \"http://localhost:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
+      test: "apk add curl; curl -X GET \"http://127.0.0.1:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
       interval: 5s
       timeout: 5s
       retries: 5
@@ -33,7 +33,7 @@ services:
       mockingbird-postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl localhost:8080/sdl" ]
+      test: [ "CMD-SHELL", "curl 127.0.0.1:8080/sdl" ]
       interval: 10s
       timeout: 5s
       retries: 100
