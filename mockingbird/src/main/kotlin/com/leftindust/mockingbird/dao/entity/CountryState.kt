@@ -19,7 +19,6 @@ class CountryState(
         }
     }
 
-    @Enumerated(EnumType.STRING)
     var province = province
         set(value) {
             if (isValidStateForCountry(value)) {
