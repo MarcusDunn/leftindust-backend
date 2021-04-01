@@ -23,7 +23,7 @@ object EntityStore {
                 city = "North Vancouver",
                 countryState = CountryState(
                     country = GraphQLCountry.Canada,
-                    province = GraphQLCanadianProvince.Alberta
+                    province = GraphQLCanadianProvince.Alberta.name
                 ),
                 address = "874 West 1st Street",
                 postalCode = "y7h1p4",
@@ -51,7 +51,7 @@ object EntityStore {
                 city = "West Vancouver",
                 countryState = CountryState(
                     country = GraphQLCountry.Canada,
-                    province = GraphQLCanadianProvince.NewBrunswick
+                    province = GraphQLCanadianProvince.NewBrunswick.name
                 ),
                 postalCode = "y7h1p5",
             )
@@ -88,7 +88,7 @@ object EntityStore {
                 address = "6732 main st",
                 city = "East Vancouver",
                 country = GraphQLCountry.Canada,
-                province = GraphQLCanadianProvince.NewBrunswick,
+                province = GraphQLCanadianProvince.NewBrunswick.name,
                 postalCode = "h221234",
             )
         ),

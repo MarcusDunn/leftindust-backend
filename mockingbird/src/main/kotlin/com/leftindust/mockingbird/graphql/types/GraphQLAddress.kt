@@ -11,7 +11,7 @@ data class GraphQLAddress(
     val address: String,
     val city: String,
     val country: GraphQLCountry,
-    val province: GraphQLCanadianProvince,
+    val province: String,
     val postalCode: String,
 ) {
     constructor(address: Address) : this(

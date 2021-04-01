@@ -24,7 +24,7 @@ data class GraphQLTime(
         eg. America/Los_Angeles for British Columbias's time zone (generally referred to as PST)
         """
     )
-    // this function makes ZERO sense. I have no clue why it works, the varibles names are lies and im so sorry
+    // this function makes ZERO sense. I have no clue why it works, the variable names are lies and im so sorry
     fun withRespectTo(timeZone: String): TimeZonedTime {
         val utc = ZoneId.of("UTC")
         val otherTimeZone = ZoneId.of(timeZone)
