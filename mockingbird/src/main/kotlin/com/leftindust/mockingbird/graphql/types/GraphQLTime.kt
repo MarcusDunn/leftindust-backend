@@ -15,22 +15,26 @@ data class GraphQLTime(
     @GraphQLName("TimeZonedTime")
     data class TimeZonedTime(
         val timeZone: String,
-        val unixSeconds: Long,
         val unixMilliseconds: Long,
     )
 
+    @GraphQLDescription(
+        """
+        the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        eg. America/Los_Angeles for British Columbias's time zone (generally referred to as PST)
+        """
+    )
+    // this function makes ZERO sense. I have no clue why it works, the varibles names are lies and im so sorry
     fun withRespectTo(timeZone: String): TimeZonedTime {
         val utc = ZoneId.of("UTC")
         val otherTimeZone = ZoneId.of(timeZone)
-        val dateTime = Timestamp(unixMilliseconds).toLocalDateTime()
-        val panamaDateTime = ZonedDateTime.of(dateTime, utc)
-        val taipeiDateTime = panamaDateTime.withZoneSameInstant(otherTimeZone)
 
-        val diffSeconds = taipeiDateTime.offset.totalSeconds.toLong()
+        val utcDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(unixMilliseconds), otherTimeZone)
+        val zonedDateTime = utcDateTime.withZoneSameLocal(utc)
+
         return TimeZonedTime(
             timeZone,
-            diffSeconds,
-            diffSeconds * 1000
+            zonedDateTime.toEpochSecond() * 1000,
         )
     }
 
@@ -103,7 +107,7 @@ data class GraphQLTimeInput(
         if ((time == null) xor (date == null)) {
             // valid input
         } else {
-            throw IllegalArgumentException("TimeInput cannot contain both time or date or neitherr")
+            throw IllegalArgumentException("TimeInput cannot contain both time or date or neither")
         }
     }
 
