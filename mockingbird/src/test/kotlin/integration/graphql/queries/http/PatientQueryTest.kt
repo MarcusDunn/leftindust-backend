@@ -54,7 +54,7 @@ class PatientQueryTest(
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """query { $query(example: {}) { 
+                """query { $query(example: {personalInformation: {firstName: {eq: "${patient.firstName}"}}}) { 
                 |   firstName
                 |   }
                 |} """.trimMargin()
