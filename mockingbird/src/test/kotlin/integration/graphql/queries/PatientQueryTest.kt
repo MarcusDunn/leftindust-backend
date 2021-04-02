@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import javax.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @Transactional
@@ -58,15 +58,14 @@ class PatientQueryTest {
 
     @Test
     internal fun `search patient by name`() {
-        runBlocking {
-            // Setup
-            val patientEntity = run {
-                val patientExample = EntityStore.patient()
-                hibernatePatientRepository.save(patientExample)
-            }
+        // Setup
+        val patientEntity = run {
+            val patientExample = EntityStore.patient()
+            hibernatePatientRepository.save(patientExample)
+        }
 
-            // action
-            val patients =
+        // action
+        val patients = runBlocking {
                 patientQuery.patients(
                     example = GraphQLPatientExample(
                         personalInformation = GraphQLPersonExample(
@@ -74,11 +73,11 @@ class PatientQueryTest {
                         )
                     ), authContext = mockkAuthContext
                 )
-
-            // assert
-            val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
-            assertEquals(listOf(expected), patients)
         }
+        // assert
+        val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
+        assertEquals(listOf(expected), patients)
+
     }
 
     @Test

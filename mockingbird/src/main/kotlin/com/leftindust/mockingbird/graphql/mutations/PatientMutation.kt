@@ -13,11 +13,6 @@ import org.springframework.stereotype.Component
 class PatientMutation(
     private val patientDao: PatientDao,
 ) : Mutation {
-    suspend fun addDoctorToPatient(patientById: ID, doctorById: ID, authContext: GraphQLAuthContext): GraphQLPatient {
-        return patientDao.addDoctorToPatient(patientById, doctorById, authContext.mediqAuthToken)
-            .getOrThrow()
-            .let { GraphQLPatient(it, it.id!!, authContext) } // safe nn assert as we just got from DB
-    }
 
     @GraphQLDescription("updates a patient by their pid, only the not null fields are updated, pid MUST be defined")
     suspend fun updatePatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {

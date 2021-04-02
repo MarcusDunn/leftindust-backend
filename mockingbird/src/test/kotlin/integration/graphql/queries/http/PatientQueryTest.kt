@@ -2,43 +2,36 @@ package integration.graphql.queries.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
-import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.ninjasquad.springmockk.MockkBean
-import integration.APPLICATION_JSON_MEDIA_TYPE
-import integration.GRAPHQL_ENDPOINT
-import integration.GRAPHQL_MEDIA_TYPE
-import integration.util.EntityStore
+import integration.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
 @Tag("Integration")
+@Transactional
 class PatientQueryTest(
     @Autowired private val testClient: WebTestClient,
 ) {
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
-    @Test
-    internal fun `test search patient`(@Autowired sessionFactory: SessionFactory) {
-        val patient = EntityStore.patient()
+    @Autowired
+    private lateinit var patientRepository: HibernatePatientRepository
 
-        // setup
-        val id = run {
-            val session = sessionFactory.openSession()
-            val id = session.save(patient) as Long
-            session.close()
-            id
-        }
+    @Test
+    internal fun `test search patient`() {
 
         coEvery { contextFactory.generateContext(any()) } returns mockk() {
             every { getHTTPRequestHeader(any()) } returns null
@@ -47,28 +40,42 @@ class PatientQueryTest(
             }
         }
 
-        val query = "patients"
+        assertDoesNotThrow {
+            val mutation = "addPatient"
 
-        testClient.post()
-            .uri(GRAPHQL_ENDPOINT)
-            .accept(APPLICATION_JSON_MEDIA_TYPE)
-            .contentType(GRAPHQL_MEDIA_TYPE)
-            .bodyValue(
-                """query { $query(example: {personalInformation: {firstName: {eq: "${patient.firstName}"}}}) { 
+            testClient.post()
+                .uri(GRAPHQL_ENDPOINT)
+                .accept(APPLICATION_JSON_MEDIA_TYPE)
+                .contentType(GRAPHQL_MEDIA_TYPE)
+                .bodyValue(
+                    """mutation { $mutation(patient: {firstName: "marcus", lastName: "dunn", sex: Male, dateOfBirth: {date: {day: 23, month: Mar, year: 2001}}}) { 
                 |   firstName
                 |   }
                 |} """.trimMargin()
-            )
-            .exchange()
-            .expectBody()
-            .jsonPath("$.data.patients[0].firstName")
-            .isEqualTo(patient.firstName)
+                )
+                .exchange()
+                .expectBody()
+                .jsonPath("$.data.addPatient.firstName")
+                .isEqualTo("marcus")
+        }
 
-        // cleanup
-        run {
-            val session = sessionFactory.openSession()
-            session.delete(session.get(Patient::class.java, id))
-            session.close()
+        assertDoesNotThrow {
+            val query = "patients"
+
+            testClient.post()
+                .uri(GRAPHQL_ENDPOINT)
+                .accept(APPLICATION_JSON_MEDIA_TYPE)
+                .contentType(GRAPHQL_MEDIA_TYPE)
+                .bodyValue(
+                    """query { $query(example: {personalInformation: {firstName: {eq: "marcus"}}}) { 
+                |   firstName
+                |   }
+                |} """.trimMargin()
+                )
+                .exchange()
+                .expectBody()
+                .jsonPath("$.data.patients[0].firstName")
+                .isEqualTo("marcus")
         }
     }
 }

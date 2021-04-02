@@ -18,11 +18,15 @@ import com.leftindust.mockingbird.graphql.types.*
    """
 )
 data class GraphQLPatientInput(
+    @GraphQLDescription("do not include when adding patient")
     val pid: OptionalInput<ID> = OptionalInput.Undefined,
+    @GraphQLDescription("required on adding patient")
     val firstName: OptionalInput<String> = OptionalInput.Undefined,
     val middleName: OptionalInput<String?> = OptionalInput.Undefined,
+    @GraphQLDescription("required on adding patient")
     val lastName: OptionalInput<String> = OptionalInput.Undefined,
     val phoneNumbers: List<GraphQLPhone>? = null,
+    @GraphQLDescription("required on adding patient")
     val dateOfBirth: OptionalInput<GraphQLTimeInput> = OptionalInput.Undefined,
     val addresses: List<GraphQLAddress>? = null,
     val emails: List<GraphQLEmail>? = null,
