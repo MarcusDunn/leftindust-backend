@@ -14,6 +14,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,7 +58,7 @@ class PatientDaoImplTest {
         }.getOrThrow()
 
         // assert
-        assertEquals(expected, result.first())
+        assertTrue(result.contains(expected))
     }
 
     @Test
@@ -83,6 +84,6 @@ class PatientDaoImplTest {
         }.getOrThrow()
 
         // assert
-        assertEquals(expected, result.first())
+        assertTrue(result.contains(expected))
     }
 }
