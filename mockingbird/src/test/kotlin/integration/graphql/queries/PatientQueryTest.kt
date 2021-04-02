@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -66,17 +67,17 @@ class PatientQueryTest {
 
         // action
         val patients = runBlocking {
-                patientQuery.patients(
-                    example = GraphQLPatientExample(
-                        personalInformation = GraphQLPersonExample(
-                            firstName = StringFilter(includes = "marcus"),
-                        )
-                    ), authContext = mockkAuthContext
-                )
+            patientQuery.patients(
+                example = GraphQLPatientExample(
+                    personalInformation = GraphQLPersonExample(
+                        firstName = StringFilter(includes = "marcus"),
+                    )
+                ), authContext = mockkAuthContext
+            )
         }
         // assert
         val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
-        assertEquals(listOf(expected), patients)
+        assertTrue(patients.contains(expected))
 
     }
 
