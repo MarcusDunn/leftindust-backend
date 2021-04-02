@@ -33,7 +33,7 @@ class PatientDaoImpl(
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val sessionFactory: SessionFactory,
-    @Autowired private val entityManagerFactory: EntityManagerFactory
+    @Autowired private val entityManager: EntityManager
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
@@ -126,7 +126,7 @@ class PatientDaoImpl(
         strict: Boolean
     ): CustomResult<List<Patient>, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManagerFactory.createEntityManager(), example, strict)
+            searchByGqlExample(entityManager, example, strict)
         } else {
             Failure(NotAuthorized(requester, "cannot read to patient"))
         }
