@@ -38,7 +38,7 @@ class PatientDaoImplTest {
     @Test
     internal fun `search by example`() {
         // setup
-        val pid = session.save(EntityStore.patient()) as Long
+        val pid = session.save(EntityStore.patient("PatientDaoImplTest.search by example")) as Long
         val expected = session.get(Patient::class.java, pid)
         val mockkMediqToken = mockk<MediqToken> {
             every { uid } returns "admin"
@@ -63,7 +63,7 @@ class PatientDaoImplTest {
     @Test
     internal fun `search by example time`() {
         // setup
-        val pid = session.save(EntityStore.patient()) as Long
+        val pid = session.save(EntityStore.patient("PatientDaoImplTest.search by example time")) as Long
         val expected = session.get(Patient::class.java, pid)
         val mockkMediqToken = mockk<MediqToken> {
             every { uid } returns "admin"

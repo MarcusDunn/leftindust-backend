@@ -12,9 +12,9 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import java.sql.Timestamp
 
 object EntityStore {
-    fun patient() = Patient(
+    fun patient(testName: String) = Patient(
         firstName = "marcus",
-        middleName = "hello",
+        middleName = testName,
         lastName = "dunn",
         dateOfBirth = Timestamp.valueOf("2020-01-02 09:01:15"),
         addresses = setOf(
@@ -39,9 +39,9 @@ object EntityStore {
         doctors = emptySet(),
     )
 
-    fun doctor() = Doctor(
+    fun doctor(testName: String) = Doctor(
         firstName = "dan",
-        lastName = "shervani",
+        lastName = testName,
         middleName = "the man",
         dateOfBirth = Timestamp.valueOf("2018-01-02 09:01:15"),
         addresses = setOf(
@@ -63,9 +63,9 @@ object EntityStore {
         schedule = Schedule(),
     )
 
-    fun graphQLPatientInput() = GraphQLPatientInput(
+    fun graphQLPatientInput(testName: String) = GraphQLPatientInput(
         firstName = OptionalInput.Defined("aydan"),
-        middleName = OptionalInput.Defined("javascript"),
+        middleName = OptionalInput.Defined(testName),
         lastName = OptionalInput.Defined("gaite"),
         phoneNumbers = listOf(
             GraphQLPhone(

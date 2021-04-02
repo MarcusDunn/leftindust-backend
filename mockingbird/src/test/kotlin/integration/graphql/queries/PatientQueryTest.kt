@@ -42,7 +42,7 @@ class PatientQueryTest {
         runBlocking {
             // Setup
             val patientEntity = run {
-                val patientExample = EntityStore.patient()
+                val patientExample = EntityStore.patient("PatientQueryTest.get patient by single pid")
                 hibernatePatientRepository.save(patientExample)
             }
 
@@ -60,7 +60,7 @@ class PatientQueryTest {
     internal fun `search patient by name`() {
         // Setup
         val patientEntity = run {
-            val patientExample = EntityStore.patient()
+            val patientExample = EntityStore.patient("PatientQueryTest.search patient by name")
             hibernatePatientRepository.save(patientExample)
         }
 
@@ -85,7 +85,7 @@ class PatientQueryTest {
         runBlocking {
             // Setup
             val patientEntity = run {
-                val patientExample = EntityStore.patient()
+                val patientExample = EntityStore.patient("PatientQueryTest.getPatientPhones")
                 hibernatePatientRepository.save(patientExample)
             }
 

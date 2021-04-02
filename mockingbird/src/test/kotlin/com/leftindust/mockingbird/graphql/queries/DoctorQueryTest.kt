@@ -18,7 +18,7 @@ internal class DoctorQueryTest {
 
     @Test
     fun getDoctorsByPatient() {
-        val doctor = EntityStore.doctor().apply {
+        val doctor = EntityStore.doctor("DoctorQueryTest.getDoctorsByPatient").apply {
             id = 2000
         }
 
@@ -39,7 +39,7 @@ internal class DoctorQueryTest {
 
     @Test
     internal fun doctors() {
-        val doctor = EntityStore.doctor().apply {
+        val doctor = EntityStore.doctor("DoctorQueryTest.doctors").apply {
             id = 1000
         }
 

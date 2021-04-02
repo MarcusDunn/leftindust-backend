@@ -12,7 +12,7 @@ internal class DoctorTest {
 
     @Test
     fun addPatient() {
-        val doctor = EntityStore.doctor()
+        val doctor = EntityStore.doctor("DoctorTest.addPatient")
 
         val patient = spyk<Patient>().apply {
             doctors = emptySet()
@@ -29,7 +29,7 @@ internal class DoctorTest {
         val mockkEvent1 = mockk<VEvent>("event1", relaxed = true)
         val mockkEvent2 = mockk<VEvent>("event2", relaxed = true)
 
-        val doctor = EntityStore.doctor().apply {
+        val doctor = EntityStore.doctor("DoctorTest.getEventsBetween").apply {
             schedule = mockk {
                 every { getEventsBetween(any(), any()) } returns listOf(mockkEvent1, mockkEvent2)
             }
