@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
 import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.persistence.criteria.CriteriaQuery
 
 internal class PatientDaoImplTest {
@@ -35,7 +36,7 @@ internal class PatientDaoImplTest {
     private val doctorPatientRepository = mockk<HibernateDoctorPatientRepository>()
     private val visitRepository = mockk<HibernateVisitRepository>()
     private val sessionFactory = mockk<SessionFactory>()
-    private val entityManager = mockk<EntityManager>()
+    private val entityManagerFactory = mockk<EntityManagerFactory>()
 
     @Test
     fun getByPID() {
@@ -46,7 +47,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
         val actual = runBlocking { patientDaoImpl.getByPID(1000, mockk()) }.getOrThrow()
 
@@ -70,7 +71,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }.getOrThrow()
@@ -90,52 +91,12 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val actual = runBlocking { patientDaoImpl.removeByPID(1000L, mockk()) }.getOrThrow()
 
         assertEquals(mockkPatient, actual)
-    }
-
-    @Test
-    fun `search for a patient by name`() {
-        val mockkPatient = mockk<Patient>()
-        every { entityManager.criteriaBuilder } returns mockk {
-            every { like(any(), any<String>()) } returns mockk()
-            every { or(*anyVararg()) } returns mockk()
-            every { createQuery(Patient::class.java) } returns mockk {
-                every { select(any()) } returns mockk {
-                    every { where(*anyVararg()) } returns mockk()
-                }
-                every { from(Patient::class.java) } returns mockk(relaxed = true)
-            }
-        }
-        every { entityManager.createQuery(any<CriteriaQuery<Patient>>()) } returns mockk() {
-            every { resultList } returns listOf(mockkPatient)
-        }
-
-        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-
-        val patientDaoImpl = PatientDaoImpl(
-            authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
-        )
-
-        val actual = runBlocking {
-            patientDaoImpl.searchByExample(
-                GraphQLPatientExample(
-                    GraphQLPersonExample(
-                        firstName = StringFilter(includes = "marc"),
-                        middleName = StringFilter(includes = "marc"),
-                        lastName = StringFilter(includes = "marc")
-                    )
-                ), mockk(), strict = false
-            )
-        }.getOrThrow()
-
-        assertEquals(listOf(mockkPatient), actual)
     }
 
     @Test
@@ -152,7 +113,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val actual = runBlocking { patientDaoImpl.getByDoctor(1000L, mockk()) }.getOrThrow()
@@ -171,7 +132,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val actual = runBlocking { patientDaoImpl.getByVisit(1000L, mockk()) }.getOrThrow()
@@ -193,7 +154,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val actual = runBlocking { patientDaoImpl.addDoctorToPatient(ID("1000"), ID("1001"), mockk()) }.getOrThrow()
@@ -214,7 +175,7 @@ internal class PatientDaoImplTest {
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
             doctorPatientRepository, visitRepository, sessionFactory,
-            entityManager
+            entityManagerFactory
         )
 
         val patientInput = mockk<GraphQLPatientInput> {

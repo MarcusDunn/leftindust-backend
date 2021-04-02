@@ -44,6 +44,7 @@ abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
             criteriaBuilder.or(*arrayOfPredicates)
         }
         criteriaQuery.select(itemRoot).where(finalPredicate)
+
         return Success(entityManager.createQuery(criteriaQuery).resultList)
     }
 

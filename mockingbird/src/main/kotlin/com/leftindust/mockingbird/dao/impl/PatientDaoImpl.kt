@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.persistence.EntityNotFoundException
 
 
@@ -32,7 +33,7 @@ class PatientDaoImpl(
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val sessionFactory: SessionFactory,
-    @Autowired private val entityManager: EntityManager
+    @Autowired private val entityManagerFactory: EntityManagerFactory
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
@@ -125,7 +126,7 @@ class PatientDaoImpl(
         strict: Boolean
     ): CustomResult<List<Patient>, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict)
+            searchByGqlExample(entityManagerFactory.createEntityManager(), example, strict)
         } else {
             Failure(NotAuthorized(requester, "cannot read to patient"))
         }
