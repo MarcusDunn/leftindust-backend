@@ -3,18 +3,17 @@ package com.leftindust.mockingbird.graphql.types
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.Doctor
-import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.extensions.plus
 
-data class GraphQLDoctorEvent(
-    val eid: ID,
-    val title: String,
-    val description: String?,
-    val start: GraphQLTime,
-    val end: GraphQLTime,
+class GraphQLDoctorEvent(
+    eid: ID,
+    title: String,
+    description: String?,
+    start: GraphQLTime,
+    end: GraphQLTime,
     private val authContext: GraphQLAuthContext,
     private val doctor: Doctor
-) {
+) : GraphQLEvent(eid, title, description, start, end) {
     constructor(event: Doctor.DocVEvent, authContext: GraphQLAuthContext) : this(
         eid = ID(event.uid.toString()),
         doctor = event.doctor,

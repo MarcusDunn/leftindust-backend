@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import java.sql.Timestamp
 
@@ -120,4 +121,12 @@ object EntityStore {
             )
         ),
     )
+
+    fun graphQLEventInput(testName: String) =
+        GraphQLEventInput(
+            title = testName,
+            description = "some description",
+            start = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:00:00")),
+            end = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 10:00:00")),
+        )
 }
