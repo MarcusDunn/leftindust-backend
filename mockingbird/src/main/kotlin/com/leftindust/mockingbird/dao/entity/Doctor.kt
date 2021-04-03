@@ -14,13 +14,14 @@ class Doctor(
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
+    user: MediqUser? = null,
     @Column(name = "title", nullable = true)
     val title: String? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
     @Embedded
     var schedule: Schedule = Schedule()
-) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones) {
+) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones, user) {
 
     fun addPatient(patient: Patient): Doctor {
         val doctorPatient = DoctorPatient(doctor = this, patient = patient)

@@ -1425,4 +1425,34 @@
     <changeSet author="marcus (generated)" id="1617059620529-1">
         <dropColumn columnName="record_id" tableName="mediq_record"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-1">
+        <addColumn tableName="doctor">
+            <column name="attached_user_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-2">
+        <addColumn tableName="patient">
+            <column name="attached_user_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-3">
+        <addColumn tableName="visit">
+            <column name="event_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-4">
+        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="patient" constraintName="FKdle6k68ogdsb5dw7piq4np47p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-5">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="visit" constraintName="FKom1f1n6vcem0rnyhg8bfw1h8s" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-6">
+        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="doctor" constraintName="FKqy3uprb6flk0irodmkdrnj6pu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-7">
+        <dropColumn columnName="time_booked" tableName="visit"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491573732-8">
+        <dropColumn columnName="time_of_visit" tableName="visit"/>
+    </changeSet>
 </databaseChangeLog>
