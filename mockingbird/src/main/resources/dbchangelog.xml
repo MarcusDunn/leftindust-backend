@@ -1455,4 +1455,32 @@
     <changeSet author="marcus (generated)" id="1617491573732-8">
         <dropColumn columnName="time_of_visit" tableName="visit"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-1">
+        <addColumn tableName="doctor">
+            <column name="user_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-2">
+        <addColumn tableName="patient">
+            <column name="user_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-3">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="patient" constraintName="FK4ppqmsg1b23u41q4aaa7hf2pe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-4">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="doctor" constraintName="FKtrhh1tqlua01uigq052cssevm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-5">
+        <dropForeignKeyConstraint baseTableName="patient" constraintName="FKdle6k68ogdsb5dw7piq4np47p"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-6">
+        <dropForeignKeyConstraint baseTableName="doctor" constraintName="FKqy3uprb6flk0irodmkdrnj6pu"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-7">
+        <dropColumn columnName="attached_user_id" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617491715039-8">
+        <dropColumn columnName="attached_user_id" tableName="patient"/>
+    </changeSet>
 </databaseChangeLog>

@@ -24,7 +24,7 @@ abstract class Person(
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var phone: Set<Phone> = emptySet(),
     @OneToOne
-    var attachedUser: MediqUser? = null
+    var user: MediqUser? = null
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {
         return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, addresses=$address, emails=$email, phones=$phone)"
