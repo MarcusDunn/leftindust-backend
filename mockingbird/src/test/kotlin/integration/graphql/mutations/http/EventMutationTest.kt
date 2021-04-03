@@ -12,6 +12,7 @@ import integration.verifyOnlyDataExists
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -61,6 +62,6 @@ class EventMutationTest(
             .exchange()
             .verifyOnlyDataExists(mutation)
 
-        hibernateEventRepository.findAll().find { it.title == "MY EVENT" } ?: fail("did not persist")
+        assertNotNull(hibernateEventRepository.findAll().find { it.title == "MY EVENT" })
     }
 }
