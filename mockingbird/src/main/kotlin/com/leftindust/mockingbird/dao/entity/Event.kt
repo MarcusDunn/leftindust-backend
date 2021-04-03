@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import java.sql.Timestamp
 import javax.persistence.*
 
-
 @Entity(name = "event")
 class Event(
     val title: String,

@@ -93,11 +93,14 @@ class VisitDaoImpl(
         ).map { Action(it) }
 
         return if (requester has requiredPermissions) {
-            val doctor = doctorRepository.getOneOrNull(visitInput.doctorId.toLong())
-                ?: return Failure(DoesNotExist("no doc with did: ${visitInput.doctorId}"))
-            val patient = patientRepository.getOneOrNull(visitInput.patientId.toLong())
-                ?: return Failure(DoesNotExist("no patient with pid ${visitInput.patientId}"))
-            Success(visitRepository.save(Visit(visitInput, patient, doctor)))
+            val doctor = doctorRepository.getOneOrNull(visitInput.doctor.toLong())
+                ?: return Failure(DoesNotExist("no doc with did: ${visitInput.doctor}"))
+            val patient = patientRepository.getOneOrNull(visitInput.patient.toLong())
+                ?: return Failure(DoesNotExist("no patient with pid ${visitInput.patient}"))
+            val event = doctor.schedule.events.find { it.id == visitInput.event.toLong() }
+                ?: return Failure(DoesNotExist("no event attached to that doctor with that id: ${visitInput.event}"))
+
+            Success(visitRepository.save(Visit(visitInput, patient, doctor, event)))
         } else {
             Failure(NotAuthorized(requester))
         }

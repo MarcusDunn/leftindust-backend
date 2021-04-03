@@ -57,9 +57,9 @@ data class GraphQLDoctor(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
         from: GraphQLTime,
         to: GraphQLTime
-    ): List<GraphQLEvent> {
+    ): List<GraphQLDoctorEvent> {
         return doctorDao.getByDoctor(did.toLong(), authToken).getOrThrow()
             .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
-            .map { GraphQLEvent(it, authContext) }
+            .map { GraphQLDoctorEvent(it, authContext) }
     }
 }

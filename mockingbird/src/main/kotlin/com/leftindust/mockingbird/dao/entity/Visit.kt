@@ -4,16 +4,12 @@ import com.leftindust.mockingbird.dao.entity.converters.IcdCodeConverter
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
-import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity
 class Visit(
-    @Column(name = "time_booked")
-    var timeBooked: Timestamp,
-    @Column(name = "time_of_visit")
-    var timeOfVisit: Timestamp,
-
+    @OneToOne
+    var event: Event,
     var title: String? = null,
 
     var description: String? = null,
@@ -26,9 +22,8 @@ class Visit(
     @Convert(converter = IcdCodeConverter::class)
     var icdFoundationCode: FoundationIcdCode,
 ) : AbstractJpaPersistable<Long>() {
-    constructor(visitInput: GraphQLVisitInput, patient: Patient, doctor: Doctor) : this(
-        timeBooked = visitInput.timeBooked.toTimestamp(),
-        timeOfVisit = visitInput.timeOfVisit.toTimestamp(),
+    constructor(visitInput: GraphQLVisitInput, patient: Patient, doctor: Doctor, event: Event) : this(
+        event = event,
         title = visitInput.title,
         description = visitInput.description,
         patient = patient,

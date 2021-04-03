@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired
 data class GraphQLVisit(
     @GraphQLDescription("the id of the visit, will be null if the visit is not persisted to the database")
     val vid: ID?,
-    val timeBooked: GraphQLTime,
-    val timeOfVisit: GraphQLTime,
     val title: String? = null,
     val description: String? = null,
     private val authContext: GraphQLAuthContext,
@@ -31,8 +29,6 @@ data class GraphQLVisit(
     // let me know and we'll have to readjust this constructor.
     constructor(visit: Visit, id: Long, graphQLAuthContext: GraphQLAuthContext) : this(
         vid = gqlID(id),
-        timeBooked = GraphQLTime(visit.timeBooked),
-        timeOfVisit = GraphQLTime(visit.timeOfVisit),
         title = visit.title,
         description = visit.description,
         authContext = graphQLAuthContext,
@@ -40,6 +36,14 @@ data class GraphQLVisit(
     ) {
         // runtime check that someone isn't sending inconsistent data
         if (visit.id != id) throw RuntimeException("inconsistency between visit.id and id (visit.id: ${visit.id} id: $id)")
+    }
+
+    suspend fun event(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLEvent {
+        val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
+        return visitDao.getVisitByVid(nnVid, authToken)
+            .getOrThrow()
+            .event
+            .let { GraphQLEvent(it, it.id!!.toLong(), authContext) }
     }
 
     suspend fun doctor(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLDoctor {

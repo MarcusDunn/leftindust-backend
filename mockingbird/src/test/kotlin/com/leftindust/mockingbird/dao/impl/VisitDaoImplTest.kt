@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.leftindust.mockingbird.auth.Authorizer
+import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
@@ -78,17 +79,25 @@ internal class VisitDaoImplTest {
     @Test
     fun addVisit() {
         val mockkVisit = mockk<Visit>()
+        val mockkEvent = mockk<Event>() {
+            every { id } returns 4000L
+        }
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        every { doctorRepository.getOne(1000) } returns mockk()
+        every { doctorRepository.getOne(1000) } returns mockk() {
+            every { schedule } returns mockk {
+                every { events } returns setOf(mockkEvent)
+            }
+        }
         every { patientRepository.getOne(2000) } returns mockk()
         every { visitRepository.save(any()) } returns mockkVisit
 
         val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
-            every { doctorId } returns gqlID(1000)
-            every { patientId } returns gqlID(2000)
+            every { doctor } returns gqlID(1000)
+            every { patient } returns gqlID(2000)
+            every { event } returns gqlID(4000)
         }
 
         val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }.getOrThrow()

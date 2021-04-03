@@ -9,8 +9,7 @@ import javax.persistence.criteria.Root
 
 data class GraphQLVisitExample(
     val vid: StringFilter? = null,
-    val timeBooked: GraphQLTimeExample? = null,
-    val timeOfVisit: GraphQLTimeExample? = null,
+    val event: GraphQLEventExample? = null,
     val title: StringFilter? = null,
     val description: StringFilter? = null,
     val icdFoundationCode: StringFilter? = null,
@@ -20,8 +19,7 @@ data class GraphQLVisitExample(
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, itemRoot: Root<Visit>): List<Predicate> {
         return listOfNotNull(
             vid?.toPredicate(criteriaBuilder, itemRoot, Visit_.ID),
-            timeBooked?.toPredicate(criteriaBuilder, itemRoot, Visit_.TIME_BOOKED),
-            timeOfVisit?.toPredicate(criteriaBuilder, itemRoot, Visit_.TIME_OF_VISIT),
+            event?.toPredicate(criteriaBuilder, itemRoot),
             title?.toPredicate(criteriaBuilder, itemRoot, Visit_.TITLE),
             description?.toPredicate(criteriaBuilder, itemRoot, Visit_.DESCRIPTION),
             icdFoundationCode?.toPredicate(criteriaBuilder, itemRoot, "icdFoundationCode"),
