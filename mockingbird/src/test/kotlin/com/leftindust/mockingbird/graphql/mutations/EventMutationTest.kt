@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class EventMutationTest {
-    val eventDao = mockk<EventDao>()
+    private val eventDao = mockk<EventDao>()
 
     @Test
     fun addEvent() {
