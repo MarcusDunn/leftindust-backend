@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class EventMutation(private val eventDao: EventDao) : Mutation {
-    fun addEvent(event: GraphQLEventInput, graphQLAuthContext: GraphQLAuthContext): GraphQLEvent {
+    suspend fun addEvent(event: GraphQLEventInput, graphQLAuthContext: GraphQLAuthContext): GraphQLEvent {
         return eventDao
-            .addEvent(event, graphQLAuthContext)
+            .addEvent(event, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
             .let { GraphQLEvent(it, it.id!!) }
     }

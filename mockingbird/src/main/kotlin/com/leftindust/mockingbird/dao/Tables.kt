@@ -10,5 +10,6 @@ enum class Tables {
     Visit,
     Record,
     EmergencyContact,
+    Event,
     ;
 }
