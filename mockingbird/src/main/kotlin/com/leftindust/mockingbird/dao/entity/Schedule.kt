@@ -15,7 +15,7 @@ import javax.persistence.OneToMany
 class Schedule(
     @Column(name = "schedule_id")
     val scheduleId: Long? = null,
-    @OneToMany(cascade = [CascadeType.ALL])
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "id")
     val events: Set<Event> = emptySet()
 ) {
     fun getEventsBetween(from: Timestamp, to: Timestamp): List<VEvent> {

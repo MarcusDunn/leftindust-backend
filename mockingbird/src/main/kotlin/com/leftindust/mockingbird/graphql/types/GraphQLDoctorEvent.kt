@@ -4,7 +4,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.extensions.plus
-
+//todo delete
 class GraphQLDoctorEvent(
     eid: ID,
     title: String,
@@ -13,7 +13,7 @@ class GraphQLDoctorEvent(
     end: GraphQLTime,
     private val authContext: GraphQLAuthContext,
     private val doctor: Doctor
-) : GraphQLEvent(eid, title, description, start, end) {
+) : GraphQLEvent(eid, title, description, start, end, authContext) {
     constructor(event: Doctor.DocVEvent, authContext: GraphQLAuthContext) : this(
         eid = ID(event.uid.toString()),
         doctor = event.doctor,

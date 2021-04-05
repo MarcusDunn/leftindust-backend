@@ -69,7 +69,7 @@ class IcdFetcherImpl(
             Failure(
                 reason = HttpFailure(
                     url = url,
-                    responseMessage = it.message
+                    responseMessage = "${it.message}"
                 )
             )
         }

@@ -1,17 +1,13 @@
 package com.leftindust.mockingbird.dao.impl
 
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.NotAuthorized
-import com.leftindust.mockingbird.dao.OrmFailureReason
-import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
+import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +33,10 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): CustomResult<List<Event>, OrmFailureReason> {
+    override suspend fun getMany(
+        range: GraphQLRangeInput,
+        requester: MediqToken
+    ): CustomResult<List<Event>, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.Event)) {
             val size = range.to - range.from
             val page = range.to / size - 1
@@ -48,4 +47,13 @@ class EventDaoImpl(
         }
     }
 
+    override suspend fun getById(eid: ID, requester: MediqToken): CustomResult<Event, OrmFailureReason> {
+        return if (requester can (Crud.READ to Tables.Event)) {
+            val event = hibernateEventRepository.getOneOrNull(eid.toLong())
+                ?: return Failure(DoesNotExist())
+            Success(event)
+        } else {
+            Failure(NotAuthorized(requester, "cannot read events"))
+        }
+    }
 }

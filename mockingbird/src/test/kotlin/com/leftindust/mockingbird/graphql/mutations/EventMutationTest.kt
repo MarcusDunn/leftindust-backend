@@ -34,6 +34,6 @@ internal class EventMutationTest {
             )
         }
 
-        assertEquals(GraphQLEvent(mockkEvent, mockkEvent.id!!), result)
+        assertEquals(GraphQLEvent(mockkEvent, mockkEvent.id!!, mockk()), result)
     }
 }

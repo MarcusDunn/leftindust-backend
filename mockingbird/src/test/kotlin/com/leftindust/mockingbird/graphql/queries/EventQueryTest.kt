@@ -34,6 +34,6 @@ internal class EventQueryTest {
 
         val result = runBlocking { eventQuery.events(GraphQLRangeInput(0, 20), graphQLAuthContext) }
 
-        assertEquals(listOfEvent.map { GraphQLEvent(it, it.id!!) }, result)
+        assertEquals(listOfEvent.map { GraphQLEvent(it, it.id!!, graphQLAuthContext) }, result)
     }
 }

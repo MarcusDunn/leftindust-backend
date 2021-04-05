@@ -13,6 +13,6 @@ class EventQuery(private val eventDao: EventDao) : Query {
         return when {
             range != null -> eventDao.getMany(range, graphQLAuthContext.mediqAuthToken).getOrThrow()
             else -> throw IllegalArgumentException("invalid argument combination to events")
-        }.map { GraphQLEvent(it, it.id!!) }
+        }.map { GraphQLEvent(it, it.id!!, graphQLAuthContext) }
     }
 }

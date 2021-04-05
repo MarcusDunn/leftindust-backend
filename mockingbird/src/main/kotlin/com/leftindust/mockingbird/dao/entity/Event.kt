@@ -5,10 +5,7 @@ import com.leftindust.mockingbird.dao.entity.converters.RecurrenceConverter
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import java.sql.Timestamp
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.Entity
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity(name = "event")
 class Event(
@@ -21,7 +18,7 @@ class Event(
     @Column(name = "recurrence_rule")
     @Convert(converter = RecurrenceConverter::class)
     val recurrenceRule: RecurrenceRule?,
-    @OneToOne
+    @ManyToOne
     val doctor: Doctor? = null,
 ) : AbstractJpaPersistable<Long>() {
     // this is for one off events and as such has no recurrence rule

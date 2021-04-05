@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao
 
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.extensions.CustomResult
@@ -16,4 +17,6 @@ interface EventDao {
         range: GraphQLRangeInput,
         requester: MediqToken
     ): CustomResult<List<Event>, OrmFailureReason>
+
+    suspend fun getById(eid: ID, requester: MediqToken): CustomResult<Event, OrmFailureReason>
 }
