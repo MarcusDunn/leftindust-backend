@@ -1483,4 +1483,12 @@
     <changeSet author="marcus (generated)" id="1617491715039-8">
         <dropColumn columnName="attached_user_id" tableName="patient"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1617652128005-1">
+        <addColumn tableName="event">
+            <column name="doctor_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617652128005-2">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="event" constraintName="FKkft3gmp0io521plyxvu00cr1e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
 </databaseChangeLog>
