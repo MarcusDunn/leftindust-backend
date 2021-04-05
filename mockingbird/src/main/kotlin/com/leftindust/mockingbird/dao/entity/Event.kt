@@ -8,6 +8,7 @@ import java.sql.Timestamp
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
+import javax.persistence.OneToOne
 
 @Entity(name = "event")
 class Event(
@@ -19,14 +20,17 @@ class Event(
     val durationMillis: Long,
     @Column(name = "recurrence_rule")
     @Convert(converter = RecurrenceConverter::class)
-    val recurrenceRule: RecurrenceRule?
+    val recurrenceRule: RecurrenceRule?,
+    @OneToOne
+    val doctor: Doctor? = null,
 ) : AbstractJpaPersistable<Long>() {
     // this is for one off events and as such has no recurrence rule
-    constructor(graphQLEventInput: GraphQLEventInput) : this(
+    constructor(graphQLEventInput: GraphQLEventInput, doctor: Doctor? = null) : this(
         title = graphQLEventInput.title,
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
         durationMillis = graphQLEventInput.end.toTimestamp().time - graphQLEventInput.start.toTimestamp().time,
+        doctor = doctor,
         recurrenceRule = null,
     )
 }
