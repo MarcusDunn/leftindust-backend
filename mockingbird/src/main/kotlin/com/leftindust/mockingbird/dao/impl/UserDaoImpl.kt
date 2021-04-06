@@ -24,7 +24,7 @@ class UserDaoImpl(
 ) : UserDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
-        return if (requester can (Crud.READ to Tables.User)) {
+        return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
             val user = userRepository.getUserByUniqueId(uid)
                 ?: return Failure(DoesNotExist("user with uid $uid not found"))
             Success(user)
