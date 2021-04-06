@@ -15,7 +15,6 @@ interface UserDao {
         requester: MediqToken
     ): CustomResult<MediqUser, OrmFailureReason>
 
-    suspend fun addUser(user: MediqUser, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason>
     suspend fun addUser(user: GraphQLUserInput, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason>
     suspend fun getUsers(from: Int, to: Int, requester: MediqToken): CustomResult<List<MediqUser>, OrmFailureReason>
 }

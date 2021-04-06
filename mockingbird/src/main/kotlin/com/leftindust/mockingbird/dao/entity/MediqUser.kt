@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import javax.persistence.*
 
 @Entity(name = "mediq_user")
@@ -11,4 +12,13 @@ class MediqUser(
     var group: MediqGroup? = null,
     @Embedded
     var settings: UserSettings,
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable<Long>() {
+    constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(
+        uniqueId = graphQLUserInput.uid,
+        group = group,
+        settings = UserSettings(
+            version = graphQLUserInput.settings_version,
+            settingsJSON = graphQLUserInput.settings.json
+        )
+    )
+}

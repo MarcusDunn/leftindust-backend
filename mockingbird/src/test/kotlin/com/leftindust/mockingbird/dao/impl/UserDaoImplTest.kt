@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.dao.entity.UserSettings
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -52,11 +53,13 @@ internal class UserDaoImplTest {
 
     @Test
     fun addUser() {
-        val mockkUser = mockk<MediqUser> {
-            every { uniqueId } returns "uid"
+        val mockkUser = mockk<GraphQLUserInput>(relaxed = true) {
+            every { uid } returns "uid"
+            every { group_id } returns null
         }
         every { userRepository.getUserByUniqueId("uid") } returns null // does not already exist in DB
-        every { userRepository.save(mockkUser) } returns mockkUser
+        val mockkMediqUser = mockk<MediqUser>()
+        every { userRepository.save(any()) } returns mockkMediqUser
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
@@ -64,6 +67,6 @@ internal class UserDaoImplTest {
 
         val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }.getOrThrow()
 
-        assertEquals(mockkUser, actual)
+        assertEquals(mockkMediqUser, actual)
     }
 }
