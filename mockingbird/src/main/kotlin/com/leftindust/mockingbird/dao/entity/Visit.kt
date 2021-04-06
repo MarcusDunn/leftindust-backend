@@ -11,7 +11,6 @@ class Visit(
     @OneToOne
     var event: Event,
     var title: String? = null,
-
     var description: String? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     var patient: Patient,

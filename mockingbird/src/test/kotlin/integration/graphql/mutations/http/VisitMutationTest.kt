@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
@@ -66,16 +65,35 @@ class VisitMutationTest(
                 |   doctor: "${doctor.id}",
                 |   patient: "${patient.id!!}"
                 |   })  {
-                |   title
+                |   vid
                 |   }
                 |} """.trimMargin()
             )
             .exchange()
             .verifyOnlyDataExists(mutation)
 
-        hibernateVisitRepository.delete(hibernateVisitRepository.getAllByDoctorId(doctor.id!!).first())
+        removeVisitsByDoctor(doctor)
+        removeEvent(event)
+        removeDoctor(doctor)
+        removePatient(patient)
+    }
+
+    private fun removeDoctor(doctor: Doctor) {
         hibernateDoctorRepository.delete(doctor)
+    }
+
+    private fun removePatient(patient: Patient) {
         hibernatePatientRepository.delete(patient)
+    }
+
+    private fun removeEvent(event: Event) {
+        hibernateEventRepository.delete(event)
+    }
+
+    private fun removeVisitsByDoctor(doctor: Doctor) {
+        hibernateVisitRepository.getAllByDoctorId(doctor.id!!).forEach {
+            hibernateVisitRepository.delete(it)
+        }
     }
 
     private fun addPatient(): Patient {

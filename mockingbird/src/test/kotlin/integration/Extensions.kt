@@ -3,11 +3,15 @@ package integration
 import org.springframework.test.web.reactive.server.WebTestClient
 
 fun WebTestClient.ResponseSpec.verifyOnlyDataExists(expectedQuery: String): WebTestClient.BodyContentSpec {
-    return this.expectBody()
-        .jsonPath("$DATA_JSON_PATH.$expectedQuery").exists()
-        .jsonPath(ERRORS_JSON_PATH).doesNotExist()
-        .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
-
+    return try {
+        this.expectBody()
+            .jsonPath("$DATA_JSON_PATH.$expectedQuery").exists()
+            .jsonPath(ERRORS_JSON_PATH).doesNotExist()
+            .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
+    } catch (e: AssertionError) {
+        this.expectBody().json("")
+        throw e
+    }
 }
 
 fun WebTestClient.ResponseSpec.verifyData(
