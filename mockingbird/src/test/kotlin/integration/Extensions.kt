@@ -1,17 +1,13 @@
 package integration
 
-import io.mockk.InternalPlatformDsl.toStr
 import org.springframework.test.web.reactive.server.WebTestClient
 
 fun WebTestClient.ResponseSpec.verifyOnlyDataExists(expectedQuery: String): WebTestClient.BodyContentSpec {
-    return try {
-        this.expectBody()
-            .jsonPath("$DATA_JSON_PATH.$expectedQuery").exists()
-            .jsonPath(ERRORS_JSON_PATH).doesNotExist()
-            .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
-    } catch (e: Throwable) {
-        throw AssertionError("failed on ${this.expectBody().jsonPath(ERRORS_JSON_PATH).isEqualTo("{}")}", e)
-    }
+    return this.expectBody()
+        .jsonPath("$DATA_JSON_PATH.$expectedQuery").exists()
+        .jsonPath(ERRORS_JSON_PATH).doesNotExist()
+        .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
+
 }
 
 fun WebTestClient.ResponseSpec.verifyData(

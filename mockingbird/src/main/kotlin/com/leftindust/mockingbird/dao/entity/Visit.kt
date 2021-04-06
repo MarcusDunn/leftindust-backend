@@ -28,6 +28,6 @@ class Visit(
         description = visitInput.description,
         patient = patient,
         doctor = doctor,
-        icdFoundationCode = visitInput.foundationIcdCode,
+        icdFoundationCode = FoundationIcdCode(visitInput.foundationIcdCode),
     )
 }

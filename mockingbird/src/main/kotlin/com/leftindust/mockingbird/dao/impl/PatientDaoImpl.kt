@@ -20,7 +20,6 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
 import javax.persistence.EntityNotFoundException
 
 
@@ -56,7 +55,6 @@ class PatientDaoImpl(
         ).map { Action(it) }
         return if (requester has permissions) {
             val newPatient = try {
-                println(patient.phoneNumbers)
                 Patient(patient, sessionFactory.currentSession)
             } catch (e: IllegalArgumentException) {
                 return Failure(InvalidArguments(e.message))

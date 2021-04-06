@@ -25,8 +25,6 @@ class UserDaoImpl(
     private val userRepository: HibernateUserRepository,
     private val groupRepository: HibernateGroupRepository,
 ) : UserDao, AbstractHibernateDao(authorizer) {
-    val logger: Logger = LogManager.getLogger()
-
 
     override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.User)) {
