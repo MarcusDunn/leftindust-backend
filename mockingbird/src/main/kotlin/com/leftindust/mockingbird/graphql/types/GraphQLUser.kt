@@ -18,18 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired
 data class GraphQLUser(
     val uid: String,
     val group: Group? = null,
-    val settings: Settings? = null,
     private val authContext: GraphQLAuthContext
 ) {
     constructor(mediqUser: MediqUser, graphQLAuthContext: GraphQLAuthContext) : this(
         uid = mediqUser.uniqueId,
         group = mediqUser.group?.let { Group(it.name) },
-        settings = Settings(
-            version = mediqUser.settings.version,
-            settings = GraphQLJsonObject(
-                json = JsonParser.parseString(mediqUser.settings.settingsJSON).asJsonObject.toString()
-            ),
-        ),
         authContext = graphQLAuthContext,
     )
 

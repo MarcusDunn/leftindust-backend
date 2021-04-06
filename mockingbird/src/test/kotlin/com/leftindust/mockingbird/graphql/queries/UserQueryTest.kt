@@ -5,7 +5,6 @@ import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.entity.UserSettings
 import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.firebase.UserFetcher
@@ -28,7 +27,6 @@ internal class UserQueryTest {
         val user = mockk<MediqUser> {
             every { uniqueId } returns "uid"
             every { group } returns null
-            every { settings } returns UserSettings(1, "{}")
         }
         coEvery { userDao.getUserByUid("uid", any()) } returns Success(user)
         val userQuery = UserQuery(userDao, firebaseFetcher)
@@ -43,7 +41,6 @@ internal class UserQueryTest {
         val user = mockk<MediqUser> {
             every { uniqueId } returns "uid"
             every { group } returns null
-            every { settings } returns UserSettings(1, "{}")
         }
         coEvery { userDao.getUsers(0, 3, any()) } returns Success(listOf(user))
         val userQuery = UserQuery(userDao, firebaseFetcher)

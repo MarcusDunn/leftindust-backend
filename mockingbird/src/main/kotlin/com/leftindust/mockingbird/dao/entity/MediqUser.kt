@@ -10,15 +10,9 @@ class MediqUser(
     val uniqueId: String,
     @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
     var group: MediqGroup? = null,
-    @Embedded
-    var settings: UserSettings,
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(
         uniqueId = graphQLUserInput.uid,
         group = group,
-        settings = UserSettings(
-            version = graphQLUserInput.settings_version,
-            settingsJSON = graphQLUserInput.settings.json
-        )
     )
 }

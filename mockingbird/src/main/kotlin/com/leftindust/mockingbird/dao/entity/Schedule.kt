@@ -75,4 +75,10 @@ class Schedule(
     private operator fun Instant.plus(toInstant: Instant): Instant {
         return Instant.ofEpochMilli(this.toEpochMilli() + toInstant.toEpochMilli())
     }
+
+    fun addEvent(event: Event) {
+        events
+            .toMutableSet()
+            .apply { add(event) }
+    }
 }

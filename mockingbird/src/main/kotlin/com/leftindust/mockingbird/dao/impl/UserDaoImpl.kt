@@ -7,13 +7,10 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.entity.UserSettings
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -35,39 +32,6 @@ class UserDaoImpl(
             Failure(NotAuthorized(requester, "not authorized to Read to that specific Patient"))
         }
     }
-
-    override suspend fun setUserSettingsByUid(
-        uid: String,
-        version: Int,
-        settings: JsonObject,
-        requester: MediqToken
-    ): CustomResult<MediqUser, OrmFailureReason> {
-
-        /* don't null check until we know we have permission to read */
-        val user = userRepository.getUserByUniqueId(uid)
-
-        val isPermitted = run {
-            val updateThisRow = Action(
-                referencedTableName = Tables.User,
-                permissionType = Crud.UPDATE,
-                rowId = user?.id,
-            )
-            requester can updateThisRow
-        }
-
-        return if (isPermitted) {
-            val newSettings = UserSettings(
-                version = version,
-                settingsJSON = settings.toString()
-            )
-            user?.settings ?: return Failure(DoesNotExist())
-            user.settings = newSettings
-            Success(user)
-        } else {
-            Failure(NotAuthorized(requester))
-        }
-    }
-
     override suspend fun addUser(
         user: GraphQLUserInput,
         requester: MediqToken

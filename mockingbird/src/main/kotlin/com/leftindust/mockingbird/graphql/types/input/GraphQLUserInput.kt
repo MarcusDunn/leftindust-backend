@@ -8,6 +8,4 @@ import com.leftindust.mockingbird.graphql.types.GraphQLJsonObject
 data class GraphQLUserInput(
     val uid: String,
     val group_id: ID? = null,
-    val settings_version: Int,
-    val settings: GraphQLJsonObject,
 )

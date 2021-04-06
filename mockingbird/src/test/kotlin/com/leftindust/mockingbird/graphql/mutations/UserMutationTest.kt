@@ -3,8 +3,9 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
+import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
-import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
+import com.sun.net.httpserver.Authenticator
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -18,51 +19,14 @@ internal class UserMutationTest {
 
 
     @Test
-    fun setUserSettings() {
-        val mockkUser = mockk<MediqUser>(relaxed = true) {
-            every { settings } returns mockk {
-                every { version } returns 1
-                every { settingsJSON } returns "{}"
-            }
-        }
-
-        every { authContext.mediqAuthToken } returns mockk()
-
-        val mockkSettings = mockk<GraphQLUser.Settings>() {
-            every { settings } returns mockk {
-                every { json } returns "{}"
-                every { version } returns 2
-            }
-        }
-        coEvery { userDao.setUserSettingsByUid(any(), any(), any(), any()) } returns mockk() {
-            every { getOrThrow() } returns mockkUser
-        }
-
-        val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
-
-        val userMutation = UserMutation(userDao)
-
-        val result = runBlocking { userMutation.setUserSettings(mockk(), mockkSettings, authContext) }
-
-        assertEquals(mockkGraphQLUser, result)
-    }
-
-    @Test
     fun addUser() {
-        val mockkUser = mockk<MediqUser>(relaxed = true) {
-            every { settings } returns mockk {
-                every { version } returns 1
-                every { settingsJSON } returns "{}"
-            }
-        }
+        val mockkUser = mockk<MediqUser>(relaxed = true)
 
         every { authContext.mediqAuthToken } returns mockk()
 
         val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
 
-        coEvery { userDao.addUser(any<GraphQLUserInput>(), any()) } returns mockk {
-            every { getOrThrow() } returns mockkUser
-        }
+        coEvery { userDao.addUser(any(), any()) } returns Success(mockkUser)
 
         val userMutation = UserMutation(userDao)
 

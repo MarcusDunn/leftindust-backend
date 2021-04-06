@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
@@ -45,11 +46,10 @@ class VisitMutationTest(
                 every { uid } returns "admin"
             }
         }
-
+        val event = addEvent()
         val doctor = addDoctor()
         val patient = addPatient()
         doctor.addPatient(patient)
-        val event = addEvent()
 
         val mutation = "addVisit"
 
@@ -73,8 +73,9 @@ class VisitMutationTest(
             .exchange()
             .verifyOnlyDataExists(mutation)
 
-        assert(hibernateVisitRepository.getAllByDoctorId(doctor.id!!).size == 1)
-        assert(hibernateVisitRepository.getAllByPatientId(patient.id!!).size == 1)
+        hibernateVisitRepository.delete(hibernateVisitRepository.getAllByDoctorId(doctor.id!!).first())
+        hibernateDoctorRepository.delete(doctor)
+        hibernatePatientRepository.delete(patient)
     }
 
     private fun addPatient(): Patient {
