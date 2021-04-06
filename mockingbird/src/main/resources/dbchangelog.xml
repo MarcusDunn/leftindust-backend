@@ -1491,4 +1491,22 @@
     <changeSet author="marcus (generated)" id="1617652128005-2">
         <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="event" constraintName="FKkft3gmp0io521plyxvu00cr1e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-1">
+        <dropForeignKeyConstraint baseTableName="doctor_events" constraintName="FK9w6g50jcfeapp4ejtfmjgxg5y"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-2">
+        <dropForeignKeyConstraint baseTableName="doctor_events" constraintName="FKew4x1wg40fl0d9qvls695uueu"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-3">
+        <dropUniqueConstraint constraintName="UK_je4wisc9c6ys7tp0yewr2g0rj" tableName="doctor_events"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-4">
+        <dropTable tableName="doctor_events"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-5">
+        <dropColumn columnName="settings_json" tableName="mediq_user"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1617740795117-6">
+        <dropColumn columnName="settings_version" tableName="mediq_user"/>
+    </changeSet>
 </databaseChangeLog>
