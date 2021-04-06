@@ -27,7 +27,7 @@ class UserFetcher(
         requester: MediqToken
     ): CustomResult<UserRecord, OrmFailureReason> {
         val readUsers = Action(Crud.READ to Tables.User)
-        if (authorizer.getAuthorization(readUsers, requester) == Authorization.Allowed || (requester.uid == uid && requester.isVerified())) {
+        if ((requester.uid == uid && requester.isVerified()) || authorizer.getAuthorization(readUsers, requester) == Authorization.Allowed) {
             val user = try {
                 firebaseAuth.getUser(uid)
             } catch (e: FirebaseAuthException) {
