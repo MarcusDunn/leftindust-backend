@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component
 class UserMutation(
     private val userDao: UserDao
 ) : Mutation {
+
+    // leave this for now, aydan is working on moving user settings to firestore
     suspend fun setUserSettings(
         uid: ID,
         newSettings: GraphQLUser.Settings,
