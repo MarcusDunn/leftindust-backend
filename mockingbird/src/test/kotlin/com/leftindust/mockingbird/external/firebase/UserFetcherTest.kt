@@ -4,6 +4,7 @@ import com.google.firebase.auth.ExportedUserRecord
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserRecord
 import com.leftindust.mockingbird.auth.Authorizer
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.extensions.Authorization
 import io.mockk.coEvery
 import io.mockk.every
@@ -19,13 +20,16 @@ internal class UserFetcherTest {
     @Test
     fun getUserInfo() {
         val mockkUser = mockk<UserRecord>()
+        val mediqToken = mockk<MediqToken>() {
+            every { uid } returns "not uid"
+        }
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { firebaseAuth.getUser("uid") } returns mockkUser
 
         val userFetcher = UserFetcher(authorizer, firebaseAuth)
 
-        val result = runBlocking { userFetcher.getUserInfo("uid", mockk()) }.getOrThrow()
+        val result = runBlocking { userFetcher.getUserInfo("uid", mediqToken) }.getOrThrow()
 
         assertEquals(mockkUser, result)
     }
