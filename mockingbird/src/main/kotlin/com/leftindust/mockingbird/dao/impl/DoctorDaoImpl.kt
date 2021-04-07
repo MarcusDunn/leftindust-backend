@@ -5,14 +5,12 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Doctor
+import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.getOneOrNull
+import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -58,8 +56,18 @@ class DoctorDaoImpl(
 
     override suspend fun addDoctor(
         doctor: GraphQLDoctorInput,
-        requester: MediqToken
+        requester: MediqToken,
+        user: MediqUser?
     ): CustomResult<Doctor, OrmFailureReason> {
-        TODO("Not yet implemented$doctor$requester")
+        return if (requester can (Crud.CREATE to Tables.Doctor)) {
+            val patients = doctor.patients.map {
+                patientRepository.getOneOrNull(it.toLong())
+                    ?: return Failure(DoesNotExist("could not find a patient with id: $it"))
+            }
+            val doctorEntity = Doctor(doctor, user, patients)
+            return Success(doctorRepository.save(doctorEntity))
+        } else {
+            Failure(NotAuthorized(requester, "cannot create to doctors"))
+        }
     }
 }

@@ -7,6 +7,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.extensions.Success
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -68,5 +70,22 @@ internal class DoctorDaoImplTest {
         val actual = runBlocking { doctorDaoImpl.getByDoctor(1000L, mockk()) }.getOrThrow()
 
         assertEquals(mockkDoctor, actual)
+    }
+
+    @Test
+    fun addDoctor() {
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val doctor = mockk<Doctor>()
+        every { doctorRepository.save(any()) } returns doctor
+
+        val doctorDaoImpl =
+            DoctorDaoImpl(authorizer, doctorRepository, doctorPatientRepository, patientRepository, visitRepository)
+
+        val graphQLDoctorInput = mockk<GraphQLDoctorInput>(relaxed = true)
+
+        val result = runBlocking { doctorDaoImpl.addDoctor(graphQLDoctorInput, mockk()) }
+
+        assertEquals(Success(doctor), result)
     }
 }

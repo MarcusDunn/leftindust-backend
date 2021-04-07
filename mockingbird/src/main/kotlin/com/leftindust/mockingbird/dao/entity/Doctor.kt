@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import biweekly.component.VEvent
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import java.sql.Timestamp
 import javax.persistence.*
 
@@ -22,6 +23,21 @@ class Doctor(
     @Embedded
     var schedule: Schedule = Schedule()
 ) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones, user) {
+    constructor(graphQLDoctorInput: GraphQLDoctorInput, user: MediqUser?, patients: Collection<Patient>) : this(
+        firstName = graphQLDoctorInput.firstName,
+        lastName = graphQLDoctorInput.lastName,
+        middleName = graphQLDoctorInput.middleName,
+        dateOfBirth = Timestamp(graphQLDoctorInput.dateOfBirth.unixMilliseconds),
+        addresses = graphQLDoctorInput.addresses.map { Address(it) }.toSet(),
+        emails = graphQLDoctorInput.emails.map { Email(it) }.toSet(),
+        phones = graphQLDoctorInput.phones.map { Phone(it) }.toSet(),
+        user = user,
+        // patients handled in following block
+        title = graphQLDoctorInput.title,
+        schedule = Schedule(),
+    ) {
+        this.patients = patients.map { DoctorPatient(it, this) }.toSet()
+    }
 
     fun addPatient(patient: Patient): Doctor {
         val doctorPatient = DoctorPatient(doctor = this, patient = patient)
