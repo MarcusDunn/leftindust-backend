@@ -118,7 +118,7 @@ liquibase {
 // test properties
 tasks.withType<Test> {
     useJUnitPlatform {
-        excludeTags("Integration")
+        excludeTags("Integration", "Performance")
     }
 
     testLogging {
