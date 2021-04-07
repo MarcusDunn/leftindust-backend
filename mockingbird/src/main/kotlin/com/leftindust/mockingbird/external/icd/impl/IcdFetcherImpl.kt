@@ -33,8 +33,7 @@ class IcdFetcherImpl(
         releaseId: String,
         code: FoundationIcdCode
     ): CustomResult<GraphQLIcdLinearizationEntity, HttpFailure> {
-        return getLinearizationEntity(releaseId, code = code)
-
+        TODO()
     }
 
     override suspend fun linearization(
@@ -50,21 +49,10 @@ class IcdFetcherImpl(
         query: String,
         flatResults: Boolean
     ): CustomResult<GraphQLIcdSearchResult, HttpFailure> {
-        return getLinearizationSearch(releaseId, linearizationName, query, flatResults)
-    }
-
-    private suspend fun getLinearizationSearch(
-        releaseId: String,
-        linearizationName: String,
-        query: String,
-        flatResults: Boolean,
-    ): CustomResult<GraphQLIcdSearchResult, HttpFailure> {
         val url =
             "${config.BASE_URL}/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
         return kotlin.runCatching {
-            Success(
-                getUrlWithIcdHeaders<GraphQLIcdSearchResult>(url)
-            )
+            Success(getUrlWithIcdHeaders<GraphQLIcdSearchResult>(url))
         }.getOrElse {
             Failure(
                 reason = HttpFailure(
@@ -136,12 +124,12 @@ class IcdFetcherImpl(
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {
-        return client.get {
+        val start = System.nanoTime()
+        return client.get<T> {
             url(url)
             header("Accept", "application/json")
             header("Accept-Language", "en")
             header("API-Version", "v2")
-        }
+        }.also { println("networkTime: ${(System.nanoTime() - start) / 1_000_000F} ms") }
     }
 }
-

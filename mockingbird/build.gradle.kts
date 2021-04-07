@@ -139,6 +139,12 @@ val integrationTest = task<Test>("integrationTest") {
     }
 }
 
+val performanceTest = task<Test>("performanceTest") {
+    useJUnitPlatform {
+        includeTags("Performance")
+    }
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         useIR = true
