@@ -13,6 +13,7 @@ import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.getOneOrNull
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -53,5 +54,12 @@ class DoctorDaoImpl(
             doctorRepository.getOneOrNull(did)
                 ?: return Failure(DoesNotExist("doctor with did: $did was not found"))
         }
+    }
+
+    override suspend fun addDoctor(
+        doctor: GraphQLDoctorInput,
+        requester: MediqToken
+    ): CustomResult<Doctor, OrmFailureReason> {
+        TODO("Not yet implemented$doctor$requester")
     }
 }
