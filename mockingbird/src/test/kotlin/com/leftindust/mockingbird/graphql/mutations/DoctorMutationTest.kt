@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -28,9 +29,13 @@ internal class DoctorMutationTest {
             coEvery { addDoctor(any(), any()) } returns Success(doctor)
         }
 
+        val graphQLDoctorInput = mockk<GraphQLDoctorInput>() {
+            every { user } returns null
+        }
+
         val doctorMutation = DoctorMutation(doctorDao)
 
-        val result = runBlocking { doctorMutation.addDoctor(mockk(), graphQLAuthContext) }
+        val result = runBlocking { doctorMutation.addDoctor(graphQLDoctorInput, graphQLAuthContext, mockk()) }
 
         val expected = GraphQLDoctor(doctor, doctor.id!!, graphQLAuthContext)
 

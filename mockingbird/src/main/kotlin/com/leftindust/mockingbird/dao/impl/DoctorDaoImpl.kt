@@ -60,10 +60,10 @@ class DoctorDaoImpl(
         user: MediqUser?
     ): CustomResult<Doctor, OrmFailureReason> {
         return if (requester can (Crud.CREATE to Tables.Doctor)) {
-            val patients = doctor.patients.map {
+            val patients = doctor.patients?.map {
                 patientRepository.getOneOrNull(it.toLong())
                     ?: return Failure(DoesNotExist("could not find a patient with id: $it"))
-            }
+            } ?: emptyList()
             val doctorEntity = Doctor(doctor, user, patients)
             return Success(doctorRepository.save(doctorEntity))
         } else {
