@@ -43,7 +43,7 @@ data class GraphQLVisit(
         return visitDao.getVisitByVid(nnVid, authToken)
             .getOrThrow()
             .event
-            .let { GraphQLEvent(it, it.id!!.toLong(), authContext) }
+            .let { GraphQLEvent.Unowned(it) } // todo make this a doctor patient event
     }
 
     suspend fun doctor(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLDoctor {

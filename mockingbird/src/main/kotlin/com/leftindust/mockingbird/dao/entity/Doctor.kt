@@ -45,22 +45,6 @@ class Doctor(
         this.patients = this.patients.toMutableSet().apply { add(doctorPatient) }
         return this
     }
-
-    fun getEventsBetween(from: Timestamp, to: Timestamp): List<DocVEvent> {
-        // TODO: 2021-03-13  remove this is favor of calling directly on schedule
-        return this.schedule.getEventsBetween(from, to).map { DocVEvent(this, it) }
-    }
-
-    data class DocVEvent(val doctor: Doctor) : VEvent() {
-        constructor(doctor: Doctor, it: VEvent) : this(doctor) {
-            summary = it.summary
-            description = it.description
-            dateStart = it.dateStart
-            dateEnd = it.dateEnd
-            dateTimeStamp = it.dateTimeStamp
-            duration = it.duration
-        }
-    }
 }
 
 

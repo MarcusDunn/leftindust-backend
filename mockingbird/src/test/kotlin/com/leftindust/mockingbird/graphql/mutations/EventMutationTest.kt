@@ -24,6 +24,7 @@ internal class EventMutationTest {
         val mockkEvent = mockk<Event>(relaxed = true) {
             every { id } returns 1000
         }
+
         coEvery { eventDao.addEvent(any(), any()) } returns Success(mockkEvent)
 
         val eventMutation = EventMutation(eventDao)
@@ -34,6 +35,6 @@ internal class EventMutationTest {
             )
         }
 
-        assertEquals(GraphQLEvent(mockkEvent, mockkEvent.id!!, mockk()), result)
+        assertEquals(GraphQLEvent.Unowned(mockkEvent), result)
     }
 }

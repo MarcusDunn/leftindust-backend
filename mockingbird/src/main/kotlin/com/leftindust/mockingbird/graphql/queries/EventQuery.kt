@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component
 class EventQuery(private val eventDao: EventDao) : Query {
     suspend fun events(range: GraphQLRangeInput?, graphQLAuthContext: GraphQLAuthContext): List<GraphQLEvent> {
         return when {
-            range != null -> eventDao.getMany(range, graphQLAuthContext.mediqAuthToken).getOrThrow()
+            range != null -> eventDao
+                .getMany(range, graphQLAuthContext.mediqAuthToken)
+                .getOrThrow()
+                .map { GraphQLEvent.Unowned(it) }
             else -> throw IllegalArgumentException("invalid argument combination to events")
-        }.map { GraphQLEvent(it, it.id!!, graphQLAuthContext) }
+        }
     }
 }
