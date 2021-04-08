@@ -1,43 +1,37 @@
 package com.leftindust.mockingbird.dao.entity
 
-import biweekly.component.VEvent
-import biweekly.property.*
-import biweekly.util.Duration
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.*
 import javax.persistence.CascadeType
-import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.OneToMany
 
 @Embeddable
 class Schedule(
-    @Column(name = "schedule_id")
-    val scheduleId: Long? = null,
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "id")
     val events: Set<Event> = emptySet()
 ) {
-    fun getEventsBetween(from: Timestamp, to: Timestamp): List<VEvent> {
+    fun getEventsBetween(from: Timestamp, to: Timestamp): List<GraphQLEvent.Unowned> {
         val utc = TimeZone.getTimeZone("UTC")
         return this.events.flatMap { event ->
             if (event.recurrenceRule == null) {
                 if (isBetween(from, event, to))
-                    sequenceOf(mediqEventAtDate(event, event.startTime))
+                    sequenceOf(GraphQLEvent.Unowned(event))
                 else
                     emptySequence()
             } else {
                 event.recurrenceRule
-                    .getDateIterator(latest(from.toDate(), event.startTime.toDate()), utc)
+                    .getDateIterator(event.startTime, utc)
                     .iterator()
                     .asSequence()
+                    .filter { it.time > from.time }
                     .takeWhile { beforeOrEquals(it, to.toDate()) }
-                    .map { mediqEventAtDate(event, it) }
+                    .map { GraphQLEvent.Unowned(event, it) }
             }
         }
     }
-
-    private fun latest(rhs: Date, lhs: Date) = if (rhs.time > lhs.time) rhs else lhs
 
     private fun Timestamp.toDate() = Date.from(this.toInstant())
 
@@ -48,17 +42,6 @@ class Schedule(
         event: Event,
         to: Timestamp,
     ) = from.time <= event.startTime.time && to.time >= (event.startTime + event.durationMillis).time
-
-    private fun mediqEventAtDate(event: Event, it: Date): VEvent {
-        return VEvent().apply {
-            summary = Summary(event.title)
-            description = Description(event.description)
-            dateStart = DateStart(it)
-            dateEnd = DateEnd(it + event.durationMillis)
-            dateTimeStamp = DateTimeStamp(it)
-            duration = DurationProperty(Duration.fromMillis(event.durationMillis))
-        }
-    }
 
     private operator fun Date.plus(startTime: Timestamp): Date {
         return Date((this.toInstant() + startTime.toInstant()).toEpochMilli())
@@ -74,11 +57,5 @@ class Schedule(
 
     private operator fun Instant.plus(toInstant: Instant): Instant {
         return Instant.ofEpochMilli(this.toEpochMilli() + toInstant.toEpochMilli())
-    }
-
-    fun addEvent(event: Event) {
-        events
-            .toMutableSet()
-            .apply { add(event) }
     }
 }
