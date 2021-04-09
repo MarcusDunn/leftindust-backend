@@ -6,6 +6,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
@@ -73,8 +74,11 @@ sealed class GraphQLEvent(
             graphQLAuthContext = graphQLAuthContext
         )
 
-        fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor {
-            TODO(doctorDao.toString())
+        suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor {
+            return doctorDao
+                .getByDoctor(doctorID.toLong(), graphQLAuthContext.mediqAuthToken)
+                .getOrThrow()
+                .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
         }
 
         override fun equals(other: Any?): Boolean {
