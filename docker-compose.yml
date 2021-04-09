@@ -7,7 +7,7 @@ services:
       test: "apk add curl; curl -X GET \"http://127.0.0.1:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
   mockingbird-postgres:
     environment:
       POSTGRES_DB: mediq
@@ -18,7 +18,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U mediq" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
   mockingbird:
     environment:
       - WHO_ICD_API=http://mockingbird-icd-api:80/icd
@@ -38,7 +38,7 @@ services:
       test: [ "CMD-SHELL", "curl mockingbird:8080/sdl" ]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 15
   gladio:
     environment:
       - MOCKINGBIRD_URL=http://mockingbird:8080
