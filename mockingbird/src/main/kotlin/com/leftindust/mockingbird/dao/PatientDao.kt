@@ -19,7 +19,7 @@ interface PatientDao {
 
     suspend fun removeByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
     suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
-    suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
+    suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Collection<Patient>, OrmFailureReason>
     suspend fun addDoctorToPatient(
         patientInput: ID,
         doctorInput: ID,

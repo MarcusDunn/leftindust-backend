@@ -43,25 +43,14 @@ data class GraphQLVisit(
         return visitDao.getVisitByVid(nnVid, authToken)
             .getOrThrow()
             .event
-            .let { GraphQLEvent.Unowned(it) } // todo make this a doctor patient event
-    }
-
-    suspend fun doctor(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLDoctor {
-        val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
-        return visitDao
-            .getVisitByVid(nnVid, authToken)
-            .getOrThrow()
-            .doctor
-            .let { GraphQLDoctor(it, it.id!!, authContext) }
-    }
-
-    suspend fun patient(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLPatient {
-        val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get patient on visit with null vid")
-        return visitDao
-            .getVisitByVid(nnVid, authToken)
-            .getOrThrow()
-            .patient
-            .let { GraphQLPatient(it, it.id!!, authContext) }
+            .let {
+                GraphQLEvent(
+                    event = it,
+                    doctors = it.doctors.map { gqlID(it.id!!) },
+                    patients = it.patients.map { gqlID(it.id!!) },
+                    authContext
+                )
+            }
     }
 
     fun icd(): GraphQLIcdSimpleEntity {

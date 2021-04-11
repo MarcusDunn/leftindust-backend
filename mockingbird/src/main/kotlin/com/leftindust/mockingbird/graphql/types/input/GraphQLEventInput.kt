@@ -8,5 +8,6 @@ data class GraphQLEventInput(
     val description: String? = null,
     val start: GraphQLTimeInput,
     val end: GraphQLTimeInput,
-    val doctor: ID? = null,
+    val doctors: List<ID>? = emptyList(),
+    val patients: List<ID>? = emptyList(),
 )

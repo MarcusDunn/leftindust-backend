@@ -28,32 +28,25 @@ class VisitQuery(
                 visitDao
                     .getVisitByVid(vid.toLong(), graphQLAuthContext.mediqAuthToken)
                     .getOrThrow()
-            }
-            pid != null && did != null && strict -> {
-                visitDao
-                    .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
-                    .getOrThrow()
-                    .filter { it.doctor.id!! == did.toLong() }
-            }
-            pid != null && did != null && !strict -> {
-                val patientVisits = visitDao
-                    .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
-                    .getOrThrow()
-                val doctorVisits = visitDao
-                    .getVisitsByDoctor(did.toLong(), graphQLAuthContext.mediqAuthToken)
-                    .getOrThrow()
-                (patientVisits + doctorVisits).toSet()
+            }.map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
+            pid != null && did != null -> {
+                val patientVisits = visits(pid = pid, graphQLAuthContext = graphQLAuthContext)
+                val doctorVisits = visits(did = did, graphQLAuthContext = graphQLAuthContext)
+                (patientVisits + doctorVisits).distinctBy { it.vid }
             }
             pid != null -> visitDao
                 .getVisitsForPatientPid(pid.toLong(), graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
+                .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             did != null -> visitDao
                 .getVisitsByDoctor(did.toLong(), graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
+                .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             example != null -> visitDao
                 .getByExample(example, strict, graphQLAuthContext.mediqAuthToken)
                 .getOrThrow()
+                .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             else -> throw GraphQLKotlinException("invalid arguments to visits")
-        }.map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
+        }
     }
 }

@@ -5,14 +5,14 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import integration.util.EntityStore
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable
 
 internal class EventDaoImplTest {
     private val hibernateEventRepository = mockk<HibernateEventRepository>()
+    private val hibernatePatientRepository = mockk<HibernatePatientRepository>()
+    private val hibernateDoctorRepository = mockk<HibernateDoctorRepository>()
     private val authorizer = mockk<Authorizer>()
 
     @Test
@@ -34,11 +36,26 @@ internal class EventDaoImplTest {
         val eventEntity = mockk<Event>()
         every { hibernateEventRepository.save(any()) } returns eventEntity
 
-        val eventDao = EventDaoImpl(hibernateEventRepository, authorizer)
+        every { hibernatePatientRepository.getOne(any()) } returns mockk() {
+            every { schedule } returns mockk() {
+                every { addEvent(any()) } just runs
+            }
+        }
+
+        every { hibernateDoctorRepository.getOne(any()) } returns mockk() {
+            every { schedule } returns mockk() {
+                every { addEvent(any()) } just runs
+            }
+        }
+
+        val eventDao = EventDaoImpl(
+            hibernateEventRepository, hibernatePatientRepository,
+            hibernateDoctorRepository, authorizer
+        )
         val event = EntityStore.graphQLEventInput("EventDaoImplTest.addEvent")
         val result = runBlocking { eventDao.addEvent(event, mockk()) }
 
-        assertEquals(Success(eventEntity), result)
+        assertEquals(Event(event, doctors = emptySet(), patients = emptySet()), result.getOrNull())
     }
 
     @Test
@@ -60,7 +77,10 @@ internal class EventDaoImplTest {
             every { toList() } returns listOfEvent
         }
 
-        val eventDao = EventDaoImpl(hibernateEventRepository, authorizer)
+        val eventDao = EventDaoImpl(
+            hibernateEventRepository, hibernatePatientRepository,
+            hibernateDoctorRepository, authorizer
+        )
 
         val result = runBlocking { eventDao.getMany(GraphQLRangeInput(0, 20), mockk()) }
 

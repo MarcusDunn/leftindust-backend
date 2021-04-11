@@ -28,13 +28,14 @@ internal class EventMutationTest {
         coEvery { eventDao.addEvent(any(), any()) } returns Success(mockkEvent)
 
         val eventMutation = EventMutation(eventDao)
+        val event = EntityStore.graphQLEventInput("EventMutationTest.addEvent")
         val result = runBlocking {
             eventMutation.addEvent(
-                EntityStore.graphQLEventInput("EventMutationTest.addEvent"),
+                event,
                 graphQLAuthContext
             )
         }
 
-        assertEquals(GraphQLEvent.Unowned(mockkEvent), result)
+        assertEquals(GraphQLEvent(mockkEvent, doctors = event.doctors!!, patients = event.patients!!, graphQLAuthContext), result)
     }
 }

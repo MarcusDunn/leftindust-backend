@@ -6,7 +6,9 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class EventDaoImpl(
     @Autowired private val hibernateEventRepository: HibernateEventRepository,
+    @Autowired private val hibernatePatientRepository: HibernatePatientRepository,
+    @Autowired private val hibernateDoctorRepository: HibernateDoctorRepository,
     @Autowired authorizer: Authorizer
 ) : EventDao, AbstractHibernateDao(authorizer) {
     override suspend fun addEvent(
@@ -26,8 +30,16 @@ class EventDaoImpl(
         requester: MediqToken
     ): CustomResult<Event, OrmFailureReason> {
         return if (requester can (Crud.CREATE to Tables.Event)) {
-            val eventEntity = Event(event)
-            Success(hibernateEventRepository.save(eventEntity))
+            val patients = event.patients
+                ?.map { hibernatePatientRepository.getOne(it.toLong()) }
+                ?.toSet()
+                ?: emptySet()
+            val doctors = event.doctors
+                ?.map { hibernateDoctorRepository.getOne(it.toLong()) }
+                ?.toSet()
+                ?: emptySet()
+            val eventEntity = Event(event, doctors, patients)
+            return Success(eventEntity)
         } else {
             Failure(NotAuthorized(requester, "cannot create an event"))
         }

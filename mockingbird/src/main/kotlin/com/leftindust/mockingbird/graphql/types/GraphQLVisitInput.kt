@@ -8,6 +8,4 @@ data class GraphQLVisitInput(
     val title: String? = null,
     val description: String? = null,
     val foundationIcdCode: FoundationIcdCodeInput,
-    val doctor: ID,
-    val patient: ID,
 )

@@ -47,15 +47,17 @@ internal class DoctorDaoImplTest {
         val mockkDoctor = mockk<Doctor>()
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { visitRepository.getOne(any()) } returns mockk {
-            every { doctor } returns mockkDoctor
+        every { visitRepository.getOne(any()) } returns mockk() {
+            every { event } returns mockk() {
+                every { doctors } returns setOf(mockkDoctor)
+            }
         }
 
         val doctorDaoImpl =
             DoctorDaoImpl(authorizer, doctorRepository, doctorPatientRepository, patientRepository, visitRepository)
         val actual = runBlocking { doctorDaoImpl.getByVisit(1000L, mockk()) }.getOrThrow()
 
-        assertEquals(mockkDoctor, actual)
+        assertEquals(setOf(mockkDoctor), actual)
     }
 
     @Test

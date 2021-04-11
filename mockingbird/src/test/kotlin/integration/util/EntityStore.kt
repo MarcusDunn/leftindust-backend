@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
+import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
@@ -129,6 +130,8 @@ object EntityStore {
             description = "some description",
             start = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:00:00")),
             end = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 10:00:00")),
+            doctors = listOf(),
+            patients = listOf(),
         )
 
     fun event(testName: String) = Event(
@@ -136,6 +139,7 @@ object EntityStore {
         description = "some other description",
         startTime = Timestamp.valueOf("2020-01-02 11:00:00"),
         durationMillis = Duration.ofHours(1).toMillis(),
-        recurrenceRule = null,
+        emptySet(),
+        emptySet()
     )
 }

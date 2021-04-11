@@ -1,9 +1,10 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.leftindust.mockingbird.auth.Authorizer
-import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.entity.Schedule
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -22,6 +23,7 @@ import javax.persistence.criteria.CriteriaQuery
 
 internal class VisitDaoImplTest {
     private val authorizer = mockk<Authorizer>()
+    private val eventRepository = mockk<HibernateEventRepository>()
     private val visitRepository = mockk<HibernateVisitRepository>()
     private val doctorRepository = mockk<HibernateDoctorRepository>()
     private val patientRepository = mockk<HibernatePatientRepository>()
@@ -38,7 +40,14 @@ internal class VisitDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(
+            authorizer,
+            eventRepository,
+            visitRepository,
+            doctorRepository,
+            patientRepository,
+            entityManager
+        )
 
         val result = runBlocking { visitDaoImpl.getVisitsForPatientPid(1000, mockk()) }.getOrThrow()
 
@@ -53,7 +62,14 @@ internal class VisitDaoImplTest {
 
         every { visitRepository.getOne(1000) } returns mockkVisit
 
-        val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(
+            authorizer,
+            eventRepository,
+            visitRepository,
+            doctorRepository,
+            patientRepository,
+            entityManager
+        )
 
         val result = runBlocking { visitDaoImpl.getVisitByVid(1000, mockk()) }.getOrThrow()
 
@@ -69,7 +85,7 @@ internal class VisitDaoImplTest {
 
         every { visitRepository.getAllByDoctorId(1000L) } returns listOf(mockkVisit)
 
-        val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(authorizer, eventRepository , visitRepository, doctorRepository, patientRepository, entityManager)
 
         val result = runBlocking { visitDaoImpl.getVisitsByDoctor(1000, mockk()) }.getOrThrow()
 
@@ -78,27 +94,27 @@ internal class VisitDaoImplTest {
 
     @Test
     fun addVisit() {
-        val mockkVisit = mockk<Visit>()
-        val mockkEvent = mockk<Event>() {
-            every { id } returns 4000L
-        }
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-
-        every { doctorRepository.getOne(1000) } returns mockk() {
-            every { schedule } returns mockk {
-                every { events } returns setOf(mockkEvent)
-            }
+        every { doctorRepository.getOne(1000) } returns mockk {
+            every { id } returns 1000
+            every { schedule } returns Schedule()
         }
-        every { patientRepository.getOne(2000) } returns mockk()
-        every { visitRepository.save(any()) } returns mockkVisit
+        every { patientRepository.getOne(2000) } returns mockk {
+            every { id } returns 2000
+            every { schedule } returns Schedule()
+        }
 
-        val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
+        every { eventRepository.getOne(4000) } returns mockk()
+
+        val mockkVisit = mockk<Visit>()
+
+        val visitDaoImpl = VisitDaoImpl(authorizer,eventRepository,  visitRepository, doctorRepository, patientRepository, entityManager)
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
-            every { doctor } returns gqlID(1000)
-            every { patient } returns gqlID(2000)
             every { event } returns gqlID(4000)
         }
+
+        every { visitRepository.save(any()) } returns mockkVisit
 
         val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }.getOrThrow()
 
@@ -122,7 +138,7 @@ internal class VisitDaoImplTest {
                 }
             }
         }
-        val visitDaoImpl = VisitDaoImpl(authorizer, visitRepository, doctorRepository, patientRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(authorizer, eventRepository, visitRepository, doctorRepository, patientRepository, entityManager)
         val result = runBlocking {
             visitDaoImpl.getByExample(
                 GraphQLVisitExample(vid = StringFilter(eq = "10000")),

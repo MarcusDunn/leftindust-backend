@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
@@ -24,6 +25,7 @@ import javax.persistence.EntityNotFoundException
 @Transactional
 class VisitDaoImpl(
     authorizer: Authorizer,
+    private val eventRepository: HibernateEventRepository,
     private val visitRepository: HibernateVisitRepository,
     private val doctorRepository: HibernateDoctorRepository,
     private val patientRepository: HibernatePatientRepository,
@@ -93,14 +95,9 @@ class VisitDaoImpl(
         ).map { Action(it) }
 
         return if (requester has requiredPermissions) {
-            val doctor = doctorRepository.getOneOrNull(visitInput.doctor.toLong())
-                ?: return Failure(DoesNotExist("no doc with did: ${visitInput.doctor}"))
-            val patient = patientRepository.getOneOrNull(visitInput.patient.toLong())
-                ?: return Failure(DoesNotExist("no patient with pid ${visitInput.patient}"))
-            val event = doctor.schedule.events.find { it.id == visitInput.event.toLong() }
-                ?: return Failure(DoesNotExist("no event attached to that doctor with that id: ${visitInput.event}"))
+            val event = eventRepository.getOne(visitInput.event.toLong())
 
-            Success(visitRepository.save(Visit(visitInput, patient, doctor, event)))
+            Success(visitRepository.save(Visit(visitInput, event)))
         } else {
             Failure(NotAuthorized(requester))
         }

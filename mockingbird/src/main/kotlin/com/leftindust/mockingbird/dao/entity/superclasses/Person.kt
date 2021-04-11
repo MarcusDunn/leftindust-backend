@@ -1,9 +1,6 @@
 package com.leftindust.mockingbird.dao.entity.superclasses
 
-import com.leftindust.mockingbird.dao.entity.Address
-import com.leftindust.mockingbird.dao.entity.Email
-import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.entity.Phone
+import com.leftindust.mockingbird.dao.entity.*
 import java.sql.Timestamp
 import javax.persistence.*
 
@@ -24,9 +21,11 @@ abstract class Person(
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var phone: Set<Phone> = emptySet(),
     @OneToOne
-    var user: MediqUser? = null
+    var user: MediqUser? = null,
+    @Embedded
+    var schedule: Schedule = Schedule(),
 ) : AbstractJpaPersistable<Long>() {
     override fun toString(): String {
-        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, addresses=$address, emails=$email, phones=$phone)"
+        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, email=$email, phone=$phone, user=$user, schedule=$schedule)"
     }
 }

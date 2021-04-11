@@ -90,11 +90,11 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
+    override suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Collection<Patient>, OrmFailureReason> {
         return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
             vid ?: return Failure(InvalidArguments("cannot find visit with null vid"))
             try {
-                visitRepository.getOne(vid).patient
+                visitRepository.getOne(vid).event.patients
             } catch (e: JpaObjectRetrievalFailureException) {
                 null
             }

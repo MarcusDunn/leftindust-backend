@@ -5,124 +5,42 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("Event")
-sealed class GraphQLEvent(
+data class GraphQLEvent(
     val title: String,
     val description: String?,
     val startTime: GraphQLTime,
-    val endTime: GraphQLTime
+    val endTime: GraphQLTime,
+    private val doctors: List<ID>,
+    private val patients: List<ID>,
+    private val authContext: GraphQLAuthContext
 ) {
-    @GraphQLName("UnownedEvent")
-    class Unowned(
-        title: String,
-        description: String?,
-        startTime: GraphQLTime,
-        endTime: GraphQLTime
-    ) : GraphQLEvent(title, description, startTime, endTime) {
-        constructor(event: Event) : this(
-            title = event.title,
-            description = event.description,
-            startTime = GraphQLTime(event.startTime),
-            endTime = GraphQLTime(event.startTime.time + event.durationMillis),
-        )
+    constructor(event: Event, doctors: List<ID>, patients: List<ID>, authContext: GraphQLAuthContext) : this(
+        title = event.title,
+        description = event.description,
+        startTime = GraphQLTime(event.startTime),
+        endTime = GraphQLTime(event.startTime.time + event.durationMillis),
+        doctors,
+        patients,
+        authContext
+    )
 
-        constructor(event: Event, date: Date) : this(
-            title = event.title,
-            description = event.description,
-            startTime = GraphQLTime(date.time),
-            endTime = GraphQLTime(date.time + event.durationMillis),
-        )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            if (!super.equals(other)) return false
-            return true
-        }
-
-        override fun hashCode(): Int {
-            return super.hashCode()
-        }
+    suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
+        return doctors
+            .map { doctorDao.getByDoctor(it.toLong(), authContext.mediqAuthToken) }
+            .map { it.getOrThrow() }
+            .map { GraphQLDoctor(it, it.id!!, authContext) }
     }
 
-    @GraphQLName("DoctorEvent")
-    class Doctor(
-        title: String,
-        description: String?,
-        startTime: GraphQLTime,
-        endTime: GraphQLTime,
-        private val doctorID: ID,
-        private val graphQLAuthContext: GraphQLAuthContext,
-    ) : GraphQLEvent(title, description, startTime, endTime) {
-        constructor(event: Event, doctorID: ID, graphQLAuthContext: GraphQLAuthContext) : this(
-            event = Unowned(event),
-            doctorID = doctorID,
-            graphQLAuthContext = graphQLAuthContext
-        )
-
-        constructor(event: GraphQLEvent, doctorID: ID, graphQLAuthContext: GraphQLAuthContext) : this(
-            title = event.title,
-            description = event.description,
-            startTime = event.startTime,
-            endTime = event.endTime,
-            doctorID = doctorID,
-            graphQLAuthContext = graphQLAuthContext
-        )
-
-        suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor {
-            return doctorDao
-                .getByDoctor(doctorID.toLong(), graphQLAuthContext.mediqAuthToken)
-                .getOrThrow()
-                .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            if (!super.equals(other)) return false
-
-            other as Doctor
-
-            if (doctorID != other.doctorID) return false
-            if (graphQLAuthContext != other.graphQLAuthContext) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = super.hashCode()
-            result = 31 * result + doctorID.hashCode()
-            result = 31 * result + graphQLAuthContext.hashCode()
-            return result
-        }
+    suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> {
+        return patients
+            .map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
+            .map { it.getOrThrow() }
+            .map { GraphQLPatient(it, it.id!!, authContext) }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as GraphQLEvent
-
-        if (title != other.title) return false
-        if (description != other.description) return false
-        if (startTime != other.startTime) return false
-        if (endTime != other.endTime) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = title.hashCode()
-        result = 31 * result + (description?.hashCode() ?: 0)
-        result = 31 * result + startTime.hashCode()
-        result = 31 * result + endTime.hashCode()
-        return result
-    }
-
-
 }

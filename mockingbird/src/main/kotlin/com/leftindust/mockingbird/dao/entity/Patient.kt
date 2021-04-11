@@ -21,6 +21,8 @@ class Patient(
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
+    schedule: Schedule = Schedule(),
+    user: MediqUser? = null,
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
     var sex: Sex,
@@ -39,7 +41,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones) {
+) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones, user, schedule) {
 
     @Throws(IllegalArgumentException::class)
     constructor(

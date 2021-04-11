@@ -14,11 +14,12 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
             .addEvent(event, graphQLAuthContext.mediqAuthToken)
             .getOrThrow()
             .let {
-                if (event.doctor == null) {
-                    GraphQLEvent.Unowned(it)
-                } else {
-                    GraphQLEvent.Doctor(it, event.doctor, graphQLAuthContext)
-                }
+                GraphQLEvent(
+                    event = it,
+                    doctors = event.doctors ?: emptyList(),
+                    patients = event.patients ?: emptyList(),
+                    authContext = graphQLAuthContext
+                )
             }
     }
 }
