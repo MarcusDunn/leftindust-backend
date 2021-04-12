@@ -3,12 +3,12 @@ package com.leftindust.mockingbird.dao
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import org.springframework.data.jpa.repository.JpaRepository
 
 interface DoctorDao {
-    suspend fun getByPatient(pid: Long, requester: MediqToken): CustomResult<List<Doctor>, OrmFailureReason>
-    suspend fun getByVisit(vid: Long, requester: MediqToken): CustomResult<Collection<Doctor>, OrmFailureReason>
-    suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<Doctor, OrmFailureReason>
-    suspend fun addDoctor(doctor: GraphQLDoctorInput, requester: MediqToken, user: MediqUser? = null): CustomResult<Doctor, OrmFailureReason>
+    suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Doctor>
+    suspend fun getByEvent(eid: Long, requester: MediqToken): Collection<Doctor>
+    suspend fun getByDoctor(did: Long, requester: MediqToken): Doctor
+    suspend fun addDoctor(doctor: GraphQLDoctorInput, requester: MediqToken, user: MediqUser? = null): Doctor
 }

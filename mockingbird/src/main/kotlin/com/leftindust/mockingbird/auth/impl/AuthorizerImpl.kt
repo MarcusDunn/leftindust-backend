@@ -23,14 +23,15 @@ internal class AuthorizerImpl(
 
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
         return logAuth(user, action) {
-            if (authorizationDao.isAdmin(
-                    user.uid ?: return@logAuth Authorization.Denied
-                )
-            ) return@logAuth Authorization.Allowed
-            return@logAuth (getRoles(user) ?: return@logAuth Authorization.Denied)
-                .map { it.action }
-                .any { it.isSuperset(action) }
-                .toAuthorization()
+            if (authorizationDao.isAdmin(user.uid ?: return@logAuth Authorization.Denied)
+            ) {
+                Authorization.Allowed
+            } else {
+                (getRoles(user) ?: return@logAuth Authorization.Denied)
+                    .map { it.action }
+                    .any { it.isSuperset(action) }
+                    .toAuthorization()
+            }
         }
     }
 

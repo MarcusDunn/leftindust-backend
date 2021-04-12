@@ -5,5 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface HibernateEventRepository : JpaRepository<Event, Long> {
-}
+interface HibernateEventRepository : JpaRepository<Event, Long>

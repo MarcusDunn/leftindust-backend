@@ -3,14 +3,16 @@ package com.leftindust.mockingbird.dao.impl
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -23,34 +25,33 @@ class DoctorDaoImpl(
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val patientRepository: HibernatePatientRepository,
-    @Autowired private val visitRepository: HibernateVisitRepository,
+    @Autowired private val eventRepository: HibernateEventRepository
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getByPatient(pid: Long, requester: MediqToken): CustomResult<List<Doctor>, OrmFailureReason> {
-
-        return if (requester can (Crud.READ to Tables.Patient)) {
-            val patient = patientRepository.getOneOrNull(pid)
-                ?: return Failure(DoesNotExist("patient with pid: $pid was not found"))
-            val doctors = doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
-            Success(doctors)
+    override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Doctor> {
+        val readDoctors = Crud.READ to Tables.Doctor
+        return if (requester can readDoctors) {
+            val patient = patientRepository.getOne(pid)
+            doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
         } else {
-            Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, readDoctors)
         }
     }
 
-    override suspend fun getByVisit(vid: Long, requester: MediqToken): CustomResult<Collection<Doctor>, OrmFailureReason> {
-        return if (requester can (Crud.READ to Tables.Visit)) {
-            val visit = visitRepository.getOneOrNull(vid)
-                ?: return Failure(DoesNotExist("cannot find visit with vid: $vid"))
-            Success(visit.event.doctors)
+    override suspend fun getByEvent(eid: Long, requester: MediqToken): Collection<Doctor> {
+        val readDoctors = Crud.READ to Tables.Doctor
+        return if (requester can readDoctors) {
+            eventRepository.getOne(eid).doctors
         } else {
-            Failure(NotAuthorized(requester, "cannot READ to Visit"))
+            throw NotAuthorizedException(requester, readDoctors)
         }
     }
 
-    override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<Doctor, OrmFailureReason> {
-        return authenticateAndThen(requester, Crud.READ to Tables.Doctor) {
-            doctorRepository.getOneOrNull(did)
-                ?: return Failure(DoesNotExist("doctor with did: $did was not found"))
+    override suspend fun getByDoctor(did: Long, requester: MediqToken): Doctor {
+        val readDoctors = Crud.READ to Tables.Doctor
+        return if (requester can readDoctors) {
+            doctorRepository.getOne(did)
+        } else {
+            throw NotAuthorizedException(requester, readDoctors)
         }
     }
 
@@ -58,16 +59,16 @@ class DoctorDaoImpl(
         doctor: GraphQLDoctorInput,
         requester: MediqToken,
         user: MediqUser?
-    ): CustomResult<Doctor, OrmFailureReason> {
-        return if (requester can (Crud.CREATE to Tables.Doctor)) {
-            val patients = doctor.patients?.map {
-                patientRepository.getOneOrNull(it.toLong())
-                    ?: return Failure(DoesNotExist("could not find a patient with id: $it"))
-            } ?: emptyList()
+    ): Doctor {
+        val createDoctor = Crud.CREATE to Tables.Doctor
+        return if (requester can createDoctor) {
+            val patients = doctor.patients
+                ?.map { patientRepository.getOne(it.toLong()) }
+                ?: emptyList()
             val doctorEntity = Doctor(doctor, user, patients)
-            return Success(doctorRepository.save(doctorEntity))
+            doctorRepository.save(doctorEntity)
         } else {
-            Failure(NotAuthorized(requester, "cannot create to doctors"))
+            throw NotAuthorizedException(requester, createDoctor)
         }
     }
 }

@@ -24,7 +24,7 @@ class EventQuery(
             doctors != null && patients != null -> {
                 val patientEvents = getEventsByPatient(patients, graphQLAuthContext)
                 val doctorEvents = getEventsByDoctor(doctors, graphQLAuthContext)
-                patientEvents + doctorEvents
+                listOf(patientEvents, doctorEvents).flatten()
             }
             doctors != null -> getEventsByDoctor(doctors, graphQLAuthContext)
             patients != null -> getEventsByPatient(patients, graphQLAuthContext)
@@ -56,7 +56,6 @@ class EventQuery(
         graphQLAuthContext: GraphQLAuthContext
     ) = doctors
         .map { doctorDao.getByDoctor(it.toLong(), graphQLAuthContext.mediqAuthToken) }
-        .map { it.getOrThrow() }
         .flatMap { doc ->
             doc.schedule.events.map {
                 GraphQLEvent(

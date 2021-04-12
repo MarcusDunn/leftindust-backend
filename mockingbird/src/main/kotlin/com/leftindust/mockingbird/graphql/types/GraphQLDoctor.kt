@@ -45,20 +45,14 @@ data class GraphQLDoctor(
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =
         patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, it.id!!, authContext) }
-
-
-    suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
-        return visitDao.getVisitsByDoctor(did.toLong(), authToken)
-            .getOrThrow()
-            .map { GraphQLVisit(it, it.id!!, authContext) } // safe nn assertion as we just got from DB
-    }
+    
 
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
         from: GraphQLTime,
         to: GraphQLTime
     ): List<GraphQLEvent> {
-        return doctorDao.getByDoctor(did.toLong(), authToken).getOrThrow()
+        return doctorDao.getByDoctor(did.toLong(), authToken)
             .schedule
             .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
             .map { GraphQLEvent(event = it, doctors = listOf(did), patients = emptyList(), authContext = authContext) }

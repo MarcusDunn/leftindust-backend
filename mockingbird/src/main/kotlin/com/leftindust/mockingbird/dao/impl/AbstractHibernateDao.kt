@@ -52,13 +52,16 @@ abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
         return actions.all { authorizer.getAuthorization(it, this).isAllowed() }
     }
 
-    suspend infix fun MediqToken.can(actions: Action): Boolean {
-        return authorizer.getAuthorization(actions, this).isAllowed()
+    suspend infix fun MediqToken.can(action: Action): Boolean {
+        return authorizer.getAuthorization(action, this).isAllowed()
     }
-
 
     suspend infix fun MediqToken.can(action: Pair<Crud, Tables>): Boolean {
         return authorizer.getAuthorization(Action(action), this).isAllowed()
+    }
+
+    suspend infix fun MediqToken.can(actions: List<Pair<Crud, Tables>>): Boolean {
+        return actions.all { authorizer.getAuthorization(Action(it), this).isAllowed() }
     }
 
     /**

@@ -33,7 +33,6 @@ data class GraphQLEvent(
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
         return doctors
             .map { doctorDao.getByDoctor(it.toLong(), authContext.mediqAuthToken) }
-            .map { it.getOrThrow() }
             .map { GraphQLDoctor(it, it.id!!, authContext) }
     }
 

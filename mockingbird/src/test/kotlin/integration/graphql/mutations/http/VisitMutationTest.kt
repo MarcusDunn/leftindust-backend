@@ -62,8 +62,6 @@ class VisitMutationTest(
                 |   title: "my visit from testing",
                 |   description: "patient has lost thier left foot",
                 |   foundationIcdCode: {code: "122222"},
-                |   doctor: "${doctor.id}",
-                |   patient: "${patient.id!!}"
                 |   })  {
                 |   vid
                 |   }
@@ -91,8 +89,8 @@ class VisitMutationTest(
     }
 
     private fun removeVisitsByDoctor(doctor: Doctor) {
-        hibernateVisitRepository.getAllByDoctorId(doctor.id!!).forEach {
-            hibernateVisitRepository.delete(it)
+        doctor.schedule.events.forEach {
+            hibernateVisitRepository.delete(hibernateVisitRepository.getByEvent_Id(it.id!!))
         }
     }
 

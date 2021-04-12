@@ -53,11 +53,9 @@ data class GraphQLPatient(
         contactDao.getByPatient(pid.toLong(), authToken).getOrThrow().map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =
-        doctorDao.getByPatient(pid.toLong(), authToken).getOrThrow().map { GraphQLDoctor(it, it.id!!, authContext) }
+        doctorDao.getByPatient(pid.toLong(), authToken).map { GraphQLDoctor(it, it.id!!, authContext) }
 
     suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
-        return visitDao.getVisitsForPatientPid(pid.toLong(), authToken)
-            .getOrThrow()
-            .map { GraphQLVisit(it, it.id!!, authContext) } // safe nn assertion as we just got from DB
+        TODO(visitDao.toString())
     }
 }

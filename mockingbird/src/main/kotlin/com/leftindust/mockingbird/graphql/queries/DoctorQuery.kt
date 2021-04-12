@@ -20,10 +20,8 @@ class DoctorQuery(
         return when {
             dids != null -> dids
                 .map { doctorDao.getByDoctor(it.toLong(), authContext.mediqAuthToken) }
-                .map { it.getOrThrow() }
             pid != null -> doctorDao
                 .getByPatient(pid.toLong(), authContext.mediqAuthToken)
-                .getOrThrow()
             else -> throw IllegalArgumentException("invalid argument combination to doctors")
         }.map { GraphQLDoctor(it, it.id!!, authContext) }
     }

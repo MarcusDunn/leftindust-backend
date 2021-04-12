@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.cli.jvm.main
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,7 +27,7 @@ dependencies {
     val ktorVersion = "1.5.0"
     val biweeklyVersion = "0.6.6"
     val firebaseVersion = "7.0.1"
-    val liquibaseVersion = "3.10.1"
+    val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
     val springBootVersion = "2.4.4"
 
@@ -101,7 +102,7 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            "changeLogFile" to "src/main/resources/dbchangelog.xml",
+            "changeLogFile" to "mockingbird/src/main/resources/dbchangelog.xml",
             "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",

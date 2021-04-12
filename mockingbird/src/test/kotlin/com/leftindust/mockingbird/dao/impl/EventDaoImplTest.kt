@@ -55,7 +55,7 @@ internal class EventDaoImplTest {
         val event = EntityStore.graphQLEventInput("EventDaoImplTest.addEvent")
         val result = runBlocking { eventDao.addEvent(event, mockk()) }
 
-        assertEquals(Event(event, doctors = emptySet(), patients = emptySet()), result.getOrNull())
+        assertEquals(eventEntity, result.getOrNull())
     }
 
     @Test
