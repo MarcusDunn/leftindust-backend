@@ -70,7 +70,7 @@ class VisitMutationTest(
             .exchange()
             .verifyOnlyDataExists(mutation)
 
-        removeVisitsByDoctor(doctor)
+        removeVisitsByEvent(event)
         removeEvent(event)
         removeDoctor(doctor)
         removePatient(patient)
@@ -88,10 +88,8 @@ class VisitMutationTest(
         hibernateEventRepository.delete(event)
     }
 
-    private fun removeVisitsByDoctor(doctor: Doctor) {
-        doctor.schedule.events.forEach {
-            hibernateVisitRepository.delete(hibernateVisitRepository.getByEvent_Id(it.id!!))
-        }
+    private fun removeVisitsByEvent(event: Event) {
+        hibernateVisitRepository.delete(hibernateVisitRepository.getByEvent_Id(event.id!!))
     }
 
     private fun addPatient(): Patient {
