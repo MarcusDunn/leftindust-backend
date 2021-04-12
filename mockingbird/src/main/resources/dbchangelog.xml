@@ -1441,13 +1441,22 @@
         </addColumn>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491573732-4">
-        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="patient" constraintName="FKdle6k68ogdsb5dw7piq4np47p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="patient"
+                                 constraintName="FKdle6k68ogdsb5dw7piq4np47p" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491573732-5">
-        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="visit" constraintName="FKom1f1n6vcem0rnyhg8bfw1h8s" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="visit"
+                                 constraintName="FKom1f1n6vcem0rnyhg8bfw1h8s" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491573732-6">
-        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="doctor" constraintName="FKqy3uprb6flk0irodmkdrnj6pu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="attached_user_id" baseTableName="doctor"
+                                 constraintName="FKqy3uprb6flk0irodmkdrnj6pu" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491573732-7">
         <dropColumn columnName="time_booked" tableName="visit"/>
@@ -1466,10 +1475,16 @@
         </addColumn>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491715039-3">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="patient" constraintName="FK4ppqmsg1b23u41q4aaa7hf2pe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="patient"
+                                 constraintName="FK4ppqmsg1b23u41q4aaa7hf2pe" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491715039-4">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="doctor" constraintName="FKtrhh1tqlua01uigq052cssevm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="doctor"
+                                 constraintName="FKtrhh1tqlua01uigq052cssevm" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617491715039-5">
         <dropForeignKeyConstraint baseTableName="patient" constraintName="FKdle6k68ogdsb5dw7piq4np47p"/>
@@ -1489,7 +1504,10 @@
         </addColumn>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617652128005-2">
-        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="event" constraintName="FKkft3gmp0io521plyxvu00cr1e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="event"
+                                 constraintName="FKkft3gmp0io521plyxvu00cr1e" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1617740795117-1">
         <dropForeignKeyConstraint baseTableName="doctor_events" constraintName="FK9w6g50jcfeapp4ejtfmjgxg5y"/>
@@ -1530,16 +1548,28 @@
         </createTable>
     </changeSet>
     <changeSet author="marcus (generated)" id="1618179972108-3">
-        <addForeignKeyConstraint baseColumnNames="patients_id" baseTableName="event_patient" constraintName="FK4i9kcs465pejbskygu8tov29e" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patients_id" baseTableName="event_patient"
+                                 constraintName="FK4i9kcs465pejbskygu8tov29e" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1618179972108-4">
-        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="event_doctor" constraintName="FK7gcq41ycgvrabe0joymhyuynm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="event_doctor"
+                                 constraintName="FK7gcq41ycgvrabe0joymhyuynm" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1618179972108-5">
-        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_doctor" constraintName="FKopfwr1t8xe176661qbvbqfa2t" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_doctor"
+                                 constraintName="FKopfwr1t8xe176661qbvbqfa2t" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1618179972108-6">
-        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_patient" constraintName="FKrxmrv8u5d91btf3wor3roruko" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_patient"
+                                 constraintName="FKrxmrv8u5d91btf3wor3roruko" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1618179972108-7">
         <dropForeignKeyConstraint baseTableName="visit" constraintName="FKc63541y8ppkvsovm00gumv90t"/>
