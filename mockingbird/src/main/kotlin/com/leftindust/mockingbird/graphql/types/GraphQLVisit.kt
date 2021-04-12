@@ -22,7 +22,6 @@ data class GraphQLVisit(
     private val authContext: GraphQLAuthContext,
     private val foundationIcdCode: FoundationIcdCode
 ) {
-    private val authToken = authContext.mediqAuthToken
 
     // The caller must verify that the Visit entity has been persisted by passing the id explicitly,
     // If you come across a reason to pass a visit back to the frontend that has not been persisted,
@@ -40,14 +39,14 @@ data class GraphQLVisit(
 
     suspend fun event(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLEvent {
         val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
-        return visitDao.getVisitByVid(nnVid, authToken)
+        return visitDao.getVisitByVid(nnVid, authContext.mediqAuthToken)
             .getOrThrow()
             .event
-            .let {
+            .let { event ->
                 GraphQLEvent(
-                    event = it,
-                    doctors = it.doctors.map { gqlID(it.id!!) },
-                    patients = it.patients.map { gqlID(it.id!!) },
+                    event = event,
+                    doctors = event.doctors.map { gqlID(it.id!!) },
+                    patients = event.patients.map { gqlID(it.id!!) },
                     authContext
                 )
             }
@@ -56,4 +55,29 @@ data class GraphQLVisit(
     fun icd(): GraphQLIcdSimpleEntity {
         TODO()
     }
+
+    // exclude authContext as it should not be relevant for equality (use === for identity)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GraphQLVisit
+
+        if (vid != other.vid) return false
+        if (title != other.title) return false
+        if (description != other.description) return false
+        if (foundationIcdCode != other.foundationIcdCode) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = vid?.hashCode() ?: 0
+        result = 31 * result + (title?.hashCode() ?: 0)
+        result = 31 * result + (description?.hashCode() ?: 0)
+        result = 31 * result + foundationIcdCode.hashCode()
+        return result
+    }
+
+
 }

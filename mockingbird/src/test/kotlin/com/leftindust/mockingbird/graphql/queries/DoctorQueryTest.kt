@@ -26,9 +26,7 @@ internal class DoctorQueryTest {
 
         val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
 
-        coEvery { doctorDao.getByPatient(1000, authContext.mediqAuthToken) } returns mockk() {
-            every { getOrThrow() } returns listOf(doctor)
-        }
+        coEvery { doctorDao.getByPatient(1000, authContext.mediqAuthToken) } returns listOf(doctor)
 
         val doctorQuery = DoctorQuery(doctorDao)
 
@@ -47,9 +45,7 @@ internal class DoctorQueryTest {
 
         val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
 
-        coEvery { doctorDao.getByDoctor(1000, any()) } returns mockk {
-            every { getOrThrow() } returns doctor
-        }
+        coEvery { doctorDao.getByDoctor(1000, any()) } returns doctor
 
         val doctorQuery = DoctorQuery(doctorDao)
 

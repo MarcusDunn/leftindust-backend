@@ -39,7 +39,7 @@ class EventDaoImpl(
                 ?.toSet()
                 ?: emptySet()
             val eventEntity = Event(event, doctors, patients)
-            return Success(eventEntity)
+            return Success(hibernateEventRepository.save(eventEntity))
         } else {
             Failure(NotAuthorized(requester, "cannot create an event"))
         }
@@ -67,5 +67,13 @@ class EventDaoImpl(
         } else {
             Failure(NotAuthorized(requester, "cannot read events"))
         }
+    }
+
+    override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event> {
+        TODO("Not yet implemented")
     }
 }

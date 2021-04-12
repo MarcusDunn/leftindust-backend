@@ -23,7 +23,6 @@ class DoctorMutation(private val doctorDao: DoctorDao) : Mutation {
         }
         return doctorDao
             .addDoctor(doctor, graphQLAuthContext.mediqAuthToken, user = user)
-            .getOrThrow()
             .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
     }
 }

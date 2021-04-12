@@ -27,7 +27,7 @@ internal class EventQueryTest {
                 every { events } returns mutableSetOf(mockk(relaxed = true))
             }
         }
-        coEvery { doctorDao.getByDoctor(1000, any()) } returns Success(expected)
+        coEvery { doctorDao.getByDoctor(1000, any()) } returns expected
 
         val eventQuery = EventQuery(patientDao, doctorDao)
 
