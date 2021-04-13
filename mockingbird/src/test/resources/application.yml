@@ -14,7 +14,7 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     show-sql: true
   liquibase:
-    change-log: classpath:dbchangelog.xml
+    change-log: classpath:dbchangelog_fresh.xml
     enabled: true
   datasource: # this is overridden by environment variables when tested on push
     driver-class-name: org.h2.Driver

@@ -15,7 +15,7 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     show-sql: true
   liquibase:
-    change-log: classpath:dbchangelog.xml
+    change-log: classpath:dbchangelog_fresh.xml
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver

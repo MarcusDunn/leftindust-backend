@@ -70,8 +70,8 @@ dependencies {
 
     // liquibase runtime dependencies
     liquibaseRuntime("org.postgresql", "postgresql")
-    liquibaseRuntime("org.liquibase", "liquibase-core", "4.2.2")
-    liquibaseRuntime("org.liquibase.ext", "liquibase-hibernate5", "4.2.2")
+    liquibaseRuntime("org.liquibase", "liquibase-core", liquibaseVersion)
+    liquibaseRuntime("org.liquibase.ext", "liquibase-hibernate5", liquibaseVersion)
     liquibaseRuntime("org.springframework.boot", "spring-boot-starter-data-jpa")
     liquibaseRuntime("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     liquibaseRuntime("net.sf.biweekly", "biweekly", "0.6.6")
