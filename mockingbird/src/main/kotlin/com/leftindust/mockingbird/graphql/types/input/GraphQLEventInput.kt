@@ -23,7 +23,7 @@ data class GraphQLEventInput(
     init {
         if (allDay == true && end != null) {
             throw IllegalArgumentException("you cannot set `end` and `allDay` in GraphQLEventInput. allDay was $allDay and end was $end")
-        } else if (allDay != true && end != null) {
+        } else if (allDay != true && end == null) {
             throw IllegalArgumentException("you must set `end` or `allDay` in GraphQLEventInput. allDay was $allDay and end was $end")
         }
     }

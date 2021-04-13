@@ -554,4 +554,9 @@
             <column name="group_id" value="1"/>
         </insert>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1618337259495-1">
+        <addColumn tableName="event">
+            <column name="all_day" type="boolean"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
