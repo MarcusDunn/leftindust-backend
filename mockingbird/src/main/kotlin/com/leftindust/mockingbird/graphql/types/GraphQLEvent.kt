@@ -14,8 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired
 data class GraphQLEvent(
     val title: String,
     val description: String?,
-    val startTime: GraphQLTime,
-    val endTime: GraphQLTime,
+    val startTime: GraphQLTime?,
+    val endTime: GraphQLTime?,
+    val allDay: Boolean,
     private val doctors: List<ID>,
     private val patients: List<ID>,
     private val authContext: GraphQLAuthContext
@@ -24,10 +25,11 @@ data class GraphQLEvent(
         title = event.title,
         description = event.description,
         startTime = GraphQLTime(event.startTime),
-        endTime = GraphQLTime(event.startTime.time + event.durationMillis),
-        doctors,
-        patients,
-        authContext
+        endTime = event.durationMillis?.let { duration -> GraphQLTime(event.startTime.time + duration) },
+        allDay = event.allDay,
+        doctors = doctors,
+        patients = patients,
+        authContext = authContext
     )
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {

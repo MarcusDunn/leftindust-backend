@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import java.sql.Timestamp
-import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.JoinTable
@@ -16,9 +15,9 @@ class Event(
     @Column(name = "start_time")
     var startTime: Timestamp,
     @Column(name = "duration_millis")
-    val durationMillis: Long,
+    val durationMillis: Long?,
     @Column(name = "all_day")
-    val allDay: Boolean,
+    val allDay: Boolean = GraphQLEventInput.allDayDefault,
     @ManyToMany
     @JoinTable(name = "event_doctor")
     val doctors: Set<Doctor>,
@@ -26,16 +25,13 @@ class Event(
     @JoinTable(name = "event_patient")
     val patients: Set<Patient>,
 ) : AbstractJpaPersistable<Long>() {
-    fun atDate(date: Date): Event {
-        return Event(
-            title = title,
-            description = description,
-            startTime = Timestamp.from(date.toInstant()),
-            durationMillis = durationMillis,
-            allDay = allDay,
-            doctors = doctors,
-            patients = patients
-        )
+
+    init {
+        if (allDay && durationMillis != null) {
+            throw IllegalArgumentException("you cannot set `durationMillis` and `allDay`")
+        } else if (!allDay && durationMillis == null) {
+            throw IllegalArgumentException("you must set `startTime/durationMillis` or `allDay`")
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -72,13 +68,12 @@ class Event(
         return "Event(title='$title', description=$description, startTime=$startTime, durationMillis=$durationMillis, allDay=$allDay, doctors=$doctors, patients=$patients)"
     }
 
-    // this is for one off events and as such has no recurrence rule
     constructor(graphQLEventInput: GraphQLEventInput, doctors: Set<Doctor>, patients: Set<Patient>) : this(
         title = graphQLEventInput.title,
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
-        durationMillis = graphQLEventInput.end.toTimestamp().time - graphQLEventInput.start.toTimestamp().time,
-        allDay = graphQLEventInput.allDay ?: false,
+        durationMillis = graphQLEventInput.end?.toTimestamp()?.time?.minus(graphQLEventInput.start.toTimestamp().time),
+        allDay = graphQLEventInput.allDay ?: GraphQLEventInput.allDayDefault,
         doctors = doctors,
         patients = patients
     )

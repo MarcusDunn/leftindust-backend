@@ -49,9 +49,9 @@ internal class ScheduleTest {
             assert(
                 it.startTime.toInstant().isAfter(jan1st2020.toInstant())
             ) { "${it.startTime} is not before jan1st2020" }
-            assert(it.startTime.time + it.durationMillis < jan1st2020.time) {
+            assert(it.startTime.time + it.durationMillis!! < jan1st2020.time) {
                 "${
-                    Timestamp.from(Instant.ofEpochMilli(it.startTime.time + it.durationMillis)).toLocalDateTime()
+                    Timestamp.from(Instant.ofEpochMilli(it.startTime.time + it.durationMillis!!)).toLocalDateTime()
                 } is not after jan1st2020"
             }
         }

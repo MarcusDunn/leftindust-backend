@@ -139,7 +139,7 @@ object EntityStore {
         description = "some other description",
         startTime = Timestamp.valueOf("2020-01-02 11:00:00"),
         durationMillis = Duration.ofHours(1).toMillis(),
-        emptySet(),
-        emptySet()
+        doctors = emptySet(),
+        patients = emptySet()
     )
 }
