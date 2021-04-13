@@ -24,7 +24,6 @@ repositories {
 dependencies {
     val graphQLKotlinVersion = "4.0.0-alpha.17"
     val ktorVersion = "1.5.0"
-    val biweeklyVersion = "0.6.6"
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
@@ -51,9 +50,6 @@ dependencies {
     implementation("io.ktor", "ktor-client-cio", ktorVersion)
     implementation("io.ktor", "ktor-client-gson", ktorVersion)
 
-    // biweekly
-    implementation("net.sf.biweekly", "biweekly", biweeklyVersion)
-
     // hibernate model code generation
     implementation("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
     kapt("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
@@ -74,7 +70,6 @@ dependencies {
     liquibaseRuntime("org.liquibase.ext", "liquibase-hibernate5", liquibaseVersion)
     liquibaseRuntime("org.springframework.boot", "spring-boot-starter-data-jpa")
     liquibaseRuntime("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-    liquibaseRuntime("net.sf.biweekly", "biweekly", "0.6.6")
     liquibaseRuntime(sourceSets.main.get().output)
 
     testImplementation("com.expediagroup", "graphql-kotlin-spring-client", graphQLKotlinVersion)

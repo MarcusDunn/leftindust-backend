@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.graphql.types
 
-import biweekly.util.Duration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
@@ -21,7 +20,6 @@ internal class GraphQLTimeTest {
         assertEquals(
             unixMilliseconds,
             unixMilliseconds1,
-            Duration.fromMillis(unixMilliseconds - unixMilliseconds1).toString()
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.graphql.types
 
-import biweekly.util.ICalDate
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
@@ -46,8 +45,6 @@ data class GraphQLTime(
     )
 
     constructor(timestamp: Timestamp) : this(timestamp.toInstant())
-
-    constructor(iCalDate: ICalDate) : this(iCalDate.toInstant())
 }
 
 
