@@ -6,7 +6,6 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
-import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
@@ -40,12 +39,14 @@ data class GraphQLDoctor(
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
     ) {
-        assert(doctor.id == null || doctor.id == id)
+        if (doctor.id == null || doctor.id == id) {
+            throw IllegalArgumentException("doctor.id does not match id where doctor.id is ${doctor.id} and id is $id")
+        }
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =
         patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, it.id!!, authContext) }
-    
+
 
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
