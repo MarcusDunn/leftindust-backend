@@ -11,7 +11,7 @@ data class GraphQLEventInput(
     val start: GraphQLTimeInput,
     @GraphQLDescription("UTC")
     val end: GraphQLTimeInput,
-    @GraphQLDescription("defaults to false")
+    @GraphQLDescription("defaults to false even if explicitly passed null")
     val allDay: Boolean? = false,
     val doctors: List<ID>? = emptyList(),
     val patients: List<ID>? = emptyList(),

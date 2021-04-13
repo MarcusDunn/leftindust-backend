@@ -17,6 +17,8 @@ class Event(
     var startTime: Timestamp,
     @Column(name = "duration_millis")
     val durationMillis: Long,
+    @Column(name = "all_day")
+    val allDay: Boolean,
     @ManyToMany
     @JoinTable(name = "event_doctor")
     val doctors: Set<Doctor>,
@@ -26,18 +28,20 @@ class Event(
 ) : AbstractJpaPersistable<Long>() {
     fun atDate(date: Date): Event {
         return Event(
-            title,
-            description,
+            title = title,
+            description = description,
             startTime = Timestamp.from(date.toInstant()),
-            durationMillis,
-            doctors,
-            patients
+            durationMillis = durationMillis,
+            allDay = allDay,
+            doctors = doctors,
+            patients = patients
         )
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
 
         other as Event
 
@@ -45,6 +49,7 @@ class Event(
         if (description != other.description) return false
         if (startTime != other.startTime) return false
         if (durationMillis != other.durationMillis) return false
+        if (allDay != other.allDay) return false
         if (doctors != other.doctors) return false
         if (patients != other.patients) return false
 
@@ -57,13 +62,14 @@ class Event(
         result = 31 * result + (description?.hashCode() ?: 0)
         result = 31 * result + startTime.hashCode()
         result = 31 * result + durationMillis.hashCode()
+        result = 31 * result + allDay.hashCode()
         result = 31 * result + doctors.hashCode()
         result = 31 * result + patients.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Event(title='$title', description=$description, startTime=$startTime, durationMillis=$durationMillis, doctors=$doctors, patients=$patients)"
+        return "Event(title='$title', description=$description, startTime=$startTime, durationMillis=$durationMillis, allDay=$allDay, doctors=$doctors, patients=$patients)"
     }
 
     // this is for one off events and as such has no recurrence rule
@@ -72,7 +78,8 @@ class Event(
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
         durationMillis = graphQLEventInput.end.toTimestamp().time - graphQLEventInput.start.toTimestamp().time,
-        doctors,
-        patients
+        allDay = graphQLEventInput.allDay ?: false,
+        doctors = doctors,
+        patients = patients
     )
 }
