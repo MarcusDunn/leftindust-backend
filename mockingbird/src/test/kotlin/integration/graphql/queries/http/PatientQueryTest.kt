@@ -27,9 +27,6 @@ class PatientQueryTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
-    @Autowired
-    private lateinit var patientRepository: HibernatePatientRepository
-
     @Test
     internal fun `test search patient`() {
 
@@ -40,24 +37,7 @@ class PatientQueryTest(
             }
         }
 
-        assertDoesNotThrow {
-            val mutation = "addPatient"
-
-            testClient.post()
-                .uri(GRAPHQL_ENDPOINT)
-                .accept(APPLICATION_JSON_MEDIA_TYPE)
-                .contentType(GRAPHQL_MEDIA_TYPE)
-                .bodyValue(
-                    """mutation { $mutation(patient: {firstName: "marcus", lastName: "dunn", sex: Male, dateOfBirth: {date: {day: 23, month: Mar, year: 2001}}}) { 
-                |   firstName
-                |   }
-                |} """.trimMargin()
-                )
-                .exchange()
-                .expectBody()
-                .jsonPath("$.data.addPatient.firstName")
-                .isEqualTo("marcus")
-        }
+        addPatient()
 
         assertDoesNotThrow {
             val query = "patients"
@@ -75,6 +55,27 @@ class PatientQueryTest(
                 .exchange()
                 .expectBody()
                 .jsonPath("$.data.patients[0].firstName")
+                .isEqualTo("marcus")
+        }
+    }
+
+    private fun addPatient() {
+        assertDoesNotThrow {
+            val mutation = "addPatient"
+
+            testClient.post()
+                .uri(GRAPHQL_ENDPOINT)
+                .accept(APPLICATION_JSON_MEDIA_TYPE)
+                .contentType(GRAPHQL_MEDIA_TYPE)
+                .bodyValue(
+                    """mutation { $mutation(patient: {firstName: "marcus", lastName: "dunn", sex: Male, dateOfBirth: {date: {day: 23, month: Mar, year: 2001}}}) { 
+                    |   firstName
+                    |   }
+                    |} """.trimMargin()
+                )
+                .exchange()
+                .expectBody()
+                .jsonPath("$.data.addPatient.firstName")
                 .isEqualTo("marcus")
         }
     }
