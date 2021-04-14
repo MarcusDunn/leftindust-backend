@@ -124,7 +124,7 @@ class IcdFetcherImpl(
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {
-        return client.get<T> {
+        return client.get {
             url(url)
             header("Accept", "application/json")
             header("Accept-Language", "en")
