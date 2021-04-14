@@ -17,4 +17,6 @@ interface VisitDao {
     ): CustomResult<List<Visit>, OrmFailureReason>
 
     suspend fun getByEvent(id: Long, requester: MediqToken): Visit
+
+    suspend fun getByPatient(pid: Long, requester: MediqToken): List<Visit>
 }

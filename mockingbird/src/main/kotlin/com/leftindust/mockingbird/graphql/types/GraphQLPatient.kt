@@ -58,12 +58,8 @@ data class GraphQLPatient(
 
     suspend fun visits(
         @GraphQLIgnore @Autowired visitDao: VisitDao,
-        @GraphQLIgnore @Autowired eventDao: EventDao
     ): List<GraphQLVisit> {
-        return eventDao
-            .getByPatient(pid.toLong(), authContext.mediqAuthToken)
-            .map { it.id!! }
-            .map { visitDao.getByEvent(it, authContext.mediqAuthToken) }
-            .map { GraphQLVisit(it, it.id!!, authContext) }
+        return visitDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
+            .map { visit -> GraphQLVisit(visit, visit.id!!, authContext) }
     }
 }

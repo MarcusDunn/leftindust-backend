@@ -60,7 +60,7 @@ class EventQuery(
                         patients = listOf(gqlID(patient.id!!)),
                         authContext = graphQLAuthContext,
                     )
-                }
+                } // this will break
             }
     }
 
@@ -77,6 +77,6 @@ class EventQuery(
                     patients = emptyList(),
                     authContext = graphQLAuthContext,
                 )
-            }
+            } // also will break
         }
 }

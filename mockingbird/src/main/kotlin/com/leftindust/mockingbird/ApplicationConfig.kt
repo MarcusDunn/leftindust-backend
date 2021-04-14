@@ -37,10 +37,6 @@ class ApplicationConfig {
             const val MAX_AGE = "3600"
         }
 
-        object IcdApiConfig {
-            const val USERNAME_PASSWORD_PATH = "src/main/resources/IcdClient.json"
-        }
-
         object HibernateConfig {
             const val ENTITY_PACKAGE = "com.leftindust.mockingbird.dao.entity"
             const val HBM2DDL_AUTO = "none"

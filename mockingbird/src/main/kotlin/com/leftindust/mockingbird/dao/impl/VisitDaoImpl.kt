@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.extensions.Failure
@@ -29,6 +30,7 @@ class VisitDaoImpl(
     private val eventRepository: HibernateEventRepository,
     private val visitRepository: HibernateVisitRepository,
     private val entityManager: EntityManager,
+    private val patientRepository: HibernatePatientRepository,
 ) : VisitDao, AbstractHibernateDao(authorizer) {
     private val logger: Logger = LogManager.getLogger()
 
@@ -80,6 +82,14 @@ class VisitDaoImpl(
     override suspend fun getByEvent(id: Long, requester: MediqToken): Visit {
         return if (requester can (Crud.READ to Tables.Event)) {
             visitRepository.getByEvent_Id(id)
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
+        }
+    }
+
+    override suspend fun getByPatient(pid: Long, requester: MediqToken): List<Visit> {
+        return if (requester can listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Visit)) {
+            patientRepository.getOne(pid).schedule.events.map { visitRepository.getByEvent_Id(it.id!!) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
