@@ -67,10 +67,18 @@ class EventDaoImpl(
     }
 
     override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event> {
-        TODO("Not yet implemented")
+        if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
+            return hibernatePatientRepository.getOne(pid).schedule.events
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient, Crud.READ to Tables.Event)
+        }
     }
 
     override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event> {
-        TODO("Not yet implemented")
+        if (requester can listOf(Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)) {
+            return hibernateDoctorRepository.getOne(did).schedule.events
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
+        }
     }
 }

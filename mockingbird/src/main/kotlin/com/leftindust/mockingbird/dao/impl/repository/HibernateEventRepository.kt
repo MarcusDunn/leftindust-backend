@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.impl.repository
 
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.entity.Patient
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
