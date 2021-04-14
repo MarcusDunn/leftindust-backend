@@ -26,4 +26,6 @@ interface EventDao {
     suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event>
 
     suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event>
+
+    suspend fun getByVisit(vid: Long, requester: MediqToken): Event
 }

@@ -10,6 +10,7 @@ import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
@@ -23,6 +24,7 @@ class EventDaoImpl(
     @Autowired private val hibernateEventRepository: HibernateEventRepository,
     @Autowired private val hibernatePatientRepository: HibernatePatientRepository,
     @Autowired private val hibernateDoctorRepository: HibernateDoctorRepository,
+    @Autowired private val hibernateVisitRepository: HibernateVisitRepository,
     @Autowired authorizer: Authorizer
 ) : EventDao, AbstractHibernateDao(authorizer) {
     override suspend fun addEvent(
@@ -77,6 +79,14 @@ class EventDaoImpl(
     override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)) {
             return hibernateDoctorRepository.getOne(did).schedule.events
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
+        }
+    }
+
+    override suspend fun getByVisit(vid: Long, requester: MediqToken): Event {
+        if (requester can listOf(Crud.READ to Tables.Visit, Crud.READ to Tables.Event)) {
+            return hibernateVisitRepository.getOne(vid).event
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }

@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.dao.impl
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Visit
@@ -58,7 +59,6 @@ class VisitDaoImpl(
 
         return if (requester has requiredPermissions) {
             val event = eventRepository.getOne(visitInput.event.toLong())
-
             Success(visitRepository.save(Visit(visitInput, event)))
         } else {
             Failure(NotAuthorized(requester))
@@ -81,7 +81,7 @@ class VisitDaoImpl(
         return if (requester can (Crud.READ to Tables.Event)) {
             visitRepository.getByEvent_Id(id)
         } else {
-            throw RuntimeException("not authorized")
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
     }
 }
