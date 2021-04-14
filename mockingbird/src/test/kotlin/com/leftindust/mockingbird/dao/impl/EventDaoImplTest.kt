@@ -8,8 +8,8 @@ import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
@@ -22,6 +22,7 @@ internal class EventDaoImplTest {
     private val hibernateEventRepository = mockk<HibernateEventRepository>()
     private val hibernatePatientRepository = mockk<HibernatePatientRepository>()
     private val hibernateDoctorRepository = mockk<HibernateDoctorRepository>()
+    private val hibernateVisitRepository = mockk<HibernateVisitRepository>()
     private val authorizer = mockk<Authorizer>()
 
     @Test
@@ -50,7 +51,7 @@ internal class EventDaoImplTest {
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
-            hibernateDoctorRepository, authorizer
+            hibernateDoctorRepository, hibernateVisitRepository, authorizer
         )
         val event = EntityStore.graphQLEventInput("EventDaoImplTest.addEvent")
         val result = runBlocking { eventDao.addEvent(event, mockk()) }
@@ -77,10 +78,10 @@ internal class EventDaoImplTest {
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
-            hibernateDoctorRepository, authorizer
+            hibernateDoctorRepository, hibernateVisitRepository, authorizer
         )
 
-        val start = mockk<GraphQLTimeInput>() {
+        val start = mockk<GraphQLTimeInput> {
             every { before(any()) } returns true
             every { toTimestamp() } returns mockk()
         }
