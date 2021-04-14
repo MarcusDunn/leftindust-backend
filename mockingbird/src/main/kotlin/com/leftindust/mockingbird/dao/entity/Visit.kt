@@ -8,7 +8,7 @@ import javax.persistence.*
 
 @Entity
 class Visit(
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var event: Event,
     var title: String? = null,
     var description: String? = null,
