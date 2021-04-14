@@ -559,4 +559,37 @@
             <column name="all_day" type="boolean"/>
         </addColumn>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-1">
+        <createTable tableName="event_days">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-2">
+        <addColumn tableName="event">
+            <column name="end_date" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-3">
+        <addColumn tableName="event">
+            <column name="start_date" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-4">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_days" constraintName="FKpbioph7kp09qbgtjmc4s2la61" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-5">
+        <dropForeignKeyConstraint baseTableName="prescription" constraintName="FK1ppr8greedyrey8nchpr0v4dn"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-6">
+        <dropForeignKeyConstraint baseTableName="comments" constraintName="FKb6lhyncrpl14mnxpq8mo9aiej"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-7">
+        <dropTable tableName="comments"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-8">
+        <dropTable tableName="prescription"/>
+    </changeSet>
 </databaseChangeLog>

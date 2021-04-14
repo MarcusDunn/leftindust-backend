@@ -10,13 +10,13 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Pageable
 
 internal class EventDaoImplTest {
     private val hibernateEventRepository = mockk<HibernateEventRepository>()
@@ -73,17 +73,19 @@ internal class EventDaoImplTest {
             }
         }
 
-        every { hibernateEventRepository.findAll(any<Pageable>()) } returns mockk() {
-            every { toList() } returns listOfEvent
-        }
+        every { hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any()) } returns listOfEvent
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
             hibernateDoctorRepository, authorizer
         )
 
-        val result = runBlocking { eventDao.getMany(GraphQLRangeInput(0, 20), mockk()) }
+        val start = mockk<GraphQLTimeInput>() {
+            every { before(any()) } returns true
+            every { toTimestamp() } returns mockk()
+        }
+        val result = runBlocking { eventDao.getMany(GraphQLTimeRangeInput(start, mockk()), mockk()) }
 
-        assertEquals(Success(listOfEvent), result)
+        assertEquals(listOfEvent, result)
     }
 }

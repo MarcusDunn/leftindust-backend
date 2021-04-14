@@ -12,21 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("Event")
 data class GraphQLEvent(
+    val eid: Long,
     val title: String,
     val description: String?,
     val startTime: GraphQLTime?,
     val endTime: GraphQLTime?,
     val allDay: Boolean,
-    private val doctors: List<ID>,
-    private val patients: List<ID>,
-    private val authContext: GraphQLAuthContext
+    val reoccurrence: GraphQLRecurrence?,
+    private val doctors: List<ID>, //todo remove
+    private val patients: List<ID>, //todo remove
+    private val authContext: GraphQLAuthContext,
 ) {
     constructor(event: Event, doctors: List<ID>, patients: List<ID>, authContext: GraphQLAuthContext) : this(
+        eid = event.id!!.toLong(),
         title = event.title,
         description = event.description,
         startTime = GraphQLTime(event.startTime),
         endTime = event.durationMillis?.let { duration -> GraphQLTime(event.startTime.time + duration) },
         allDay = event.allDay,
+        reoccurrence = event.reoccurrence?.let { GraphQLRecurrence(it) },
         doctors = doctors,
         patients = patients,
         authContext = authContext

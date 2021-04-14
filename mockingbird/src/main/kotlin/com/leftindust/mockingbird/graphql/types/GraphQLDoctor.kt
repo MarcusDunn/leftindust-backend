@@ -39,7 +39,7 @@ data class GraphQLDoctor(
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
     ) {
-        if (doctor.id == null || doctor.id == id) {
+        if (doctor.id == null || doctor.id != id) {
             throw IllegalArgumentException("doctor.id does not match id where doctor.id is ${doctor.id} and id is $id")
         }
     }

@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
@@ -16,20 +17,23 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class EventQueryTest {
+    private val eventDao = mockk<EventDao>()
     private val patientDao = mockk<PatientDao>()
     private val doctorDao = mockk<DoctorDao>()
 
     @Test
     internal fun getByDoctor() {
-        val expected = mockk<Doctor>() {
+        val expected = mockk<Doctor> {
             every { id } returns 1000
-            every { schedule } returns mockk() {
-                every { events } returns mutableSetOf(mockk(relaxed = true))
+            every { schedule } returns mockk {
+                every { events } returns mutableSetOf(mockk(relaxed = true) {
+                    every { id } returns 4000L
+                })
             }
         }
         coEvery { doctorDao.getByDoctor(1000, any()) } returns expected
 
-        val eventQuery = EventQuery(patientDao, doctorDao)
+        val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
 
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
@@ -50,15 +54,17 @@ internal class EventQueryTest {
 
     @Test
     internal fun getByPatient() {
-        val expected = mockk<Patient>() {
-            every { id } returns 2000
-            every { schedule } returns mockk() {
-                every { events } returns mutableSetOf(mockk(relaxed = true))
+        val expected = mockk<Patient> {
+            every { id } returns 2000L
+            every { schedule } returns mockk {
+                every { events } returns mutableSetOf(mockk(relaxed = true) {
+                    every { id } returns 4000L
+                })
             }
         }
-        coEvery { patientDao.getByPID(2000, any()) } returns Success(expected)
+        coEvery { patientDao.getByPID(2000L, any()) } returns Success(expected)
 
-        val eventQuery = EventQuery(patientDao, doctorDao)
+        val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
 
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()

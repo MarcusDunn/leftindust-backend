@@ -3,10 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import java.sql.Timestamp
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
+import javax.persistence.*
 
 @Entity(name = "event")
 class Event(
@@ -24,6 +21,8 @@ class Event(
     @ManyToMany
     @JoinTable(name = "event_patient")
     val patients: Set<Patient>,
+    @Embedded
+    val reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable<Long>() {
 
     init {
@@ -74,6 +73,7 @@ class Event(
         startTime = graphQLEventInput.start.toTimestamp(),
         durationMillis = graphQLEventInput.end?.toTimestamp()?.time?.minus(graphQLEventInput.start.toTimestamp().time),
         allDay = graphQLEventInput.allDay ?: GraphQLEventInput.allDayDefault,
+        reoccurrence = graphQLEventInput.reoccurrence?.let { Reoccurrence(it) },
         doctors = doctors,
         patients = patients
     )

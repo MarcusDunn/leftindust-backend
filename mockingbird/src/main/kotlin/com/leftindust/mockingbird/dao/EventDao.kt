@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 
 interface EventDao {
     suspend fun addEvent(
@@ -16,9 +17,9 @@ interface EventDao {
     ): CustomResult<Event, OrmFailureReason>
 
     suspend fun getMany(
-        range: GraphQLRangeInput,
+        range: GraphQLTimeRangeInput,
         requester: MediqToken
-    ): CustomResult<List<Event>, OrmFailureReason>
+    ): Collection<Event>
 
     suspend fun getById(eid: ID, requester: MediqToken): CustomResult<Event, OrmFailureReason>
 

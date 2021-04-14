@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import java.sql.Timestamp
 import java.time.*
+import java.util.*
 
 @GraphQLName("UtcTime")
 data class GraphQLTime(
@@ -53,8 +54,24 @@ data class GraphQLDate(
     val month: GraphQLMonth,
     val year: Int,
 ) {
+    constructor(date: LocalDate) : this(
+        day = date.dayOfMonth,
+        month = GraphQLMonth.fromInt(date.monthValue)!!,
+        year = date.year
+    )
+
     @GraphQLIgnore
-    fun toInstant(): Instant = LocalDate.of(year, month.toJavaMonth(), day).atStartOfDay(ZoneId.of("UTC")).toInstant()
+    fun toLocalDate(): LocalDate {
+        return LocalDate.of(year, month.toJavaMonth(), day)
+    }
+
+
+    @GraphQLIgnore
+    fun toCalender(): Calendar {
+        val calender = Calendar.getInstance()
+        calender.set(year, month.toJavaMonth().value, day)
+        return calender
+    }
 
     @GraphQLIgnore
     fun toTimestamp(): Timestamp =
@@ -76,6 +93,7 @@ enum class GraphQLMonth {
     Nov,
     Dec;
 
+    @GraphQLIgnore
     fun toJavaMonth(): Month = when (this) {
         Jan -> Month.JANUARY
         Feb -> Month.FEBRUARY
@@ -89,6 +107,10 @@ enum class GraphQLMonth {
         Oct -> Month.OCTOBER
         Nov -> Month.NOVEMBER
         Dec -> Month.DECEMBER
+    }
+
+    companion object {
+        fun fromInt(month: Int): GraphQLMonth? = values().getOrNull(month)
     }
 }
 
@@ -109,4 +131,23 @@ data class GraphQLTimeInput(
     }
 
     fun toTimestamp(): Timestamp = time?.toTimestamp() ?: date!!.toTimestamp()
+
+    fun before(other: GraphQLTimeInput): Boolean {
+        return toTimestamp().time < other.toTimestamp().time
+    }
+}
+
+@GraphQLName("DayOfWeek")
+enum class GraphQLDayOfWeek {
+    Mon,
+    Tue,
+    Wed,
+    Thu,
+    Fri,
+    Sat,
+    Sun;
+
+    companion object {
+        fun fromInt(dayOfWeek: Int): GraphQLDayOfWeek? = values().getOrNull(dayOfWeek)
+    }
 }

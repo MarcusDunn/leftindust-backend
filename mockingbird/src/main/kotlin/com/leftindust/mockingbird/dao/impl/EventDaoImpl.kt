@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
@@ -11,9 +12,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -46,16 +46,13 @@ class EventDaoImpl(
     }
 
     override suspend fun getMany(
-        range: GraphQLRangeInput,
+        range: GraphQLTimeRangeInput,
         requester: MediqToken
-    ): CustomResult<List<Event>, OrmFailureReason> {
-        return if (requester can (Crud.READ to Tables.Event)) {
-            val size = range.to - range.from
-            val page = range.to / size - 1
-            return Success(hibernateEventRepository.findAll(PageRequest.of(page, size)).toList())
+    ): Collection<Event> {
+        if (requester can (Crud.READ to Tables.Event)) {
+            return hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(range.start.toTimestamp())
         } else {
-            Failure(NotAuthorized(requester, "cannot read events"))
-
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
     }
 
