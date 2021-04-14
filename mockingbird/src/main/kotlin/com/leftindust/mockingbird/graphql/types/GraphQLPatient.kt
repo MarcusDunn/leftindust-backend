@@ -6,6 +6,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
@@ -30,7 +31,6 @@ data class GraphQLPatient(
     val ethnicity: Ethnicity? = null,
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
-    private val authToken = authContext.mediqAuthToken
 
     constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
         pid = gqlID(id).also { LogManager.getLogger().trace(patient) },
@@ -50,12 +50,20 @@ data class GraphQLPatient(
     }
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
-        contactDao.getByPatient(pid.toLong(), authToken).getOrThrow().map { GraphQLEmergencyContact(it, authContext) }
+        contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken).getOrThrow()
+            .map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =
-        doctorDao.getByPatient(pid.toLong(), authToken).map { GraphQLDoctor(it, it.id!!, authContext) }
+        doctorDao.getByPatient(pid.toLong(), authContext.mediqAuthToken).map { GraphQLDoctor(it, it.id!!, authContext) }
 
-    suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> {
-        TODO(visitDao.toString())
+    suspend fun visits(
+        @GraphQLIgnore @Autowired visitDao: VisitDao,
+        @GraphQLIgnore @Autowired eventDao: EventDao
+    ): List<GraphQLVisit> {
+        return eventDao
+            .getByPatient(pid.toLong(), authContext.mediqAuthToken)
+            .map { it.id!! }
+            .map { visitDao.getByEvent(it, authContext.mediqAuthToken) }
+            .map { GraphQLVisit(it, it.id!!, authContext) }
     }
 }
