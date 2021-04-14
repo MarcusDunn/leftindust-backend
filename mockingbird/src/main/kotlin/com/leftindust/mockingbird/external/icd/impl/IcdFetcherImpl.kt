@@ -124,12 +124,11 @@ class IcdFetcherImpl(
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {
-        val start = System.nanoTime()
         return client.get<T> {
             url(url)
             header("Accept", "application/json")
             header("Accept-Language", "en")
             header("API-Version", "v2")
-        }.also { println("networkTime: ${(System.nanoTime() - start) / 1_000_000F} ms") }
+        }
     }
 }
