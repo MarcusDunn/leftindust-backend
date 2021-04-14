@@ -41,7 +41,8 @@ internal class VisitDaoImplTest {
             authorizer,
             eventRepository,
             visitRepository,
-            entityManager
+            entityManager,
+            patientRepository
         )
 
         val result = runBlocking { visitDaoImpl.getVisitByVid(1000, mockk()) }.getOrThrow()
@@ -65,7 +66,10 @@ internal class VisitDaoImplTest {
 
         val mockkVisit = mockk<Visit>()
 
-        val visitDaoImpl = VisitDaoImpl(authorizer,eventRepository,  visitRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(
+            authorizer, eventRepository, visitRepository, entityManager,
+            patientRepository
+        )
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
             every { event } returns gqlID(4000)
@@ -95,7 +99,7 @@ internal class VisitDaoImplTest {
                 }
             }
         }
-        val visitDaoImpl = VisitDaoImpl(authorizer, eventRepository, visitRepository, entityManager)
+        val visitDaoImpl = VisitDaoImpl(authorizer, eventRepository, visitRepository, entityManager, patientRepository)
         val result = runBlocking {
             visitDaoImpl.getByExample(
                 GraphQLVisitExample(vid = StringFilter(eq = "10000")),
