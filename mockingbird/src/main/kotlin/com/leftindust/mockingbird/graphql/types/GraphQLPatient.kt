@@ -6,7 +6,6 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
@@ -23,7 +22,7 @@ data class GraphQLPatient(
     override val lastName: String,
     override val phones: List<GraphQLPhone> = emptyList(),
     val pid: ID,
-    val dateOfBirth: GraphQLTime? = null,
+    val dateOfBirth: GraphQLUtcTime? = null,
     val addresses: List<GraphQLAddress> = emptyList(),
     val emails: List<GraphQLEmail> = emptyList(),
     val insuranceNumber: String? = null,
@@ -38,7 +37,7 @@ data class GraphQLPatient(
         middleName = patient.middleName,
         lastName = patient.lastName,
         phones = patient.phone.map { GraphQLPhone(it) },
-        dateOfBirth = GraphQLTime(patient.dateOfBirth),
+        dateOfBirth = GraphQLUtcTime(patient.dateOfBirth),
         addresses = patient.address.map { GraphQLAddress(it) },
         emails = patient.email.map { GraphQLEmail(it) },
         insuranceNumber = patient.insuranceNumber,

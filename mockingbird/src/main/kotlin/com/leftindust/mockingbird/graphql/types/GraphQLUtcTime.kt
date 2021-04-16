@@ -3,12 +3,13 @@ package com.leftindust.mockingbird.graphql.types
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import java.sql.Timestamp
 import java.time.*
 import java.util.*
 
 @GraphQLName("UtcTime")
-data class GraphQLTime(
+data class GraphQLUtcTime(
     val unixMilliseconds: Long,
 ) {
 
@@ -65,17 +66,9 @@ data class GraphQLDate(
         return LocalDate.of(year, month.toJavaMonth(), day)
     }
 
-
-    @GraphQLIgnore
-    fun toCalender(): Calendar {
-        val calender = Calendar.getInstance()
-        calender.set(year, month.toJavaMonth().value, day)
-        return calender
-    }
-
     @GraphQLIgnore
     fun toTimestamp(): Timestamp =
-        Timestamp.from(LocalDate.of(year, month.toJavaMonth(), day).atStartOfDay(ZoneId.of("UTC")).toInstant())
+        Timestamp.from(toLocalDate().atStartOfDay(ZoneId.of("UTC")).toInstant())
 }
 
 @GraphQLName("Month")
@@ -117,10 +110,10 @@ enum class GraphQLMonth {
 @GraphQLName("TimeInput")
 @GraphQLDescription("Sum type over time or date")
 data class GraphQLTimeInput(
-    val time: GraphQLTime? = null,
-    val date: GraphQLDate? = null
+    val time: GraphQLUtcTime? = null,
+    val date: GraphQLDateInput? = null
 ) {
-    constructor(time: Timestamp) : this(time = GraphQLTime(time), date = null)
+    constructor(time: Timestamp) : this(time = GraphQLUtcTime(time), date = null)
 
     init { // validates sum typeyness
         if ((time == null) xor (date == null)) {
@@ -130,7 +123,7 @@ data class GraphQLTimeInput(
         }
     }
 
-    fun toTimestamp(): Timestamp = time?.toTimestamp() ?: date!!.toTimestamp()
+    fun toTimestamp(): Timestamp = time?.toTimestamp() ?: date!!.toTimeStamp()
 
     fun before(other: GraphQLTimeInput): Boolean {
         return toTimestamp().time < other.toTimestamp().time

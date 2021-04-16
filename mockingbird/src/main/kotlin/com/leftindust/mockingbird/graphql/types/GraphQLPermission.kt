@@ -11,8 +11,8 @@ import com.leftindust.mockingbird.dao.entity.Action
 data class GraphQLPermission(
     val referencedTableName: Tables,
     val permissionType: Crud,
-    val startTime: GraphQLTime? = null,
-    val endTime: GraphQLTime? = null,
+    val startTime: GraphQLUtcTime? = null,
+    val endTime: GraphQLUtcTime? = null,
     val rowId: ID? = null,
     val columnName: String? = null,
 ) {
@@ -73,8 +73,8 @@ data class GraphQLPermission(
     constructor(action: Action) : this(
         referencedTableName = action.referencedTableName,
         permissionType = action.permissionType,
-        startTime = action.startTime?.let { GraphQLTime(it) },
-        endTime = action.endTime?.let { GraphQLTime(it) },
+        startTime = action.startTime?.let { GraphQLUtcTime(it) },
+        endTime = action.endTime?.let { GraphQLUtcTime(it) },
         rowId = action.rowId?.let { ID(it.toString()) }, // let needed as toString on null is a valid call
         columnName = action.columnName,
     )

@@ -20,7 +20,7 @@ data class GraphQLDoctor(
     override val lastName: String,
     override val phones: List<GraphQLPhone>,
     val title: String? = null,
-    val dateOfBirth: GraphQLTime? = null,
+    val dateOfBirth: GraphQLUtcTime? = null,
     val addresses: List<GraphQLAddress> = emptyList(),
     val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
@@ -34,7 +34,7 @@ data class GraphQLDoctor(
         lastName = doctor.lastName,
         phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
-        dateOfBirth = GraphQLTime(doctor.dateOfBirth),
+        dateOfBirth = GraphQLUtcTime(doctor.dateOfBirth),
         addresses = doctor.address.map { GraphQLAddress(it) },
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
@@ -50,8 +50,8 @@ data class GraphQLDoctor(
 
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
-        from: GraphQLTime,
-        to: GraphQLTime
+        from: GraphQLUtcTime,
+        to: GraphQLUtcTime
     ): List<GraphQLEvent> {
         return doctorDao.getByDoctor(did.toLong(), authToken)
             .schedule

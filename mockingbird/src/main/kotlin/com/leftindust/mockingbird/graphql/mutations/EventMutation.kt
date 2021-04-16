@@ -1,9 +1,11 @@
 package com.leftindust.mockingbird.graphql.mutations
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import org.springframework.stereotype.Component
 
@@ -21,5 +23,10 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
                     authContext = graphQLAuthContext
                 )
             }
+    }
+
+    @GraphQLDescription("edits the event referenced by eid")
+    suspend fun editEvent(event: GraphQLEventEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLEvent {
+        TODO()
     }
 }

@@ -6,8 +6,8 @@ import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -78,7 +78,7 @@ object EntityStore {
         ),
         dateOfBirth = OptionalInput.Defined(
             GraphQLTimeInput(
-                date = GraphQLDate(
+                date = GraphQLDateInput(
                     day = 12,
                     month = GraphQLMonth.Apr,
                     year = 1948

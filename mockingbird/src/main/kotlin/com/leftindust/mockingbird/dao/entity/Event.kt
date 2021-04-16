@@ -14,7 +14,7 @@ class Event(
     @Column(name = "duration_millis")
     val durationMillis: Long?,
     @Column(name = "all_day")
-    val allDay: Boolean = GraphQLEventInput.allDayDefault,
+    val allDay: Boolean = false,
     @ManyToMany
     @JoinTable(name = "event_doctor")
     val doctors: Set<Doctor>,
@@ -25,7 +25,7 @@ class Event(
     val reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable<Long>() {
 
-    init {
+    init { // validation logic
         if (allDay && durationMillis != null) {
             throw IllegalArgumentException("you cannot set `durationMillis` and `allDay`")
         } else if (!allDay && durationMillis == null) {
@@ -72,8 +72,8 @@ class Event(
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
         durationMillis = graphQLEventInput.end?.toTimestamp()?.time?.minus(graphQLEventInput.start.toTimestamp().time),
-        allDay = graphQLEventInput.allDay ?: GraphQLEventInput.allDayDefault,
-        reoccurrence = graphQLEventInput.reoccurrence?.let { Reoccurrence(it) },
+        allDay = graphQLEventInput.allDay ?: false,
+        reoccurrence = graphQLEventInput.recurrence?.let { Reoccurrence(it) },
         doctors = doctors,
         patients = patients
     )

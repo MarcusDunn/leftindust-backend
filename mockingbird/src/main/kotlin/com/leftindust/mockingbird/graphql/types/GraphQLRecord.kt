@@ -11,14 +11,14 @@ import com.leftindust.mockingbird.extensions.gqlID
 @GraphQLName("Record")
 data class GraphQLRecord(
     val rid: ID,
-    val creationDate: GraphQLTime,
+    val creationDate: GraphQLUtcTime,
     val type: RecordType,
     private val patient: Patient,
     private val authContext: GraphQLAuthContext,
 ) {
     constructor(record: MediqRecord, id: Long, graphQLAuthContext: GraphQLAuthContext) : this(
         rid = gqlID(id),
-        creationDate = GraphQLTime(record.creationDate),
+        creationDate = GraphQLUtcTime(record.creationDate),
         type = record.type,
         patient = record.patient,
         authContext = graphQLAuthContext,
