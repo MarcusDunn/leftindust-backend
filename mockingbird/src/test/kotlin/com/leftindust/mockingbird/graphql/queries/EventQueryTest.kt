@@ -45,8 +45,6 @@ internal class EventQueryTest {
         assertEquals(expected.schedule.events.map {
             GraphQLEvent(
                 event = it,
-                doctors = listOf(gqlID(1000)),
-                patients = emptyList(),
                 authContext = graphQLAuthContext
             )
         }, result)
@@ -75,8 +73,6 @@ internal class EventQueryTest {
         assertEquals(expected.schedule.events.map {
             GraphQLEvent(
                 event = it,
-                doctors = emptyList(),
-                patients = listOf(gqlID(2000)),
                 authContext = graphQLAuthContext
             )
         }, result)

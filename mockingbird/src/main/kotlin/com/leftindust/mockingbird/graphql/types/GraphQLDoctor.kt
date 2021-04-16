@@ -56,6 +56,6 @@ data class GraphQLDoctor(
         return doctorDao.getByDoctor(did.toLong(), authToken)
             .schedule
             .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
-            .map { GraphQLEvent(event = it, doctors = listOf(did), patients = emptyList(), authContext = authContext) }
+            .map { GraphQLEvent(event = it, authContext = authContext) }
     }
 }

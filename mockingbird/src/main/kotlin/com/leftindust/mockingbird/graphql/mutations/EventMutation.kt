@@ -18,8 +18,6 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
             .let {
                 GraphQLEvent(
                     event = it,
-                    doctors = event.doctors ?: emptyList(),
-                    patients = event.patients ?: emptyList(),
                     authContext = graphQLAuthContext
                 )
             }
@@ -27,6 +25,8 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
 
     @GraphQLDescription("edits the event referenced by eid")
     suspend fun editEvent(event: GraphQLEventEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLEvent {
-        TODO()
+        return eventDao
+            .editEvent(event, graphQLAuthContext.mediqAuthToken)
+            .let { GraphQLEvent(it, graphQLAuthContext) }
     }
 }

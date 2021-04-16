@@ -6,7 +6,6 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
@@ -40,12 +39,11 @@ data class GraphQLVisit(
 
     suspend fun event(@GraphQLIgnore @Autowired eventDao: EventDao): GraphQLEvent {
         val nnVid = vid?.toLong() ?: throw IllegalArgumentException("cannot get doctor on visit with null vid")
-        return eventDao.getByVisit(nnVid, authContext.mediqAuthToken)
+        return eventDao
+            .getByVisit(nnVid, authContext.mediqAuthToken)
             .let { event ->
                 GraphQLEvent(
                     event = event,
-                    doctors = event.doctors.map { gqlID(it.id!!) },
-                    patients = event.patients.map { gqlID(it.id!!) },
                     authContext
                 )
             }

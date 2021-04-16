@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.PatientDao
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
@@ -42,7 +41,7 @@ class EventQuery(
     ): List<GraphQLEvent> {
         return eventDao
             .getMany(range = range, requester = graphQLAuthContext.mediqAuthToken)
-            .map { GraphQLEvent(it, emptyList(), emptyList(), graphQLAuthContext) }
+            .map { GraphQLEvent(it, graphQLAuthContext) }
     }
 
     private suspend fun getEventsByPatient(
@@ -56,8 +55,6 @@ class EventQuery(
                 patient.schedule.events.map {
                     GraphQLEvent(
                         event = it,
-                        doctors = emptyList(),
-                        patients = listOf(gqlID(patient.id!!)),
                         authContext = graphQLAuthContext,
                     )
                 } // this will break
@@ -73,8 +70,6 @@ class EventQuery(
             doc.schedule.events.map {
                 GraphQLEvent(
                     event = it,
-                    doctors = listOf(gqlID(doc.id!!)),
-                    patients = emptyList(),
                     authContext = graphQLAuthContext,
                 )
             } // also will break
