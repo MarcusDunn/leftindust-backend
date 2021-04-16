@@ -102,7 +102,12 @@ class EventDaoImpl(
             val patients = event.patients
                 ?.map { hibernatePatientRepository.getOne(it.toLong()) }
                 ?.toSet()
-            return hibernateEventRepository.save(entity.update(event, newDoctors = doctors, newPatients = patients))
+            val updatedEntity = entity.update(event, newDoctors = doctors, newPatients = patients)
+
+            // prevents double references to collections between updatedEntity and entity
+            hibernateEventRepository.delete(entity)
+
+            return hibernateEventRepository.save(updatedEntity)
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
         }

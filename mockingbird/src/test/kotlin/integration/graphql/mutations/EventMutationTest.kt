@@ -102,14 +102,18 @@ class EventMutationTest(
             description = OptionalInput.Defined(newDescription),
         )
 
-        // check returned value is changed
-        assertEquals(event.description, newDescription)
+        val result = runBlocking {
+            eventMutation.editEvent(event, graphQLAuthContext)
+        }
 
-        val result = assertDoesNotThrow {
+        // check returned value is changed
+        assertEquals(result.description, newDescription)
+
+        val entity = assertDoesNotThrow {
             hibernateEventRepository.findByTitleEquals("EventMutationTest.edit event")
         }
 
         // check changes are persisted
-        assertEquals(result.description, newDescription)
+        assertEquals(entity.description, newDescription)
     }
 }
