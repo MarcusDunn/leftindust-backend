@@ -4,7 +4,9 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
@@ -15,6 +17,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -25,6 +28,17 @@ internal class EventDaoImplTest {
     private val hibernateVisitRepository = mockk<HibernateVisitRepository>()
     private val authorizer = mockk<Authorizer>()
 
+    @AfterEach
+    internal fun tearDown() {
+        confirmVerified(
+            hibernateEventRepository,
+            hibernatePatientRepository,
+            hibernateDoctorRepository,
+            hibernateVisitRepository,
+            authorizer
+        )
+    }
+
     @Test
     fun addEvent() {
         coEvery {
@@ -34,20 +48,17 @@ internal class EventDaoImplTest {
             )
         } returns Authorization.Allowed
 
-        val eventEntity = mockk<Event>()
-        every { hibernateEventRepository.save(any()) } returns eventEntity
+        val mockkEvent = mockk<Event>()
 
-        every { hibernatePatientRepository.getOne(any()) } returns mockk() {
-            every { schedule } returns mockk() {
-                every { addEvent(any()) } just runs
-            }
-        }
+        every { hibernateEventRepository.save(any()) } returns mockkEvent
 
-        every { hibernateDoctorRepository.getOne(any()) } returns mockk() {
-            every { schedule } returns mockk() {
-                every { addEvent(any()) } just runs
-            }
-        }
+        val mockkPatient = mockk<Patient>()
+
+        every { hibernatePatientRepository.getOne(any()) } returns mockkPatient
+
+        val mockkDoctor = mockk<Doctor>()
+
+        every { hibernateDoctorRepository.getOne(any()) } returns mockkDoctor
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
@@ -56,7 +67,14 @@ internal class EventDaoImplTest {
         val event = EntityStore.graphQLEventInput("EventDaoImplTest.addEvent")
         val result = runBlocking { eventDao.addEvent(event, mockk()) }
 
-        assertEquals(eventEntity, result.getOrNull())
+        coVerifyAll {
+            hibernateEventRepository.save(any())
+            authorizer.getAuthorization(any(), any())
+        }
+
+        confirmVerified(mockkEvent, mockkDoctor, mockkPatient)
+
+        assertEquals(mockkEvent, result.getOrNull())
     }
 
     @Test
@@ -68,35 +86,38 @@ internal class EventDaoImplTest {
             )
         } returns Authorization.Allowed
 
-        val listOfEvent = (0 until 20).map {
-            mockk<Event>(relaxed = true) {
-                every { id } returns it.toLong()
-            }
-        }
+        val listOfMockkEvents = mockk<List<Event>>()
 
-        every { hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any()) } returns listOfEvent
+        every { hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any()) } returns listOfMockkEvents
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
             hibernateDoctorRepository, hibernateVisitRepository, authorizer
         )
 
-        val start = mockk<GraphQLTimeInput> {
+        val mockkStart = mockk<GraphQLTimeInput> {
             every { before(any()) } returns true
             every { toTimestamp() } returns mockk()
         }
-        val result = runBlocking { eventDao.getMany(GraphQLTimeRangeInput(start, mockk()), mockk()) }
 
-        assertEquals(listOfEvent, result)
+        val result = runBlocking { eventDao.getMany(GraphQLTimeRangeInput(mockkStart, mockk()), mockk()) }
+
+
+        coVerifyAll {
+            authorizer.getAuthorization(any(), any())
+            mockkStart.before(any())
+            mockkStart.toTimestamp()
+            hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any())
+        }
+
+        confirmVerified(mockkStart, listOfMockkEvents)
+
+        assertEquals(listOfMockkEvents, result)
+
     }
 
     @Test
     fun editEvent() {
-        coEvery {
-            authorizer.getAuthorization(
-                match { Action(Crud.UPDATE to Tables.Event).isSuperset(it) },
-                any()
-            )
-        } returns Authorization.Allowed
+        TODO()
     }
 }
