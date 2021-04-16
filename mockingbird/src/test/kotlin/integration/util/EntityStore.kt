@@ -12,7 +12,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInp
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import java.sql.Timestamp
-import java.time.Duration
 
 object EntityStore {
     fun patient(testName: String) = Patient(
@@ -138,7 +137,7 @@ object EntityStore {
         title = testName,
         description = "some other description",
         startTime = Timestamp.valueOf("2020-01-02 11:00:00"),
-        end = Timestamp.valueOf("2020-01-02 12:00:00"),
+        endTime = Timestamp.valueOf("2020-01-02 12:00:00"),
         doctors = emptySet(),
         patients = emptySet()
     )

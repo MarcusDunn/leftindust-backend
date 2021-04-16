@@ -26,6 +26,6 @@ internal class EventTest {
         assertEquals("new fancy description", result.description)
         assertEquals(true, result.allDay)
         assertEquals(event.startTime, result.startTime)
-        assertEquals(null, result.end)
+        assertEquals(null, result.endTime)
     }
 }

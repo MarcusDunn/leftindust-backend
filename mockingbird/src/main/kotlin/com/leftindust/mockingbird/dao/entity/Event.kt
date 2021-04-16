@@ -17,8 +17,8 @@ class Event(
     val description: String?,
     @Column(name = "start_time")
     var startTime: Timestamp,
-    @Column(name = "duration_millis")
-    val end: Timestamp?,
+    @Column(name = "end_time")
+    val endTime: Timestamp?,
     @Column(name = "all_day")
     val allDay: Boolean = false,
     @ManyToMany
@@ -32,9 +32,9 @@ class Event(
 ) : AbstractJpaPersistable<Long>() {
 
     init { // validation logic
-        if (allDay && end != null) {
+        if (allDay && endTime != null) {
             throw IllegalArgumentException("you cannot set `durationMillis` and `allDay`")
-        } else if (!allDay && end == null) {
+        } else if (!allDay && endTime == null) {
             throw IllegalArgumentException("you must set `startTime/durationMillis` or `allDay`")
         }
     }
@@ -49,7 +49,7 @@ class Event(
         if (title != other.title) return false
         if (description != other.description) return false
         if (startTime != other.startTime) return false
-        if (end != other.end) return false
+        if (endTime != other.endTime) return false
         if (allDay != other.allDay) return false
         if (doctors != other.doctors) return false
         if (patients != other.patients) return false
@@ -62,7 +62,7 @@ class Event(
         result = 31 * result + title.hashCode()
         result = 31 * result + (description?.hashCode() ?: 0)
         result = 31 * result + startTime.hashCode()
-        result = 31 * result + end.hashCode()
+        result = 31 * result + endTime.hashCode()
         result = 31 * result + allDay.hashCode()
         result = 31 * result + doctors.hashCode()
         result = 31 * result + patients.hashCode()
@@ -70,7 +70,7 @@ class Event(
     }
 
     override fun toString(): String {
-        return "Event(title='$title', description=$description, startTime=$startTime, end=$end, allDay=$allDay, doctors=$doctors, patients=$patients)"
+        return "Event(title='$title', description=$description, startTime=$startTime, end=$endTime, allDay=$allDay, doctors=$doctors, patients=$patients)"
     }
 
     fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?): Event {
@@ -78,7 +78,7 @@ class Event(
             title = event.title ?: title,
             description = event.description.onUndefined(description),
             startTime = event.start?.toTimestamp() ?: startTime,
-            end = event.end.onUndefined(end?.time?.let { GraphQLTimeInput(GraphQLUtcTime(it)) })?.toTimestamp(),
+            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLTimeInput(GraphQLUtcTime(it)) })?.toTimestamp(),
             allDay = event.allDay ?: allDay,
             doctors = newDoctors ?: doctors,
             patients = newPatients ?: patients,
@@ -93,7 +93,7 @@ class Event(
         title = graphQLEventInput.title,
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
-        end = graphQLEventInput.end?.toTimestamp(),
+        endTime = graphQLEventInput.end?.toTimestamp(),
         allDay = graphQLEventInput.allDay ?: false,
         reoccurrence = graphQLEventInput.recurrence?.let { Reoccurrence(it) },
         doctors = doctors,

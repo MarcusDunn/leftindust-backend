@@ -24,7 +24,7 @@ data class GraphQLEvent(
         title = event.title,
         description = event.description,
         startTime = GraphQLUtcTime(event.startTime),
-        endTime = event.end?.let { GraphQLUtcTime(it) },
+        endTime = event.endTime?.let { GraphQLUtcTime(it) },
         allDay = event.allDay,
         reoccurrence = event.reoccurrence?.let { GraphQLRecurrence(it) },
         authContext = authContext

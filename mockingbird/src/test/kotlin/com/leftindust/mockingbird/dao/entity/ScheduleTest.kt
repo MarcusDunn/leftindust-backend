@@ -47,8 +47,8 @@ internal class ScheduleTest {
         actual.forEach {
             assert(it.startTime.toInstant().isAfter(jan1st2020.toInstant()))
             { "${it.startTime} is not after jan1st2020" }
-            assert(it.end!!.before(jan1st2021))
-            { "$${it.end} is not before jan1st 2021" }
+            assert(it.endTime!!.before(jan1st2021))
+            { "$${it.endTime} is not before jan1st 2021" }
         }
     }
 }

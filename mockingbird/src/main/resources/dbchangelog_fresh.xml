@@ -592,4 +592,12 @@
     <changeSet author="marcus (generated)" id="1618353521091-8">
         <dropTable tableName="prescription"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1618612037085-1">
+        <addColumn tableName="event">
+            <column name="end_time" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618612037085-2">
+        <dropColumn columnName="duration_millis" tableName="event"/>
+    </changeSet>
 </databaseChangeLog>

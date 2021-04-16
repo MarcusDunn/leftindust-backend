@@ -49,7 +49,7 @@ internal class EventMutationTest {
             mockkEvent.title
             mockkEvent.description
             mockkEvent.startTime
-            mockkEvent.end
+            mockkEvent.endTime
             mockkEvent.allDay
             mockkEvent.reoccurrence
             eventDao.addEvent(any(), any())
@@ -91,7 +91,7 @@ internal class EventMutationTest {
             mockkEvent.title
             mockkEvent.description
             mockkEvent.startTime
-            mockkEvent.end
+            mockkEvent.endTime
             mockkEvent.allDay
             mockkEvent.reoccurrence
             eventDao.editEvent(any(), any())
