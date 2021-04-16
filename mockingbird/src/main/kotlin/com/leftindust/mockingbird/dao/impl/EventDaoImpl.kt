@@ -94,6 +94,17 @@ class EventDaoImpl(
     }
 
     override suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event {
-        TODO("Not yet implemented")
+        if (requester can (Crud.UPDATE to Tables.Event)) {
+            val entity = hibernateEventRepository.getOne(event.eid.toLong())
+            val doctors = event.doctors
+                ?.map { hibernateDoctorRepository.getOne(it.toLong()) }
+                ?.toSet()
+            val patients = event.patients
+                ?.map { hibernatePatientRepository.getOne(it.toLong()) }
+                ?.toSet()
+            return hibernateEventRepository.save(entity.update(event, newDoctors = doctors, newPatients = patients))
+        } else {
+            throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
+        }
     }
 }

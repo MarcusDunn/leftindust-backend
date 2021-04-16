@@ -4,7 +4,6 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Event
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +24,7 @@ data class GraphQLEvent(
         title = event.title,
         description = event.description,
         startTime = GraphQLUtcTime(event.startTime),
-        endTime = event.durationMillis?.let { duration -> GraphQLUtcTime(event.startTime.time + duration) },
+        endTime = event.end?.let { GraphQLUtcTime(it) },
         allDay = event.allDay,
         reoccurrence = event.reoccurrence?.let { GraphQLRecurrence(it) },
         authContext = authContext

@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
@@ -12,7 +13,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
 import io.mockk.*
@@ -118,6 +121,42 @@ internal class EventDaoImplTest {
 
     @Test
     fun editEvent() {
-        TODO()
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val eventDao = EventDaoImpl(
+            hibernateEventRepository, hibernatePatientRepository,
+            hibernateDoctorRepository, hibernateVisitRepository, authorizer
+        )
+
+        val eventUpdateInput = GraphQLEventEditInput(gqlID(1000), description = OptionalInput.Defined("fancy descr"))
+
+        val updateEventMockk = mockk<Event>()
+
+        val originalEventMockk = mockk<Event>() {
+            every { update(eventUpdateInput, null, null) } returns updateEventMockk
+        }
+
+        every { hibernateEventRepository.getOne(1000) } returns originalEventMockk
+
+        every { hibernateEventRepository.save(updateEventMockk) } returns updateEventMockk
+
+
+        val result = runBlocking {
+            eventDao.editEvent(
+                eventUpdateInput,
+                mockk()
+            )
+        }
+
+        coVerifyAll {
+            authorizer.getAuthorization(any(), any())
+            originalEventMockk.update(eventUpdateInput, null, null)
+            hibernateEventRepository.getOne(1000)
+            hibernateEventRepository.save(updateEventMockk)
+        }
+
+        confirmVerified(updateEventMockk, originalEventMockk)
+
+        assertEquals(updateEventMockk, result)
     }
 }

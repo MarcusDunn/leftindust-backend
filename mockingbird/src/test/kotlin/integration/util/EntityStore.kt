@@ -138,7 +138,7 @@ object EntityStore {
         title = testName,
         description = "some other description",
         startTime = Timestamp.valueOf("2020-01-02 11:00:00"),
-        durationMillis = Duration.ofHours(1).toMillis(),
+        end = Timestamp.valueOf("2020-01-02 12:00:00"),
         doctors = emptySet(),
         patients = emptySet()
     )

@@ -1,6 +1,12 @@
 package com.leftindust.mockingbird.dao.entity
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.extensions.getOrThrow
+import com.leftindust.mockingbird.extensions.onUndefined
+import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import java.sql.Timestamp
 import javax.persistence.*
@@ -12,7 +18,7 @@ class Event(
     @Column(name = "start_time")
     var startTime: Timestamp,
     @Column(name = "duration_millis")
-    val durationMillis: Long?,
+    val end: Timestamp?,
     @Column(name = "all_day")
     val allDay: Boolean = false,
     @ManyToMany
@@ -26,9 +32,9 @@ class Event(
 ) : AbstractJpaPersistable<Long>() {
 
     init { // validation logic
-        if (allDay && durationMillis != null) {
+        if (allDay && end != null) {
             throw IllegalArgumentException("you cannot set `durationMillis` and `allDay`")
-        } else if (!allDay && durationMillis == null) {
+        } else if (!allDay && end == null) {
             throw IllegalArgumentException("you must set `startTime/durationMillis` or `allDay`")
         }
     }
@@ -43,7 +49,7 @@ class Event(
         if (title != other.title) return false
         if (description != other.description) return false
         if (startTime != other.startTime) return false
-        if (durationMillis != other.durationMillis) return false
+        if (end != other.end) return false
         if (allDay != other.allDay) return false
         if (doctors != other.doctors) return false
         if (patients != other.patients) return false
@@ -56,7 +62,7 @@ class Event(
         result = 31 * result + title.hashCode()
         result = 31 * result + (description?.hashCode() ?: 0)
         result = 31 * result + startTime.hashCode()
-        result = 31 * result + durationMillis.hashCode()
+        result = 31 * result + end.hashCode()
         result = 31 * result + allDay.hashCode()
         result = 31 * result + doctors.hashCode()
         result = 31 * result + patients.hashCode()
@@ -64,14 +70,30 @@ class Event(
     }
 
     override fun toString(): String {
-        return "Event(title='$title', description=$description, startTime=$startTime, durationMillis=$durationMillis, allDay=$allDay, doctors=$doctors, patients=$patients)"
+        return "Event(title='$title', description=$description, startTime=$startTime, end=$end, allDay=$allDay, doctors=$doctors, patients=$patients)"
+    }
+
+    fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?): Event {
+        return Event(
+            title = event.title ?: title,
+            description = event.description.onUndefined(description),
+            startTime = event.start?.toTimestamp() ?: startTime,
+            end = event.end.onUndefined(end?.time?.let { GraphQLTimeInput(GraphQLUtcTime(it)) })?.toTimestamp(),
+            allDay = event.allDay ?: allDay,
+            doctors = newDoctors ?: doctors,
+            patients = newPatients ?: patients,
+            reoccurrence = if (event.recurrence is OptionalInput.Undefined)
+                reoccurrence
+            else
+                event.recurrence.getOrThrow().let { Reoccurrence(it) }
+        )
     }
 
     constructor(graphQLEventInput: GraphQLEventInput, doctors: Set<Doctor>, patients: Set<Patient>) : this(
         title = graphQLEventInput.title,
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
-        durationMillis = graphQLEventInput.end?.toTimestamp()?.time?.minus(graphQLEventInput.start.toTimestamp().time),
+        end = graphQLEventInput.end?.toTimestamp(),
         allDay = graphQLEventInput.allDay ?: false,
         reoccurrence = graphQLEventInput.recurrence?.let { Reoccurrence(it) },
         doctors = doctors,

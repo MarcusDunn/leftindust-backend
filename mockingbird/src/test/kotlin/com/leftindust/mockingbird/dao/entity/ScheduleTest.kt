@@ -6,7 +6,6 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
-import java.time.Instant
 
 internal class ScheduleTest {
 
@@ -46,14 +45,10 @@ internal class ScheduleTest {
 
         val actual = schedule.getEventsBetween(jan1st2020, jan1st2021)
         actual.forEach {
-            assert(
-                it.startTime.toInstant().isAfter(jan1st2020.toInstant())
-            ) { "${it.startTime} is not before jan1st2020" }
-            assert(it.startTime.time + it.durationMillis!! < jan1st2020.time) {
-                "${
-                    Timestamp.from(Instant.ofEpochMilli(it.startTime.time + it.durationMillis!!)).toLocalDateTime()
-                } is not after jan1st2020"
-            }
+            assert(it.startTime.toInstant().isAfter(jan1st2020.toInstant()))
+            { "${it.startTime} is not after jan1st2020" }
+            assert(it.end!!.before(jan1st2021))
+            { "$${it.end} is not before jan1st 2021" }
         }
     }
 }
