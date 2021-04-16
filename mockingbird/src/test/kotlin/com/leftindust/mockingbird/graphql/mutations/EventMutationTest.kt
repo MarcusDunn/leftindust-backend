@@ -43,8 +43,6 @@ internal class EventMutationTest {
             )
         }
 
-        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
-
         coVerifyAll {
             mockkContext.mediqAuthToken
             mockkEvent.id
@@ -54,11 +52,13 @@ internal class EventMutationTest {
             mockkEvent.durationMillis
             mockkEvent.allDay
             mockkEvent.reoccurrence
-            mockkContext.equals(mockkContext)
             eventDao.addEvent(any(), any())
         }
 
         confirmVerified(mockkEvent, mockkContext)
+
+        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
+
     }
 
     @Test
@@ -84,7 +84,6 @@ internal class EventMutationTest {
             )
         }
 
-        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
 
         coVerifyAll {
             mockkContext.mediqAuthToken
@@ -95,10 +94,12 @@ internal class EventMutationTest {
             mockkEvent.durationMillis
             mockkEvent.allDay
             mockkEvent.reoccurrence
-            mockkContext.equals(mockkContext)
             eventDao.editEvent(any(), any())
         }
 
         confirmVerified(mockkEvent, mockkContext)
+
+        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
+
     }
 }
