@@ -89,4 +89,14 @@ internal class EventDaoImplTest {
 
         assertEquals(listOfEvent, result)
     }
+
+    @Test
+    fun editEvent() {
+        coEvery {
+            authorizer.getAuthorization(
+                match { Action(Crud.UPDATE to Tables.Event).isSuperset(it) },
+                any()
+            )
+        } returns Authorization.Allowed
+    }
 }

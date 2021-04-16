@@ -9,19 +9,23 @@ import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import integration.util.EntityStore
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class EventMutationTest {
     private val eventDao = mockk<EventDao>()
 
+    @AfterEach
+    internal fun tearDown() {
+        confirmVerified(eventDao)
+    }
+
     @Test
     fun addEvent() {
-        val graphQLAuthContext = mockk<GraphQLAuthContext>() {
+        val mockkContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
         val mockkEvent = mockk<Event>(relaxed = true) {
@@ -35,36 +39,66 @@ internal class EventMutationTest {
         val result = runBlocking {
             eventMutation.addEvent(
                 event,
-                graphQLAuthContext
+                mockkContext
             )
         }
 
-        assertEquals(GraphQLEvent(mockkEvent, graphQLAuthContext), result)
+        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
+
+        coVerifyAll {
+            mockkContext.mediqAuthToken
+            mockkEvent.id
+            mockkEvent.title
+            mockkEvent.description
+            mockkEvent.startTime
+            mockkEvent.durationMillis
+            mockkEvent.allDay
+            mockkEvent.reoccurrence
+            mockkContext.equals(mockkContext)
+            eventDao.addEvent(any(), any())
+        }
+
+        confirmVerified(mockkEvent, mockkContext)
     }
 
     @Test
     internal fun `edit event`() {
-        val graphQLAuthContext = mockk<GraphQLAuthContext>() {
+        val mockkContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
 
         val eventMutation = EventMutation(eventDao)
 
-        val expected = mockk<Event>(relaxed = true) {
+        val mockkEvent = mockk<Event>(relaxed = true) {
             every { id } returns 1000
         }
 
-        coEvery { eventDao.editEvent(any(), any()) } returns expected
+        coEvery { eventDao.editEvent(any(), any()) } returns mockkEvent
 
         val result = runBlocking {
             eventMutation.editEvent(
                 GraphQLEventEditInput(
                     gqlID(1000),
                     description = OptionalInput.Defined("new descr")
-                ), graphQLAuthContext
+                ), mockkContext
             )
         }
 
-        assertEquals(GraphQLEvent(expected, graphQLAuthContext), result)
+        assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
+
+        coVerifyAll {
+            mockkContext.mediqAuthToken
+            mockkEvent.id
+            mockkEvent.title
+            mockkEvent.description
+            mockkEvent.startTime
+            mockkEvent.durationMillis
+            mockkEvent.allDay
+            mockkEvent.reoccurrence
+            mockkContext.equals(mockkContext)
+            eventDao.editEvent(any(), any())
+        }
+
+        confirmVerified(mockkEvent, mockkContext)
     }
 }
