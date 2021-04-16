@@ -28,7 +28,5 @@ interface EventDao {
 
     suspend fun getByVisit(vid: Long, requester: MediqToken): Event
 
-    suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event {
-        TODO("Not yet implemented")
-    }
+    suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event
 }

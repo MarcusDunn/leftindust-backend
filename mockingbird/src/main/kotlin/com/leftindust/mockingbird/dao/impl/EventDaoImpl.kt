@@ -12,6 +12,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -90,5 +91,9 @@ class EventDaoImpl(
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
+    }
+
+    override suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event {
+        TODO("Not yet implemented")
     }
 }
