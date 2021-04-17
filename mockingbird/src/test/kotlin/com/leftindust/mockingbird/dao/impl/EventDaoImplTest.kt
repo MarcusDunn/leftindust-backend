@@ -140,6 +140,7 @@ internal class EventDaoImplTest {
 
         every { hibernateEventRepository.save(updateEventMockk) } returns updateEventMockk
 
+        every { hibernateEventRepository.delete(originalEventMockk) } just runs
 
         val result = runBlocking {
             eventDao.editEvent(
@@ -153,6 +154,7 @@ internal class EventDaoImplTest {
             originalEventMockk.update(eventUpdateInput, null, null)
             hibernateEventRepository.getOne(1000)
             hibernateEventRepository.save(updateEventMockk)
+            hibernateEventRepository.delete(originalEventMockk)
         }
 
         confirmVerified(updateEventMockk, originalEventMockk)
