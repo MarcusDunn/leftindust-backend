@@ -46,7 +46,7 @@ class EventMutationTest(
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
         assertDoesNotThrow {
-            hibernateEventRepository.findByTitleEquals("EventMutationTest.add event no recurrence")
+            hibernateEventRepository.getByTitleEquals("EventMutationTest.add event no recurrence")
         }
     }
 
@@ -76,7 +76,7 @@ class EventMutationTest(
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
         assertDoesNotThrow {
-            hibernateEventRepository.findByTitleEquals("EventMutationTest.add event with recurrence")
+            hibernateEventRepository.getByTitleEquals("EventMutationTest.add event with recurrence")
         }
     }
 
@@ -110,10 +110,79 @@ class EventMutationTest(
         assertEquals(result.description, newDescription)
 
         val entity = assertDoesNotThrow {
-            hibernateEventRepository.findByTitleEquals("EventMutationTest.edit event")
+            hibernateEventRepository.getByTitleEquals("EventMutationTest.edit event")
         }
 
         // check changes are persisted
-        assertEquals(entity.description, newDescription)
+        assertEquals(entity.first().description, newDescription)
+    }
+
+    @Test
+    internal fun `edit event with recurrence`() {
+        val graphQLAuthContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk() {
+                every { uid } returns "admin"
+            }
+        }
+
+        val recurrence = GraphQLRecurrenceInput(
+            startDate = GraphQLDateInput(1, GraphQLMonth.Mar, 2020),
+            endDate = GraphQLDateInput(1, GraphQLMonth.Mar, 2030),
+            daysOfWeek = listOf(GraphQLDayOfWeek.Mon)
+        )
+
+        val originalWithRecurrence = EntityStore
+            .graphQLEventInput("EventMutationTest.edit event with recurrence")
+            .copy(recurrence = recurrence)
+
+        val eid = runBlocking {
+            eventMutation.addEvent(
+                originalWithRecurrence,
+                graphQLAuthContext
+            ).eid
+        }
+
+        val newDescription = "some fancy new description"
+
+        val event = GraphQLEventEditInput(
+            eid = gqlID(eid),
+            description = OptionalInput.Defined(newDescription),
+        )
+
+        val recurrenceSettings = EventMutation.GraphQLRecurrenceEditSettings(
+            editStart = GraphQLDateInput(1, GraphQLMonth.Mar, 2021),
+            editEnd = GraphQLDateInput(1, GraphQLMonth.Mar, 2022),
+        )
+
+        val result = runBlocking {
+            eventMutation.editEvent(event, graphQLAuthContext, recurrenceSettings)
+        }
+
+        // check returned value is changed
+        assertEquals(result.description, newDescription)
+
+        val entities = assertDoesNotThrow {
+            hibernateEventRepository.getByTitleEquals("EventMutationTest.edit event with recurrence")
+        }
+
+        assertEquals(3, entities.size)
+        with(entities.sortedBy { it.reoccurrence!!.startDate }) {
+            // the original segment up until changes took place
+            assertEquals(recurrence.startDate.toLocalDate(), get(0).reoccurrence!!.startDate)
+            assertEquals(recurrenceSettings.editStart.toLocalDate(), get(0).reoccurrence!!.endDate)
+            assertEquals(originalWithRecurrence.description, get(0).description)
+
+
+            // the edited segment
+            assertEquals(recurrenceSettings.editStart.toLocalDate(), get(1).reoccurrence!!.startDate)
+            assertEquals(recurrenceSettings.editEnd.toLocalDate(), get(1).reoccurrence!!.endDate)
+            assertEquals(newDescription, get(1).description)
+
+
+            // the original segment after the edits end
+            assertEquals(recurrenceSettings.editEnd.toLocalDate(), get(2).reoccurrence!!.startDate)
+            assertEquals(recurrence.endDate.toLocalDate(), get(2).reoccurrence!!.endDate)
+            assertEquals(originalWithRecurrence.description, get(2).description)
+        }
     }
 }

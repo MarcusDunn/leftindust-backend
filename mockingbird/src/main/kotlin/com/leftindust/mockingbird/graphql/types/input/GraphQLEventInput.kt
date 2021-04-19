@@ -4,7 +4,6 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.graphql.types.GraphQLRecurrence
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 
 
@@ -43,20 +42,26 @@ data class GraphQLEventEditInput(
     @GraphQLDescription("The new end of the event. Can only be null if the event is allDay")
     val end: OptionalInput<GraphQLTimeInput?> = OptionalInput.Undefined,
     @GraphQLDescription(
-        "weather the event is all day or not. Cannot be null and must be false if and only if end " +
-                "is not null"
+        """
+            weather the event is all day or not. Cannot be null and must be false if and only if end
+            is not null
+            """
     )
     val allDay: Boolean? = null,
     @GraphQLDescription(
-        "the doctors attached to this event. if set to null, no changes will be made, to clear the " +
-                "list you must pass an empty list"
+        """
+            the doctors attached to this event. if set to null, no changes will be made, to clear the 
+            list you must pass an empty list
+            """
     )
     val doctors: List<ID>? = null,
     @GraphQLDescription("the patients attached to this event. see doctors for nullability rules")
     val patients: List<ID>? = null,
     @GraphQLDescription(
-        "the rules surrounding recurrence of the event, Can be set to null. Setting this value " +
-                "will overwrite the whole recurrence object, leaving fields blank will __not__ retain prior values"
+        """
+            the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite 
+            the whole recurrence object, leaving fields blank will __not__ retain prior values
+            """
     )
     val recurrence: OptionalInput<GraphQLRecurrenceInput> = OptionalInput.Undefined
 )
