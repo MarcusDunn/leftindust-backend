@@ -25,9 +25,7 @@ internal class PatientQueryTest {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
         }
-        coEvery { patientDao.getByPID(1000, any()) } returns mockk() {
-            every { getOrThrow() } returns mockkPatient
-        }
+        coEvery { patientDao.getByPID(1000, any()) } returns mockkPatient
         every { authContext.mediqAuthToken } returns mockk()
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val patientQuery = PatientQuery(patientDao)
@@ -59,9 +57,7 @@ internal class PatientQueryTest {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
         }
-        coEvery { patientDao.searchByExample(any(), any()) } returns mockk {
-            every { getOrThrow() } returns listOf(mockkPatient)
-        }
+        coEvery { patientDao.searchByExample(any(), any()) } returns listOf(mockkPatient)
         val patientQuery = PatientQuery(patientDao)
         every { authContext.mediqAuthToken } returns mockk()
         val result = runBlocking {
@@ -85,9 +81,7 @@ internal class PatientQueryTest {
             every { id } returns 1000L
         }
         every { authContext.mediqAuthToken } returns mockk()
-        coEvery { patientDao.searchByExample(any(), any()) } returns mockk {
-            every { getOrThrow() } returns listOf(mockkPatient)
-        }
+        coEvery { patientDao.searchByExample(any(), any()) } returns listOf(mockkPatient)
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val patientQuery = PatientQuery(patientDao)
         val result = runBlocking { patientQuery.patients(example = mockk(), authContext = authContext) }

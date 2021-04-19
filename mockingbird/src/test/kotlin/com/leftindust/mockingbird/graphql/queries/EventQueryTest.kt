@@ -60,7 +60,7 @@ internal class EventQueryTest {
                 })
             }
         }
-        coEvery { patientDao.getByPID(2000L, any()) } returns Success(expected)
+        coEvery { patientDao.getByPID(2000L, any()) } returns expected
 
         val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
 

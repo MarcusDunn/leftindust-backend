@@ -37,23 +37,19 @@ class PatientQuery(
             }
             pids != null && sortedBy != null -> {
                 pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
-                    .map { it.getOrThrow() }
                     .sortedBy { sortedBy.instanceValue(it) }
             }
             pids != null && sortedBy == null -> {
                 pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
-                    .map { it.getOrThrow() }
             }
             example != null && sortedBy != null -> {
                 patientDao
                     .searchByExample(example, authContext.mediqAuthToken)
-                    .getOrThrow()
                     .sortedBy { sortedBy.instanceValue(it) }
             }
             example != null && sortedBy == null -> {
                 patientDao
                     .searchByExample(example, authContext.mediqAuthToken)
-                    .getOrThrow()
             }
             else -> throw GraphQLKotlinException("invalid arguments")
         }.map { GraphQLPatient(it, it.id!!, authContext) }

@@ -76,9 +76,7 @@ internal class PatientMutationTest {
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
 
-        coEvery { patientDao.addNewPatient(any(), any()) } returns mockk {
-            every { getOrThrow() } returns mockkPatient
-        }
+        coEvery { patientDao.addNewPatient(any(), any()) } returns mockkPatient
 
         val patientMutation = PatientMutation(patientDao)
 

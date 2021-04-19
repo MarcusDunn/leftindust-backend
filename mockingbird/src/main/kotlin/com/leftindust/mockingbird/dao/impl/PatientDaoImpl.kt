@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
-import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
@@ -36,43 +35,33 @@ class PatientDaoImpl(
     @Autowired private val entityManager: EntityManager
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
-    override suspend fun getByPID(pID: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
-        val readToDatabase = Action(Crud.READ to Tables.Patient)
-        return readToDatabase.getAuthorization(requester) {
-            Success(
-                patientRepository.getOneOrNull(pID)
-                    ?: return@getAuthorization Failure(DoesNotExist())
-            )
+    override suspend fun getByPID(pID: Long, requester: MediqToken): Patient {
+        if (requester can (Crud.READ to Tables.Patient)) {
+            return patientRepository.getOne(pID)
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 
     override suspend fun addNewPatient(
         patient: GraphQLPatientInput,
         requester: MediqToken
-    ): CustomResult<Patient, OrmFailureReason> {
-        val permissions = listOf(
-            Crud.CREATE to Tables.Patient,
-            Crud.UPDATE to Tables.Doctor,
-        ).map { Action(it) }
-        return if (requester has permissions) {
-            val newPatient = try {
-                Patient(patient, sessionFactory.currentSession)
-            } catch (e: IllegalArgumentException) {
-                return Failure(InvalidArguments(e.message))
-            }
-            val savedPatient = patientRepository.save(newPatient)
-            Success(savedPatient)
+    ): Patient {
+        if (requester can listOf(Crud.CREATE to Tables.Patient, Crud.UPDATE to Tables.Doctor)) {
+            val newPatient = Patient(patient, sessionFactory.currentSession)
+            return patientRepository.save(newPatient)
         } else {
-            Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, Crud.CREATE to Tables.Patient, Crud.UPDATE to Tables.Doctor)
         }
     }
 
-    override suspend fun removeByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason> {
-        val deletePatient = Action(Crud.DELETE to Tables.Patient)
-        return deletePatient.getAuthorization(requester) {
-            val toBeDeleted = patientRepository.getOneOrNull(pid) ?: return@getAuthorization Failure(DoesNotExist(""))
+    override suspend fun removeByPID(pid: Long, requester: MediqToken): Patient {
+        return if (requester can (Crud.DELETE to Tables.Patient)) {
+            val toBeDeleted = patientRepository.getOne(pid)
             patientRepository.delete(toBeDeleted)
-            Success(toBeDeleted)
+            toBeDeleted
+        } else {
+            throw NotAuthorizedException(requester, Crud.DELETE to Tables.Patient)
         }
     }
 
@@ -97,16 +86,14 @@ class PatientDaoImpl(
         patientInput: ID,
         doctorInput: ID,
         requester: MediqToken
-    ): CustomResult<Patient, OrmFailureReason> {
-        val permissions = listOf(Crud.UPDATE to Tables.Doctor, Crud.UPDATE to Tables.Doctor).map { Action(it) }
-        return if (requester has permissions) {
-            val patient = patientRepository.getOneOrNull(patientInput.toLong())
-                ?: return Failure(DoesNotExist("patient does not exist"))
-            val doctor = doctorRepository.getOneOrNull(doctorInput.toLong())
-                ?: return Failure(DoesNotExist("doctor does not exist"))
-            return Success(patient.addDoctor(doctor))
+    ): Patient {
+        val permissions = listOf(Crud.UPDATE to Tables.Doctor, Crud.UPDATE to Tables.Doctor)
+        return if (requester can permissions) {
+            val patient = patientRepository.getOne(patientInput.toLong())
+            val doctor = doctorRepository.getOne(doctorInput.toLong())
+            patient.addDoctor(doctor)
         } else {
-            Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, *permissions.toTypedArray())
         }
     }
 
@@ -114,11 +101,11 @@ class PatientDaoImpl(
         example: GraphQLPatientExample,
         requester: MediqToken,
         strict: Boolean
-    ): CustomResult<List<Patient>, OrmFailureReason> {
+    ): List<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict)
+            searchByGqlExample(entityManager, example, strict).getOrThrow()
         } else {
-            Failure(NotAuthorized(requester, "cannot read to patient"))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 

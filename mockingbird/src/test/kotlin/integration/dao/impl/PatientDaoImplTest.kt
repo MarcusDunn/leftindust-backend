@@ -55,7 +55,7 @@ class PatientDaoImplTest {
                 ),
                 mockkMediqToken
             )
-        }.getOrThrow()
+        }
 
         // assert
         assertTrue(result.contains(expected))
@@ -63,14 +63,12 @@ class PatientDaoImplTest {
 
     @Test
     internal fun `search by example time`() {
-        // setup
         val pid = session.save(EntityStore.patient("PatientDaoImplTest.search by example time")) as Long
         val expected = session.get(Patient::class.java, pid)
         val mockkMediqToken = mockk<MediqToken> {
             every { uid } returns "admin"
         }
 
-        // action
         val result = runBlocking {
             patientDao.searchByExample(
                 GraphQLPatientExample(
@@ -81,9 +79,8 @@ class PatientDaoImplTest {
                 ),
                 mockkMediqToken
             )
-        }.getOrThrow()
+        }
 
-        // assert
         assertTrue(result.contains(expected))
     }
 }

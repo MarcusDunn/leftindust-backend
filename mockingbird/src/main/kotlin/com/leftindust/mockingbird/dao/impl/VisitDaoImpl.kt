@@ -5,7 +5,6 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
-import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
@@ -57,13 +56,13 @@ class VisitDaoImpl(
             Crud.READ to Tables.Doctor,
             Crud.READ to Tables.Patient,
             Crud.CREATE to Tables.Visit,
-        ).map { Action(it) }
+        )
 
-        return if (requester has requiredPermissions) {
+        return if (requester can requiredPermissions) {
             val event = eventRepository.getOne(visitInput.event.toLong())
             Success(visitRepository.save(Visit(visitInput, event)))
         } else {
-            Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
         }
     }
 

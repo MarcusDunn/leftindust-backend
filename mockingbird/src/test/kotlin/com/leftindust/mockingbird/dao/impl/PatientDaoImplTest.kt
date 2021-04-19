@@ -44,7 +44,7 @@ internal class PatientDaoImplTest {
             doctorPatientRepository, visitRepository, sessionFactory,
             entityManager
         )
-        val actual = runBlocking { patientDaoImpl.getByPID(1000, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.getByPID(1000, mockk()) }
 
         assertEquals(mockkPatient, actual)
 
@@ -69,7 +69,7 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }
 
         assertEquals(mockkPatient, actual)
     }
@@ -89,7 +89,7 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val actual = runBlocking { patientDaoImpl.removeByPID(1000L, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.removeByPID(1000L, mockk()) }
 
         assertEquals(mockkPatient, actual)
     }
@@ -154,7 +154,7 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val actual = runBlocking { patientDaoImpl.addDoctorToPatient(ID("1000"), ID("1001"), mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.addDoctorToPatient(ID("1000"), ID("1001"), mockk()) }
 
         assertEquals(mockkPatient, actual)
     }

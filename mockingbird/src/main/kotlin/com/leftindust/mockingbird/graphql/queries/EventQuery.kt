@@ -50,7 +50,6 @@ class EventQuery(
     ): List<GraphQLEvent> {
         return patients
             .map { patientDao.getByPID(it.toLong(), graphQLAuthContext.mediqAuthToken) }
-            .map { it.getOrThrow() }
             .flatMap { patient ->
                 patient.schedule.events.map {
                     GraphQLEvent(

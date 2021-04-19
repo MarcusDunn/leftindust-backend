@@ -32,7 +32,6 @@ class PatientMutation(
                 patient = patient,
                 requester = graphQLAuthContext.mediqAuthToken
             )
-            .getOrThrow()
             .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) }  // safe nn assert as we just added from DB
     }
 }
