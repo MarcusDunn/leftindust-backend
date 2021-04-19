@@ -14,7 +14,6 @@ class VisitMutation(
 ) : Mutation {
     suspend fun addVisit(visit: GraphQLVisitInput, graphQLAuthContext: GraphQLAuthContext): GraphQLVisit {
         return visitDao.addVisit(visit, graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
             .let { GraphQLVisit(it, it.id!!, graphQLAuthContext) } // safe nn call as we just persisted this visit
     }
 }

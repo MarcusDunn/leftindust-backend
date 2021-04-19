@@ -5,12 +5,11 @@ import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.google.firebase.auth.ExportedUserRecord
+import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.NotAuthorized
+import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
-import com.leftindust.mockingbird.extensions.CustomResultException
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.GraphQLFirebaseInfo
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
@@ -24,22 +23,20 @@ class UserQuery(
 ) : Query {
     suspend fun user(uid: ID, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         val strUid = uid.value
-        return try {
-            val user = userDao.getUserByUid(strUid, graphQLAuthContext.mediqAuthToken)
-                .getOrThrow() // check if user exists in database
-            GraphQLUser(user, graphQLAuthContext)
-        } catch (e: CustomResultException) {
+        val user = userDao.getUserByUid(strUid, graphQLAuthContext.mediqAuthToken).getOrNull()
+        return if (user == null) {
             if (graphQLAuthContext.mediqAuthToken.isVerified()) {
-                when (val result = firebaseFetcher.getUserInfo(strUid, graphQLAuthContext.mediqAuthToken)) {
-                    is Failure -> result.getOrThrow()
-                    is Success -> GraphQLUser(
-                        uid = result.value.uid!!,
-                        authContext = graphQLAuthContext
-                    )
-                }
+                val fireBaseUser = firebaseFetcher.getUserInfo(strUid, graphQLAuthContext.mediqAuthToken)
+                GraphQLUser(
+                    uid = fireBaseUser.uid,
+                    group = null,
+                    authContext = graphQLAuthContext
+                )
             } else {
-                Failure(NotAuthorized(graphQLAuthContext.mediqAuthToken)).getOrThrow()
+                throw NotAuthorizedException(graphQLAuthContext.mediqAuthToken, Crud.READ to Tables.User)
             }
+        } else {
+            GraphQLUser(user, graphQLAuthContext)
         }
     }
 
@@ -61,10 +58,9 @@ the default arguments are users(RangeInput(0,20))
                 val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
                 userDao
                     .getUsers(validatedRange.first, validatedRange.last, graphQLAuthContext.mediqAuthToken)
-
             }
             range == null -> {
-                uniqueIds.map { userDao.getUserByUid(it.value, graphQLAuthContext.mediqAuthToken).getOrThrow() }
+                uniqueIds.map { userDao.getUserByUid(it.value, graphQLAuthContext.mediqAuthToken).getOrNull()!! }
             }
             else -> {
                 throw GraphQLKotlinException(
@@ -86,9 +82,7 @@ to true (defaults to false)"""
         filterRegistered: Boolean? = false,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLFirebaseInfo> {
-        val users = firebaseFetcher
-            .getUsers(graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
+        val users = firebaseFetcher.getUsers(graphQLAuthContext.mediqAuthToken).getOrNull()!!
         val nnRange = range ?: GraphQLRangeInput(0, 20)
         val validatedRange = nnRange.toIntRange()
 

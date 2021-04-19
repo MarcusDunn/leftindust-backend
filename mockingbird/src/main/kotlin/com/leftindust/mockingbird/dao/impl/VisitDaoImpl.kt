@@ -4,7 +4,10 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.NotAuthorized
+import com.leftindust.mockingbird.dao.OrmFailureReason
+import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
@@ -17,7 +20,6 @@ import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
@@ -33,25 +35,18 @@ class VisitDaoImpl(
 ) : VisitDao, AbstractHibernateDao(authorizer) {
     private val logger: Logger = LogManager.getLogger()
 
-    override suspend fun getVisitByVid(vid: Long, requester: MediqToken): CustomResult<Visit, OrmFailureReason> {
+    override suspend fun getVisitByVid(vid: Long, requester: MediqToken): Visit {
         return if (requester can (Crud.READ to Tables.Visit)) {
-            val visit = try {
-                visitRepository.getOne(vid)
-            } catch (e: JpaObjectRetrievalFailureException) {
-                logger.error("attempted to find a non-existent visit with vid: $vid ")
-                return Failure(DoesNotExist())
-            }
-            Success(visit)
+            visitRepository.getOne(vid)
         } else {
-            logger.warn("unauthorized attempt to getVisitByVid")
-            Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Visit)
         }
     }
 
     override suspend fun addVisit(
         visitInput: GraphQLVisitInput,
         requester: MediqToken
-    ): CustomResult<Visit, OrmFailureReason> {
+    ): Visit {
         val requiredPermissions = listOf(
             Crud.READ to Tables.Doctor,
             Crud.READ to Tables.Patient,
@@ -60,7 +55,7 @@ class VisitDaoImpl(
 
         return if (requester can requiredPermissions) {
             val event = eventRepository.getOne(visitInput.event.toLong())
-            Success(visitRepository.save(Visit(visitInput, event)))
+            visitRepository.save(Visit(visitInput, event))
         } else {
             throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
         }
@@ -70,11 +65,11 @@ class VisitDaoImpl(
         example: GraphQLVisitExample,
         strict: Boolean,
         requester: MediqToken
-    ): CustomResult<List<Visit>, OrmFailureReason> {
+    ): List<Visit> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict)
+            searchByGqlExample(entityManager, example, strict).getOrNull()!!
         } else {
-            Failure(NotAuthorized(requester, "cannot read to patients"))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 

@@ -22,13 +22,13 @@ internal class UserDaoImplTest {
     fun getUserByUid() {
         val mockkUser = mockk<MediqUser>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { userRepository.getUserByUniqueId("test uid") } returns mockkUser
+        every { userRepository.findByUniqueId("test uid") } returns mockkUser
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository)
 
-        val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }.getOrThrow()
+        val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }.getOrNull()!!
 
-        assertEquals(mockkUser, actual)
+        assertEquals(mockkUser, actual)re
     }
 
     @Test
@@ -37,7 +37,6 @@ internal class UserDaoImplTest {
             every { uid } returns "uid"
             every { group_id } returns null
         }
-        every { userRepository.getUserByUniqueId("uid") } returns null // does not already exist in DB
         val mockkMediqUser = mockk<MediqUser>()
         every { userRepository.save(any()) } returns mockkMediqUser
 
@@ -45,7 +44,7 @@ internal class UserDaoImplTest {
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository)
 
-        val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }.getOrThrow()
+        val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }
 
         assertEquals(mockkMediqUser, actual)
     }

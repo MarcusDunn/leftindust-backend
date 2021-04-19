@@ -13,14 +13,14 @@ interface EventDao {
     suspend fun addEvent(
         event: GraphQLEventInput,
         requester: MediqToken
-    ): CustomResult<Event, OrmFailureReason>
+    ): Event
 
     suspend fun getMany(
         range: GraphQLTimeRangeInput,
         requester: MediqToken
     ): Collection<Event>
 
-    suspend fun getById(eid: ID, requester: MediqToken): CustomResult<Event, OrmFailureReason>
+    suspend fun getById(eid: ID, requester: MediqToken): Event
 
     suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event>
 

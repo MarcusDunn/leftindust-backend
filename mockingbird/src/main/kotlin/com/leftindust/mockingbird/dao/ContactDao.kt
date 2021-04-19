@@ -5,5 +5,5 @@ import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.extensions.CustomResult
 
 interface ContactDao {
-    suspend fun getByPatient(pid: Long, requester: MediqToken): CustomResult<List<EmergencyContact>, OrmFailureReason>
+    suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<EmergencyContact>
 }

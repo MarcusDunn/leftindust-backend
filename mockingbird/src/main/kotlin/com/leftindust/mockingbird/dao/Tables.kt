@@ -11,5 +11,6 @@ enum class Tables {
     Record,
     EmergencyContact,
     Event,
+    IcdCode,
     ;
 }

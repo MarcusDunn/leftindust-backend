@@ -14,15 +14,7 @@ import org.apache.logging.log4j.LogManager
 sealed class CustomResult<out S, out F> {
     fun isSuccess() = this is Success
     fun isFailure() = this is Failure
-
-    fun getOrThrow(onFailure: (failure: F) -> Throwable = { CustomResultException("called getOrThrow on failure $it") }): S {
-        return when (this) {
-            is Success -> this.value
-            is Failure -> throw onFailure(this.reason)
-                .also { LogManager.getLogger().error("failed to unwrap success on $this") }
-        }
-    }
-
+    
     fun getOrNull(): S? {
         return when (this) {
             is Failure -> null

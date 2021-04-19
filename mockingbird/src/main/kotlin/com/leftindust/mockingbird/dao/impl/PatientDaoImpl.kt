@@ -5,13 +5,15 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.getOrThrow
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.SessionFactory
@@ -103,7 +105,7 @@ class PatientDaoImpl(
         strict: Boolean
     ): List<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict).getOrThrow()
+            searchByGqlExample(entityManager, example, strict).getOrNull()!!
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
@@ -127,20 +129,15 @@ class PatientDaoImpl(
     override suspend fun update(
         patientInput: GraphQLPatientInput,
         requester: MediqToken
-    ): CustomResult<Patient, OrmFailureReason> {
-        val updatePatients = Crud.UPDATE to Tables.Patient
-        return if (requester can updatePatients) {
-            val pid = patientInput.pid.getOrNull() ?: return Failure(InvalidArguments("pid must be defined"))
-            val patient = patientRepository.getOneOrNull(pid.toLong())
-                ?: return Failure(DoesNotExist("could not find the patient with pid ${pid.value}"))
-            try {
-                patient.setByGqlInput(patientInput, sessionFactory.currentSession)
-                Success(patient)
-            } catch (e: IllegalArgumentException) {
-                Failure(InvalidArguments(e.message))
+    ): Patient {
+        return if (requester can (Crud.UPDATE to Tables.Patient)) {
+            val pid = patientInput.pid.getOrThrow()
+            val patient = patientRepository.getOne(pid.toLong())
+            patient.apply {
+                setByGqlInput(patientInput, sessionFactory.currentSession)
             }
         } else {
-            Failure(NotAuthorized(requester, "not allowed to $updatePatients"))
+            throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
         }
     }
 }

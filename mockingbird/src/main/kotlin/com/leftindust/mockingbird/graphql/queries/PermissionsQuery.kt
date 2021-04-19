@@ -15,11 +15,9 @@ class PermissionsQuery(
         if (graphQLAuthContext.mediqAuthToken.isVerified()) {
             return authorizer
                 .getRolesForUserByUid(uid)
-                .getOrThrow()
                 .let { GraphQLPermissions(it) }
         } else {
             throw GraphQLKotlinException("unauthenticated token")
         }
-
     }
 }

@@ -4,7 +4,6 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
@@ -32,7 +31,7 @@ internal class EventMutationTest {
             every { id } returns 1000
         }
 
-        coEvery { eventDao.addEvent(any(), any()) } returns Success(mockkEvent)
+        coEvery { eventDao.addEvent(any(), any()) } returns mockkEvent
 
         val eventMutation = EventMutation(eventDao)
         val event = EntityStore.graphQLEventInput("EventMutationTest.addEvent")

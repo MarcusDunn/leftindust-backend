@@ -49,7 +49,7 @@ data class GraphQLPatient(
     }
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
-        contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken).getOrThrow()
+        contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
             .map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =

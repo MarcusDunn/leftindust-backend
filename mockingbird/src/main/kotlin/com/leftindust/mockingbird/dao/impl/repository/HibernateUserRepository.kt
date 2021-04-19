@@ -6,5 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 interface HibernateUserRepository: JpaRepository<MediqUser, Long> {
-    fun getUserByUniqueId(uniqueId: String): MediqUser?
+    fun getUserByUniqueId(uniqueId: String): MediqUser
+    fun findByUniqueId(uniqueId: String): MediqUser?
 }

@@ -51,7 +51,6 @@ internal class AuthorizerImpl(
         return user.uid?.let { uid ->
             authorizationDao
                 .getRolesForUserByUid(uid)
-                .getOrNull()
         }
     }
 

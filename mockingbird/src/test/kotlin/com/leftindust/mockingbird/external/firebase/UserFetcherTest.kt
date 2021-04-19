@@ -20,7 +20,7 @@ internal class UserFetcherTest {
     @Test
     fun getUserInfo() {
         val mockkUser = mockk<UserRecord>()
-        val mediqToken = mockk<MediqToken>() {
+        val mediqToken = mockk<MediqToken> {
             every { uid } returns "not uid"
         }
 
@@ -29,7 +29,7 @@ internal class UserFetcherTest {
 
         val userFetcher = UserFetcher(authorizer, firebaseAuth)
 
-        val result = runBlocking { userFetcher.getUserInfo("uid", mediqToken) }.getOrThrow()
+        val result = runBlocking { userFetcher.getUserInfo("uid", mediqToken) }
 
         assertEquals(mockkUser, result)
     }
@@ -46,8 +46,8 @@ internal class UserFetcherTest {
 
         val userFetcher = UserFetcher(authorizer, firebaseAuth)
 
-        val result = runBlocking { userFetcher.getUsers(mockk()) }.getOrThrow()
+        val result = runBlocking { userFetcher.getUsers(mockk()) }
 
-        assertEquals(mockkIterable, result)
+        assertEquals(mockkIterable, result.getOrNull())
     }
 }

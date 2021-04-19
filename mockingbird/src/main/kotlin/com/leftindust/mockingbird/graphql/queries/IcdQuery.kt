@@ -2,9 +2,12 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.server.operations.Query
+import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
+import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.external.icd.IcdFetcher
+import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
 import org.springframework.stereotype.Component
@@ -32,7 +35,6 @@ class IcdQuery(
             val nnFlatResults = flatResults ?: flatResultsDefaultValue
             return client
                 .search(query, nnFlexiSearch, nnFlatResults)
-                .getOrThrow()
         } else throw GraphQLKotlinException("not authorized")
     }
 
@@ -46,20 +48,16 @@ class IcdQuery(
         if (authContext.mediqAuthToken.isVerified()) {
             return client
                 .linearizationSearch(releaseId ?: "2020-09", linearizationName ?: "mms", query, flatResults ?: false)
-                .getOrThrow()
-        } else throw GraphQLKotlinException("not authorized")
+        } else {
+            throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
+        }
     }
 
-    /**
-     * finds details on the given [FoundationIcdCode]
-     * @param icdCode the desired ICD code
-     * @returns the [GraphQLIcdFoundationEntity] representation of the [icdCode]
-     */
     suspend fun icd(icdCode: String, authContext: GraphQLAuthContext): GraphQLIcdFoundationEntity {
-        if (authContext.mediqAuthToken.isVerified()) {
-            return client
-                .getDetails(FoundationIcdCode(icdCode))
-                .getOrThrow()
-        } else throw GraphQLKotlinException("not authorized")
+        return if (authContext.mediqAuthToken.isVerified()) {
+            client.getDetails(FoundationIcdCode(icdCode))
+        } else {
+            throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
+        }
     }
 }

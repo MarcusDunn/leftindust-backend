@@ -8,7 +8,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.Test
 
 internal class ContactDaoImplTest {
@@ -26,8 +26,8 @@ internal class ContactDaoImplTest {
         }
 
         val contactDaoImpl = ContactDaoImpl(authorizer, patientRepository)
-        val actual = runBlocking { contactDaoImpl.getByPatient(1000L, mockk()) }.getOrThrow()
+        val actual = runBlocking { contactDaoImpl.getByPatient(1000L, mockk()) }
 
-        assertEquals(listOf(emergencyContact), actual)
+        assertIterableEquals(listOf(emergencyContact), actual)
     }
 }

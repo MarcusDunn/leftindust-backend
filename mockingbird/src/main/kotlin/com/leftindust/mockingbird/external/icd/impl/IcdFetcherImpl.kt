@@ -1,9 +1,5 @@
 package com.leftindust.mockingbird.external.icd.impl
 
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.external.HttpFailure
 import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.*
@@ -32,14 +28,14 @@ class IcdFetcherImpl(
     override suspend fun getLinearizationEntity(
         releaseId: String,
         code: FoundationIcdCode
-    ): CustomResult<GraphQLIcdLinearizationEntity, HttpFailure> {
+    ): GraphQLIcdLinearizationEntity {
         TODO()
     }
 
     override suspend fun linearization(
         linearizationName: String,
         code: FoundationIcdCode
-    ): CustomResult<GraphQLIcdMultiVersion, HttpFailure> {
+    ): GraphQLIcdMultiVersion {
         return getLinearization(linearizationName, code)
     }
 
@@ -48,79 +44,34 @@ class IcdFetcherImpl(
         linearizationName: String,
         query: String,
         flatResults: Boolean
-    ): CustomResult<GraphQLIcdSearchResult, HttpFailure> {
-        val url =
-            "${config.BASE_URL}/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
-        return kotlin.runCatching {
-            Success(getUrlWithIcdHeaders<GraphQLIcdSearchResult>(url))
-        }.getOrElse {
-            Failure(
-                reason = HttpFailure(
-                    url = url,
-                    responseMessage = "${it.message}"
-                )
-            )
-        }
+    ): GraphQLIcdSearchResult {
+        val url = "${config.BASE_URL}/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
+        return getUrlWithIcdHeaders(url)
     }
 
     private suspend fun getLinearization(
         linearizationName: String,
         code: FoundationIcdCode,
-    ): CustomResult<GraphQLIcdMultiVersion, HttpFailure> {
+    ): GraphQLIcdMultiVersion {
         val url = "${config.BASE_URL}/release/11/$linearizationName/${code.value}"
-        return kotlin.runCatching {
-            Success(
-                GraphQLIcdMultiVersion(
-                    getUrlWithIcdHeaders<IcdMultiVersion>(url)
-                )
-            )
-        }.getOrElse {
-            Failure(
-                reason = HttpFailure(
-                    url = url,
-                    responseMessage = it.message
-                )
-            )
-        }
+        return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
     }
+
 
     override suspend fun getDetails(
         code: FoundationIcdCode,
-    ): CustomResult<GraphQLIcdFoundationEntity, HttpFailure> {
+    ): GraphQLIcdFoundationEntity {
         val url = "${config.BASE_URL}/entity/${code.value}"
-        return kotlin.runCatching {
-            Success(
-                value = GraphQLIcdFoundationEntity(
-                    foundationEntity = getUrlWithIcdHeaders(url)
-                )
-            )
-        }.getOrElse {
-            Failure(
-                reason = HttpFailure(
-                    url = url,
-                    responseMessage = it.message
-                )
-            )
-        }
+        return GraphQLIcdFoundationEntity(getUrlWithIcdHeaders(url))
     }
 
     override suspend fun search(
         query: String,
         flexiSearch: Boolean,
         flatResults: Boolean
-    ): CustomResult<GraphQLIcdSearchResult, HttpFailure> {
+    ): GraphQLIcdSearchResult {
         val url = "${config.BASE_URL}/entity/search?q=$query&useFlexisearch=$flexiSearch&flatResults=$flatResults"
-        val response = getUrlWithIcdHeaders<GraphQLIcdSearchResult>(url)
-        return if (response.error) {
-            Failure(
-                HttpFailure(
-                    url = url,
-                    responseMessage = response.errorMessage,
-                )
-            )
-        } else {
-            Success(response)
-        }
+        return getUrlWithIcdHeaders(url)
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {

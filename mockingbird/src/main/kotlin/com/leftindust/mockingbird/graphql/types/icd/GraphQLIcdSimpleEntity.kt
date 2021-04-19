@@ -2,8 +2,6 @@ package com.leftindust.mockingbird.graphql.types.icd
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -30,10 +28,7 @@ data class GraphQLIcdSimpleEntity(
     val descendants: List<GraphQLIcdSimpleEntity>,
 ) {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
-        return when (val result = icdFetcher.getDetails(FoundationIcdCode(id ?: return null))) {
-            is Failure -> null
-            is Success -> result.value
-        }
+        return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
     }
 
     fun id(asUrl: Boolean? = false): String? {
@@ -58,23 +53,13 @@ data class GraphQLIcdSimpleEntity(
         @Autowired @GraphQLIgnore icdFetcher: IcdFetcher,
         linearizationName: String? = "mms"
     ): GraphQLIcdMultiVersion? {
-        return if (id == null) null else {
-            when (val result = icdFetcher.linearization(linearizationName ?: "mms", FoundationIcdCode(id))) {
-                is Failure -> null
-                is Success -> result.value
-            }
-        }
+        return id?.let { icdFetcher.linearization(linearizationName ?: "mms", FoundationIcdCode(it)) }
     }
 
     suspend fun linearizationEntity(
         @Autowired @GraphQLIgnore icdFetcher: IcdFetcher,
         releaseId: String? = "2019-04"
     ): GraphQLIcdLinearizationEntity? {
-        return if (id == null) null else {
-            when (val result = icdFetcher.getLinearizationEntity(releaseId ?: "2019-04", FoundationIcdCode(id))) {
-                is Failure -> null
-                is Success -> result.value
-            }
-        }
+        return id?.let { icdFetcher.getLinearizationEntity(releaseId ?: "2019-04", FoundationIcdCode(it)) }
     }
 }

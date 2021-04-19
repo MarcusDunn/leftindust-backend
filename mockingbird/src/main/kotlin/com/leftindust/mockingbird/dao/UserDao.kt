@@ -7,6 +7,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 
 interface UserDao {
     suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason>
-    suspend fun addUser(user: GraphQLUserInput, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason>
+    suspend fun addUser(user: GraphQLUserInput, requester: MediqToken): MediqUser
     suspend fun getUsers(from: Int, to: Int, requester: MediqToken): Collection<MediqUser>
 }

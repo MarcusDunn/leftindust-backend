@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.dao.DoesNotExist
@@ -30,19 +29,17 @@ data class GraphQLUser(
         return when (val result = userDao.getUserByUid(uid, authContext.mediqAuthToken)) {
             is Failure -> when (result.reason) {
                 is DoesNotExist -> false
-                else -> result.getOrThrow() // throw but with nice logging already handled in getOrThrow()
+                else -> throw RuntimeException(result.reason.toString())
             }
             is Success -> true
         }
     }
 
     suspend fun firebaseUserInfo(@GraphQLIgnore @Autowired userFetcher: UserFetcher): GraphQLFirebaseInfo =
-        GraphQLFirebaseInfo(userFetcher.getUserInfo(uid, authContext.mediqAuthToken).getOrThrow())
+        GraphQLFirebaseInfo(userFetcher.getUserInfo(uid, authContext.mediqAuthToken))
 
     suspend fun permissions(@GraphQLIgnore @Autowired authorizationDao: AuthorizationDao): GraphQLPermissions {
-        return GraphQLPermissions(
-            authorizationDao.getRolesForUserByUid(uid).getOrNull() ?: emptyList()
-        ) //todo check if this is a security issue
+        return GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
     }
 
     suspend fun hasPermission(
@@ -50,7 +47,7 @@ data class GraphQLUser(
         perm: GraphQLPermission
     ): Boolean {
         val action = Action(perm)
-        return authorizationDao.getRolesForUserByUid(uid).getOrThrow().any {
+        return authorizationDao.getRolesForUserByUid(uid).any {
             it.action.isSuperset(
                 action
             )

@@ -16,7 +16,6 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
     suspend fun addEvent(event: GraphQLEventInput, graphQLAuthContext: GraphQLAuthContext): GraphQLEvent {
         return eventDao
             .addEvent(event, graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
             .let {
                 GraphQLEvent(
                     event = it,

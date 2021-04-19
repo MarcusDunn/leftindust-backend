@@ -24,7 +24,7 @@ class IcdPerfTest {
                     flatResults = false,
                     linearizationName = "mms",
                     releaseId = "2020-09"
-                ).getOrThrow()
+                )
             }
         }
     }

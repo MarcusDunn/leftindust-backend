@@ -57,7 +57,7 @@ internal class GraphQLUserTest {
             )
         }
 
-        assertThrows<CustomResultException> {
+        assertThrows<Exception> {
             runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
         }
     }

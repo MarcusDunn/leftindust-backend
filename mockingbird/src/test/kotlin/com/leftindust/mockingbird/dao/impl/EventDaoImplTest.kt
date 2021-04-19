@@ -79,7 +79,7 @@ internal class EventDaoImplTest {
 
         confirmVerified(mockkEvent, mockkDoctor, mockkPatient)
 
-        assertEquals(mockkEvent, result.getOrNull())
+        assertEquals(mockkEvent, result)
     }
 
     @Test

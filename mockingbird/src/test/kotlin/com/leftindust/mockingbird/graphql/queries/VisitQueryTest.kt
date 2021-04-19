@@ -103,7 +103,7 @@ internal class VisitQueryTest {
             every { id } returns 1000
         }
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
-        coEvery { visitDao.getVisitByVid(3000, any()) } returns Success(mockkVisit)
+        coEvery { visitDao.getVisitByVid(3000, any()) } returns mockkVisit
 
         val visitQuery = VisitQuery(visitDao, eventDao)
 
@@ -188,7 +188,7 @@ internal class VisitQueryTest {
             every { id } returns 1000
         }
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
-        coEvery { visitDao.getByExample(any(), any(), any()) } returns Success(listOf(mockkVisit))
+        coEvery { visitDao.getByExample(any(), any(), any()) } returns listOf(mockkVisit)
 
         val visitQuery = VisitQuery(visitDao, eventDao)
 

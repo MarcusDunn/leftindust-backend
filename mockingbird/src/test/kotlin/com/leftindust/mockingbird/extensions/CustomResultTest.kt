@@ -22,22 +22,6 @@ internal class CustomResultTest {
     }
 
     @Test
-    fun `getOrThrow does not throw in success`() {
-        assertDoesNotThrow {
-            val customResult: CustomResult<*, Int> = Success(10)
-            customResult.getOrThrow()
-        }
-    }
-
-    @Test
-    internal fun `getOrThrow throws on failure`() {
-        assertThrows<CustomResultException> {
-            val customResult: CustomResult<*, Int> = Failure(10)
-            customResult.getOrThrow()
-        }
-    }
-
-    @Test
     fun `getOrNull returns null on failure`() {
         val customResult: CustomResult<*, Int> = Failure(10)
         assertEquals(null, customResult.getOrNull())

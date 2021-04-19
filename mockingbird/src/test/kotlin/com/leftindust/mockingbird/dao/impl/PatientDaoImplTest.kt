@@ -179,7 +179,7 @@ internal class PatientDaoImplTest {
             every { pid } returns OptionalInput.Defined(gqlID(100))
         }
 
-        val actual = runBlocking { patientDaoImpl.update(patientInput, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.update(patientInput, mockk()) }
 
         assertEquals(mockkPatient, actual)
     }

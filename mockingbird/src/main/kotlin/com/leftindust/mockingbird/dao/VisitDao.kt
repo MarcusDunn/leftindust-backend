@@ -8,13 +8,13 @@ import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 
 interface VisitDao {
-    suspend fun getVisitByVid(vid: Long, requester: MediqToken): CustomResult<Visit, OrmFailureReason>
-    suspend fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): CustomResult<Visit, OrmFailureReason>
+    suspend fun getVisitByVid(vid: Long, requester: MediqToken): Visit
+    suspend fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): Visit
     suspend fun getByExample(
         example: GraphQLVisitExample,
         strict: Boolean = true,
         requester: MediqToken
-    ): CustomResult<List<Visit>, OrmFailureReason>
+    ): List<Visit>
 
     suspend fun getByEvent(id: Long, requester: MediqToken): Visit
 

@@ -5,11 +5,13 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.EventDao
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Reoccurrence
 import com.leftindust.mockingbird.dao.impl.repository.*
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.getByIds
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
@@ -30,7 +32,7 @@ class EventDaoImpl(
     override suspend fun addEvent(
         event: GraphQLEventInput,
         requester: MediqToken
-    ): CustomResult<Event, OrmFailureReason> {
+    ): Event {
         return if (requester can (Crud.CREATE to Tables.Event)) {
             val patients = event.patients
                 ?.map { hibernatePatientRepository.getOne(it.toLong()) }
@@ -41,9 +43,9 @@ class EventDaoImpl(
                 ?.toSet()
                 ?: emptySet()
             val eventEntity = Event(event, doctors, patients)
-            return Success(hibernateEventRepository.save(eventEntity))
+            hibernateEventRepository.save(eventEntity)
         } else {
-            Failure(NotAuthorized(requester, "cannot create an event"))
+            throw NotAuthorizedException(requester, Crud.CREATE to Tables.Event)
         }
     }
 
@@ -58,13 +60,11 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getById(eid: ID, requester: MediqToken): CustomResult<Event, OrmFailureReason> {
+    override suspend fun getById(eid: ID, requester: MediqToken): Event {
         return if (requester can (Crud.READ to Tables.Event)) {
-            val event = hibernateEventRepository.getOneOrNull(eid.toLong())
-                ?: return Failure(DoesNotExist())
-            Success(event)
+            hibernateEventRepository.getOne(eid.toLong())
         } else {
-            Failure(NotAuthorized(requester, "cannot read events"))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
     }
 

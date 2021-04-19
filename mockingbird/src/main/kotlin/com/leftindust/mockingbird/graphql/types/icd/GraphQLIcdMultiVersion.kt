@@ -2,8 +2,6 @@ package com.leftindust.mockingbird.graphql.types.icd
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.external.icd.impl.IcdMultiVersion
 import kotlinx.coroutines.flow.asFlow
@@ -24,10 +22,7 @@ data class GraphQLIcdMultiVersion(
     ): GraphQLIcdLinearizationEntity? {
         return if (id == null || latestRelease == null) null else {
             val releaseId = releaseIdFromUri(latestRelease)
-            when (val result = icdFetcher.getLinearizationEntity(releaseId, FoundationIcdCode(id))) {
-                is Failure -> null
-                is Success -> result.value
-            }
+            icdFetcher.getLinearizationEntity(releaseId, FoundationIcdCode(id))
         }
     }
 
@@ -38,11 +33,7 @@ data class GraphQLIcdMultiVersion(
     suspend fun entities(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): List<GraphQLIcdLinearizationEntity?> {
         val returnList = emptyList<GraphQLIcdLinearizationEntity?>().toMutableList()
         release.asFlow().map {
-            when (val result =
-                icdFetcher.getLinearizationEntity(releaseIdFromUri(it), FoundationIcdCode(id ?: return@map null))) {
-                is Failure -> null
-                is Success -> result.value
-            }
+            icdFetcher.getLinearizationEntity(releaseIdFromUri(it), FoundationIcdCode(id ?: return@map null))
         }.toList(returnList)
         return returnList.filterNotNull()
     }

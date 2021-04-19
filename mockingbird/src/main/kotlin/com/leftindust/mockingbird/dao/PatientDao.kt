@@ -42,7 +42,7 @@ interface PatientDao {
     suspend fun update(
         patientInput: GraphQLPatientInput,
         requester: MediqToken
-    ): CustomResult<Patient, OrmFailureReason>
+    ): Patient
 
     suspend fun getByEvent(eid: Long, mediqAuthToken: MediqToken): Collection<Patient> {
         TODO("Not yet implemented")

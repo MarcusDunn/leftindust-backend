@@ -17,10 +17,7 @@ class DoctorMutation(private val doctorDao: DoctorDao) : Mutation {
         graphQLAuthContext: GraphQLAuthContext,
         @GraphQLIgnore @Autowired userDao: UserDao
     ): GraphQLDoctor {
-        val user = doctor.user?.let {
-            userDao.getUserByUid(it.uid, graphQLAuthContext.mediqAuthToken).getOrNull()
-                ?: userDao.addUser(it, graphQLAuthContext.mediqAuthToken).getOrThrow()
-        }
+        val user = doctor.user?.let { userDao.getUserByUid(it.uid, graphQLAuthContext.mediqAuthToken).getOrNull()!! }
         return doctorDao
             .addDoctor(doctor, graphQLAuthContext.mediqAuthToken, user = user)
             .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }

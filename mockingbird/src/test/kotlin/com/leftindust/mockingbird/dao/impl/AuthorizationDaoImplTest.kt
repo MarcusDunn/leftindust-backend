@@ -28,6 +28,6 @@ internal class AuthorizationDaoImplTest {
 
         val authorizationDaoImpl = AuthorizationDaoImpl(aclRepository, userRepository)
         val result = runBlocking { authorizationDaoImpl.getRolesForUserByUid("uid") }
-        assertEquals(Success(listOf(acl)), result)
+        assertEquals(listOf(acl), result)
     }
 }

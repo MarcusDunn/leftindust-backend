@@ -24,9 +24,7 @@ internal class ContactQueryTest {
 
         val graphQLEmergencyContact = GraphQLEmergencyContact(mockkContact, authContext)
 
-        coEvery { contactDao.getByPatient(1000L, any()) } returns mockk() {
-            every { getOrThrow() } returns listOf(mockkContact)
-        }
+        coEvery { contactDao.getByPatient(1000L, any()) } returns listOf(mockkContact)
 
         val contactQuery = ContactQuery(contactDao)
 

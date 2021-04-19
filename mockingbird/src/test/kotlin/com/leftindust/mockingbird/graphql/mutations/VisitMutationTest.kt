@@ -24,9 +24,7 @@ internal class VisitMutationTest {
             every { id } returns 1000L
         }
 
-        coEvery { visitDao.addVisit(any(), any()) } returns mockk {
-            every { getOrThrow() } returns mockkVisit
-        }
+        coEvery { visitDao.addVisit(any(), any()) } returns mockkVisit
 
         val visitMutation = VisitMutation(visitDao)
 

@@ -2,11 +2,11 @@ package com.leftindust.mockingbird.external.firebase
 
 import com.google.firebase.auth.ExportedUserRecord
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.UserRecord
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.DoesNotExist
 import com.leftindust.mockingbird.dao.NotAuthorized
 import com.leftindust.mockingbird.dao.OrmFailureReason
@@ -25,23 +25,22 @@ class UserFetcher(
     suspend fun getUserInfo(
         uid: String,
         requester: MediqToken
-    ): CustomResult<UserRecord, OrmFailureReason> {
+    ): UserRecord {
         val readUsers = Action(Crud.READ to Tables.User)
-        if ((requester.uid == uid && requester.isVerified()) || authorizer.getAuthorization(readUsers, requester) == Authorization.Allowed) {
-            val user = try {
-                firebaseAuth.getUser(uid)
-            } catch (e: FirebaseAuthException) {
-                return Failure(DoesNotExist())
-            }
-            return Success(user ?: return Failure(DoesNotExist()))
+        return if ((requester.uid == uid && requester.isVerified()) || authorizer.getAuthorization(readUsers, requester) == Authorization.Allowed
+        ) {
+            firebaseAuth.getUser(uid)!!
         } else {
-            return Failure(NotAuthorized(requester))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
         }
     }
 
     suspend fun getUsers(requester: MediqToken): CustomResult<MutableIterable<ExportedUserRecord>, OrmFailureReason> {
         return if (authorizer.getAuthorization(Action(Crud.READ to Tables.User), requester).isAllowed()) {
-            Success(firebaseAuth.listUsers(null).iterateAll() ?: return Failure(DoesNotExist("list users has returned null")))
+            Success(
+                firebaseAuth.listUsers(null).iterateAll()
+                    ?: return Failure(DoesNotExist("list users has returned null"))
+            )
         } else {
             Failure(NotAuthorized(requester, "cannot read bulk users"))
         }

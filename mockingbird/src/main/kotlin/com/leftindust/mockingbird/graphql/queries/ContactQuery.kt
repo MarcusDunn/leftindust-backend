@@ -17,7 +17,6 @@ class ContactQuery(
     @Throws(GraphQLKotlinException::class)
     suspend fun getContactsByPatient(pid: ID, authContext: GraphQLAuthContext): List<GraphQLPerson> {
         return contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
-            .getOrThrow()
             .map { GraphQLEmergencyContact(it, authContext) }
     }
 }

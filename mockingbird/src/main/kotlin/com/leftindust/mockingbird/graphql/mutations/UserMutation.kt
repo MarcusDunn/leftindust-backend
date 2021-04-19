@@ -14,7 +14,6 @@ class UserMutation(
     suspend fun addUser(user: GraphQLUserInput, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         return userDao
             .addUser(user, graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
             .let { GraphQLUser(it, graphQLAuthContext) }
     }
 }

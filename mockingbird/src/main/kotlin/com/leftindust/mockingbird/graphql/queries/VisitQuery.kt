@@ -29,7 +29,6 @@ class VisitQuery(
             vids != null -> vids.map { vid ->
                 visitDao
                     .getVisitByVid(vid.toLong(), graphQLAuthContext.mediqAuthToken)
-                    .getOrThrow()
             }.map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             pid != null && did != null -> {
                 val patientVisits = visits(pid = pid, graphQLAuthContext = graphQLAuthContext)
@@ -46,7 +45,6 @@ class VisitQuery(
                 .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             example != null -> visitDao
                 .getByExample(example, strict, graphQLAuthContext.mediqAuthToken)
-                .getOrThrow()
                 .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             else -> throw GraphQLKotlinException("invalid arguments to visits")
         }

@@ -8,7 +8,10 @@ import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.CustomResult
+import com.leftindust.mockingbird.extensions.Failure
+import com.leftindust.mockingbird.extensions.Success
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
@@ -24,7 +27,7 @@ class UserDaoImpl(
 
     override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
         return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
-            val user = userRepository.getUserByUniqueId(uid)
+            val user = userRepository.findByUniqueId(uid)
                 ?: return Failure(DoesNotExist("user with uid $uid not found"))
             Success(user)
         } else {
@@ -35,20 +38,13 @@ class UserDaoImpl(
     override suspend fun addUser(
         user: GraphQLUserInput,
         requester: MediqToken
-    ): CustomResult<MediqUser, OrmFailureReason> {
+    ): MediqUser {
         return if (requester can (Crud.CREATE to Tables.User)) {
-            val group = user.group_id?.let {
-                groupRepository.getOneOrNull(it.toLong())
-                    ?: return Failure(DoesNotExist("that group does not exist"))
-            } // if no group is passed, no problem, if group is passed and does not exist, throw an error
+            val group = user.group_id?.let { groupRepository.getOne(it.toLong()) }
             val mediqUser = MediqUser(user, group)
-            if (userRepository.getUserByUniqueId(user.uid) == null) {
-                Success(userRepository.save(mediqUser))
-            } else {
-                Failure(AlreadyExists())
-            }
+            userRepository.save(mediqUser)
         } else {
-            Failure(NotAuthorized(requester, "cannot ${Crud.CREATE to Tables.User}"))
+            throw NotAuthorizedException(requester, Crud.CREATE to Tables.User)
         }
     }
 

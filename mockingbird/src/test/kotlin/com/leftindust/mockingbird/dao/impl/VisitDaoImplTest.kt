@@ -45,7 +45,7 @@ internal class VisitDaoImplTest {
             patientRepository
         )
 
-        val result = runBlocking { visitDaoImpl.getVisitByVid(1000, mockk()) }.getOrThrow()
+        val result = runBlocking { visitDaoImpl.getVisitByVid(1000, mockk()) }
 
         assertEquals(mockkVisit, result)
     }
@@ -77,7 +77,7 @@ internal class VisitDaoImplTest {
 
         every { visitRepository.save(any()) } returns mockkVisit
 
-        val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }.getOrThrow()
+        val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }
 
         assertEquals(mockkVisit, result)
     }
@@ -106,7 +106,7 @@ internal class VisitDaoImplTest {
                 strict = true,
                 mockk()
             )
-        }.getOrThrow()
+        }
         assertEquals(listOf(mockkVisit), result)
     }
 }

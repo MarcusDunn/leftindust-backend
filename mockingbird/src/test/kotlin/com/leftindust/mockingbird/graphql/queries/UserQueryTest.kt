@@ -63,14 +63,13 @@ internal class UserQueryTest {
         coEvery { userDao.getUserByUid("uid3", any()) } returns Failure(mockk())
         coEvery { userDao.getUserByUid("uid4", any()) } returns Success(mockk())
 
-        coEvery { firebaseFetcher.getUsers(any()) } returns mockk {
-            every { getOrThrow(any()) } returns mockk {
-                every { iterator() } returns mockk {
-                    every { hasNext() } returnsMany listOf(true, true, true, true, true, false)
-                    every { next() } returnsMany userRecords
-                }
+        coEvery { firebaseFetcher.getUsers(any()) } returns Success(mockk {
+            every { iterator() } returns mockk {
+                every { hasNext() } returnsMany listOf(true, true, true, true, true, false)
+                every { next() } returnsMany userRecords
             }
         }
+        )
 
         val userQuery = UserQuery(userDao, firebaseFetcher)
 

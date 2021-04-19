@@ -18,7 +18,6 @@ class PatientMutation(
     suspend fun updatePatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao
             .update(patient, graphQLAuthContext.mediqAuthToken)
-            .getOrThrow()
             .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) } // safe nn assert as we just got from DB
     }
 

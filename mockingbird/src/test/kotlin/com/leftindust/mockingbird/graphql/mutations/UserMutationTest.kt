@@ -26,7 +26,7 @@ internal class UserMutationTest {
 
         val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
 
-        coEvery { userDao.addUser(any(), any()) } returns Success(mockkUser)
+        coEvery { userDao.addUser(any(), any()) } returns mockkUser
 
         val userMutation = UserMutation(userDao)
 
