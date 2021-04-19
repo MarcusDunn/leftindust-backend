@@ -16,6 +16,7 @@ import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import javax.transaction.Transactional
@@ -25,18 +26,11 @@ import javax.transaction.Transactional
 @Transactional
 class TestPatient(@Autowired private val patientDao: PatientDao) {
 
-    @Autowired
-    private lateinit var sessionFactory: SessionFactory
-
-    val session: Session
-        get() = sessionFactory.currentSession
-
     @Test
     internal fun `test patient does not persist on invalid arguments`(@Autowired patientRepository: HibernatePatientRepository) {
         val requester = mockk<MediqToken>() {
             every { uid } returns "admin"
         }
-
 
         val graphQLPatientInput = GraphQLPatientInput(
             firstName = OptionalInput.Defined("mar"),
@@ -46,7 +40,9 @@ class TestPatient(@Autowired private val patientDao: PatientDao) {
         )
 
         runBlocking {
-            patientDao.addNewPatient(graphQLPatientInput, requester)
+            assertThrows<IllegalArgumentException> {
+                patientDao.addNewPatient(graphQLPatientInput, requester)
+            }
         }
 
         assertEquals(null, patientRepository.findAll().find { it.firstName == "mar" && it.lastName == "mar" })
