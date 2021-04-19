@@ -12,6 +12,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
@@ -53,7 +54,7 @@ class EventDaoImpl(
         requester: MediqToken
     ): Collection<Event> {
         if (requester can (Crud.READ to Tables.Event)) {
-            return hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(range.start.toTimestamp())
+            return hibernateEventRepository.findAllMatchingOrHasReoccurrence(range.start.toTimestamp())
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
@@ -93,9 +94,16 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event {
+    override suspend fun editEvent(
+        event: GraphQLEventEditInput,
+        requester: MediqToken,
+        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings?
+    ): Event {
         if (requester can (Crud.UPDATE to Tables.Event)) {
             val entity = hibernateEventRepository.getOne(event.eid.toLong())
+
+            validateRecurenceSettingsNullablityOrThrow(entity, recurrenceSettings)
+
             val doctors = event.doctors
                 ?.map { hibernateDoctorRepository.getOne(it.toLong()) }
                 ?.toSet()
@@ -110,6 +118,18 @@ class EventDaoImpl(
             return hibernateEventRepository.save(updatedEntity)
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
+        }
+    }
+
+    private fun validateRecurenceSettingsNullablityOrThrow(
+        entity: Event,
+        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings?
+    ) {
+        if (entity.reoccurrence == null && recurrenceSettings != null) {
+            throw IllegalArgumentException("you cannot pass recurrenceSettings to an event that has no recurrence")
+        }
+        if (entity.reoccurrence != null && recurrenceSettings == null) {
+            throw IllegalArgumentException("if an event has recurrence you must pass recurrence settings")
         }
     }
 }

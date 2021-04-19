@@ -102,4 +102,45 @@ internal class EventMutationTest {
         assertEquals(GraphQLEvent(mockkEvent, mockkContext), result)
 
     }
+
+    @Test
+    internal fun `edit event with recurrence`() {
+        val editedEvent = mockk<Event>(relaxed = true) {
+            every { id } returns 1000
+        }
+
+        coEvery { eventDao.editEvent(any(), any(), any()) } returns editedEvent
+
+        val eventMutation = EventMutation(eventDao)
+
+        val graphQLAuthContext = mockk<GraphQLAuthContext>() {
+            every { mediqAuthToken } returns mockk()
+        }
+
+
+        val result = runBlocking {
+            eventMutation.editEvent(
+                mockk(relaxed = true),
+                graphQLAuthContext,
+                mockk()
+            )
+        }
+
+
+        coVerifyAll {
+            eventDao.editEvent(any(), any(), any())
+            graphQLAuthContext.mediqAuthToken
+            editedEvent.id
+            editedEvent.reoccurrence
+            editedEvent.title
+            editedEvent.description
+            editedEvent.startTime
+            editedEvent.endTime
+            editedEvent.allDay
+        }
+
+        confirmVerified(editedEvent, graphQLAuthContext)
+
+        assertEquals(GraphQLEvent(editedEvent, graphQLAuthContext), result)
+    }
 }

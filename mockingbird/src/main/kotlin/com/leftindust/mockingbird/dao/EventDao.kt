@@ -4,10 +4,10 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.extensions.CustomResult
+import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
-import org.springframework.web.reactive.function.server.ServerRequest
 
 interface EventDao {
     suspend fun addEvent(
@@ -28,5 +28,9 @@ interface EventDao {
 
     suspend fun getByVisit(vid: Long, requester: MediqToken): Event
 
-    suspend fun editEvent(event: GraphQLEventEditInput, requester: MediqToken): Event
+    suspend fun editEvent(
+        event: GraphQLEventEditInput,
+        requester: MediqToken,
+        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings? = null
+    ): Event
 }

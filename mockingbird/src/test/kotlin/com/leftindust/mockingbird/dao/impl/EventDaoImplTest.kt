@@ -91,7 +91,7 @@ internal class EventDaoImplTest {
 
         val listOfMockkEvents = mockk<List<Event>>()
 
-        every { hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any()) } returns listOfMockkEvents
+        every { hibernateEventRepository.findAllMatchingOrHasReoccurrence(any()) } returns listOfMockkEvents
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
@@ -110,7 +110,7 @@ internal class EventDaoImplTest {
             authorizer.getAuthorization(any(), any())
             mockkStart.before(any())
             mockkStart.toTimestamp()
-            hibernateEventRepository.findAllByStartTimeAfterOrReoccurrenceIsNotNull(any())
+            hibernateEventRepository.findAllMatchingOrHasReoccurrence(any())
         }
 
         confirmVerified(mockkStart, listOfMockkEvents)
@@ -133,6 +133,7 @@ internal class EventDaoImplTest {
         val updateEventMockk = mockk<Event>()
 
         val originalEventMockk = mockk<Event>() {
+            every { reoccurrence } returns null
             every { update(eventUpdateInput, null, null) } returns updateEventMockk
         }
 
@@ -155,6 +156,7 @@ internal class EventDaoImplTest {
             hibernateEventRepository.getOne(1000)
             hibernateEventRepository.save(updateEventMockk)
             hibernateEventRepository.delete(originalEventMockk)
+            originalEventMockk.reoccurrence
         }
 
         confirmVerified(updateEventMockk, originalEventMockk)

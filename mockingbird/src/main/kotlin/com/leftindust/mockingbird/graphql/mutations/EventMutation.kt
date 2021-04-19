@@ -32,7 +32,7 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
         recurrenceSettings: GraphQLRecurrenceEditSettings? = null
     ): GraphQLEvent {
         return eventDao
-            .editEvent(event, graphQLAuthContext.mediqAuthToken)
+            .editEvent(event, graphQLAuthContext.mediqAuthToken, recurrenceSettings)
             .let { GraphQLEvent(it, graphQLAuthContext) }
     }
 

@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.dao.impl.repository
 
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.dao.entity.Patient
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
@@ -11,5 +10,12 @@ interface HibernateEventRepository : JpaRepository<Event, Long> {
     fun getByTitleEquals(title: String): List<Event>
 
     // TODO: 2021-04-13 make this not shit
-    fun findAllByStartTimeAfterOrReoccurrenceIsNotNull(startTime: Timestamp): List<Event>
+    fun findAllByStartTimeAfterAndEndTimeBeforeOrReoccurrenceIsNotNull(
+        startTime: Timestamp,
+        endTime: Timestamp
+    ): List<Event>
+
+    fun findAllMatchingOrHasReoccurrence(time: Timestamp): List<Event> {
+        return findAllByStartTimeAfterAndEndTimeBeforeOrReoccurrenceIsNotNull(time, time)
+    }
 }
