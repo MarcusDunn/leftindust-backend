@@ -165,7 +165,6 @@ class EventMutationTest(
             hibernateEventRepository.getAllByTitleEquals("EventMutationTest.edit event with recurrence")
         }
 
-        println(entities)
         assertEquals(3, entities.size)
         with(entities.sortedBy { it.reoccurrence!!.startDate }) {
             // the original segment up until changes took place

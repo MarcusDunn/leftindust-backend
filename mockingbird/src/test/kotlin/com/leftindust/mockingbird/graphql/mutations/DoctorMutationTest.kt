@@ -33,9 +33,9 @@ internal class DoctorMutationTest {
             every { user } returns null
         }
 
-        val doctorMutation = DoctorMutation(doctorDao)
+        val doctorMutation = DoctorMutation(doctorDao, mockk())
 
-        val result = runBlocking { doctorMutation.addDoctor(graphQLDoctorInput, graphQLAuthContext, mockk()) }
+        val result = runBlocking { doctorMutation.addDoctor(graphQLDoctorInput, graphQLAuthContext) }
 
         val expected = GraphQLDoctor(doctor, doctor.id!!, graphQLAuthContext)
 
