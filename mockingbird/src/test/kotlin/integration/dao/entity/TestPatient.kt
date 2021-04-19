@@ -1,9 +1,11 @@
 package integration.dao.entity
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.extensions.gqlID
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -29,7 +31,9 @@ class TestPatient(@Autowired private val patientDao: PatientDao) {
         }
 
         val testName = "TestPatient.test patient does not persist on invalid arguments"
-        val graphQLPatientInput = EntityStore.graphQLPatientInput(testName)
+        val graphQLPatientInput = EntityStore.graphQLPatientInput(testName).copy(
+            pid = OptionalInput.Defined(gqlID(12))
+        )
 
         runBlocking {
             assertThrows<IllegalArgumentException> {
