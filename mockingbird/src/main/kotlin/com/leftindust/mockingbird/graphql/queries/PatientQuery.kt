@@ -29,13 +29,11 @@ class PatientQuery(
                 val intRange = range.toIntRange()
                 patientDao
                     .getMany(intRange.first, intRange.last, sortedBy, authContext.mediqAuthToken)
-                    .getOrThrow()
             }
             range != null && sortedBy == null -> {
                 val intRange = range.toIntRange()
                 patientDao
                     .getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken)
-                    .getOrThrow()
             }
             pids != null && sortedBy != null -> {
                 pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }

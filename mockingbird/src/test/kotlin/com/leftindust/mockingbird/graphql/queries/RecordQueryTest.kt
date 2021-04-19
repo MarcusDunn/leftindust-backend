@@ -21,7 +21,7 @@ internal class RecordQueryTest {
         val mockkRecord = mockk<MediqRecord>(relaxed = true) {
             every { id } returns 1000
         }
-        coEvery { recordDao.getRecordByRecordId(1000, any()) } returns Success(mockkRecord)
+        coEvery { recordDao.getRecordByRecordId(1000, any()) } returns mockkRecord
 
         val recordQuery = RecordQuery(recordDao)
         val mockkAuthContext = mockk<GraphQLAuthContext>() {
@@ -38,7 +38,7 @@ internal class RecordQueryTest {
         val mockkRecord = mockk<MediqRecord>(relaxed = true) {
             every { id } returns 1000
         }
-        coEvery { recordDao.getRecordsByPatientPid(2000, any()) } returns Success(listOf(mockkRecord))
+        coEvery { recordDao.getRecordsByPatientPid(2000, any()) } returns listOf(mockkRecord)
 
         val recordQuery = RecordQuery(recordDao)
         val mockkAuthContext = mockk<GraphQLAuthContext>() {

@@ -26,7 +26,7 @@ internal class RecordDaoImplTest {
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordByRecordId(1000, mockk()) }.getOrThrow()
+        val result = runBlocking { recordDaoImpl.getRecordByRecordId(1000, mockk()) }
 
         assertEquals(mockkRecord, result)
     }
@@ -42,7 +42,7 @@ internal class RecordDaoImplTest {
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(1000, mockk()) }.getOrThrow()
+        val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(1000, mockk()) }
 
         assertEquals(listOf(mockkRecord), result)
     }

@@ -42,7 +42,7 @@ internal class UserQueryTest {
             every { uniqueId } returns "uid"
             every { group } returns null
         }
-        coEvery { userDao.getUsers(0, 3, any()) } returns Success(listOf(user))
+        coEvery { userDao.getUsers(0, 3, any()) } returns listOf(user)
         val userQuery = UserQuery(userDao, firebaseFetcher)
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val result = runBlocking { userQuery.users(GraphQLRangeInput(0, 3), graphQLAuthContext = graphQLAuthContext) }

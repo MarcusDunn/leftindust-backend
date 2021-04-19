@@ -18,8 +18,8 @@ interface PatientDao {
     ): CustomResult<Patient, OrmFailureReason>
 
     suspend fun removeByPID(pid: Long, requester: MediqToken): CustomResult<Patient, OrmFailureReason>
-    suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason>
-    suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Collection<Patient>, OrmFailureReason>
+    suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Patient>
+    suspend fun getByVisit(vid: Long, requester: MediqToken): Collection<Patient>
     suspend fun addDoctorToPatient(
         patientInput: ID,
         doctorInput: ID,
@@ -37,7 +37,7 @@ interface PatientDao {
         to: Int,
         sortedBy: Patient.SortableField = Patient.SortableField.PID,
         requester: MediqToken
-    ): CustomResult<List<Patient>, OrmFailureReason>
+    ): Collection<Patient>
 
     suspend fun update(
         patientInput: GraphQLPatientInput,

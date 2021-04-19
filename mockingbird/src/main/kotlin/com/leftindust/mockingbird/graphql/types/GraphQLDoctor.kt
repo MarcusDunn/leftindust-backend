@@ -45,7 +45,7 @@ data class GraphQLDoctor(
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =
-        patientDao.getByDoctor(did.toLong(), authToken).getOrThrow().map { GraphQLPatient(it, it.id!!, authContext) }
+        patientDao.getByDoctor(did.toLong(), authToken).map { GraphQLPatient(it, it.id!!, authContext) }
 
 
     suspend fun schedule(

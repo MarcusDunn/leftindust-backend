@@ -63,29 +63,4 @@ abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
     suspend infix fun MediqToken.can(actions: List<Pair<Crud, Tables>>): Boolean {
         return actions.all { authorizer.getAuthorization(Action(it), this).isAllowed() }
     }
-
-    /**
-     * Authenticates, returning a Failure<NotAuthorized> if it fails then executes the [onAllowed] if [onAllowed]
-     * returns null than this transforms it into a Failure<DoesNotExist>, behavior beyond this merits a custom function
-     * @returns a [CustomResult] with the success variant typed as the return type of [onAllowed]
-     * @param onAllowed a function to be executed and transformed into either Success<T> if it returns T or
-     * Failure<DoesNotExist> if it returns null
-     * @param action the action required to execute [onAllowed]
-     * @param requester the token of the user requesting to execute [onAllowed]
-     */
-    suspend inline fun <T> authenticateAndThen(
-        requester: MediqToken,
-        action: Pair<Crud, Tables>,
-        onAllowed: () -> T?
-    ): CustomResult<T, OrmFailureReason> {
-        return if (requester can action) {
-            val ret = onAllowed() ?: return Failure(DoesNotExist()).also {
-                LogManager.getLogger().error("attempt to get a something nonexistent")
-            }
-            Success(ret)
-        } else {
-            LogManager.getLogger().error("unauthorized attempt to $action")
-            Failure(NotAuthorized(requester, "cannot $action"))
-        }
-    }
 }

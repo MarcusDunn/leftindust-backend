@@ -61,7 +61,6 @@ the default arguments are users(RangeInput(0,20))
                 val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
                 userDao
                     .getUsers(validatedRange.first, validatedRange.last, graphQLAuthContext.mediqAuthToken)
-                    .getOrThrow()
 
             }
             range == null -> {

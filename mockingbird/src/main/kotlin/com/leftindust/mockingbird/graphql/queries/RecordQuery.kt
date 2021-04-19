@@ -16,7 +16,6 @@ class RecordQuery(
         val requester = authContext.mediqAuthToken
         return recordDao
             .getRecordByRecordId(record_id.toLong(), requester)
-            .getOrThrow()
             .let { GraphQLRecord(it, it.id!!, authContext) }
     }
 
@@ -24,7 +23,6 @@ class RecordQuery(
         val requester = authContext.mediqAuthToken
         return recordDao
             .getRecordsByPatientPid(pid.toLong(), requester)
-            .getOrThrow()
             .map { GraphQLRecord(it, it.id!!, authContext) }
     }
 }

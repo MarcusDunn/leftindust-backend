@@ -4,10 +4,14 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.impl.repository.*
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -15,12 +19,9 @@ import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import javax.persistence.EntityManager
-import javax.persistence.EntityNotFoundException
 
 
 @Transactional
@@ -75,29 +76,20 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: Long, requester: MediqToken): CustomResult<List<Patient>, OrmFailureReason> {
-        return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
-            val doctor = try {
-                doctorRepository.getOne(did)
-            } catch (failure: JpaObjectRetrievalFailureException) {
-                if (failure.cause is EntityNotFoundException) {
-                    return Failure(DoesNotExist("doctor with did $did was not found"))
-                } else {
-                    throw failure
-                }
-            }
-            doctorPatientRepository.getAllByDoctorId(doctor.id).map { it.patient }
+    override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Patient> {
+        if (requester can (Crud.READ to Tables.Patient)) {
+            val doctor = doctorRepository.getOne(did)
+            return doctorPatientRepository.getAllByDoctorId(doctor.id).map { it.patient }
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 
-    override suspend fun getByVisit(vid: Long?, requester: MediqToken): CustomResult<Collection<Patient>, OrmFailureReason> {
-        return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
-            vid ?: return Failure(InvalidArguments("cannot find visit with null vid"))
-            try {
-                visitRepository.getOne(vid).event.patients
-            } catch (e: JpaObjectRetrievalFailureException) {
-                null
-            }
+    override suspend fun getByVisit(vid: Long, requester: MediqToken): Collection<Patient> {
+        return if (requester can (Crud.READ to Tables.Patient)) {
+            visitRepository.getOne(vid).event.patients
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 
@@ -135,11 +127,13 @@ class PatientDaoImpl(
         to: Int,
         sortedBy: Patient.SortableField,
         requester: MediqToken
-    ): CustomResult<List<Patient>, OrmFailureReason> {
+    ): Collection<Patient> {
         val size = to - from
         val page = to / size - 1
-        return authenticateAndThen(requester, Crud.READ to Tables.Patient) {
+        return if (requester can (Crud.READ to Tables.Patient)) {
             patientRepository.findAll(PageRequest.of(page, size, Sort.by(sortedBy.fieldName))).toList()
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 

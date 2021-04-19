@@ -111,7 +111,7 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val actual = runBlocking { patientDaoImpl.getByDoctor(1000L, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.getByDoctor(1000L, mockk()) }
 
         assertEquals(listOf(mockkPatient), actual)
     }
@@ -120,8 +120,8 @@ internal class PatientDaoImplTest {
     fun getByVisit() {
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { visitRepository.getOne(1000L) } returns mockk() {
-            every { event } returns mockk() {
+        every { visitRepository.getOne(1000L) } returns mockk {
+            every { event } returns mockk {
                 every { patients } returns setOf(mockkPatient)
             }
         }
@@ -132,7 +132,7 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val actual = runBlocking { patientDaoImpl.getByVisit(1000L, mockk()) }.getOrThrow()
+        val actual = runBlocking { patientDaoImpl.getByVisit(1000L, mockk()) }
 
         assertEquals(listOf(mockkPatient), actual.toList())
     }

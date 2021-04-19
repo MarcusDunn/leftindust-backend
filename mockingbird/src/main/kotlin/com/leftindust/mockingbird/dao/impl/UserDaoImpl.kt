@@ -1,11 +1,10 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.google.gson.JsonObject
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
-import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
@@ -32,6 +31,7 @@ class UserDaoImpl(
             Failure(NotAuthorized(requester, "not authorized to Read to that specific Patient"))
         }
     }
+
     override suspend fun addUser(
         user: GraphQLUserInput,
         requester: MediqToken
@@ -56,11 +56,13 @@ class UserDaoImpl(
         from: Int,
         to: Int,
         requester: MediqToken
-    ): CustomResult<List<MediqUser>, OrmFailureReason> {
-        val size = to - from
-        val page = to / size - 1
-        return authenticateAndThen(requester, Crud.READ to Tables.User) {
+    ): Collection<MediqUser> {
+        return if (requester can (Crud.READ to Tables.User)) {
+            val size = to - from
+            val page = to / size - 1
             userRepository.findAll(PageRequest.of(page, size)).toList()
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 }
