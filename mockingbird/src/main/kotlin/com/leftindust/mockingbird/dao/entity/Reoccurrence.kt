@@ -20,4 +20,8 @@ class Reoccurrence(
         endDate = reoccurrence.endDate.toLocalDate(),
         days = reoccurrence.daysOfWeek,
     )
+
+    override fun toString(): String {
+        return "Reoccurrence(startDate=$startDate, endDate=$endDate, days=$days)"
+    }
 }

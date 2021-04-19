@@ -28,7 +28,7 @@ class Event(
     @JoinTable(name = "event_patient")
     val patients: Set<Patient>,
     @Embedded
-    val reoccurrence: Reoccurrence? = null,
+    var reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable<Long>() {
 
     init { // validation logic
@@ -69,9 +69,6 @@ class Event(
         return result
     }
 
-    override fun toString(): String {
-        return "Event(title='$title', description=$description, startTime=$startTime, end=$endTime, allDay=$allDay, doctors=$doctors, patients=$patients)"
-    }
 
     fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?): Event {
         return Event(
@@ -80,7 +77,7 @@ class Event(
             startTime = event.start?.toTimestamp() ?: startTime,
             endTime = event.end.onUndefined(endTime?.time?.let { GraphQLTimeInput(GraphQLUtcTime(it)) })?.toTimestamp(),
             allDay = event.allDay ?: allDay,
-            doctors = newDoctors ?: doctors,
+            doctors = newDoctors ?: doctors, // we call toMutableSet to avoid shared references to a collection
             patients = newPatients ?: patients,
             reoccurrence = if (event.recurrence is OptionalInput.Undefined)
                 reoccurrence
@@ -99,4 +96,23 @@ class Event(
         doctors = doctors,
         patients = patients
     )
+
+    fun clone(): Event {
+        return Event(
+            title = title,
+            description = description,
+            startTime = startTime,
+            endTime = endTime,
+            allDay = allDay,
+            // toMutableSet clones the collection to avoid shared references to a collection
+            doctors = doctors.toMutableSet(),
+            // toMutableSet clones the collection to avoid shared references to a collection
+            patients = patients.toMutableSet(),
+            reoccurrence = reoccurrence,
+        )
+    }
+
+    override fun toString(): String {
+        return "Event(title='$title', description=$description, startTime=$startTime, endTime=$endTime, allDay=$allDay, doctors=$doctors, patients=$patients, reoccurrence=$reoccurrence)"
+    }
 }

@@ -46,7 +46,7 @@ class EventMutationTest(
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
         assertDoesNotThrow {
-            hibernateEventRepository.getByTitleEquals("EventMutationTest.add event no recurrence")
+            hibernateEventRepository.getAllByTitleEquals("EventMutationTest.add event no recurrence")
         }
     }
 
@@ -76,7 +76,7 @@ class EventMutationTest(
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
         assertDoesNotThrow {
-            hibernateEventRepository.getByTitleEquals("EventMutationTest.add event with recurrence")
+            hibernateEventRepository.getAllByTitleEquals("EventMutationTest.add event with recurrence")
         }
     }
 
@@ -110,7 +110,7 @@ class EventMutationTest(
         assertEquals(result.description, newDescription)
 
         val entity = assertDoesNotThrow {
-            hibernateEventRepository.getByTitleEquals("EventMutationTest.edit event")
+            hibernateEventRepository.getAllByTitleEquals("EventMutationTest.edit event")
         }
 
         // check changes are persisted
@@ -155,16 +155,17 @@ class EventMutationTest(
         )
 
         val result = runBlocking {
-            eventMutation.editEvent(event, graphQLAuthContext, recurrenceSettings)
+            eventMutation.editRecurringEvent(event, graphQLAuthContext, recurrenceSettings)
         }
 
         // check returned value is changed
         assertEquals(result.description, newDescription)
 
         val entities = assertDoesNotThrow {
-            hibernateEventRepository.getByTitleEquals("EventMutationTest.edit event with recurrence")
+            hibernateEventRepository.getAllByTitleEquals("EventMutationTest.edit event with recurrence")
         }
 
+        println(entities)
         assertEquals(3, entities.size)
         with(entities.sortedBy { it.reoccurrence!!.startDate }) {
             // the original segment up until changes took place

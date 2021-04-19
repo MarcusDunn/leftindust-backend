@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-interface HibernatePatientRepository : JpaRepository<Patient, Long>
+interface HibernatePatientRepository : JpaRepository<Patient, Long> {
+    fun getPatientsById(id: Long): Collection<Patient>
+}

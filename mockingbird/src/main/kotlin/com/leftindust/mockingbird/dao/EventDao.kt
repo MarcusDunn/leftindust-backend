@@ -31,6 +31,11 @@ interface EventDao {
     suspend fun editEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
-        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings? = null
+    ): Event
+
+    suspend fun editRecurringEvent(
+        event: GraphQLEventEditInput,
+        requester: MediqToken,
+        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings
     ): Event
 }

@@ -34,5 +34,4 @@ abstract class AbstractJpaPersistable<T : Serializable> {
     }
 
     override fun toString() = "Entity of type ${this.javaClass.name} with id: $id"
-
 }

@@ -7,10 +7,8 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
+import com.leftindust.mockingbird.dao.entity.Reoccurrence
+import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
@@ -54,7 +52,7 @@ class EventDaoImpl(
         requester: MediqToken
     ): Collection<Event> {
         if (requester can (Crud.READ to Tables.Event)) {
-            return hibernateEventRepository.findAllMatchingOrHasReoccurrence(range.start.toTimestamp())
+            return hibernateEventRepository.getAllMatchingOrHasRecurrence(range.start.toTimestamp())
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
@@ -96,20 +94,17 @@ class EventDaoImpl(
 
     override suspend fun editEvent(
         event: GraphQLEventEditInput,
-        requester: MediqToken,
-        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings?
+        requester: MediqToken
     ): Event {
         if (requester can (Crud.UPDATE to Tables.Event)) {
             val entity = hibernateEventRepository.getOne(event.eid.toLong())
 
-            validateRecurenceSettingsNullablityOrThrow(entity, recurrenceSettings)
+            if (entity.reoccurrence != null) {
+                throw IllegalArgumentException("cannot call editEvent on a recurring event")
+            }
 
-            val doctors = event.doctors
-                ?.map { hibernateDoctorRepository.getOne(it.toLong()) }
-                ?.toSet()
-            val patients = event.patients
-                ?.map { hibernatePatientRepository.getOne(it.toLong()) }
-                ?.toSet()
+            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) }
+            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) }
             val updatedEntity = entity.update(event, newDoctors = doctors, newPatients = patients)
 
             // prevents double references to collections between updatedEntity and entity
@@ -121,15 +116,74 @@ class EventDaoImpl(
         }
     }
 
-    private fun validateRecurenceSettingsNullablityOrThrow(
-        entity: Event,
-        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings?
-    ) {
-        if (entity.reoccurrence == null && recurrenceSettings != null) {
-            throw IllegalArgumentException("you cannot pass recurrenceSettings to an event that has no recurrence")
-        }
-        if (entity.reoccurrence != null && recurrenceSettings == null) {
-            throw IllegalArgumentException("if an event has recurrence you must pass recurrence settings")
+    // this function has some issues. but basically does as follows
+    // in the simplest case, if the recurrence settings cover the entirety of the event recurrence, we simply replace
+    // the event with a single edited event
+    // if the user only wants to edit part of the recurrence period, we create up to 3 events.
+    // one for the edited event within the recurrenceSettings time period
+    // one for the time before recurrenceSettings.editStart, that is unmodified except for that the recurrence now ends when the edited event begins
+    // and finally one for after the the edited period, this is also unchanged.
+    // keep in mind that recurrenceSettings can potentially cover only the tail or start of the event, in which case we end up with only 2 events
+    override suspend fun editRecurringEvent(
+        event: GraphQLEventEditInput,
+        requester: MediqToken,
+        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings
+    ): Event {
+        if (requester can (Crud.UPDATE to Tables.Event)) {
+            val entity = hibernateEventRepository.getOne(event.eid.toLong())
+
+            if (entity.reoccurrence == null) {
+                throw IllegalArgumentException("cannot call editRecurringEvent on a non-recurring event")
+            }
+
+            val currentStartDate = entity.reoccurrence!!.startDate
+
+            val currentEndDate = entity.reoccurrence!!.endDate
+
+            hibernateEventRepository.delete(entity)
+
+
+            if (currentEndDate.isAfter(recurrenceSettings.editEnd.toLocalDate())) { // there will be a trailing unedited event
+                val trailingEntity = entity.clone().apply {
+                    id = null
+                    reoccurrence = Reoccurrence(
+                        // toMutableList clones the collection to avoid shared references to a collection
+                        days = reoccurrence!!.days.toMutableList(),
+                        startDate = reoccurrence!!.startDate,
+                        endDate = recurrenceSettings.editStart.toLocalDate()
+                    )
+                }
+                hibernateEventRepository.save(trailingEntity)
+            }
+
+            if (currentStartDate.isBefore(recurrenceSettings.editStart.toLocalDate())) { // there will be a unedited event prior to the edited one
+                val priorEntity = entity.clone().apply {
+                    id = null
+                    reoccurrence = Reoccurrence(
+                        // toMutableList clones the collection to avoid shared references to a collection
+                        days = reoccurrence!!.days.toMutableList(),
+                        startDate = recurrenceSettings.editEnd.toLocalDate(),
+                        endDate = reoccurrence!!.endDate
+                    )
+                }
+                hibernateEventRepository.save(priorEntity)
+            }
+
+            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) }
+            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) }
+            val updatedEntity = entity.clone().apply { // we keep the same id
+                reoccurrence = Reoccurrence(
+                    startDate = recurrenceSettings.editStart.toLocalDate(),
+                    endDate = recurrenceSettings.editEnd.toLocalDate(),
+                    // toMutableList clones the collection to avoid shared references to a collection
+                    days = reoccurrence!!.days.toMutableList()
+                )
+            }.update(event, newDoctors = doctors, newPatients = patients)
+
+            return hibernateEventRepository.save(updatedEntity)
+
+        } else {
+            throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
         }
     }
 }

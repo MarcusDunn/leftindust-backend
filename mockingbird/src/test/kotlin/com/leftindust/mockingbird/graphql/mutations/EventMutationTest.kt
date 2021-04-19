@@ -109,7 +109,7 @@ internal class EventMutationTest {
             every { id } returns 1000
         }
 
-        coEvery { eventDao.editEvent(any(), any(), any()) } returns editedEvent
+        coEvery { eventDao.editRecurringEvent(any(), any(), any()) } returns editedEvent
 
         val eventMutation = EventMutation(eventDao)
 
@@ -119,7 +119,7 @@ internal class EventMutationTest {
 
 
         val result = runBlocking {
-            eventMutation.editEvent(
+            eventMutation.editRecurringEvent(
                 mockk(relaxed = true),
                 graphQLAuthContext,
                 mockk()
@@ -128,7 +128,7 @@ internal class EventMutationTest {
 
 
         coVerifyAll {
-            eventDao.editEvent(any(), any(), any())
+            eventDao.editRecurringEvent(any(), any(), any())
             graphQLAuthContext.mediqAuthToken
             editedEvent.id
             editedEvent.reoccurrence

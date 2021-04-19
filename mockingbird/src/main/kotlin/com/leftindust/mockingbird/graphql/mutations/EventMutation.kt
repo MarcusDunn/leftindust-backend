@@ -29,10 +29,20 @@ class EventMutation(private val eventDao: EventDao) : Mutation {
     suspend fun editEvent(
         event: GraphQLEventEditInput,
         graphQLAuthContext: GraphQLAuthContext,
-        recurrenceSettings: GraphQLRecurrenceEditSettings? = null
     ): GraphQLEvent {
         return eventDao
-            .editEvent(event, graphQLAuthContext.mediqAuthToken, recurrenceSettings)
+            .editEvent(event, graphQLAuthContext.mediqAuthToken)
+            .let { GraphQLEvent(it, graphQLAuthContext) }
+    }
+
+    @GraphQLDescription("edits the event referenced by eid")
+    suspend fun editRecurringEvent(
+        event: GraphQLEventEditInput,
+        graphQLAuthContext: GraphQLAuthContext,
+        recurrenceSettings: GraphQLRecurrenceEditSettings
+    ): GraphQLEvent {
+        return eventDao
+            .editRecurringEvent(event, graphQLAuthContext.mediqAuthToken, recurrenceSettings)
             .let { GraphQLEvent(it, graphQLAuthContext) }
     }
 
