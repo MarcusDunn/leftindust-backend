@@ -28,7 +28,7 @@ internal class UserDaoImplTest {
 
         val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }.getOrNull()!!
 
-        assertEquals(mockkUser, actual)re
+        assertEquals(mockkUser, actual)
     }
 
     @Test
