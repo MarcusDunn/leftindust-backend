@@ -2,14 +2,17 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.dao.DoesNotExist
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
+import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -21,7 +24,7 @@ data class GraphQLUser(
 ) {
     constructor(mediqUser: MediqUser, graphQLAuthContext: GraphQLAuthContext) : this(
         uid = mediqUser.uniqueId,
-        group = mediqUser.group?.let { Group(it.name) },
+        group = mediqUser.group?.let { Group(it) },
         authContext = graphQLAuthContext,
     )
 
@@ -60,8 +63,14 @@ data class GraphQLUser(
     )
 
     data class Group(
+        val gid: ID,
         val name: String
-    )
+    ) {
+        constructor(group: MediqGroup) : this(
+            gid = gqlID(group.id!!),
+            name = group.name
+        )
+    }
 }
 
 

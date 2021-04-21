@@ -61,8 +61,6 @@ class Patient(
             .getOrNull()?.value,
         sex = graphQLPatientInput.sex
             .getOrThrow(IllegalArgumentException("sex must be defined when constructing a Patient")),
-        gender = graphQLPatientInput.gender
-            .getOrDefault(graphQLPatientInput.sex.getOrNull()!!.toString()),
         doctors = emptySet<DoctorPatient>(), // set after constructor is called
         ethnicity = graphQLPatientInput.ethnicity
             .getOrNull(),
@@ -79,6 +77,9 @@ class Patient(
             ?.toSet()
             ?: emptySet(),
     ) {
+        gender = graphQLPatientInput.gender
+            .getOrDefault(graphQLPatientInput.sex.getOrNull()?.toString() ?: sex.toString())
+
         contacts = graphQLPatientInput.emergencyContact
             ?.map { EmergencyContact(it, this) }
             ?.toSet()
@@ -104,7 +105,6 @@ class Patient(
         doctors.forEach { it.doctor.patients = emptySet() }
         doctors = emptySet() // if any input is given, it overwrites previous doctors
     }
-
 
     fun addDoctor(doctor: Doctor): Patient {
         doctor.addPatient(this)
