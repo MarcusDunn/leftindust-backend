@@ -20,7 +20,11 @@ internal class UserMutationTest {
 
     @Test
     fun addUser() {
-        val mockkUser = mockk<MediqUser>(relaxed = true)
+        val mockkUser = mockk<MediqUser>(relaxed = true) {
+            every { group } returns mockk(relaxed = true) {
+                every { id } returns 1000
+            }
+        }
 
         every { authContext.mediqAuthToken } returns mockk()
 
