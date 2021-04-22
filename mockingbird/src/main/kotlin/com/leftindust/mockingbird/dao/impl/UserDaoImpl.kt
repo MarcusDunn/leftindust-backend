@@ -10,6 +10,7 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import org.springframework.data.domain.PageRequest
@@ -48,14 +49,11 @@ class UserDaoImpl(
     }
 
     override suspend fun getUsers(
-        from: Int,
-        to: Int,
+        range: GraphQLRangeInput,
         requester: MediqToken
     ): Collection<MediqUser> {
         return if (requester can (Crud.READ to Tables.User)) {
-            val size = to - from
-            val page = to / size - 1
-            userRepository.findAll(PageRequest.of(page, size)).toList()
+            userRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

@@ -11,7 +11,9 @@ import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -41,6 +43,14 @@ class GroupDaoImpl(
     override suspend fun getGroupById(gid: ID, requester: MediqToken): MediqGroup {
         if (requester can (Crud.READ to Tables.Group)) {
             return groupRepository.getOne(gid.toLong())
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
+        }
+    }
+
+    override suspend fun getRange(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqGroup> {
+        if (requester can (Crud.READ to Tables.Group)) {
+            return groupRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
         }

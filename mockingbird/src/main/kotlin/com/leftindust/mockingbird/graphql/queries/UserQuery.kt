@@ -21,6 +21,7 @@ class UserQuery(
     private val userDao: UserDao,
     private val firebaseFetcher: UserFetcher
 ) : Query {
+    @GraphQLDescription("attempts to find the mediq-regestered user by uid, if the user does not exist in the DB, ")
     suspend fun user(uid: ID, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         val strUid = uid.value
         val user = userDao.getUserByUid(strUid, graphQLAuthContext.mediqAuthToken).getOrNull()
@@ -40,34 +41,16 @@ class UserQuery(
         }
     }
 
-    @GraphQLDescription(
-        """returns a list of users sorted by UID
-from is inclusive and to is exclusive.
-the arguments must match the following predicate
-(range != null) -> (ids == null)
-the default arguments are users(RangeInput(0,20))
-"""
-    )
+    @GraphQLDescription("returns a list of users, only one argument should be specified")
     suspend fun users(
         range: GraphQLRangeInput? = null,
         uniqueIds: List<ID>? = null,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLUser> {
         return when {
-            uniqueIds == null -> {
-                val validatedRange = (range ?: GraphQLRangeInput(0, 20)).toIntRange()
-                userDao
-                    .getUsers(validatedRange.first, validatedRange.last, graphQLAuthContext.mediqAuthToken)
-            }
-            range == null -> {
-                uniqueIds.map { userDao.getUserByUid(it.value, graphQLAuthContext.mediqAuthToken).getOrNull()!! }
-            }
-            else -> {
-                throw GraphQLKotlinException(
-                    "the arguments must match the following predicate: (range != null) -> (ids == null)",
-                    IllegalArgumentException()
-                )
-            }
+            uniqueIds != null -> uniqueIds.map { userDao.getUserByUid(it.value, graphQLAuthContext.mediqAuthToken).getOrNull()!! }
+            range != null -> userDao.getUsers(range, graphQLAuthContext.mediqAuthToken)
+            else -> throw IllegalArgumentException("invalid argument combination to users")
         }.map { GraphQLUser(it, graphQLAuthContext) }
     }
 
