@@ -25,7 +25,7 @@ internal class PatientQueryTest {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns 1000L
         }
-        coEvery { patientDao.getByPID(1000, any()) } returns mockkPatient
+        coEvery { patientDao.getPatientsByPids(listOf(gqlID(1000)), any()) } returns listOf(mockkPatient)
         every { authContext.mediqAuthToken } returns mockk()
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val patientQuery = PatientQuery(patientDao)
