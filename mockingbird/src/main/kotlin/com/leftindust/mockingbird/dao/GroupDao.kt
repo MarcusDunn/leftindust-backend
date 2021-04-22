@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 
 interface GroupDao {
     suspend fun addGroup(group: GraphQLGroupInput, requester: MediqToken): MediqGroup
-    suspend fun getAllGroups(requester: MediqToken): Collection<MediqGroup>
     suspend fun getGroupById(gid: ID, requester: MediqToken): MediqGroup
     suspend fun getRange(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqGroup>
 }
