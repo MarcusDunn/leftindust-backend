@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -8,10 +9,8 @@ import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
@@ -59,6 +58,19 @@ class UserDaoImpl(
             userRepository.findAll(PageRequest.of(page, size)).toList()
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+        }
+    }
+
+    override suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser {
+        return if (requester can (Crud.UPDATE to Tables.User)) {
+            userRepository.getUserByUniqueId(user.uid).apply {
+                group = when (user.group_id) {
+                    is OptionalInput.Undefined -> this.group
+                    is OptionalInput.Defined -> user.group_id.value?.let { groupRepository.getOne(it.toLong()) }
+                }
+            }
+        } else {
+            throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
         }
     }
 }
