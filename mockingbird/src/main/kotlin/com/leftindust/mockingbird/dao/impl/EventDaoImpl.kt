@@ -34,14 +34,8 @@ class EventDaoImpl(
         requester: MediqToken
     ): Event {
         return if (requester can (Crud.CREATE to Tables.Event)) {
-            val patients = event.patients
-                ?.map { hibernatePatientRepository.getOne(it.toLong()) }
-                ?.toSet()
-                ?: emptySet()
-            val doctors = event.doctors
-                ?.map { hibernateDoctorRepository.getOne(it.toLong()) }
-                ?.toSet()
-                ?: emptySet()
+            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) } ?: emptySet()
+            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) } ?: emptySet()
             val eventEntity = Event(event, doctors, patients)
             hibernateEventRepository.save(eventEntity)
         } else {

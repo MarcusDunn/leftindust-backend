@@ -108,6 +108,8 @@ internal class DoctorDaoImplTest {
 
         val graphQLDoctorInput = mockk<GraphQLDoctorInput>(relaxed = true)
 
+        every { patientRepository.findAllById(emptyList()) } returns emptyList<Patient>()
+        
         val doctorDaoImpl =
             DoctorDaoImpl(authorizer, doctorRepository, doctorPatientRepository, patientRepository, eventRepository)
 

@@ -20,6 +20,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
+import io.ktor.http.*
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -59,11 +60,11 @@ internal class EventDaoImplTest {
 
         val mockkPatient = mockk<Patient>()
 
-        every { hibernatePatientRepository.getOne(any()) } returns mockkPatient
+        every { hibernatePatientRepository.findAllById(emptyList()) } returns emptyList()
 
         val mockkDoctor = mockk<Doctor>()
 
-        every { hibernateDoctorRepository.getOne(any()) } returns mockkDoctor
+        every { hibernateDoctorRepository.findAllById(emptyList()) } returns emptyList()
 
         val eventDao = EventDaoImpl(
             hibernateEventRepository, hibernatePatientRepository,
@@ -74,6 +75,8 @@ internal class EventDaoImplTest {
 
         coVerifyAll {
             hibernateEventRepository.save(any())
+            hibernatePatientRepository.findAllById(emptyList())
+            hibernateDoctorRepository.findAllById(emptyList())
             authorizer.getAuthorization(any(), any())
         }
 

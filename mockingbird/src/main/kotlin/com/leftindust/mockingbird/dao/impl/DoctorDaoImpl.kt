@@ -12,6 +12,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepo
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -62,9 +63,7 @@ class DoctorDaoImpl(
     ): Doctor {
         val createDoctor = Crud.CREATE to Tables.Doctor
         return if (requester can createDoctor) {
-            val patients = doctor.patients
-                ?.map { patientRepository.getOne(it.toLong()) }
-                ?: emptyList()
+            val patients = doctor.patients?.let { patientRepository.getByIds(it) } ?: emptySet()
             val doctorEntity = Doctor(doctor, user, patients)
             doctorRepository.save(doctorEntity)
         } else {
