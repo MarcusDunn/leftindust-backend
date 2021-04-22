@@ -47,4 +47,5 @@ interface PatientDao {
     suspend fun getByEvent(eid: Long, mediqAuthToken: MediqToken): Collection<Patient> {
         TODO("Not yet implemented")
     }
+    suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient>
 }

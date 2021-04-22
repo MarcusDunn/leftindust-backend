@@ -6,6 +6,7 @@ import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.extensions.parallelMap
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
@@ -35,13 +36,11 @@ class PatientQuery(
                 patientDao
                     .getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken)
             }
-            pids != null && sortedBy != null -> {
-                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
+            pids != null && sortedBy != null ->
+                patientDao.getPatientsByPids(pids, authContext.mediqAuthToken)
                     .sortedBy { sortedBy.instanceValue(it) }
-            }
-            pids != null && sortedBy == null -> {
-                pids.map { patientDao.getByPID(it.toLong(), authContext.mediqAuthToken) }
-            }
+
+            pids != null && sortedBy == null -> patientDao.getPatientsByPids(pids, authContext.mediqAuthToken)
             example != null && sortedBy != null -> {
                 patientDao
                     .searchByExample(example, authContext.mediqAuthToken)

@@ -7,7 +7,7 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import javax.persistence.EntityNotFoundException
 
 
-inline fun <reified T> JpaRepository<T, Long>.getByIds(ids: Collection<ID>) =
+inline fun <reified T> JpaRepository<T, Long>.getByIds(ids: Collection<ID>): Set<T> =
     ids
         .map { this.getOne(it.toLong()) }
         .toSet()

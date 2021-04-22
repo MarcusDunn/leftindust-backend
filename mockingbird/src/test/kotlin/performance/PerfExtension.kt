@@ -1,6 +1,6 @@
 package performance
 
-fun assertPerf(name: String, runs: Int, maxNanos: Int, test: (Int) -> Unit) {
+fun assertPerf(name: String, runs: Int, maxNanos: Long, test: (Int) -> Unit) {
     val startTime = System.nanoTime()
     for (i in 0 until runs) {
         test(i)

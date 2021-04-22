@@ -140,4 +140,12 @@ class PatientDaoImpl(
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
         }
     }
+
+    override suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient> {
+        return if (requester can (Crud.READ to Tables.Patient)) {
+            patientRepository.findAllById(pids.map { it.toLong() })
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+        }
+    }
 }
