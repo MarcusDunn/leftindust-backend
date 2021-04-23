@@ -7,8 +7,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
  */
 data class FoundationIcdCode(private val url: String) {
     constructor(foundationIcdCode: FoundationIcdCodeInput) : this(foundationIcdCode.url)
-
-    val value: String = url.split("/").last()
+    val value: String = Regex("""\d{5,}""").find(url)?.value!!
 }
 
 data class FoundationIcdCodeInput(val code: String) {
