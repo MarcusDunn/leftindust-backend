@@ -23,7 +23,7 @@ class IcdFetcherImpl(
                 setPrettyPrinting()
             }
         }
-        expectSuccess = false
+        expectSuccess = true
     }
 
     override suspend fun linearization(
