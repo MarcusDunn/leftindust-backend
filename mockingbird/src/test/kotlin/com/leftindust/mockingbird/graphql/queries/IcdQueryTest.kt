@@ -60,7 +60,7 @@ internal class IcdQueryTest {
             every { isVerified() } returns true
         }
 
-        val result = runBlocking { icdQuery.icd("hello!", authContext = authContext) }
+        val result = runBlocking { icdQuery.icd("1277781", authContext = authContext) }
 
         assertEquals(mockkIcdFoundationEntity, result)
     }

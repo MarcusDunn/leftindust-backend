@@ -12,6 +12,7 @@ import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 import com.leftindust.mockingbird.graphql.types.examples.StringFilter
+import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -73,6 +74,7 @@ internal class VisitDaoImplTest {
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
             every { event } returns gqlID(4000)
+            every { foundationIcdCode } returns FoundationIcdCodeInput("1222121")
         }
 
         every { visitRepository.save(any()) } returns mockkVisit

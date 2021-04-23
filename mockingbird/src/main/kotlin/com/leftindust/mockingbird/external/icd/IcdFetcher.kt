@@ -11,7 +11,6 @@ interface IcdFetcher {
     ): GraphQLIcdSearchResult
 
     suspend fun getDetails(code: FoundationIcdCode): GraphQLIcdFoundationEntity
-    suspend fun getLinearizationEntity(releaseId: GraphQLReleaseIdInput, code: FoundationIcdCode): GraphQLIcdLinearizationEntity
     suspend fun linearization(linearizationName: String, code: FoundationIcdCode): GraphQLIcdMultiVersion
     suspend fun linearizationSearch(
         releaseId: GraphQLReleaseIdInput,

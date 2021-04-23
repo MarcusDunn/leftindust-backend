@@ -18,12 +18,6 @@ data class GraphQLIcdMultiVersion(
     private val latestRelease: String?,
     private val release: List<String>
 ) {
-    // todo test to see if I broke
-    suspend fun entities(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): List<GraphQLIcdLinearizationEntity> {
-        return release.map {
-            icdFetcher.getLinearizationEntity(GraphQLReleaseIdInput.fromString(it), FoundationIcdCode(id ?: return@map null))
-        }.filterNotNull()
-    }
 
     constructor(icdMultiVersion: IcdMultiVersion) : this(
         context = icdMultiVersion.`@context`,

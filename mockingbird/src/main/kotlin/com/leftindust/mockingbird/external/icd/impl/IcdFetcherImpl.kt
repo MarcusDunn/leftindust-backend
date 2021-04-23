@@ -26,13 +26,6 @@ class IcdFetcherImpl(
         expectSuccess = false
     }
 
-    override suspend fun getLinearizationEntity(
-        releaseId: GraphQLReleaseIdInput,
-        code: FoundationIcdCode
-    ): GraphQLIcdLinearizationEntity {
-        TODO("not yet implemented")
-    }
-
     override suspend fun linearization(
         linearizationName: String,
         code: FoundationIcdCode
