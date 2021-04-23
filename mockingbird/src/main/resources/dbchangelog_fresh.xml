@@ -600,4 +600,10 @@
     <changeSet author="marcus (generated)" id="1618612037085-2">
         <dropColumn columnName="duration_millis" tableName="event"/>
     </changeSet>
+    <changeSet id="marcus" author="1618612037086">
+        <update tableName="mediq_group">
+            <column name="name" value="Administrator"/>
+            <where>name='admin'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
