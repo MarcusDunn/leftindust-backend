@@ -3,6 +3,8 @@ package com.leftindust.mockingbird.graphql.types.icd
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.external.icd.IcdFetcher
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
+import io.ktor.client.call.*
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("IcdSimpleEntity")
@@ -28,7 +30,14 @@ data class GraphQLIcdSimpleEntity(
     val descendants: List<GraphQLIcdSimpleEntity>,
 ) {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
-        return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
+        try {
+            println(id)
+            return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
+        } catch (e: NoTransformationFoundException) {
+            id
+            throw e
+        }
+
     }
 
     fun id(asUrl: Boolean? = false): String? {
@@ -58,8 +67,8 @@ data class GraphQLIcdSimpleEntity(
 
     suspend fun linearizationEntity(
         @Autowired @GraphQLIgnore icdFetcher: IcdFetcher,
-        releaseId: String? = "2019-04"
+        releaseId: GraphQLReleaseIdInput? = null
     ): GraphQLIcdLinearizationEntity? {
-        return id?.let { icdFetcher.getLinearizationEntity(releaseId ?: "2019-04", FoundationIcdCode(it)) }
+        return id?.let { icdFetcher.getLinearizationEntity(releaseId ?: GraphQLReleaseIdInput.R_2020_09, FoundationIcdCode(it)) }
     }
 }

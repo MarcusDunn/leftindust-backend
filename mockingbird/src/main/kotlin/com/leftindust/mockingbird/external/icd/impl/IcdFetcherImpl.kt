@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.external.icd.impl
 import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -26,21 +27,22 @@ class IcdFetcherImpl(
     }
 
     override suspend fun getLinearizationEntity(
-        releaseId: String,
+        releaseId: GraphQLReleaseIdInput,
         code: FoundationIcdCode
     ): GraphQLIcdLinearizationEntity {
-        TODO()
+        TODO("not yet implemented")
     }
 
     override suspend fun linearization(
         linearizationName: String,
         code: FoundationIcdCode
     ): GraphQLIcdMultiVersion {
-        return getLinearization(linearizationName, code)
+        val url = "${config.BASE_URL}/release/11/$linearizationName/${code.value}"
+        return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
     }
 
     override suspend fun linearizationSearch(
-        releaseId: String,
+        releaseId: GraphQLReleaseIdInput,
         linearizationName: String,
         query: String,
         flatResults: Boolean
@@ -48,15 +50,6 @@ class IcdFetcherImpl(
         val url = "${config.BASE_URL}/release/11/$releaseId/$linearizationName/search?q=$query&flatResult=$flatResults"
         return getUrlWithIcdHeaders(url)
     }
-
-    private suspend fun getLinearization(
-        linearizationName: String,
-        code: FoundationIcdCode,
-    ): GraphQLIcdMultiVersion {
-        val url = "${config.BASE_URL}/release/11/$linearizationName/${code.value}"
-        return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
-    }
-
 
     override suspend fun getDetails(
         code: FoundationIcdCode,

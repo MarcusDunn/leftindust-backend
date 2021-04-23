@@ -10,6 +10,7 @@ import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.stereotype.Component
 
 @Component
@@ -40,14 +41,14 @@ class IcdQuery(
 
     suspend fun searchIcdLinearization(
         query: String,
-        releaseId: String? = null,
+        releaseId: GraphQLReleaseIdInput? = null,
         linearizationName: String? = null,
         flatResults: Boolean? = null,
         authContext: GraphQLAuthContext
     ): GraphQLIcdSearchResult {
         if (authContext.mediqAuthToken.isVerified()) {
             return client
-                .linearizationSearch(releaseId ?: "2020-09", linearizationName ?: "mms", query, flatResults ?: false)
+                .linearizationSearch(releaseId ?: GraphQLReleaseIdInput.R_2020_09, linearizationName ?: "mms", query, flatResults ?: false)
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }

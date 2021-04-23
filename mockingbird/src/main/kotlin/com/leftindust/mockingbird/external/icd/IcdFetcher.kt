@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.external.icd
 
 import com.leftindust.mockingbird.graphql.types.icd.*
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 
 interface IcdFetcher {
     suspend fun search(
@@ -10,10 +11,10 @@ interface IcdFetcher {
     ): GraphQLIcdSearchResult
 
     suspend fun getDetails(code: FoundationIcdCode): GraphQLIcdFoundationEntity
-    suspend fun getLinearizationEntity(releaseId: String, code: FoundationIcdCode): GraphQLIcdLinearizationEntity
+    suspend fun getLinearizationEntity(releaseId: GraphQLReleaseIdInput, code: FoundationIcdCode): GraphQLIcdLinearizationEntity
     suspend fun linearization(linearizationName: String, code: FoundationIcdCode): GraphQLIcdMultiVersion
     suspend fun linearizationSearch(
-        releaseId: String,
+        releaseId: GraphQLReleaseIdInput,
         linearizationName: String,
         query: String,
         flatResults: Boolean

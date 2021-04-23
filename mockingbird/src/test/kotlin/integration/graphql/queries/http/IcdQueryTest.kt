@@ -41,10 +41,30 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """query { $query(query: "covid") { 
+                """query { $query(query: "hiv") { 
                 |   words { 
-                |       label 
-                |       } 
+                |       label
+                |       }
+                |   destinationEntities {
+                |      title(withTags: true)
+                |      id
+                |      entity {
+                |           definition {
+                |               value
+                |               }
+                |           }     
+                |       theCode
+                |       descendants {
+                |           title(withTags: true)
+                |           id
+                |           theCode
+                |           entity {
+                |               definition {
+                |                   value
+                |               }
+                |           }
+                |           }
+                |       }
                 |   } 
                 |} """.trimMargin()
             )
