@@ -17,11 +17,6 @@ data class GraphQLPermission(
     val columnName: String? = null,
 ) {
 
-    @GraphQLIgnore
-    fun toActionEntity(): Action {
-        return Action(this)
-    }
-
     fun friendlyName(): String {
         return StringBuilder().apply {
             append("${permissionType.name} to ${referencedTableName.name} ")

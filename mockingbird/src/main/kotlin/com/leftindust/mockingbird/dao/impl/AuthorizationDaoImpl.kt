@@ -24,6 +24,8 @@ class AuthorizationDaoImpl(
     }
 
     override suspend fun isAdmin(uid: String): Boolean {
-        return userRepository.getUserByUniqueId(uid).group?.name == "admin"
+        return adminAlias.contains(userRepository.getUserByUniqueId(uid).group?.name)
     }
+
+    val adminAlias = listOf("admin", "Administrator")
 }

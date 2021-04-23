@@ -139,8 +139,4 @@ enum class GraphQLDayOfWeek {
     Fri,
     Sat,
     Sun;
-
-    companion object {
-        fun fromInt(dayOfWeek: Int): GraphQLDayOfWeek? = values().getOrNull(dayOfWeek)
-    }
 }
