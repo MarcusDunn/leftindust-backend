@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao
 
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.extensions.CustomResult
@@ -12,4 +13,5 @@ interface UserDao {
     suspend fun addUser(user: GraphQLUserInput, requester: MediqToken): MediqUser
     suspend fun getUsers(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqUser>
     suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser
+    suspend fun getByDoctor(did: ID , requester: MediqToken): MediqUser?
 }

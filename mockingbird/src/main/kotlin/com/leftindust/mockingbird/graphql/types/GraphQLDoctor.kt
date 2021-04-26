@@ -6,6 +6,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
@@ -42,6 +43,10 @@ data class GraphQLDoctor(
         if (doctor.id == null || doctor.id != id) {
             throw IllegalArgumentException("doctor.id does not match id where doctor.id is ${doctor.id} and id is $id")
         }
+    }
+
+    suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? {
+        return userDao.getByDoctor(did, authContext.mediqAuthToken)?.let { GraphQLUser(it, authContext) }
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =

@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -60,5 +61,23 @@ internal class GraphQLUserTest {
         assertThrows<Exception> {
             runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
         }
+    }
+
+    @Test
+    @Disabled
+    fun firebaseUserInfo() {
+        TODO()
+    }
+
+    @Test
+    @Disabled
+    fun permissions() {
+        TODO()
+    }
+
+    @Test
+    @Disabled
+    fun hasPermission() {
+        TODO()
     }
 }

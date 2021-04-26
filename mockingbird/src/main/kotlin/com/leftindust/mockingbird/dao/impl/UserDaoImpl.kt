@@ -1,12 +1,14 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.MediqUser
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.*
@@ -23,6 +25,7 @@ class UserDaoImpl(
     authorizer: Authorizer,
     private val userRepository: HibernateUserRepository,
     private val groupRepository: HibernateGroupRepository,
+    private val doctorRepository: HibernateDoctorRepository,
 ) : UserDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
@@ -69,6 +72,15 @@ class UserDaoImpl(
             }
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
+        }
+    }
+
+    override suspend fun getByDoctor(did: ID, requester: MediqToken): MediqUser? {
+        return if (requester can listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)){
+            doctorRepository.getOne(did.toLong()).user
+        } else{
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
+
         }
     }
 }

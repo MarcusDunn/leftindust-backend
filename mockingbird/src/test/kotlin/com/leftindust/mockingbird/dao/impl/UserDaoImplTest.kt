@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.impl
 
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.MediqUser
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -17,6 +18,7 @@ internal class UserDaoImplTest {
     private val authorizer = mockk<Authorizer>()
     private val userRepository = mockk<HibernateUserRepository>()
     private val groupRepository = mockk<HibernateGroupRepository>()
+    private val doctorRepository = mockk<HibernateDoctorRepository>()
 
     @Test
     fun getUserByUid() {
@@ -24,7 +26,7 @@ internal class UserDaoImplTest {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { userRepository.findByUniqueId("test uid") } returns mockkUser
 
-        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository)
+        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository)
 
         val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }.getOrNull()!!
 
@@ -42,7 +44,7 @@ internal class UserDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository)
+        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository)
 
         val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }
 
