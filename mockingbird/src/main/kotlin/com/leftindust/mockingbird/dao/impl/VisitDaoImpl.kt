@@ -4,20 +4,14 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.NotAuthorized
-import com.leftindust.mockingbird.dao.OrmFailureReason
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.toLong
-import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.stereotype.Repository
@@ -58,18 +52,6 @@ class VisitDaoImpl(
             visitRepository.save(Visit(visitInput, event))
         } else {
             throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
-        }
-    }
-
-    override suspend fun getByExample(
-        example: GraphQLVisitExample,
-        strict: Boolean,
-        requester: MediqToken
-    ): List<Visit> {
-        return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict).getOrNull()!!
-        } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 

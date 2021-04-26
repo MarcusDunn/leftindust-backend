@@ -9,9 +9,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
-import com.leftindust.mockingbird.graphql.types.examples.StringFilter
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -82,33 +80,5 @@ internal class VisitDaoImplTest {
         val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }
 
         assertEquals(mockkVisit, result)
-    }
-
-    @Test
-    fun getByExample() {
-        val mockkVisit = mockk<Visit>()
-        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { entityManager.createQuery(any<CriteriaQuery<Visit>>()) } returns mockk {
-            every { resultList } returns listOf(mockkVisit)
-        }
-        every { entityManager.criteriaBuilder } returns mockk {
-            every { and(*anyVararg()) } returns mockk()
-            every { equal(any(), "10000") } returns mockk()
-            every { createQuery(Visit::class.java) } returns mockk {
-                every { from(Visit::class.java) } returns mockk(relaxed = true)
-                every { select(any()) } returns mockk {
-                    every { where(*anyVararg()) } returns mockk()
-                }
-            }
-        }
-        val visitDaoImpl = VisitDaoImpl(authorizer, eventRepository, visitRepository, entityManager, patientRepository)
-        val result = runBlocking {
-            visitDaoImpl.getByExample(
-                GraphQLVisitExample(vid = StringFilter(eq = "10000")),
-                strict = true,
-                mockk()
-            )
-        }
-        assertEquals(listOf(mockkVisit), result)
     }
 }

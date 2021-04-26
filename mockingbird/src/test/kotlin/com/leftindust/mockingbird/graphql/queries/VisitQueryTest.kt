@@ -181,28 +181,4 @@ internal class VisitQueryTest {
         }
     }
 
-    @Test
-    fun `search visits by example`() {
-        every { graphQLAuthContext.mediqAuthToken } returns mockk()
-        val mockkVisit = mockk<Visit>(relaxed = true) {
-            every { id } returns 1000
-        }
-        every { graphQLAuthContext.mediqAuthToken } returns mockk()
-        coEvery { visitDao.getByExample(any(), any(), any()) } returns listOf(mockkVisit)
-
-        val visitQuery = VisitQuery(visitDao, eventDao)
-
-        val result = runBlocking { visitQuery.visits(example = mockk(), graphQLAuthContext = graphQLAuthContext) }
-
-        assertEquals(listOf(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext)), result)
-
-        coVerifyAll {
-            graphQLAuthContext.mediqAuthToken
-            mockkVisit.id
-            mockkVisit.title
-            mockkVisit.description
-            mockkVisit.icdFoundationCode
-            visitDao.getByExample(any(), any(), any())
-        }
-    }
 }

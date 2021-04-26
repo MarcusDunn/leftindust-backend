@@ -606,4 +606,60 @@
             <where>name='admin'</where>
         </update>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-1">
+        <createTable tableName="name_info">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="name_infoPK"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-2">
+        <addColumn tableName="doctor">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-3">
+        <addColumn tableName="mediq_user">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-4">
+        <addColumn tableName="patient">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-5">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="patient" constraintName="FK7o051o7jeffmkglcq8ql2pusp" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-6">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="doctor" constraintName="FKf6k6oe3l8fjge6x9x47djwo1p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-7">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="mediq_user" constraintName="FKjh63v3p54suwqkuk79ynjj507" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-8">
+        <dropColumn columnName="first_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-9">
+        <dropColumn columnName="first_name" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-10">
+        <dropColumn columnName="last_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-11">
+        <dropColumn columnName="last_name" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-12">
+        <dropColumn columnName="middle_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-13">
+        <dropColumn columnName="middle_name" tableName="patient"/>
+    </changeSet>
 </databaseChangeLog>

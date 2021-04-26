@@ -27,37 +27,6 @@ class PatientQueryTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
-    @Test
-    internal fun `test search patient`() {
-
-        coEvery { contextFactory.generateContext(any()) } returns mockk() {
-            every { getHTTPRequestHeader(any()) } returns null
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
-        }
-
-        addPatient()
-
-        assertDoesNotThrow {
-            val query = "patients"
-
-            testClient.post()
-                .uri(GRAPHQL_ENDPOINT)
-                .accept(APPLICATION_JSON_MEDIA_TYPE)
-                .contentType(GRAPHQL_MEDIA_TYPE)
-                .bodyValue(
-                    """query { $query(example: {personalInformation: {firstName: {eq: "marcus"}}}) { 
-                |   firstName
-                |   }
-                |} """.trimMargin()
-                )
-                .exchange()
-                .expectBody()
-                .jsonPath("$.data.patients[0].firstName")
-                .isEqualTo("marcus")
-        }
-    }
 
     private fun addPatient() {
         assertDoesNotThrow {

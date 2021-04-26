@@ -30,9 +30,9 @@ data class GraphQLDoctor(
 
     constructor(doctor: Doctor, id: Long, authContext: GraphQLAuthContext) : this(
         did = gqlID(id),
-        firstName = doctor.firstName,
-        middleName = doctor.middleName,
-        lastName = doctor.lastName,
+        firstName = doctor.nameInfo.firstName,
+        middleName = doctor.nameInfo.middleName,
+        lastName = doctor.nameInfo.lastName,
         phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
         dateOfBirth = GraphQLUtcTime(doctor.dateOfBirth),

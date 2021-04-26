@@ -11,13 +11,19 @@ import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 data class GraphQLDoctorInput(
     val did: ID? = null,
     val user: GraphQLUserInput? = null,
-    val firstName: String,
-    val middleName: String? = null,
-    val lastName: String,
+    val nameInfo: GraphQLNameInput,
     val phones: List<GraphQLPhone>? = emptyList(),
     val title: String? = null,
     val dateOfBirth: GraphQLTimeInput,
     val addresses: List<GraphQLAddress>? = emptyList(),
     val emails: List<GraphQLEmail>? = emptyList(),
     val patients: List<ID>? = emptyList(),
-)
+) {
+    init {
+        if (user?.nameInfo == nameInfo || user == null) {
+            // ok
+        } else {
+            throw IllegalArgumentException("nameInfo for the user and the doctor must be the same")
+        }
+    }
+}

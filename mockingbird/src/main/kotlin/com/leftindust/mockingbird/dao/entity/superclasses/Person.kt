@@ -6,12 +6,9 @@ import javax.persistence.*
 
 @MappedSuperclass
 abstract class Person(
-    @Column(name = "first_name", nullable = false)
-    var firstName: String,
-    @Column(name = "last_name", nullable = false)
-    var lastName: String,
-    @Column(name = "middle_name", nullable = true)
-    var middleName: String?,
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @JoinColumn(name = "name_info_id")
+    var nameInfo: NameInfo,
     @Column(name = "date_of_birth", nullable = false)
     var dateOfBirth: Timestamp,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -25,7 +22,12 @@ abstract class Person(
     @Embedded
     var schedule: Schedule = Schedule(),
 ) : AbstractJpaPersistable<Long>() {
+    init {
+        // if user exists, set the user nameInfo to the info stored on the person instead to prevent inconsistencies
+        user?.let { it.nameInfo = nameInfo }
+    }
+
     override fun toString(): String {
-        return "Person(firstName='$firstName', lastName='$lastName', middleName=$middleName, dateOfBirth=$dateOfBirth, address=$address, email=$email, phone=$phone, user=$user, schedule=$schedule)"
+        return "Person(nameInfo=$nameInfo, dateOfBirth=$dateOfBirth, address=$address, email=$email, phone=$phone, user=$user, schedule=$schedule)"
     }
 }

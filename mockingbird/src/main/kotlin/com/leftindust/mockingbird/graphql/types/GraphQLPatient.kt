@@ -33,9 +33,9 @@ data class GraphQLPatient(
 
     constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
         pid = gqlID(id).also { LogManager.getLogger().trace(patient) },
-        firstName = patient.firstName,
-        middleName = patient.middleName,
-        lastName = patient.lastName,
+        firstName = patient.nameInfo.firstName,
+        middleName = patient.nameInfo.middleName,
+        lastName = patient.nameInfo.lastName,
         phones = patient.phone.map { GraphQLPhone(it) },
         dateOfBirth = GraphQLUtcTime(patient.dateOfBirth),
         addresses = patient.address.map { GraphQLAddress(it) },

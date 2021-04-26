@@ -183,4 +183,19 @@ internal class PatientDaoImplTest {
 
         assertEquals(mockkPatient, actual)
     }
+
+    @Test
+    fun removeByPID() {
+        // TODO: 2021-04-26  
+    }
+
+    @Test
+    fun getMany() {
+        // TODO: 2021-04-26  
+    }
+
+    @Test
+    fun getPatientsByPids() {
+        // TODO: 2021-04-26  
+    }
 }

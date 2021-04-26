@@ -3,13 +3,14 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import java.sql.Timestamp
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.OneToMany
 
 @Entity
 class Doctor(
-    firstName: String,
-    lastName: String,
-    middleName: String? = null,
+    nameInfo: NameInfo,
     dateOfBirth: Timestamp,
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
@@ -20,11 +21,9 @@ class Doctor(
     val title: String? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones, user, schedule) {
+) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
     constructor(graphQLDoctorInput: GraphQLDoctorInput, user: MediqUser?, patients: Collection<Patient>) : this(
-        firstName = graphQLDoctorInput.firstName,
-        lastName = graphQLDoctorInput.lastName,
-        middleName = graphQLDoctorInput.middleName,
+        nameInfo = NameInfo(graphQLDoctorInput.nameInfo),
         dateOfBirth = graphQLDoctorInput.dateOfBirth.toTimestamp(),
         addresses = graphQLDoctorInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
         emails = graphQLDoctorInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),

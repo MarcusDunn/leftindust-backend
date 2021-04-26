@@ -15,9 +15,11 @@ import java.sql.Timestamp
 
 object EntityStore {
     fun patient(testName: String) = Patient(
-        firstName = "marcus",
-        middleName = testName,
-        lastName = "dunn",
+        nameInfo = NameInfo(
+            firstName = "marcus",
+            middleName = testName,
+            lastName = "dunn",
+        ),
         dateOfBirth = Timestamp.valueOf("2020-01-02 09:01:15"),
         addresses = setOf(
             Address(
@@ -42,9 +44,11 @@ object EntityStore {
     )
 
     fun doctor(testName: String) = Doctor(
-        firstName = "dan",
-        lastName = testName,
-        middleName = "the man",
+        nameInfo = NameInfo(
+            firstName = "dan",
+            lastName = testName,
+            middleName = "the man",
+        ),
         dateOfBirth = Timestamp.valueOf("2018-01-02 09:01:15"),
         addresses = setOf(
             Address(

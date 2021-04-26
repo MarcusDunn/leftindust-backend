@@ -6,15 +6,11 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
-import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,30 +51,6 @@ class PatientQueryTest {
             val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
             assertEquals(listOf(expected), patients)
         }
-    }
-
-    @Test
-    internal fun `search patient by name`() {
-        // Setup
-        val patientEntity = run {
-            val patientExample = EntityStore.patient("PatientQueryTest.search patient by name")
-            hibernatePatientRepository.save(patientExample)
-        }
-
-        // action
-        val patients = runBlocking {
-            patientQuery.patients(
-                example = GraphQLPatientExample(
-                    personalInformation = GraphQLPersonExample(
-                        firstName = StringFilter(includes = "marcus"),
-                    )
-                ), authContext = mockkAuthContext
-            )
-        }
-        // assert
-        val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
-        assertTrue(patients.contains(expected))
-
     }
 
     @Test

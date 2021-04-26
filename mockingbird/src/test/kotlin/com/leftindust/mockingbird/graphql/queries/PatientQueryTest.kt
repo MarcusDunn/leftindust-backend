@@ -5,9 +5,6 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPersonExample
-import com.leftindust.mockingbird.graphql.types.examples.StringFilter
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -50,41 +47,5 @@ internal class PatientQueryTest {
         val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
         val result = runBlocking { patientQuery.patients(GraphQLRangeInput(0, 5), authContext = authContext) }
         assertEquals((0 until 5).map { graphQLPatient }, result)
-    }
-
-    @Test
-    fun searchPatientsByName() {
-        val mockkPatient = mockk<Patient>(relaxed = true) {
-            every { id } returns 1000L
-        }
-        coEvery { patientDao.searchByExample(any(), any()) } returns listOf(mockkPatient)
-        val patientQuery = PatientQuery(patientDao)
-        every { authContext.mediqAuthToken } returns mockk()
-        val result = runBlocking {
-            patientQuery.patients(
-                example = GraphQLPatientExample(
-                    personalInformation = GraphQLPersonExample(
-                        firstName = StringFilter(includes = "hello"),
-                        middleName = StringFilter(includes = "hello"),
-                        lastName = StringFilter(includes = "hello")
-                    )
-                ), authContext = authContext
-            )
-        }
-        val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
-        assertEquals(listOf(graphQLPatient), result)
-    }
-
-    @Test
-    fun searchPatient() {
-        val mockkPatient = mockk<Patient>(relaxed = true) {
-            every { id } returns 1000L
-        }
-        every { authContext.mediqAuthToken } returns mockk()
-        coEvery { patientDao.searchByExample(any(), any()) } returns listOf(mockkPatient)
-        val graphQLPatient = GraphQLPatient(mockkPatient, mockkPatient.id!!, authContext)
-        val patientQuery = PatientQuery(patientDao)
-        val result = runBlocking { patientQuery.patients(example = mockk(), authContext = authContext) }
-        assertEquals(listOf(graphQLPatient), result)
     }
 }

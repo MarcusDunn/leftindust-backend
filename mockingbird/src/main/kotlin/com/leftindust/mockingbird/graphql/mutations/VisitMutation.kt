@@ -4,8 +4,7 @@ import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
-import org.springframework.beans.factory.annotation.Autowired
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import org.springframework.stereotype.Component
 
 @Component

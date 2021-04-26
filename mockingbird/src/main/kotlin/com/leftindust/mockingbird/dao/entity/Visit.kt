@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.converters.IcdCodeConverter
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
 import javax.persistence.*
 

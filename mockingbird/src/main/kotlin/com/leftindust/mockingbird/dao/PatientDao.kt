@@ -3,8 +3,6 @@ package com.leftindust.mockingbird.dao
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 
 /**
@@ -26,12 +24,6 @@ interface PatientDao {
         requester: MediqToken
     ): Patient
 
-    suspend fun searchByExample(
-        example: GraphQLPatientExample,
-        requester: MediqToken,
-        strict: Boolean = true,
-    ): List<Patient>
-
     suspend fun getMany(
         from: Int,
         to: Int,
@@ -47,5 +39,6 @@ interface PatientDao {
     suspend fun getByEvent(eid: Long, mediqAuthToken: MediqToken): Collection<Patient> {
         TODO("Not yet implemented")
     }
+
     suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient>
 }

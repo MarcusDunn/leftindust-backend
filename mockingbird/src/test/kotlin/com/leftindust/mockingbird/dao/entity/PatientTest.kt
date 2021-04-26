@@ -1,8 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.extensions.getOrNull
 import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -12,7 +10,6 @@ import io.mockk.mockk
 import io.mockk.spyk
 import org.hibernate.Session
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 internal class PatientTest {
@@ -57,6 +54,6 @@ internal class PatientTest {
 
         patient.setByGqlInput(gqlInput, mockk())
 
-        assertEquals(gqlInput.firstName.getOrThrow(), patient.firstName)
+        assertEquals(gqlInput.firstName.getOrThrow(), patient.nameInfo.firstName)
     }
 }

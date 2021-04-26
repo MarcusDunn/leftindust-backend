@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLVisitExample
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
@@ -21,7 +20,6 @@ class VisitQuery(
         vids: List<ID>? = null,
         pid: ID? = null,
         did: ID? = null,
-        example: GraphQLVisitExample? = null,
         strict: Boolean = true,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLVisit> {
@@ -42,9 +40,6 @@ class VisitQuery(
             did != null -> eventDao
                 .getByDoctor(did.toLong(), graphQLAuthContext.mediqAuthToken)
                 .map { visitDao.getByEvent(it.id!!, graphQLAuthContext.mediqAuthToken) }
-                .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
-            example != null -> visitDao
-                .getByExample(example, strict, graphQLAuthContext.mediqAuthToken)
                 .map { GraphQLVisit(it, it.id!!, graphQLAuthContext) }
             else -> throw GraphQLKotlinException("invalid arguments to visits")
         }

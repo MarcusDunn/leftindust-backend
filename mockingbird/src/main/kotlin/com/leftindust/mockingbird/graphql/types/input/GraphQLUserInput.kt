@@ -4,10 +4,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.graphql.types.GraphQLJsonObject
 
 @GraphQLName("UserInput")
 data class GraphQLUserInput(
+    val nameInfo: GraphQLNameInput,
     val uid: String,
     val group_id: ID? = null,
 )

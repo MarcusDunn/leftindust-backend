@@ -29,7 +29,7 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
     private lateinit var contextFactory: ContextFactory
 
     @Test
-    internal fun testSearch() {
+    internal fun testIcdSearch() {
         coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
             every { isVerified() } returns true
         }, mockk(relaxed = true))

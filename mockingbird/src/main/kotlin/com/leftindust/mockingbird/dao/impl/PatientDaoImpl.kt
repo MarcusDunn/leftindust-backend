@@ -14,7 +14,6 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.toLong
-import com.leftindust.mockingbird.graphql.types.examples.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -99,17 +98,6 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun searchByExample(
-        example: GraphQLPatientExample,
-        requester: MediqToken,
-        strict: Boolean
-    ): List<Patient> {
-        return if (requester can (Crud.READ to Tables.Patient)) {
-            searchByGqlExample(entityManager, example, strict).getOrNull()!!
-        } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
-        }
-    }
 
     override suspend fun getMany(
         from: Int,

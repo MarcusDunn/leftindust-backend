@@ -1,4 +1,4 @@
-package com.leftindust.mockingbird.graphql.types
+package com.leftindust.mockingbird.graphql.types.input
 
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeInput

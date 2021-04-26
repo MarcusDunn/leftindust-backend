@@ -41,6 +41,6 @@ class TestPatient(@Autowired private val patientDao: PatientDao) {
             }
         }
 
-        assertEquals(null, patientRepository.findAll(PageRequest.of(0, 100)).find { it.middleName == testName })
+        assertEquals(null, patientRepository.findAll(PageRequest.of(0, 100)).find { it.nameInfo.middleName == testName })
     }
 }

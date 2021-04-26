@@ -14,9 +14,7 @@ import javax.persistence.*
 
 @Entity(name = "patient")
 class Patient(
-    firstName: String,
-    middleName: String? = null,
-    lastName: String,
+    nameInfo: NameInfo,
     dateOfBirth: Timestamp,
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
@@ -41,19 +39,21 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(firstName, lastName, middleName, dateOfBirth, addresses, emails, phones, user, schedule) {
+) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
 
     @Throws(IllegalArgumentException::class)
     constructor(
         graphQLPatientInput: GraphQLPatientInput,
         session: Session
     ) : this(
-        firstName = graphQLPatientInput.firstName
-            .getOrThrow(IllegalArgumentException("firstName must be defined when constructing a Patient")),
-        middleName = graphQLPatientInput.middleName
-            .getOrNull(),
-        lastName = graphQLPatientInput.lastName
-            .getOrThrow(IllegalArgumentException("lastName must be defined when constructing a Patient")),
+        nameInfo = NameInfo(
+            firstName = graphQLPatientInput.firstName
+                .getOrThrow(IllegalArgumentException("firstName must be defined when constructing a Patient")),
+            middleName = graphQLPatientInput.middleName
+                .getOrNull(),
+            lastName = graphQLPatientInput.lastName
+                .getOrThrow(IllegalArgumentException("lastName must be defined when constructing a Patient")),
+        ),
         dateOfBirth = graphQLPatientInput.dateOfBirth
             .getOrThrow(IllegalArgumentException("date of birth must be defined"))
             .toTimestamp(),
@@ -129,8 +129,8 @@ class Patient(
         fun instanceValue(receiver: Patient): String {
             return when (this) {
                 PID -> receiver.id!!.toString()
-                FIRST_NAME -> receiver.firstName
-                LAST_NAME -> receiver.lastName
+                FIRST_NAME -> receiver.nameInfo.firstName
+                LAST_NAME -> receiver.nameInfo.firstName
             }
         }
     }
@@ -141,12 +141,16 @@ class Patient(
         if (patientInput.pid.getOrNull()?.toLong() != this.id!!)
             throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid.getOrNull()}")
 
-        firstName = patientInput.firstName
-            .onUndefined(firstName) ?: throw IllegalArgumentException("firstName cannot be set to null")
-        middleName = patientInput.middleName.onUndefined(middleName)
+        nameInfo.apply {
+            firstName = patientInput.firstName
+                .onUndefined(firstName) ?: throw IllegalArgumentException("firstName cannot be set to null")
+            middleName = patientInput.middleName
+                .onUndefined(middleName)
+            lastName = patientInput.lastName
+                .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
+        }
 
-        lastName = patientInput.lastName
-            .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
+
 
         dateOfBirth = (patientInput.dateOfBirth.onUndefined(GraphQLTimeInput(dateOfBirth))
             ?: throw IllegalArgumentException("date of birth cannot be set to null"))

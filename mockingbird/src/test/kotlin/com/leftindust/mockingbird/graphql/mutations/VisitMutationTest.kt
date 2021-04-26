@@ -4,7 +4,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.GraphQLVisitInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
