@@ -49,3 +49,33 @@ data class GraphQLPatientInput(
         }
     }
 }
+
+data class GraphQLPatientEditInput(
+    @GraphQLDescription("pid determines which entity will be updated")
+    val pid: ID,
+    @GraphQLDescription("setting nameInfoEditInput to null will have no effect on update")
+    val nameInfoEditInput: GraphQLNameInfoEditInput? = null,
+    val phoneNumbers: List<GraphQLPhone>? = null,
+    @GraphQLDescription("setting dateOfBirth to null will have no effect on update")
+    val dateOfBirth: GraphQLTimeInput? = null,
+    val addresses: List<GraphQLAddress>? = null,
+    val emails: List<GraphQLEmail>? = null,
+    val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,
+    @GraphQLDescription("setting sex to null will have no effect on update")
+    val sex: Sex? = null,
+    @GraphQLDescription("setting gender to null will have no effect on update")
+    val gender: String? = null,
+    val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
+    val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
+    val doctors: List<ID>? = null,
+) {
+    init {
+        if (emails != null) {
+            if (emails.all { it.email.contains("@") }) {
+                // valid email
+            } else {
+                throw IllegalArgumentException("not a valid email")
+            }
+        }
+    }
+}

@@ -11,7 +11,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 data class GraphQLDoctorInput(
     val did: ID? = null,
     val user: GraphQLUserInput? = null,
-    val nameInfo: GraphQLNameInput,
+    val nameInfo: GraphQLNameInfoInput,
     val phones: List<GraphQLPhone>? = emptyList(),
     val title: String? = null,
     val dateOfBirth: GraphQLTimeInput,

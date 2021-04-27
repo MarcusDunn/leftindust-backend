@@ -1,9 +1,8 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoEditInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -47,13 +46,15 @@ internal class PatientTest {
     fun setByGqlInput() {
         val patient = EntityStore.patient("PatientTest.setByGqlInput").apply { id = 1 }
 
-        val gqlInput = GraphQLPatientInput(
-            pid = OptionalInput.Defined(gqlID(1)),
-            firstName = OptionalInput.Defined("new name")
+        val gqlInput = GraphQLPatientEditInput(
+            pid = gqlID(1),
+            nameInfoEditInput = GraphQLNameInfoEditInput(
+                firstName = "grape"
+            )
         )
 
         patient.setByGqlInput(gqlInput, mockk())
 
-        assertEquals(gqlInput.firstName.getOrThrow(), patient.nameInfo.firstName)
+        assertEquals(gqlInput.nameInfoEditInput!!.firstName, patient.nameInfo.firstName)
     }
 }

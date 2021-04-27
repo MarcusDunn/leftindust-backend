@@ -12,9 +12,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepo
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -116,12 +116,11 @@ class PatientDaoImpl(
     }
 
     override suspend fun update(
-        patientInput: GraphQLPatientInput,
+        patientInput: GraphQLPatientEditInput,
         requester: MediqToken
     ): Patient {
         return if (requester can (Crud.UPDATE to Tables.Patient)) {
-            val pid = patientInput.pid.getOrThrow()
-            val patient = patientRepository.getOne(pid.toLong())
+            val patient = patientRepository.getOne(patientInput.pid.toLong())
             patient.apply {
                 setByGqlInput(patientInput, sessionFactory.currentSession)
             }

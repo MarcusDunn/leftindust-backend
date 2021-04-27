@@ -13,6 +13,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -175,8 +176,8 @@ internal class PatientDaoImplTest {
             entityManager
         )
 
-        val patientInput = mockk<GraphQLPatientInput> {
-            every { pid } returns OptionalInput.Defined(gqlID(100))
+        val patientInput = mockk<GraphQLPatientEditInput> {
+            every { pid } returns gqlID(100)
         }
 
         val actual = runBlocking { patientDaoImpl.update(patientInput, mockk()) }

@@ -6,7 +6,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.*
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
 import java.sql.Timestamp
@@ -120,7 +120,7 @@ class Patient(
         val fieldName: String
             get() {
                 return when (this) {
-                    PID ->Patient_.ID
+                    PID -> Patient_.ID
                     FIRST_NAME -> NameInfo_.FIRST_NAME
                     LAST_NAME -> NameInfo_.LAST_NAME
                 }
@@ -137,44 +137,16 @@ class Patient(
 
 
     @Throws(IllegalArgumentException::class)
-    fun setByGqlInput(patientInput: GraphQLPatientInput, session: Session) {
-        if (patientInput.pid.getOrNull()?.toLong() != this.id!!)
-            throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid.getOrNull()}")
-
-        nameInfo.apply {
-            firstName = patientInput.firstName
-                .onUndefined(firstName) ?: throw IllegalArgumentException("firstName cannot be set to null")
-            middleName = patientInput.middleName
-                .onUndefined(middleName)
-            lastName = patientInput.lastName
-                .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
-        }
-
-
-        dateOfBirth = (patientInput.dateOfBirth.onUndefined(GraphQLTimeInput(dateOfBirth))
-            ?: throw IllegalArgumentException("date of birth cannot be set to null"))
-            .toTimestamp()
-
-        address = patientInput.addresses
-            ?.map { Address(it) }
-            ?.toSet()
-            ?: emptySet()
-
-        email = patientInput.emails
-            ?.map { Email(it) }
-            ?.toSet()
-            ?: emptySet()
-
-        phone = patientInput.phoneNumbers
-            ?.map { Phone(it) }
-            ?.toSet()
-            ?: emptySet()
-
+    fun setByGqlInput(patientInput: GraphQLPatientEditInput, session: Session) {
+        if (patientInput.pid.toLong() != this.id!!) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
+        nameInfo.setByGqlInput(patientInput.nameInfoEditInput)
+        dateOfBirth = patientInput.dateOfBirth?.toTimestamp() ?: dateOfBirth
+        address = patientInput.addresses?.map { Address(it) }?.toSet() ?: address
+        email = patientInput.emails?.map { Email(it) }?.toSet() ?: emptySet()
+        phone = patientInput.phoneNumbers?.map { Phone(it) }?.toSet() ?: phone
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
-        sex = patientInput.sex.onUndefined(sex)
-            ?: throw IllegalArgumentException("sex cannot be set to null")
-        gender = patientInput.gender.onUndefined(gender)
-            ?: throw IllegalArgumentException("gender cannot be set to null")
+        sex = patientInput.sex ?: sex
+        gender = patientInput.gender ?: gender
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
 
         doctors = if (patientInput.doctors == null) emptySet() else {

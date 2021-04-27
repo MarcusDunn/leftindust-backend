@@ -7,7 +7,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 
 @GraphQLName("UserInput")
 data class GraphQLUserInput(
-    val nameInfo: GraphQLNameInput,
+    val nameInfo: GraphQLNameInfoInput,
     val uid: String,
     val group_id: ID? = null,
 )

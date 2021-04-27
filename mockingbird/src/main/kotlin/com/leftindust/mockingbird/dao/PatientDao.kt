@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 
 /**
@@ -33,7 +34,7 @@ interface PatientDao {
     ): Collection<Patient>
 
     suspend fun update(
-        patientInput: GraphQLPatientInput,
+        patientInput: GraphQLPatientEditInput,
         requester: MediqToken
     ): Patient
 
