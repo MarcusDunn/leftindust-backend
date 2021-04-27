@@ -668,4 +668,7 @@
     <changeSet author="marcus (generated)" id="1619566523248-2">
         <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="patient" validate="true"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619566601537-1">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="mediq_user" validate="true"/>
+    </changeSet>
 </databaseChangeLog>

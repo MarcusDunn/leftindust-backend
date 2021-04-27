@@ -11,7 +11,7 @@ class MediqUser(
     @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
     var group: MediqGroup? = null,
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "name_info_id")
+    @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(
