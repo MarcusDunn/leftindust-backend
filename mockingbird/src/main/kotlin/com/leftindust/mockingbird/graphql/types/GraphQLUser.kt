@@ -5,13 +5,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.AuthorizationDao
-import com.leftindust.mockingbird.dao.DoesNotExist
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,13 +26,7 @@ data class GraphQLUser(
     )
 
     suspend fun isRegistered(@GraphQLIgnore @Autowired userDao: UserDao): Boolean {
-        return when (val result = userDao.getUserByUid(uid, authContext.mediqAuthToken)) {
-            is Failure -> when (result.reason) {
-                is DoesNotExist -> false
-                else -> throw RuntimeException(result.reason.toString())
-            }
-            is Success -> true
-        }
+        return userDao.findUserByUid(uid, authContext.mediqAuthToken) != null
     }
 
     suspend fun firebaseUserInfo(@GraphQLIgnore @Autowired userFetcher: UserFetcher): GraphQLFirebaseInfo =

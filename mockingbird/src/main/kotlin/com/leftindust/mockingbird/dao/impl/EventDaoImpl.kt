@@ -12,9 +12,9 @@ import com.leftindust.mockingbird.dao.entity.Reoccurrence
 import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.extensions.toLong
-import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -121,7 +121,7 @@ class EventDaoImpl(
     override suspend fun editRecurringEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
-        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings
+        recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event {
         if (requester can (Crud.UPDATE to Tables.Event)) {
             val entity = hibernateEventRepository.getOne(event.eid.toLong())

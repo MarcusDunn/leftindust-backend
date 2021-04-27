@@ -1,12 +1,10 @@
 package com.leftindust.mockingbird.graphql.types
 
+import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.DoesNotExist
-import com.leftindust.mockingbird.dao.NotAuthorized
+import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
-import com.leftindust.mockingbird.extensions.CustomResultException
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -24,7 +22,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao>() {
-            coEvery { getUserByUid("uid", any()) } returns Success(mockk())
+            coEvery { findUserByUid("uid", any()) } returns mockk()
         }
 
         val graphQLUser = runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
@@ -37,7 +35,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao>() {
-            coEvery { getUserByUid("uid", any()) } returns Failure(DoesNotExist())
+            coEvery { findUserByUid("uid", any()) } returns null
         }
 
         val graphQLUser = runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
@@ -50,15 +48,13 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao>() {
-            coEvery { getUserByUid("uid", any()) } returns Failure(
-                NotAuthorized(
-                    authContext.mediqAuthToken,
-                    "cannot do that!"
-                )
+            coEvery { findUserByUid("uid", any()) } throws NotAuthorizedException(
+                authContext.mediqAuthToken,
+                Crud.READ to Tables.User
             )
         }
 
-        assertThrows<Exception> {
+        assertThrows<NotAuthorizedException> {
             runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
         }
     }

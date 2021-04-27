@@ -41,27 +41,25 @@ data class GraphQLEventEditInput(
     val start: GraphQLTimeInput? = null,
     @GraphQLDescription("The new end of the event. Can only be null if the event is allDay")
     val end: OptionalInput<GraphQLTimeInput?> = OptionalInput.Undefined,
-    @GraphQLDescription(
-        """
-            weather the event is all day or not. Cannot be null and must be false if and only if end
-            is not null
-            """
-    )
+    @GraphQLDescription(" weather the event is all day or not. Cannot be null and must be false if and only if end is not null")
     val allDay: Boolean? = null,
-    @GraphQLDescription(
-        """
-            the doctors attached to this event. if set to null, no changes will be made, to clear the 
-            list you must pass an empty list
-            """
-    )
+    @GraphQLDescription("the doctors attached to this event. if set to null, no changes will be made, to clear the list you must pass an empty list")
     val doctors: List<ID>? = null,
     @GraphQLDescription("the patients attached to this event. see doctors for nullability rules")
     val patients: List<ID>? = null,
-    @GraphQLDescription(
-        """
-            the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite 
-            the whole recurrence object, leaving fields blank will __not__ retain prior values
-            """
-    )
+    @GraphQLDescription("the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite the whole recurrence object, leaving fields blank will __not__ retain prior values")
     val recurrence: OptionalInput<GraphQLRecurrenceInput> = OptionalInput.Undefined
+)
+
+
+@GraphQLName("RecurrenceEditSettings")
+@GraphQLDescription(
+    """the date range that the edits will effect the reoccurring event. This allows things such as editing a 
+            single event of a reoccurring event or leaving the past events untouched but editing future ones"""
+)
+data class GraphQLRecurrenceEditSettings(
+    @GraphQLDescription("the start of events that the edit should take place on")
+    val editStart: GraphQLDateInput,
+    @GraphQLDescription("the end of the events that the edit should take place on")
+    val editEnd: GraphQLDateInput,
 )

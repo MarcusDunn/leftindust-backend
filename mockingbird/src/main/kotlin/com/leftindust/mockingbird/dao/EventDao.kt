@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.extensions.CustomResult
 import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 
 interface EventDao {
@@ -36,6 +37,6 @@ interface EventDao {
     suspend fun editRecurringEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
-        recurrenceSettings: EventMutation.GraphQLRecurrenceEditSettings
+        recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event
 }

@@ -24,11 +24,11 @@ internal class UserDaoImplTest {
     fun getUserByUid() {
         val mockkUser = mockk<MediqUser>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { userRepository.findByUniqueId("test uid") } returns mockkUser
+        every { userRepository.getByUniqueId("test uid") } returns mockkUser
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository)
 
-        val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }.getOrNull()!!
+        val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }
 
         assertEquals(mockkUser, actual)
     }

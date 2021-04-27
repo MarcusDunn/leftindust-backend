@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.graphql.queries
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.google.firebase.auth.ExportedUserRecord
@@ -21,10 +20,10 @@ class UserQuery(
     private val userDao: UserDao,
     private val firebaseFetcher: UserFetcher
 ) : Query {
-    @GraphQLDescription("attempts to find the mediq-regestered user by uid, if the user does not exist in the DB, ")
+    @GraphQLDescription("attempts to find the mediq-registered user by uid, if the user does not exist in the DB")
     suspend fun user(uid: ID, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         val strUid = uid.value
-        val user = userDao.getUserByUid(strUid, graphQLAuthContext.mediqAuthToken).getOrNull()
+        val user = userDao.findUserByUid(strUid, graphQLAuthContext.mediqAuthToken)
         return if (user == null) {
             if (graphQLAuthContext.mediqAuthToken.isVerified()) {
                 val fireBaseUser = firebaseFetcher.getUserInfo(strUid, graphQLAuthContext.mediqAuthToken)
@@ -48,7 +47,7 @@ class UserQuery(
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLUser> {
         return when {
-            uniqueIds != null -> uniqueIds.map { userDao.getUserByUid(it.value, graphQLAuthContext.mediqAuthToken).getOrNull()!! }
+            uniqueIds != null -> uniqueIds.map { userDao.findUserByUid(it.value, graphQLAuthContext.mediqAuthToken)!! }
             range != null -> userDao.getUsers(range, graphQLAuthContext.mediqAuthToken)
             else -> throw IllegalArgumentException("invalid argument combination to users")
         }.map { GraphQLUser(it, graphQLAuthContext) }
@@ -71,7 +70,7 @@ to true (defaults to false)"""
 
         val returnedUsers = emptyList<ExportedUserRecord>().toMutableList()
         users.takeWhile { returnedUsers.size < validatedRange.last }
-            .filter { userDao.getUserByUid(it.uid, graphQLAuthContext.mediqAuthToken).isSuccess() == filterRegistered }
+            .filter { (userDao.findUserByUid(it.uid, graphQLAuthContext.mediqAuthToken) != null) == filterRegistered }
             .forEach { returnedUsers.add(it) }
 
         return returnedUsers

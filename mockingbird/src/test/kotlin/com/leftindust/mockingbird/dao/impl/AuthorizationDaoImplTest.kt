@@ -4,7 +4,6 @@ import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.Success
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -23,7 +22,7 @@ internal class AuthorizationDaoImplTest {
             every { group } returns null
         }
 
-        every { userRepository.getUserByUniqueId("uid") } returns mediqUser
+        every { userRepository.getByUniqueId("uid") } returns mediqUser
         every { aclRepository.findAllByMediqUser(mediqUser) } returns listOf(acl)
 
         val authorizationDaoImpl = AuthorizationDaoImpl(aclRepository, userRepository)

@@ -18,6 +18,7 @@ import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.GraphQLDayOfWeek
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
 import io.ktor.http.*
@@ -213,7 +214,7 @@ internal class EventDaoImplTest {
         )
 
 
-        val recurrenceSettings = mockk<EventMutation.GraphQLRecurrenceEditSettings>() {
+        val recurrenceSettings = mockk<GraphQLRecurrenceEditSettings>() {
             every { editEnd } returns mockk {
                 every { toLocalDate() } returns mockk()
             }

@@ -5,7 +5,6 @@ import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.extensions.Failure
 import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
@@ -28,7 +27,7 @@ internal class UserQueryTest {
             every { uniqueId } returns "uid"
             every { group } returns null
         }
-        coEvery { userDao.getUserByUid("uid", any()) } returns Success(user)
+        coEvery { userDao.findUserByUid("uid", any()) } returns user
         val userQuery = UserQuery(userDao, firebaseFetcher)
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
 
@@ -57,11 +56,11 @@ internal class UserQueryTest {
             }
         }
 
-        coEvery { userDao.getUserByUid("uid0", any()) } returns Success(mockk())
-        coEvery { userDao.getUserByUid("uid1", any()) } returns Success(mockk())
-        coEvery { userDao.getUserByUid("uid2", any()) } returns Success(mockk())
-        coEvery { userDao.getUserByUid("uid3", any()) } returns Failure(mockk())
-        coEvery { userDao.getUserByUid("uid4", any()) } returns Success(mockk())
+        coEvery { userDao.findUserByUid("uid0", any()) } returns mockk()
+        coEvery { userDao.findUserByUid("uid1", any()) } returns mockk()
+        coEvery { userDao.findUserByUid("uid2", any()) } returns mockk()
+        coEvery { userDao.findUserByUid("uid3", any()) } returns null
+        coEvery { userDao.findUserByUid("uid4", any()) } returns mockk()
 
         coEvery { firebaseFetcher.getUsers(any()) } returns Success(mockk {
             every { iterator() } returns mockk {

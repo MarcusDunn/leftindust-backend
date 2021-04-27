@@ -46,7 +46,7 @@ data class GraphQLDoctor(
     }
 
     suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? {
-        return userDao.getByDoctor(did, authContext.mediqAuthToken)?.let { GraphQLUser(it, authContext) }
+        return userDao.findByDoctor(did, authContext.mediqAuthToken)?.let { GraphQLUser(it, authContext) }
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> =

@@ -1,12 +1,9 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.leftindust.mockingbird.dao.AuthorizationDao
-import com.leftindust.mockingbird.dao.DoesNotExist
 import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.Failure
-import com.leftindust.mockingbird.extensions.Success
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,14 +14,14 @@ class AuthorizationDaoImpl(
     private val userRepository: HibernateUserRepository
 ) : AuthorizationDao {
     override suspend fun getRolesForUserByUid(uid: String): List<AccessControlList> {
-        val user = userRepository.getUserByUniqueId(uid)
+        val user = userRepository.getByUniqueId(uid)
         val userPerms = aclRepository.findAllByMediqUser(user)
         val groupPerms = user.group?.let { aclRepository.findAllByGroup(it) } ?: emptyList()
         return userPerms + groupPerms
     }
 
     override suspend fun isAdmin(uid: String): Boolean {
-        return adminAlias.contains(userRepository.getUserByUniqueId(uid).group?.name)
+        return adminAlias.contains(userRepository.getByUniqueId(uid).group?.name)
     }
 
     val adminAlias = listOf("admin", "Administrator")

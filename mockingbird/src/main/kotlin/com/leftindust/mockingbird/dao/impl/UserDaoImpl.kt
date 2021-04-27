@@ -6,16 +6,16 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,13 +28,19 @@ class UserDaoImpl(
     private val doctorRepository: HibernateDoctorRepository,
 ) : UserDao, AbstractHibernateDao(authorizer) {
 
-    override suspend fun getUserByUid(uid: String, requester: MediqToken): CustomResult<MediqUser, OrmFailureReason> {
+    override suspend fun findUserByUid(uid: String, requester: MediqToken): MediqUser? {
         return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
-            val user = userRepository.findByUniqueId(uid)
-                ?: return Failure(DoesNotExist("user with uid $uid not found"))
-            Success(user)
+            userRepository.findByUniqueId(uid)
         } else {
-            Failure(NotAuthorized(requester, "not authorized to Read to that specific Patient"))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
+        }
+    }
+
+    override suspend fun getUserByUid(uid: String, requester: MediqToken): MediqUser {
+        return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
+            userRepository.getByUniqueId(uid)
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
         }
     }
 
@@ -64,7 +70,7 @@ class UserDaoImpl(
 
     override suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser {
         return if (requester can (Crud.UPDATE to Tables.User)) {
-            userRepository.getUserByUniqueId(user.uid).apply {
+            userRepository.getByUniqueId(user.uid).apply {
                 group = when (user.group_id) {
                     is OptionalInput.Undefined -> this.group
                     is OptionalInput.Defined -> user.group_id.value?.let { groupRepository.getOne(it.toLong()) }
@@ -75,12 +81,11 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: ID, requester: MediqToken): MediqUser? {
-        return if (requester can listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)){
+    override suspend fun findByDoctor(did: ID, requester: MediqToken): MediqUser? {
+        return if (requester can listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)) {
             doctorRepository.getOne(did.toLong()).user
-        } else{
+        } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.User)
-
         }
     }
 }

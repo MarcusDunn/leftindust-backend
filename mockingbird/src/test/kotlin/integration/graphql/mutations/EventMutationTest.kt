@@ -9,10 +9,7 @@ import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.GraphQLDayOfWeek
 import com.leftindust.mockingbird.graphql.types.GraphQLMonth
 import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceInput
+import com.leftindust.mockingbird.graphql.types.input.*
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -149,7 +146,7 @@ class EventMutationTest(
             description = OptionalInput.Defined(newDescription),
         )
 
-        val recurrenceSettings = EventMutation.GraphQLRecurrenceEditSettings(
+        val recurrenceSettings = GraphQLRecurrenceEditSettings(
             editStart = GraphQLDateInput(1, GraphQLMonth.Mar, 2021),
             editEnd = GraphQLDateInput(1, GraphQLMonth.Mar, 2022),
         )
