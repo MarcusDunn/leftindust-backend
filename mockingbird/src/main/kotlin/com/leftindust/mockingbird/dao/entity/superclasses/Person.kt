@@ -7,7 +7,7 @@ import javax.persistence.*
 @MappedSuperclass
 abstract class Person(
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "name_info_id")
+    @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
     @Column(name = "date_of_birth", nullable = false)
     var dateOfBirth: Timestamp,

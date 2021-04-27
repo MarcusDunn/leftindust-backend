@@ -662,4 +662,10 @@
     <changeSet author="marcus (generated)" id="1619471914348-13">
         <dropColumn columnName="middle_name" tableName="patient"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619566523248-1">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619566523248-2">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="patient" validate="true"/>
+    </changeSet>
 </databaseChangeLog>
