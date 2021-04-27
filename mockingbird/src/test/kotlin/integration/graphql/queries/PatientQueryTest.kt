@@ -6,6 +6,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.example.StringFiler
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -69,6 +71,29 @@ class PatientQueryTest {
             // assert
             val expected = GraphQLPatient(patientEntity, patientEntity.id!!, authContext = mockkAuthContext)
             assertEquals(listOf(expected), patients)
+        }
+    }
+
+    @Test
+    internal fun searchByExample() {
+        runBlocking {
+            val patientEntity = run {
+                val patientExample = EntityStore.patient("PatientQueryTest.searchByExample")
+                hibernatePatientRepository.save(patientExample)
+            }
+
+            val result = patientQuery.patients(
+                example = GraphQLPatientExample(
+                    firstName = StringFiler(
+                        eq = patientEntity.nameInfo.firstName
+                    )
+                ),
+                authContext = mockkAuthContext
+            )
+
+            val expected = listOf(GraphQLPatient(patientEntity, patientEntity.id!!, mockkAuthContext))
+
+            assertEquals(expected, result)
         }
     }
 }
