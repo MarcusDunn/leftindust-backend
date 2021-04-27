@@ -41,49 +41,25 @@ class Patient(
     var doctors: Set<DoctorPatient> = emptySet(),
 ) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
 
-    @Throws(IllegalArgumentException::class)
+    /**
+     * see [GraphQLPatientInput] for details on how updates should behave
+     */
     constructor(
         graphQLPatientInput: GraphQLPatientInput,
         session: Session
     ) : this(
-        nameInfo = NameInfo(
-            firstName = graphQLPatientInput.firstName
-                .getOrThrow(IllegalArgumentException("firstName must be defined when constructing a Patient")),
-            middleName = graphQLPatientInput.middleName
-                .getOrNull(),
-            lastName = graphQLPatientInput.lastName
-                .getOrThrow(IllegalArgumentException("lastName must be defined when constructing a Patient")),
-        ),
-        dateOfBirth = graphQLPatientInput.dateOfBirth
-            .getOrThrow(IllegalArgumentException("date of birth must be defined"))
-            .toTimestamp(),
-        insuranceNumber = graphQLPatientInput.insuranceNumber
-            .getOrNull()?.value,
-        sex = graphQLPatientInput.sex
-            .getOrThrow(IllegalArgumentException("sex must be defined when constructing a Patient")),
-        doctors = emptySet<DoctorPatient>(), // set after constructor is called
-        ethnicity = graphQLPatientInput.ethnicity
-            .getOrNull(),
-        phones = graphQLPatientInput.phoneNumbers
-            ?.map { Phone(it) }
-            ?.toSet()
-            ?: emptySet(),
-        addresses = graphQLPatientInput.addresses
-            ?.map { Address(it) }
-            ?.toSet()
-            ?: emptySet(),
-        emails = graphQLPatientInput.emails
-            ?.map { Email(it) }
-            ?.toSet()
-            ?: emptySet(),
+        nameInfo = NameInfo(graphQLPatientInput.nameInfo),
+        dateOfBirth = graphQLPatientInput.dateOfBirth.toTimeStamp(),
+        insuranceNumber = graphQLPatientInput.insuranceNumber?.value,
+        sex = graphQLPatientInput.sex,
+        gender = graphQLPatientInput.gender ?: graphQLPatientInput.sex.toString(),
+        ethnicity = graphQLPatientInput.ethnicity,
+        phones = graphQLPatientInput.phoneNumbers?.map { Phone(it) }?.toSet() ?: emptySet(),
+        addresses = graphQLPatientInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
+        emails = graphQLPatientInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
     ) {
-        gender = graphQLPatientInput.gender
-            .getOrDefault(graphQLPatientInput.sex.getOrNull()?.toString() ?: sex.toString())
 
-        contacts = graphQLPatientInput.emergencyContact
-            ?.map { EmergencyContact(it, this) }
-            ?.toSet()
-            ?: emptySet()
+        contacts = graphQLPatientInput.emergencyContact?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
 
         if (graphQLPatientInput.doctors != null) {
             clearDoctors()
@@ -93,11 +69,6 @@ class Patient(
                         ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
                 )
             }
-        }
-
-        // check that they are not trying to assign primary key on creation
-        if (graphQLPatientInput.pid is OptionalInput.Defined) {
-            throw IllegalArgumentException("cannot assign a pid to a newly created patient, let the server handle that!")
         }
     }
 

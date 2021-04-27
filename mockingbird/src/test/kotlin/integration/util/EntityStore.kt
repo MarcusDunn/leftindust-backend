@@ -1,16 +1,12 @@
 package integration.util
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
+import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.*
-import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
-import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import com.leftindust.mockingbird.graphql.types.input.*
 import java.sql.Timestamp
 
 object EntityStore {
@@ -70,23 +66,22 @@ object EntityStore {
     )
 
     fun graphQLPatientInput(testName: String) = GraphQLPatientInput(
-        firstName = OptionalInput.Defined("aydan"),
-        middleName = OptionalInput.Defined(testName),
-        lastName = OptionalInput.Defined("gaite"),
+        nameInfo = GraphQLNameInfoInput(
+            firstName = "aydan",
+            middleName = testName,
+            lastName = "gaite",
+        ),
+
         phoneNumbers = listOf(
             GraphQLPhone(
                 number = 11111111,
                 type = GraphQLPhoneType.Work,
             )
         ),
-        dateOfBirth = OptionalInput.Defined(
-            GraphQLTimeInput(
-                date = GraphQLDateInput(
-                    day = 12,
-                    month = GraphQLMonth.Apr,
-                    year = 1948
-                )
-            )
+        dateOfBirth = GraphQLDateInput(
+            day = 12,
+            month = GraphQLMonth.Apr,
+            year = 1948
         ),
         addresses = listOf(
             GraphQLAddress(
@@ -104,9 +99,9 @@ object EntityStore {
                 email = "hello@mars.ca",
             )
         ),
-        insuranceNumber = OptionalInput.Defined(ID("111111111")),
-        sex = OptionalInput.Defined(Sex.Male),
-        ethnicity = OptionalInput.Defined(Ethnicity.AmericanAboriginal),
+        insuranceNumber = gqlID(111111111),
+        sex = Sex.Male,
+        ethnicity = Ethnicity.AmericanAboriginal,
         emergencyContact = listOf(
             GraphQLEmergencyContactInput(
                 firstName = "mom firstName",

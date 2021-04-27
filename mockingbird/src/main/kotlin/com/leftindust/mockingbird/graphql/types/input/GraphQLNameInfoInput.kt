@@ -7,7 +7,7 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 @GraphQLName("NameInput")
 data class GraphQLNameInfoInput(
     val firstName: String,
-    val middleName: String?,
+    val middleName: String? = null,
     val lastName: String,
 )
 

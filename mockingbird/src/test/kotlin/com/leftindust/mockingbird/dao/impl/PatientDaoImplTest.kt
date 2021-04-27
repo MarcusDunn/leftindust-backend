@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Doctor
@@ -12,7 +11,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.GraphQLMonth
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import io.mockk.coEvery
@@ -22,7 +23,6 @@ import kotlinx.coroutines.runBlocking
 import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.sql.Timestamp
 import javax.persistence.EntityManager
 
 internal class PatientDaoImplTest {
@@ -54,10 +54,12 @@ internal class PatientDaoImplTest {
     @Test
     fun addNewPatient() {
         val graphQLPatientInput = GraphQLPatientInput(
-            firstName = OptionalInput.Defined("hello"),
-            lastName = OptionalInput.Defined("world"),
-            dateOfBirth = OptionalInput.Defined(GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:01:15"))),
-            sex = OptionalInput.Defined(Sex.Male)
+            nameInfo = GraphQLNameInfoInput(
+                firstName = "hello",
+                lastName = "world",
+            ),
+            dateOfBirth = GraphQLDateInput(year = 2020, day = 10, month = GraphQLMonth.Feb),
+            sex = Sex.Male
         )
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed

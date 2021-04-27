@@ -20,24 +20,28 @@ import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
    """
 )
 data class GraphQLPatientInput(
-    @GraphQLDescription("do not include when adding patient")
-    val pid: OptionalInput<ID> = OptionalInput.Undefined,
-    @GraphQLDescription("required on adding patient")
-    val firstName: OptionalInput<String> = OptionalInput.Undefined,
-    val middleName: OptionalInput<String?> = OptionalInput.Undefined,
-    @GraphQLDescription("required on adding patient")
-    val lastName: OptionalInput<String> = OptionalInput.Undefined,
-    val phoneNumbers: List<GraphQLPhone>? = null, // TODO: 2021-04-27 allow passing null or leaving blank
-    @GraphQLDescription("required on adding patient")
-    val dateOfBirth: OptionalInput<GraphQLTimeInput> = OptionalInput.Undefined,
-    val addresses: List<GraphQLAddress>? = null, // TODO: 2021-04-27 allow passing null or leaving blank
-    val emails: List<GraphQLEmail>? = null, // TODO: 2021-04-27 allow passing null or leaving blank
-    val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,
-    val sex: OptionalInput<Sex> = OptionalInput.Undefined,
-    val gender: OptionalInput<String> = OptionalInput.Undefined,
-    val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
+    @GraphQLDescription("required")
+    val nameInfo: GraphQLNameInfoInput,
+    @GraphQLDescription("defaults to emptyList")
+    val phoneNumbers: List<GraphQLPhone>? = null,
+    @GraphQLDescription("required")
+    val dateOfBirth: GraphQLDateInput,
+    @GraphQLDescription("defaults to emptyList")
+    val addresses: List<GraphQLAddress>? = null,
+    @GraphQLDescription("defaults to emptyList")
+    val emails: List<GraphQLEmail>? = null,
+    @GraphQLDescription("defaults to null")
+    val insuranceNumber: ID? = null,
+    @GraphQLDescription("required")
+    val sex: Sex,
+    @GraphQLDescription("defaults to sex")
+    val gender: String? = null,
+    @GraphQLDescription("defaults to null")
+    val ethnicity: Ethnicity? = null,
+    @GraphQLDescription("defaults to emptyList")
     val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
-    val doctors: List<ID>? = null, // TODO: 2021-04-27 allow passing null or leaving blank
+    @GraphQLDescription("defaults to emptyList")
+    val doctors: List<ID>? = null,
 ) {
     init {
         if (emails != null) {
@@ -51,22 +55,29 @@ data class GraphQLPatientInput(
 }
 
 data class GraphQLPatientEditInput(
-    @GraphQLDescription("pid determines which entity will be updated")
+    @GraphQLDescription("required. Determines what patient is being updated")
     val pid: ID,
     @GraphQLDescription("setting nameInfoEditInput to null will have no effect on update")
     val nameInfoEditInput: GraphQLNameInfoEditInput? = null,
+    @GraphQLDescription("setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList")
     val phoneNumbers: List<GraphQLPhone>? = null,
     @GraphQLDescription("setting dateOfBirth to null will have no effect on update")
     val dateOfBirth: GraphQLTimeInput? = null,
+    @GraphQLDescription("setting addresses to null will have no effect on update. to remove, pass an emptyList")
     val addresses: List<GraphQLAddress>? = null,
+    @GraphQLDescription("setting emails to null will have no effect on update. to remove, pass an emptyList")
     val emails: List<GraphQLEmail>? = null,
+    @GraphQLDescription("setting to null will delete prior insuranceNumber, leaving blank will keep old insuranceNumber")
     val insuranceNumber: OptionalInput<ID> = OptionalInput.Undefined,
     @GraphQLDescription("setting sex to null will have no effect on update")
     val sex: Sex? = null,
     @GraphQLDescription("setting gender to null will have no effect on update")
     val gender: String? = null,
+    @GraphQLDescription("setting to null will delete prior ethnicity, leaving blank will keep old ethnicity")
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
+    @GraphQLDescription("setting emergencyContact to null will have no effect on update. to remove, pass an emptyList")
     val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
+    @GraphQLDescription("setting doctors to null will have no effect on update. to remove, pass an emptyList")
     val doctors: List<ID>? = null,
 ) {
     init {
