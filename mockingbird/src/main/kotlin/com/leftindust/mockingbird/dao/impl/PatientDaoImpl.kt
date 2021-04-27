@@ -14,6 +14,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -132,6 +133,24 @@ class PatientDaoImpl(
     override suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
             patientRepository.findAllById(pids.map { it.toLong() })
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+        }
+    }
+
+    override suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient> {
+        if (requester can (Crud.READ to Tables.Patient)) {
+            val session = sessionFactory.currentSession
+
+            val criteriaBuilder = session.criteriaBuilder
+            val criteriaQuery = criteriaBuilder.createQuery(Patient::class.java)
+            val root = criteriaQuery.from(Patient::class.java)
+
+            val predicate = example.toPredicate(criteriaBuilder, root)
+
+            criteriaQuery.where(predicate)
+
+            return session.createQuery(criteriaQuery.where(predicate)).resultList
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

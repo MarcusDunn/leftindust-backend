@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.dao
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 
 /**
@@ -41,4 +42,5 @@ interface PatientDao {
     }
 
     suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient>
+    suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient>
 }

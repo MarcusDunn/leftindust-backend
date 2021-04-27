@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.stereotype.Component
 
@@ -19,6 +20,7 @@ class PatientQuery(
         range: GraphQLRangeInput? = null,
         pids: List<ID>? = null,
         sortedBy: Patient.SortableField? = null,
+        example: GraphQLPatientExample? = null,
         authContext: GraphQLAuthContext
     ): List<GraphQLPatient> {
         return when {
@@ -37,6 +39,7 @@ class PatientQuery(
                     .sortedBy { sortedBy.instanceValue(it) }
 
             pids != null && sortedBy == null -> patientDao.getPatientsByPids(pids, authContext.mediqAuthToken)
+            example != null -> patientDao.searchByExample(example, authContext.mediqAuthToken)
             else -> throw GraphQLKotlinException("invalid arguments")
         }.map { GraphQLPatient(it, it.id!!, authContext) }
     }

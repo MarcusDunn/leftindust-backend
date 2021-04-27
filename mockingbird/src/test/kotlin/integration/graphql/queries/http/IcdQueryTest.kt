@@ -8,7 +8,6 @@ import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
 import integration.GRAPHQL_MEDIA_TYPE
 import integration.verifyOnlyDataExists
-import io.mockk.InternalPlatformDsl.toStr
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
