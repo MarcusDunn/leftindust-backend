@@ -82,7 +82,9 @@ data class StringFiler(
         root: Join<Z, X>,
         columnName: SingularAttribute<X, String>?
     ): Predicate {
-        val toTypedArray = listOfNotNull(criteriaBuilder.equal(root.get(columnName), eq)).toTypedArray()
+        val toTypedArray = listOfNotNull(
+            criteriaBuilder.equal(root.get(columnName), eq)
+        ).toTypedArray()
         return if (strict) {
             criteriaBuilder.and(*toTypedArray)
         } else {

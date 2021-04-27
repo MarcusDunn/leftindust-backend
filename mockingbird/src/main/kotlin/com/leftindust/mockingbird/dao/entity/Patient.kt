@@ -120,9 +120,9 @@ class Patient(
         val fieldName: String
             get() {
                 return when (this) {
-                    PID -> "id" // TODO: 2021-03-11  
-                    FIRST_NAME -> "firstName"
-                    LAST_NAME -> "lastName"
+                    PID ->Patient_.ID
+                    FIRST_NAME -> NameInfo_.FIRST_NAME
+                    LAST_NAME -> NameInfo_.LAST_NAME
                 }
             }
 
@@ -149,7 +149,6 @@ class Patient(
             lastName = patientInput.lastName
                 .onUndefined(firstName) ?: throw IllegalArgumentException("lastname cannot be set to null")
         }
-
 
 
         dateOfBirth = (patientInput.dateOfBirth.onUndefined(GraphQLTimeInput(dateOfBirth))
