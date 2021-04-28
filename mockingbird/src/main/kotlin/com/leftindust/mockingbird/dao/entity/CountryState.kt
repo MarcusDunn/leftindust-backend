@@ -15,7 +15,12 @@ class CountryState(
         if (isValidStateForCountry(province)) {
             // ok
         } else {
-            throw IllegalArgumentException("the province must be contained within the country, possible values are ${country.associatedStates()}")
+            throw IllegalArgumentException(
+                """
+                    |the province must be contained within the country, possible values are
+                    | ${country.associatedStates().asStrings()} or ${country.associatedStates().asShortStrings()}
+                    | """.trimMargin()
+            )
         }
     }
 
@@ -28,6 +33,7 @@ class CountryState(
             }
         }
 
-    private fun isValidStateForCountry(value: String) = country.associatedStates().contains(value)
+    private fun isValidStateForCountry(value: String) = with(country.associatedStates()) {
+        this.asShortStrings().contains(value) || this.asStrings().contains(value)
+    }
 }
-

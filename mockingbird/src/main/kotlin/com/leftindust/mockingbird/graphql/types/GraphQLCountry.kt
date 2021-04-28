@@ -7,9 +7,9 @@ enum class GraphQLCountry {
     Canada;
 
     @GraphQLDescription("gives a list of possible states/provinces/territories that can be used for this country")
-    fun associatedStates(): List<String> {
+    fun associatedStates(): GraphQLProvince {
         return when (this) {
-            Canada -> GraphQLCanadianProvince.values().map { it.name }
+            Canada -> GraphQLCanadianProvince
         }
     }
 }

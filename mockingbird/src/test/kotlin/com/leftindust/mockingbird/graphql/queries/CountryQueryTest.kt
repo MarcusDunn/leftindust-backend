@@ -10,8 +10,8 @@ internal class CountryQueryTest {
     fun country() {
         val countryQuery = CountryQuery()
 
-        val result = countryQuery.country(GraphQLCountry.Canada)
+        val result = countryQuery.country(GraphQLCountry.Canada).asStrings()
 
-        assert(result.containsAll(GraphQLCanadianProvince.values().map { it.name }))
+        assert(result.containsAll(GraphQLCanadianProvince.Provinces.values().map { it.name }))
     }
 }
