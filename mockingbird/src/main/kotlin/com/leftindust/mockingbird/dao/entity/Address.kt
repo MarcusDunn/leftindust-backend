@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.graphql.types.GraphQLAddress
 import com.leftindust.mockingbird.graphql.types.GraphQLAddressType
+import com.leftindust.mockingbird.graphql.types.input.GraphQLAddressInput
 import javax.persistence.*
 
 @Entity(name = "address")
@@ -19,7 +19,7 @@ class Address(
     @Column(name = "postal_code", nullable = false)
     var postalCode: String, //todo validation
 ) : AbstractJpaPersistable<Long>() {
-    constructor(graphQLAddress: GraphQLAddress) : this(
+    constructor(graphQLAddress: GraphQLAddressInput) : this(
         type = graphQLAddress.addressType,
         address = graphQLAddress.address,
         city = graphQLAddress.city,

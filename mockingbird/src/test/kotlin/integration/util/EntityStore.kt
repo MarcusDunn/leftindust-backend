@@ -71,9 +71,8 @@ object EntityStore {
             middleName = testName,
             lastName = "gaite",
         ),
-
         phoneNumbers = listOf(
-            GraphQLPhone(
+            GraphQLPhoneInput(
                 number = 11111111,
                 type = GraphQLPhoneType.Work,
             )
@@ -84,7 +83,7 @@ object EntityStore {
             year = 1948
         ),
         addresses = listOf(
-            GraphQLAddress(
+            GraphQLAddressInput(
                 addressType = GraphQLAddressType.Home,
                 address = "6732 main st",
                 city = "East Vancouver",
@@ -94,7 +93,7 @@ object EntityStore {
             )
         ),
         emails = listOf(
-            GraphQLEmail(
+            GraphQLEmailInput(
                 type = GraphQLEmailType.School,
                 email = "hello@mars.ca",
             )
@@ -109,11 +108,11 @@ object EntityStore {
                 lastName = "mom lastName",
                 relationship = Relationship.Parent,
                 phones = listOf(
-                    GraphQLPhone(
+                    GraphQLPhoneInput(
                         number = 111111111,
                         type = GraphQLPhoneType.Work,
                     ),
-                    GraphQLPhone(
+                    GraphQLPhoneInput(
                         number = 223223222,
                         type = GraphQLPhoneType.Home,
                     ),

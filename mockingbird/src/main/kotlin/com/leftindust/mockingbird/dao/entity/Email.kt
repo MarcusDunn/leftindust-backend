@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.GraphQLEmail
 import com.leftindust.mockingbird.graphql.types.GraphQLEmailType
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEmailInput
 import javax.persistence.Column
 import javax.persistence.Entity
 
@@ -14,5 +15,5 @@ class Email(
     @Column(name = "email", nullable = false)
     var email: String,
 ) : AbstractJpaPersistable<Long>() {
-    constructor(graphQLEmail: GraphQLEmail) : this(graphQLEmail.type, graphQLEmail.email)
+    constructor(graphQLEmail: GraphQLEmailInput) : this(graphQLEmail.type, graphQLEmail.email)
 }

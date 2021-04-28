@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.graphql.types.GraphQLPhone
 import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPhoneInput
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -16,5 +16,5 @@ class Phone(
     @Enumerated(EnumType.STRING)
     var type: GraphQLPhoneType
 ) : AbstractJpaPersistable<Long>() {
-    constructor(graphQLPhone: GraphQLPhone) : this(graphQLPhone.number, graphQLPhone.type)
+    constructor(graphQLPhone: GraphQLPhoneInput) : this(graphQLPhone.number, graphQLPhone.type)
 }

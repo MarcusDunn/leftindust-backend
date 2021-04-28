@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.graphql.types.GraphQLEmergencyContact
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import javax.persistence.*
 
@@ -22,15 +21,6 @@ class EmergencyContact(
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var phone: Set<Phone> = emptySet()
 ) : AbstractJpaPersistable<Long>() {
-    constructor(graphQLEmergencyContact: GraphQLEmergencyContact, patient: Patient) : this(
-        patient,
-        graphQLEmergencyContact.relationship,
-        graphQLEmergencyContact.firstName,
-        graphQLEmergencyContact.middleName,
-        graphQLEmergencyContact.lastName,
-        graphQLEmergencyContact.phones.map { Phone(it) }.toSet(),
-    )
-
     constructor(graphQLEmergencyContactInput: GraphQLEmergencyContactInput, patient: Patient) : this(
         patient,
         graphQLEmergencyContactInput.relationship,
@@ -40,4 +30,3 @@ class EmergencyContact(
         graphQLEmergencyContactInput.phones.map { Phone(it) }.toSet(),
     )
 }
-

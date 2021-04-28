@@ -22,7 +22,7 @@ data class GraphQLUtcTime(
     @GraphQLDescription(
         """
         the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        eg. America/Los_Angeles for British Columbias's time zone (generally referred to as PST)
+        eg. America/Los_Angeles for British Columbia's time zone (generally referred to as PST)
         """
     )
     // this function makes ZERO sense. I have no clue why it works, the variable names are lies and im so sorry
