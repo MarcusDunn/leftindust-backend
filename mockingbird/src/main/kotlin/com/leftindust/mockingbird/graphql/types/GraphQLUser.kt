@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.AuthorizationDao
+import com.leftindust.mockingbird.dao.NameInfoDao
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqGroup
@@ -24,6 +25,10 @@ data class GraphQLUser(
         group = mediqUser.group?.let { Group(it) },
         authContext = graphQLAuthContext,
     )
+
+    suspend fun names(@GraphQLIgnore @Autowired nameInfoDao: NameInfoDao): GraphQLNameInfo {
+        return GraphQLNameInfo(nameInfoDao.getByUniqueId(uid, authContext.mediqAuthToken))
+    }
 
     suspend fun isRegistered(@GraphQLIgnore @Autowired userDao: UserDao): Boolean {
         return userDao.findUserByUid(uid, authContext.mediqAuthToken) != null
