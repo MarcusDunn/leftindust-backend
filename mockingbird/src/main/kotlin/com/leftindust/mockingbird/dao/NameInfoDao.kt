@@ -6,4 +6,5 @@ import com.leftindust.mockingbird.dao.entity.NameInfo
 
 interface NameInfoDao {
     suspend fun getByUniqueId(uid: String, requester: MediqToken): NameInfo
+    suspend fun findByUniqueId(uid: String, requester: MediqToken): NameInfo?
 }

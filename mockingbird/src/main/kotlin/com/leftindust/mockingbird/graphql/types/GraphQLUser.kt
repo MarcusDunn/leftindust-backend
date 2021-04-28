@@ -26,8 +26,8 @@ data class GraphQLUser(
         authContext = graphQLAuthContext,
     )
 
-    suspend fun names(@GraphQLIgnore @Autowired nameInfoDao: NameInfoDao): GraphQLNameInfo {
-        return GraphQLNameInfo(nameInfoDao.getByUniqueId(uid, authContext.mediqAuthToken))
+    suspend fun names(@GraphQLIgnore @Autowired nameInfoDao: NameInfoDao): GraphQLNameInfo? {
+        return nameInfoDao.findByUniqueId(uid, authContext.mediqAuthToken)?.let { GraphQLNameInfo(it) }
     }
 
     suspend fun isRegistered(@GraphQLIgnore @Autowired userDao: UserDao): Boolean {

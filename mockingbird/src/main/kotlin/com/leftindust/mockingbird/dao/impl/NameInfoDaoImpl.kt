@@ -25,4 +25,11 @@ class NameInfoDaoImpl(
             throw NotAuthorizedException(requester, Crud.READ to Tables.User)
         }
     }
+
+    override suspend fun findByUniqueId(uid: String, requester: MediqToken): NameInfo? {
+        return if (requester can (Crud.READ to Tables.User)) {
+            hibernateUserRepository.findByUniqueId(uid)?.nameInfo
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
+        }    }
 }
