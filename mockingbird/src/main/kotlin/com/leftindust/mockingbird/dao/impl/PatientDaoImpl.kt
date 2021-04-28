@@ -109,7 +109,7 @@ class PatientDaoImpl(
         val size = to - from
         val page = to / size - 1
         return if (requester can (Crud.READ to Tables.Patient)) {
-            patientRepository.findAll(PageRequest.of(page, size, Sort.by(sortedBy.fieldName))).toList()
+            patientRepository.findAll(PageRequest.of(page, size)).sortedBy { sortedBy.instanceValue(it) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
