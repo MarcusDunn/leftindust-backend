@@ -15,9 +15,9 @@ data class GraphQLEmergencyContact(
     private val authContext: GraphQLAuthContext,
 ) : GraphQLPerson {
     constructor(emergencyContact: EmergencyContact, authContext: GraphQLAuthContext) : this(
-        firstName = emergencyContact.firstName,
-        middleName = emergencyContact.middleName,
-        lastName = emergencyContact.lastName,
+        firstName = emergencyContact.nameInfo.firstName,
+        middleName = emergencyContact.nameInfo.middleName,
+        lastName = emergencyContact.nameInfo.lastName,
         relationship = emergencyContact.relationship,
         authContext = authContext,
         phones = emergencyContact.phone.map { GraphQLPhone(it) }

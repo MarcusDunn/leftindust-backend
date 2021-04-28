@@ -12,21 +12,20 @@ class EmergencyContact(
     var patient: Patient,
     @Enumerated(EnumType.STRING)
     var relationship: Relationship,
-    @Column(name = "first_name", nullable = false)
-    var firstName: String,
-    @Column(name = "middle_name", nullable = true)
-    var middleName: String? = null,
-    @Column(name = "last_name", nullable = false)
-    var lastName: String,
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @JoinColumn(name = "name_info_id", nullable = false)
+    var nameInfo: NameInfo,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var phone: Set<Phone> = emptySet()
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLEmergencyContactInput: GraphQLEmergencyContactInput, patient: Patient) : this(
-        patient,
-        graphQLEmergencyContactInput.relationship,
-        graphQLEmergencyContactInput.firstName,
-        graphQLEmergencyContactInput.middleName,
-        graphQLEmergencyContactInput.lastName,
-        graphQLEmergencyContactInput.phones.map { Phone(it) }.toSet(),
+        patient = patient,
+        relationship = graphQLEmergencyContactInput.relationship,
+        nameInfo = NameInfo(
+            firstName = graphQLEmergencyContactInput.firstName,
+            middleName = graphQLEmergencyContactInput.middleName,
+            lastName = graphQLEmergencyContactInput.lastName,
+        ),
+        phone = graphQLEmergencyContactInput.phones.map { Phone(it) }.toSet(),
     )
 }

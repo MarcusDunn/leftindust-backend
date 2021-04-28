@@ -696,4 +696,23 @@
             <where>id=1</where>
         </delete>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-1">
+        <addColumn tableName="emergency_contact">
+            <column name="name_info_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-2">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="emergency_contact" constraintName="FKnclxop3u6i5d7fb3fgkfugory" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-3">
+        <dropColumn columnName="first_name" tableName="emergency_contact"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-4">
+        <dropColumn columnName="last_name" tableName="emergency_contact"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-5">
+        <dropColumn columnName="middle_name" tableName="emergency_contact"/>
+    </changeSet>
 </databaseChangeLog>
