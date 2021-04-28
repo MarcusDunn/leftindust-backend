@@ -64,7 +64,7 @@ to true (defaults to false)"""
         filterRegistered: Boolean? = false,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLFirebaseInfo> {
-        val users = firebaseFetcher.getUsers(graphQLAuthContext.mediqAuthToken).getOrNull()!!
+        val users = firebaseFetcher.getUsers(graphQLAuthContext.mediqAuthToken)
         val nnRange = range ?: GraphQLRangeInput(0, 20)
         val validatedRange = nnRange.toIntRange()
 

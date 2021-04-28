@@ -5,7 +5,6 @@ import com.google.firebase.auth.ExportedUserRecord
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -62,13 +61,12 @@ internal class UserQueryTest {
         coEvery { userDao.findUserByUid("uid3", any()) } returns null
         coEvery { userDao.findUserByUid("uid4", any()) } returns mockk()
 
-        coEvery { firebaseFetcher.getUsers(any()) } returns Success(mockk {
+        coEvery { firebaseFetcher.getUsers(any()) } returns mockk {
             every { iterator() } returns mockk {
                 every { hasNext() } returnsMany listOf(true, true, true, true, true, false)
                 every { next() } returnsMany userRecords
             }
         }
-        )
 
         val userQuery = UserQuery(userDao, firebaseFetcher)
 

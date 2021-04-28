@@ -14,14 +14,14 @@ class AuthorizationDaoImpl(
     private val userRepository: HibernateUserRepository
 ) : AuthorizationDao {
     override suspend fun getRolesForUserByUid(uid: String): List<AccessControlList> {
-        val user = userRepository.getByUniqueId(uid)
+        val user = userRepository.findByUniqueId(uid) ?: return emptyList()
         val userPerms = aclRepository.findAllByMediqUser(user)
         val groupPerms = user.group?.let { aclRepository.findAllByGroup(it) } ?: emptyList()
         return userPerms + groupPerms
     }
 
     override suspend fun isAdmin(uid: String): Boolean {
-        return adminAlias.contains(userRepository.getByUniqueId(uid).group?.name)
+        return adminAlias.contains(userRepository.findByUniqueId(uid)?.group?.name)
     }
 
     val adminAlias = listOf("admin", "Administrator")

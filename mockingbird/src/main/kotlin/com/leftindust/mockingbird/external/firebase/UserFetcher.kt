@@ -7,12 +7,10 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.DoesNotExist
-import com.leftindust.mockingbird.dao.NotAuthorized
-import com.leftindust.mockingbird.dao.OrmFailureReason
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.extensions.isAllowed
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -35,14 +33,11 @@ class UserFetcher(
         }
     }
 
-    suspend fun getUsers(requester: MediqToken): CustomResult<MutableIterable<ExportedUserRecord>, OrmFailureReason> {
+    suspend fun getUsers(requester: MediqToken): MutableIterable<ExportedUserRecord> {
         return if (authorizer.getAuthorization(Action(Crud.READ to Tables.User), requester).isAllowed()) {
-            Success(
-                firebaseAuth.listUsers(null).iterateAll()
-                    ?: return Failure(DoesNotExist("list users has returned null"))
-            )
+            firebaseAuth.listUsers(null).iterateAll()!!
         } else {
-            Failure(NotAuthorized(requester, "cannot read bulk users"))
+            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
         }
     }
 }

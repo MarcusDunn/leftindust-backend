@@ -48,6 +48,6 @@ internal class UserFetcherTest {
 
         val result = runBlocking { userFetcher.getUsers(mockk()) }
 
-        assertEquals(mockkIterable, result.getOrNull())
+        assertEquals(mockkIterable, result)
     }
 }
