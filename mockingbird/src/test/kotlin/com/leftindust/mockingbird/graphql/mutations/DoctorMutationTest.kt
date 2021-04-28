@@ -41,4 +41,9 @@ internal class DoctorMutationTest {
 
         assertEquals(expected, result)
     }
+
+    @Test
+    fun updateDoctor() {
+
+    }
 }
