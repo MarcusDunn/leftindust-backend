@@ -682,4 +682,18 @@
     <changeSet author="marcus (generated)" id="1619566601537-1">
         <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="mediq_user" validate="true"/>
     </changeSet>
+    <changeSet id="1619566601538" author="marcus">
+        <insert tableName="name_info">
+            <column name="id" value="0"/>
+            <column name="first_name" value="admin_FN"/>
+            <column name="last_name" value="admin_LN"/>
+        </insert>
+        <update tableName="mediq_user">
+            <column name="name_info_id" value="0"/>
+            <where>unique_id='admin'</where>
+        </update>
+        <delete tableName="name_info">
+            <where>id=1</where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>
