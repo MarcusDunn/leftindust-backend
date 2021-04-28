@@ -67,10 +67,6 @@ data class GraphQLDate(
         return LocalDate.of(year, month.toJavaMonth(), day)
     }
 
-    @GraphQLIgnore
-    fun toTimestamp(): Timestamp =
-        Timestamp.from(toLocalDate().atStartOfDay(ZoneId.of("UTC")).toInstant())
-
     @Deprecated("will be removed before 1.0", ReplaceWith("using the information I send you"))
     fun toUtcTime(): GraphQLUtcTime {
         return GraphQLUtcTime(Calendar.getInstance().apply { set(year, month.toJavaMonth().value, day) }.timeInMillis)
