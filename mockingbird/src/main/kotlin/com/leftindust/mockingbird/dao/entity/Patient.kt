@@ -1,11 +1,11 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.onUndefined
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
@@ -87,15 +87,6 @@ class Patient(
         FIRST_NAME,
         LAST_NAME,
         ;
-
-        val fieldName: String
-            get() {
-                return when (this) {
-                    PID -> Patient_.ID
-                    FIRST_NAME -> NameInfo_.FIRST_NAME
-                    LAST_NAME -> NameInfo_.LAST_NAME
-                }
-            }
 
         fun instanceValue(receiver: Patient): String {
             return when (this) {

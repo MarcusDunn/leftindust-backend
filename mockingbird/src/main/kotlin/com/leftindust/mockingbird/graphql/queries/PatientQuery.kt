@@ -25,14 +25,12 @@ class PatientQuery(
     ): List<GraphQLPatient> {
         return when {
             range != null && sortedBy != null -> {
-                val intRange = range.toIntRange()
                 patientDao
-                    .getMany(intRange.first, intRange.last, sortedBy, authContext.mediqAuthToken)
+                    .getMany(range, sortedBy, authContext.mediqAuthToken)
             }
             range != null && sortedBy == null -> {
-                val intRange = range.toIntRange()
                 patientDao
-                    .getMany(intRange.first, intRange.last, requester = authContext.mediqAuthToken)
+                    .getMany(range, requester = authContext.mediqAuthToken)
             }
             pids != null && sortedBy != null ->
                 patientDao.getPatientsByPids(pids, authContext.mediqAuthToken)

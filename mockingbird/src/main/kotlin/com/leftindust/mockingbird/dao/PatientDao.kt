@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 
 /**
  * handles getting and authorizing of all database requests involving the patients
@@ -27,8 +28,7 @@ interface PatientDao {
     ): Patient
 
     suspend fun getMany(
-        from: Int,
-        to: Int,
+        range: GraphQLRangeInput,
         sortedBy: Patient.SortableField = Patient.SortableField.PID,
         requester: MediqToken
     ): Collection<Patient>

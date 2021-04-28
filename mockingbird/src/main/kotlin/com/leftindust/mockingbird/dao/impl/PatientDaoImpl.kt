@@ -16,10 +16,9 @@ import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
@@ -101,15 +100,13 @@ class PatientDaoImpl(
 
 
     override suspend fun getMany(
-        from: Int,
-        to: Int,
+        range: GraphQLRangeInput,
         sortedBy: Patient.SortableField,
         requester: MediqToken
     ): Collection<Patient> {
-        val size = to - from
-        val page = to / size - 1
         return if (requester can (Crud.READ to Tables.Patient)) {
-            patientRepository.findAll(PageRequest.of(page, size)).sortedBy { sortedBy.instanceValue(it) }
+            patientRepository.findAll(range.toPageable())
+                .sortedBy { sortedBy.instanceValue(it) } // TODO: 2021-04-27 sort at SQL
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

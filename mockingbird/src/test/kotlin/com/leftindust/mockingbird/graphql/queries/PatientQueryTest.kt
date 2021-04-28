@@ -36,7 +36,7 @@ internal class PatientQueryTest {
             every { id } returns 1000L
         }
         every { authContext.mediqAuthToken } returns mockk()
-        coEvery { patientDao.getMany(0, 5, any(), any()) } returns listOf(
+        coEvery { patientDao.getMany(any(), any(), any()) } returns listOf(
             mockkPatient,
             mockkPatient,
             mockkPatient,
