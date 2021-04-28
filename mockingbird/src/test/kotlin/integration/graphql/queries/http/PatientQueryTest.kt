@@ -5,11 +5,8 @@ import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.ninjasquad.springmockk.MockkBean
-import integration.APPLICATION_JSON_MEDIA_TYPE
-import integration.GRAPHQL_ENDPOINT
-import integration.GRAPHQL_MEDIA_TYPE
+import integration.*
 import integration.util.EntityStore
-import integration.verifyData
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -50,7 +47,7 @@ class PatientQueryTest(
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
                 """query{
-                |   $query(range: {from: 0, to: 1} sortedBy: FIRST_NAME) {
+                |   $query(range: {from: 0, to: 2} sortedBy: FIRST_NAME) {
                 |       pid
                 |       firstName
                 |   }
@@ -58,10 +55,9 @@ class PatientQueryTest(
                 |""".trimMargin()
             )
             .exchange()
-            .verifyData(
-                query,
-                """{pid=100, firstName=marcus + 0}"""
-            )
+            .expectBody()
+            .jsonPath("$DATA_JSON_PATH.$query[0].firstName")
+            .isEqualTo("marcus + 0")
 
         patients.forEach { hibernatePatientRepository.delete(it) }
     }
