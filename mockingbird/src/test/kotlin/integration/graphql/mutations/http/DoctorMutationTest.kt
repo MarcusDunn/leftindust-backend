@@ -2,7 +2,6 @@ package integration.graphql.mutations.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
-import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.ninjasquad.springmockk.MockkBean
@@ -19,13 +18,15 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.Example
+import org.springframework.data.domain.PageRequest
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
 @Tag("Integration")
+@Transactional
+
 class DoctorMutationTest(
     @Autowired private val testClient: WebTestClient,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
@@ -35,7 +36,6 @@ class DoctorMutationTest(
     private lateinit var contextFactory: ContextFactory
 
     @Test
-    @Transactional
     internal fun `create doctor with user`() {
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
             every { mediqAuthToken } returns mockk() {
@@ -61,9 +61,46 @@ class DoctorMutationTest(
             .exchange()
             .verifyOnlyDataExists(mutation)
 
-        val result = doctorRepository.findAll().find { it.nameInfo.firstName == "doc" && it.nameInfo.lastName == "james" }
+        val result =
+            doctorRepository.findAll().find { it.nameInfo.firstName == "doc" && it.nameInfo.lastName == "james" }
         val userResult = userRepository.findAll().find { it.uniqueId == uid }
         assertNotNull(result)
         assertNotNull(userResult)
+    }
+
+    @Test
+    internal fun `create doctor with address`() {
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mockk() {
+                every { uid } returns "admin"
+            }
+        }
+
+        val mutation = "addDoctor"
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                """mutation { $mutation(doctor: {
+                |    nameInfo: {firstName: "doc", lastName: "james"},
+                |    dateOfBirth: {day: 23, month: Jan, year: 1999}, 
+                |    addresses: [{addressType: Home, address: "182 yeet st", city: "Vancouver", country: Canada, province: "BritishColumbia", postalCode: "h7g1p1"}]
+                |})
+                | {
+                | firstName
+                |   }
+                |}
+                |""".trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists(mutation)
+
+        val result = doctorRepository.findAll(PageRequest.of(0, 10))
+            .iterator()
+            .asSequence()
+            .find { it.address.firstOrNull()?.address == "182 yeet st" }
+        assertNotNull(result)
     }
 }
