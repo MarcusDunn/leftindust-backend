@@ -11,7 +11,7 @@ data class GraphQLDoctorInput(
     val nameInfo: GraphQLNameInfoInput,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
-    val dateOfBirth: GraphQLTimeInput,
+    val dateOfBirth: GraphQLDateInput,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
     val patients: List<ID>? = emptyList(),

@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import java.sql.Date
 import java.sql.Timestamp
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -11,7 +12,7 @@ import javax.persistence.OneToMany
 @Entity
 class Doctor(
     nameInfo: NameInfo,
-    dateOfBirth: Timestamp,
+    dateOfBirth: Date,
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
@@ -24,7 +25,7 @@ class Doctor(
 ) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
     constructor(graphQLDoctorInput: GraphQLDoctorInput, user: MediqUser?, patients: Collection<Patient>) : this(
         nameInfo = NameInfo(graphQLDoctorInput.nameInfo),
-        dateOfBirth = graphQLDoctorInput.dateOfBirth.toTimestamp(),
+        dateOfBirth = graphQLDoctorInput.dateOfBirth.toDate(),
         addresses = graphQLDoctorInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
         emails = graphQLDoctorInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
         phones = graphQLDoctorInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),

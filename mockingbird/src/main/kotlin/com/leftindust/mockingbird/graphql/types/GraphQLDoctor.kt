@@ -21,7 +21,7 @@ data class GraphQLDoctor(
     override val lastName: String,
     override val phones: List<GraphQLPhone>,
     val title: String? = null,
-    val dateOfBirth: GraphQLUtcTime? = null,
+    val dateOfBirth: GraphQLDate? = null,
     val addresses: List<GraphQLAddress> = emptyList(),
     override val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
@@ -35,7 +35,7 @@ data class GraphQLDoctor(
         lastName = doctor.nameInfo.lastName,
         phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
-        dateOfBirth = GraphQLUtcTime(doctor.dateOfBirth),
+        dateOfBirth = GraphQLDate(doctor.dateOfBirth.toLocalDate()),
         addresses = doctor.address.map { GraphQLAddress(it) },
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext

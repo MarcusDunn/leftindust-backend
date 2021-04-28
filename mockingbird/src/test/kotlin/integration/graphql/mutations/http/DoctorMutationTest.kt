@@ -52,7 +52,7 @@ class DoctorMutationTest(
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """mutation { $mutation(doctor: {user: {uid: "$uid", nameInfo: {firstName: "doc", lastName: "james"}}, nameInfo: {firstName: "doc", lastName: "james"}, title: "khan", dateOfBirth: {date: {day: 23, month: Jan, year: 1999}}}) {
+                """mutation { $mutation(doctor: {user: {uid: "$uid", nameInfo: {firstName: "doc", lastName: "james"}}, nameInfo: {firstName: "doc", lastName: "james"}, title: "khan", dateOfBirth: {day: 23, month: Jan, year: 1999}}) {
                 | firstName
                 |   }
                 |}

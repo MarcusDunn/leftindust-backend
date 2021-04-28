@@ -9,13 +9,14 @@ import com.leftindust.mockingbird.extensions.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
+import java.sql.Date
 import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity(name = "patient")
 class Patient(
     nameInfo: NameInfo,
-    dateOfBirth: Timestamp,
+    dateOfBirth: Date,
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
@@ -49,7 +50,7 @@ class Patient(
         session: Session
     ) : this(
         nameInfo = NameInfo(graphQLPatientInput.nameInfo),
-        dateOfBirth = graphQLPatientInput.dateOfBirth.toTimeStamp(),
+        dateOfBirth = graphQLPatientInput.dateOfBirth.toDate(),
         insuranceNumber = graphQLPatientInput.insuranceNumber?.value,
         sex = graphQLPatientInput.sex,
         gender = graphQLPatientInput.gender ?: graphQLPatientInput.sex.toString(),
@@ -111,7 +112,7 @@ class Patient(
     fun setByGqlInput(patientInput: GraphQLPatientEditInput, session: Session) {
         if (patientInput.pid.toLong() != this.id!!) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
         nameInfo.setByGqlInput(patientInput.nameInfoEditInput)
-        dateOfBirth = patientInput.dateOfBirth?.toTimestamp() ?: dateOfBirth
+        dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
         address = patientInput.addresses?.map { Address(it) }?.toSet() ?: address
         email = patientInput.emails?.map { Email(it) }?.toSet() ?: emptySet()
         phone = patientInput.phoneNumbers?.map { Phone(it) }?.toSet() ?: phone

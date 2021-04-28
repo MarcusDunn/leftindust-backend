@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.dao.entity.superclasses
 
 import com.leftindust.mockingbird.dao.entity.*
-import java.sql.Timestamp
+import java.sql.Date
 import javax.persistence.*
 
 @MappedSuperclass
@@ -10,7 +10,7 @@ abstract class Person(
     @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
     @Column(name = "date_of_birth", nullable = false)
-    var dateOfBirth: Timestamp,
+    var dateOfBirth: Date,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var address: Set<Address> = emptySet(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)

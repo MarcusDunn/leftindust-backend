@@ -59,7 +59,7 @@ data class GraphQLPatientEditInput(
     @GraphQLDescription("setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList")
     val phoneNumbers: List<GraphQLPhoneInput>? = null,
     @GraphQLDescription("setting dateOfBirth to null will have no effect on update")
-    val dateOfBirth: GraphQLTimeInput? = null,
+    val dateOfBirth: GraphQLDateInput? = null,
     @GraphQLDescription("setting addresses to null will have no effect on update. to remove, pass an emptyList")
     val addresses: List<GraphQLAddressInput>? = null,
     @GraphQLDescription("setting emails to null will have no effect on update. to remove, pass an emptyList")

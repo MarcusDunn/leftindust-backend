@@ -7,7 +7,9 @@ import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.*
+import java.sql.Date
 import java.sql.Timestamp
+import java.time.LocalDate
 
 object EntityStore {
     fun patient(testName: String) = Patient(
@@ -16,7 +18,7 @@ object EntityStore {
             middleName = testName,
             lastName = "dunn",
         ),
-        dateOfBirth = Timestamp.valueOf("2020-01-02 09:01:15"),
+        dateOfBirth = Date.valueOf(LocalDate.of(2020, 1, 2)),
         addresses = setOf(
             Address(
                 type = GraphQLAddressType.Home,
@@ -45,7 +47,7 @@ object EntityStore {
             lastName = testName,
             middleName = "the man",
         ),
-        dateOfBirth = Timestamp.valueOf("2018-01-02 09:01:15"),
+        dateOfBirth = Date.valueOf(LocalDate.of(2018, 1, 24)),
         addresses = setOf(
             Address(
                 type = GraphQLAddressType.Home,
