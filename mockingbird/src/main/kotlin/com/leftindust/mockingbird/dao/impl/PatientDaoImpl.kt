@@ -19,6 +19,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
@@ -105,8 +106,7 @@ class PatientDaoImpl(
         requester: MediqToken
     ): Collection<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            patientRepository.findAll(range.toPageable())
-                .sortedBy { sortedBy.instanceValue(it) } // TODO: 2021-04-27 sort at SQL
+            patientRepository.findAll(range.toPageable(Sort.by(sortedBy.fieldName))).content
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
