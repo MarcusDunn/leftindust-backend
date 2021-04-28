@@ -44,8 +44,6 @@ class PatientMutationTest(
 
         val mutation = "addPatient"
 
-        val address = "1909 Poo Poo St, Vancouver, BritishColumbia"
-
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
@@ -54,7 +52,7 @@ class PatientMutationTest(
                 """mutation { $mutation(patient: {
                 |    nameInfo: {firstName: "patient", lastName: "heck"},
                 |    dateOfBirth: {day: 23, month: Jan, year: 1999}, 
-                |    addresses: [{addressType: Home, address: "$address", city: "Vancouver", country: Canada, province: "BritishColumbia", postalCode: "h7g1p1"}],
+                |    addresses: [{addressType: Apartment, address: "1444 Poo poo st", city: "Vancouver", country: Canada, province: "Alberta", postalCode: "Poopoo"}],
                 |    sex: Male
                 |})
                 | {
@@ -69,7 +67,7 @@ class PatientMutationTest(
         val result = patientRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
-            .find { it.address.firstOrNull()?.address == address }
+            .find { it.address.firstOrNull()?.address == "1444 Poo poo st" }
         Assert.assertNotNull(result)
     }
 }

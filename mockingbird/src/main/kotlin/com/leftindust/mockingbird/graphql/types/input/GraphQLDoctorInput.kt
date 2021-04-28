@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.graphql.types.input
 
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 
 @GraphQLName("DoctorInput")
 data class GraphQLDoctorInput(
@@ -24,3 +23,15 @@ data class GraphQLDoctorInput(
         }
     }
 }
+
+data class GraphQLDoctorEditInput(
+    val did: ID? = null,
+    val user: GraphQLUserInput? = null,
+    val nameInfo: GraphQLNameInfoInput,
+    val phones: List<GraphQLPhoneInput>? = emptyList(),
+    val title: String? = null,
+    val dateOfBirth: GraphQLDateInput,
+    val addresses: List<GraphQLAddressInput>? = emptyList(),
+    val emails: List<GraphQLEmailInput>? = emptyList(),
+    val patients: List<ID>? = emptyList(),
+)
