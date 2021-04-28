@@ -117,6 +117,12 @@ object EntityStore {
                         type = GraphQLPhoneType.Home,
                     ),
                 ),
+                emails = listOf(
+                    GraphQLEmailInput(
+                        type = GraphQLEmailType.School,
+                        email = "bye@saturn.uk",
+                    )
+                )
             )
         ),
     )

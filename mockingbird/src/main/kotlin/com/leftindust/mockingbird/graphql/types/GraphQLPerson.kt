@@ -8,4 +8,5 @@ interface GraphQLPerson {
     val middleName: String?
     val lastName: String
     val phones: List<GraphQLPhone>
+    val emails: List<GraphQLEmail>
 }

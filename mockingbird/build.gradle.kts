@@ -96,9 +96,14 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            // no clue why, but you gotta set this shit urself from ur HOME directory. I push mine to keep got diffs to 0
-            //"changeLogFile" to "/IdeaProjects/leftindust-backend/mockingbird/src/main/resources/dbchangelog_fresh.xml",
-            "changeLogFile" to "src/main/resources/dbchangelog_fresh.xml",
+            /**
+             * I use this one for update
+             **/
+            "changeLogFile" to "/IdeaProjects/leftindust-backend/mockingbird/src/main/resources/dbchangelog_fresh.xml",
+            /**
+             * And this one for diffChangeLog
+             **/
+            //"changeLogFile" to "src/main/resources/dbchangelog_fresh.xml",
             "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",

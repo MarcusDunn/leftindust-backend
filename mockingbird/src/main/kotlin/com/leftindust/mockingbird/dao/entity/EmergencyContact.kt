@@ -16,7 +16,9 @@ class EmergencyContact(
     @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var phone: Set<Phone> = emptySet()
+    var phone: Set<Phone> = emptySet(),
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var email: Set<Email> = emptySet(),
 ) : AbstractJpaPersistable<Long>() {
     constructor(graphQLEmergencyContactInput: GraphQLEmergencyContactInput, patient: Patient) : this(
         patient = patient,

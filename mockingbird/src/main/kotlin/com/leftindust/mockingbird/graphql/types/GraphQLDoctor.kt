@@ -23,7 +23,7 @@ data class GraphQLDoctor(
     val title: String? = null,
     val dateOfBirth: GraphQLUtcTime? = null,
     val addresses: List<GraphQLAddress> = emptyList(),
-    val emails: List<GraphQLEmail> = emptyList(),
+    override val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
     private val authToken = authContext.mediqAuthToken

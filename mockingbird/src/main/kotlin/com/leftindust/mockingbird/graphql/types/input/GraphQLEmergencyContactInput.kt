@@ -9,4 +9,5 @@ data class GraphQLEmergencyContactInput(
     val lastName: String,
     val relationship: Relationship,
     val phones: List<GraphQLPhoneInput>,
+    val emails: List<GraphQLEmailInput>,
 )

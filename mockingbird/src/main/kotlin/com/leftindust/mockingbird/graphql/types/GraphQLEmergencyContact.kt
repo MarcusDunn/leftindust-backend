@@ -12,6 +12,7 @@ data class GraphQLEmergencyContact(
     override val lastName: String,
     val relationship: Relationship,
     override val phones: List<GraphQLPhone>,
+    override val emails: List<GraphQLEmail>,
     private val authContext: GraphQLAuthContext,
 ) : GraphQLPerson {
     constructor(emergencyContact: EmergencyContact, authContext: GraphQLAuthContext) : this(
@@ -20,6 +21,7 @@ data class GraphQLEmergencyContact(
         lastName = emergencyContact.nameInfo.lastName,
         relationship = emergencyContact.relationship,
         authContext = authContext,
+        emails = emergencyContact.email.map { GraphQLEmail(it) },
         phones = emergencyContact.phone.map { GraphQLPhone(it) }
     )
 }

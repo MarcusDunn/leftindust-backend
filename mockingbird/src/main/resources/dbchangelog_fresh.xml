@@ -715,4 +715,23 @@
     <changeSet author="marcus (generated)" id="1619630799139-5">
         <dropColumn columnName="middle_name" tableName="emergency_contact"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-1">
+        <createTable tableName="emergency_contact_email">
+            <column name="emergency_contact_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-2">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_6n8qhyud44ujr78p2x2ufinnf" tableName="emergency_contact_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-3">
+        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_email" constraintName="FK4t5hp6dayoki596rcbl2n83gl" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="emergency_contact" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-4">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="emergency_contact_email" constraintName="FKexdx1twosjfnvg8xpx7b2b9fn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
 </databaseChangeLog>
