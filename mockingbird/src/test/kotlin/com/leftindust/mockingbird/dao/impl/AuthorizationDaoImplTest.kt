@@ -22,7 +22,7 @@ internal class AuthorizationDaoImplTest {
             every { group } returns null
         }
 
-        every { userRepository.getByUniqueId("uid") } returns mediqUser
+        every { userRepository.findByUniqueId("uid") } returns mediqUser
         every { aclRepository.findAllByMediqUser(mediqUser) } returns listOf(acl)
 
         val authorizationDaoImpl = AuthorizationDaoImpl(aclRepository, userRepository)
