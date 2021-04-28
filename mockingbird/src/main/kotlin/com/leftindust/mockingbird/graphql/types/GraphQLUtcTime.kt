@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLDirective
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
@@ -70,6 +71,7 @@ data class GraphQLDate(
     fun toTimestamp(): Timestamp =
         Timestamp.from(toLocalDate().atStartOfDay(ZoneId.of("UTC")).toInstant())
 
+    @Deprecated("will be removed before 1.0", ReplaceWith("using the information I send you"))
     fun toUtcTime(): GraphQLUtcTime {
         return GraphQLUtcTime(Calendar.getInstance().apply { set(year, month.toJavaMonth().value, day) }.timeInMillis)
     }
