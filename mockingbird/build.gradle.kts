@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    val graphQLKotlinVersion = "4.0.0-alpha.17"
+    val graphQLKotlinVersion = "4.1.0"
     val ktorVersion = "1.5.0"
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.3.2"
