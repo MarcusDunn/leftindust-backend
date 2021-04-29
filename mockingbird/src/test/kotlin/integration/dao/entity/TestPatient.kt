@@ -17,8 +17,7 @@ import javax.transaction.Transactional
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @Tag("Integration")
 @Transactional
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestPatient(
+class DoctorTest(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val sessionFactory: SessionFactory
