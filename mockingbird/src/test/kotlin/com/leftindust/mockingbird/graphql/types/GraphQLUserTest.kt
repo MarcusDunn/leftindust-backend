@@ -1,16 +1,19 @@
 package com.leftindust.mockingbird.graphql.types
 
+import com.google.firebase.auth.UserRecord
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
+import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.external.firebase.UserFetcher
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -60,20 +63,55 @@ internal class GraphQLUserTest {
     }
 
     @Test
-    @Disabled
     fun firebaseUserInfo() {
-        TODO()
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val expected = mockk<UserRecord>(relaxed = true)
+
+        val userFetcher = mockk<UserFetcher>() {
+            coEvery { getUserInfo("uid", authContext.mediqAuthToken) } returns expected
+        }
+        val result = runBlocking { GraphQLUser("uid", null, authContext).firebaseUserInfo(userFetcher) }
+
+        assertEquals(GraphQLFirebaseInfo(expected), result)
     }
 
     @Test
-    @Disabled
     fun permissions() {
-        TODO()
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val authorizationDao = mockk<AuthorizationDao>() {
+            coEvery { getRolesForUserByUid("uid") } returns emptyList()
+        }
+
+        val result = runBlocking { GraphQLUser("uid", null, authContext).permissions(authorizationDao) }
+
+        assertEquals(GraphQLPermissions(emptyList()), result)
     }
 
     @Test
-    @Disabled
     fun hasPermission() {
-        TODO()
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val authorizationDao = mockk<AuthorizationDao>() {
+            coEvery { getRolesForUserByUid("uid") } returns listOf(mockk() {
+                every { action } returns Action(Crud.UPDATE to Tables.Patient)
+            })
+        }
+
+        val result = runBlocking {
+            GraphQLUser("uid", null, authContext).hasPermission(
+                authorizationDao,
+                GraphQLPermission(Action(Crud.UPDATE to Tables.Patient))
+            )
+        }
+
+        assertEquals(true, result)
     }
 }
