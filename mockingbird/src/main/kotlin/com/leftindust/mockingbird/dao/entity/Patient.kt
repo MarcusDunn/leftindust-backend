@@ -1,16 +1,15 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
-import com.leftindust.mockingbird.extensions.*
+import com.leftindust.mockingbird.extensions.onUndefined
+import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
 import java.sql.Date
-import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity(name = "patient")
@@ -74,8 +73,12 @@ class Patient(
     }
 
     private fun clearDoctors() {
-        doctors.forEach { it.doctor.patients = emptySet() }
-        doctors = emptySet() // if any input is given, it overwrites previous doctors
+        for (doctorPatient in doctors) {
+            doctorPatient.doctor.patients = doctorPatient.doctor.patients.toMutableSet().apply {
+                removeIf { it.patient.id == this@Patient.id }
+            }
+            this.doctors = emptySet()
+        }
     }
 
     fun addDoctor(doctor: Doctor): Patient {
@@ -121,11 +124,9 @@ class Patient(
         gender = patientInput.gender ?: gender
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
 
-        doctors = if (patientInput.doctors == null) emptySet() else {
-            patientInput.doctors.forEach {
-                addDoctor(session.get(Doctor::class.java, it.toLong()))
-            }
-            this.doctors
+        if (patientInput.doctors != null) {
+            clearDoctors()
+            patientInput.doctors.map { session.get(Doctor::class.java, it.toLong()).addPatient(this) }
         }
     }
 
