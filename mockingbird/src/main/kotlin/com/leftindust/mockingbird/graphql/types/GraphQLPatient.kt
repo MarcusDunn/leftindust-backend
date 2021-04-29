@@ -23,7 +23,7 @@ data class GraphQLPatient(
     override val phones: List<GraphQLPhone> = emptyList(),
     override val emails: List<GraphQLEmail> = emptyList(),
     val pid: ID,
-    val dateOfBirth: GraphQLDate? = null,
+    val dateOfBirth: GraphQLDate,
     val addresses: List<GraphQLAddress> = emptyList(),
     val insuranceNumber: String? = null,
     val sex: Sex,
