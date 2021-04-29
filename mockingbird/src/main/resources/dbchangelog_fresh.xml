@@ -734,4 +734,7 @@
     <changeSet author="marcus (generated)" id="1619631123408-4">
         <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="emergency_contact_email" constraintName="FKexdx1twosjfnvg8xpx7b2b9fn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email" validate="true"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619734001481-1">
+        <dropNotNullConstraint columnDataType="date" columnName="date_of_birth" tableName="doctor"/>
+    </changeSet>
 </databaseChangeLog>

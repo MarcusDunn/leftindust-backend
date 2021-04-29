@@ -9,8 +9,6 @@ abstract class Person(
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
-    @Column(name = "date_of_birth", nullable = false)
-    var dateOfBirth: Date,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var address: Set<Address> = emptySet(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -28,6 +26,6 @@ abstract class Person(
     }
 
     override fun toString(): String {
-        return "Person(nameInfo=$nameInfo, dateOfBirth=$dateOfBirth, address=$address, email=$email, phone=$phone, user=$user, schedule=$schedule)"
+        return "Person(nameInfo=$nameInfo, address=$address, email=$email, phone=$phone, user=$user, schedule=$schedule)"
     }
 }

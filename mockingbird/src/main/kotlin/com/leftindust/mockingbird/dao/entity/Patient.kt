@@ -15,7 +15,6 @@ import javax.persistence.*
 @Entity(name = "patient")
 class Patient(
     nameInfo: NameInfo,
-    dateOfBirth: Date,
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
@@ -24,6 +23,8 @@ class Patient(
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
     var sex: Sex,
+    @Column(name = "date_of_birth", nullable = false)
+    var dateOfBirth: Date,
     @Column(name = "gender", nullable = false)
     var gender: String = sex.toString(),
     @Column(name = "ethnicity", nullable = true)
@@ -39,7 +40,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
+) : Person(nameInfo, addresses, emails, phones, user, schedule) {
 
     /**
      * see [GraphQLPatientInput] for details on how updates should behave

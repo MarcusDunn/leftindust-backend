@@ -35,7 +35,7 @@ data class GraphQLDoctor(
         lastName = doctor.nameInfo.lastName,
         phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
-        dateOfBirth = GraphQLDate(doctor.dateOfBirth.toLocalDate()),
+        dateOfBirth = doctor.dateOfBirth?.let {GraphQLDate(it.toLocalDate()) },
         addresses = doctor.address.map { GraphQLAddress(it) },
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
