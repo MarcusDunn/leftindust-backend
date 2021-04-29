@@ -28,6 +28,6 @@ class EmergencyContact(
             middleName = graphQLEmergencyContactInput.middleName,
             lastName = graphQLEmergencyContactInput.lastName,
         ),
-        phone = graphQLEmergencyContactInput.phones.map { Phone(it) }.toSet(),
+        phone = graphQLEmergencyContactInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),
     )
 }
