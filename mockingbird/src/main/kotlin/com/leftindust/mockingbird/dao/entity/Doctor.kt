@@ -1,9 +1,11 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
+import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import org.hibernate.Session
 import java.sql.Date
-import java.sql.Timestamp
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -19,7 +21,7 @@ class Doctor(
     user: MediqUser? = null,
     schedule: Schedule = Schedule(),
     @Column(name = "title", nullable = true)
-    val title: String? = null,
+    var title: String? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
 ) : Person(nameInfo, dateOfBirth, addresses, emails, phones, user, schedule) {
@@ -41,6 +43,29 @@ class Doctor(
         patient.doctors = patient.doctors.toMutableSet().apply { add(doctorPatient) }
         this.patients = this.patients.toMutableSet().apply { add(doctorPatient) }
         return this
+    }
+
+    private fun clearPatients() {
+        for (doctorPatient in patients) {
+            doctorPatient.patient.doctors = doctorPatient.patient.doctors.toMutableSet().apply {
+                removeIf { it.doctor.id == this@Doctor.id }
+            }
+            this.patients = emptySet()
+        }
+    }
+
+    fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, new_user: MediqUser? = null) {
+        nameInfo.setByGqlInput(graphQLDoctorEditInput.nameInfo)
+        dateOfBirth = graphQLDoctorEditInput.dateOfBirth?.toDate() ?: dateOfBirth
+        address = graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet() ?: address
+        email = graphQLDoctorEditInput.emails?.map { Email(it) }?.toSet() ?: email
+        phone = graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone
+        user = new_user ?: user
+        title = graphQLDoctorEditInput.title ?: title
+        if (graphQLDoctorEditInput.patients != null) {
+            clearPatients()
+            graphQLDoctorEditInput.patients.map { session.get(Patient::class.java, it.toLong()).addDoctor(this) }
+        }
     }
 }
 

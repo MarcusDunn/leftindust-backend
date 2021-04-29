@@ -14,7 +14,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +28,8 @@ class DoctorDaoImpl(
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val patientRepository: HibernatePatientRepository,
-    @Autowired private val eventRepository: HibernateEventRepository
+    @Autowired private val eventRepository: HibernateEventRepository,
+    @Autowired private val sessionFactory: SessionFactory,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
     override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
@@ -68,6 +71,17 @@ class DoctorDaoImpl(
             doctorRepository.save(doctorEntity)
         } else {
             throw NotAuthorizedException(requester, createDoctor)
+        }
+    }
+
+    override suspend fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
+        val updateDoctor = Crud.UPDATE to Tables.Doctor
+        if (requester can updateDoctor) {
+            val doctorEntity = doctorRepository.getOne(doctor.did.toLong())
+            doctorEntity.setByGqlInput(doctor, sessionFactory.currentSession)
+            return doctorEntity
+        } else {
+            throw NotAuthorizedException(requester, updateDoctor)
         }
     }
 }

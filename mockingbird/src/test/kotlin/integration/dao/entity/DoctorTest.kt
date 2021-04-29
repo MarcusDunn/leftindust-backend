@@ -1,31 +1,22 @@
 package integration.dao.entity
 
-import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import integration.util.EntityStore
-import org.hibernate.SessionFactory
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
+import io.mockk.mockk
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import javax.transaction.Transactional
 
-@SpringBootTest(classes = [MockingbirdApplication::class])
-@Tag("Integration")
-@Transactional
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestPatient(
-    @Autowired private val patientRepository: HibernatePatientRepository,
-    @Autowired private val doctorRepository: HibernateDoctorRepository,
-    @Autowired private val sessionFactory: SessionFactory
-) {
+class DoctorTest {
 
     @Test
-    internal fun `set by gql input with patients`() {
+    internal fun `set by gql input with patients`(
+        @Autowired patientRepository: HibernatePatientRepository,
+        @Autowired doctorRepository: HibernateDoctorRepository
+    ) {
         val doctor = doctorRepository.save(EntityStore.doctor("DoctorTest.set by gql input with patients"))
 
         val attachedPatient = patientRepository.save(EntityStore.patient("DoctorTest.set by gql input with patients"))
@@ -39,10 +30,10 @@ class TestPatient(
             patients = listOf(gqlID(newPatient.id!!))
         )
 
-        doctor.setByGqlInput(gqlInput, sessionFactory.currentSession)
+        doctor.setByGqlInput(gqlInput, mockk())
 
-        assertEquals(newPatient, doctor.patients.firstOrNull()?.patient)
+        Assertions.assertEquals(newPatient, doctor.patients.firstOrNull()?.patient)
         assert(attachedPatient.doctors.isEmpty())
-        assertFalse(doctor.patients.any { it.patient == attachedPatient })
+        Assertions.assertFalse(doctor.patients.any { it.patient == attachedPatient })
     }
 }

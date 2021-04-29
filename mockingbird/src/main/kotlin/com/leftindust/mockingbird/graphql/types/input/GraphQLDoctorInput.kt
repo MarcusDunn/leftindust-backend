@@ -25,12 +25,12 @@ data class GraphQLDoctorInput(
 }
 
 data class GraphQLDoctorEditInput(
-    val did: ID? = null,
-    val user: GraphQLUserInput? = null,
-    val nameInfo: GraphQLNameInfoInput,
+    val did: ID,
+    val user_uid: String? = null,
+    val nameInfo: GraphQLNameInfoEditInput? = null,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
-    val dateOfBirth: GraphQLDateInput,
+    val dateOfBirth: GraphQLDateInput? = null,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
     val patients: List<ID>? = emptyList(),

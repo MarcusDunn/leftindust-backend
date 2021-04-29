@@ -26,6 +26,8 @@ class DoctorMutation(private val doctorDao: DoctorDao, private val userDao: User
     }
 
     suspend fun updateDoctor(doctor: GraphQLDoctorEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLDoctor {
-        TODO()
+        return doctorDao
+            .editDoctor(doctor, graphQLAuthContext.mediqAuthToken)
+            .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
     }
 }
