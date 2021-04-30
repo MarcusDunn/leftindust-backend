@@ -8,6 +8,8 @@ import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
+import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Repository
@@ -28,6 +30,17 @@ class ClinicDaoImpl(
             clinicRepository.save(
                 Clinic(clinic, sessionFactory.currentSession)
             )
+        } else {
+            throw NotAuthorizedException(requester, createClinic)
+        }
+    }
+
+    override suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic {
+        val createClinic = Crud.UPDATE to Tables.Clinic
+        if (requester can createClinic) {
+            val clinicEntity = clinicRepository.getOne(clinic.id.toLong())
+            clinicEntity.setByGqlInput(clinic, sessionFactory.currentSession)
+            return clinicEntity
         } else {
             throw NotAuthorizedException(requester, createClinic)
         }

@@ -9,3 +9,11 @@ data class GraphQLClinicInput(
     @GraphQLDescription("defaults to empty list")
     val doctors: List<ID>? = null
 )
+
+data class GraphQLClinicEditInput(
+    val id: ID,
+    val name: String? = null,
+    val address: GraphQLAddressEditInput? = null,
+    @GraphQLDescription("passing null will not update, to clear: pass an empty list")
+    val doctors: List<ID>? = null
+)

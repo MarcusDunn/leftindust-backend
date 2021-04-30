@@ -6,10 +6,19 @@ import com.leftindust.mockingbird.graphql.types.GraphQLCountry
 
 @GraphQLName("Address")
 data class GraphQLAddressInput(
-    val addressType: GraphQLAddressType? = null,
+    val addressType: GraphQLAddressType,
     val address: String,
     val city: String,
     val country: GraphQLCountry,
     val province: String,
     val postalCode: String,
+)
+
+data class GraphQLAddressEditInput(
+    val addressType: GraphQLAddressType? = null,
+    val address: String? = null,
+    val city: String? = null,
+    val country: GraphQLCountry? = null,
+    val province: String? = null,
+    val postalCode: String? = null,
 )

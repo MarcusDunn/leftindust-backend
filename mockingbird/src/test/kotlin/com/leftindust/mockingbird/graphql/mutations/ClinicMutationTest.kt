@@ -4,6 +4,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
+import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -33,6 +34,27 @@ internal class ClinicMutationTest {
         val clinicMutation = ClinicMutation(clinicDao)
 
         val result = runBlocking { clinicMutation.addClinic(clinic, authContext) }
+
+        assertEquals(GraphQLClinic(mockkClinic, mockkClinic.id!!, authContext), result)
+    }
+
+    @Test
+    fun editClinic() {
+        val authContext = mockk<GraphQLAuthContext>() {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val clinic = mockk<GraphQLClinicEditInput>()
+
+        val mockkClinic = mockk<Clinic>(relaxed = true) {
+            every { id } returns 1000L
+        }
+
+        coEvery { clinicDao.editClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
+
+        val clinicMutation = ClinicMutation(clinicDao)
+
+        val result = runBlocking { clinicMutation.editClinic(clinic, authContext) }
 
         assertEquals(GraphQLClinic(mockkClinic, mockkClinic.id!!, authContext), result)
     }
