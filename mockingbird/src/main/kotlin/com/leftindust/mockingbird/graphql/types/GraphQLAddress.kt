@@ -16,10 +16,10 @@ data class GraphQLAddress(
 ) {
     constructor(address: Address) : this(
         addressType = address.type,
-        address = address.countryState.country.provinceLongToShort(address.address),
+        address = address.address,
         city = address.city,
         country = address.countryState.country,
-        province = address.countryState.province,
+        province = address.countryState.province.let { address.countryState.country.provinceLongToShort(it) },
         postalCode = address.postalCode
     )
 }
