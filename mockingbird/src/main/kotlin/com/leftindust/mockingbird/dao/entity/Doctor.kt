@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
@@ -26,14 +27,19 @@ class Doctor(
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
 ) : Person(nameInfo, addresses, emails, phones, user, schedule) {
-    constructor(graphQLDoctorInput: GraphQLDoctorInput, user: MediqUser?, patients: Collection<Patient>) : this(
+    constructor(
+        graphQLDoctorInput: GraphQLDoctorInput,
+        user: MediqUser?,
+        patients: Collection<Patient>,
+        clinic: Clinic? = null
+    ) : this(
         nameInfo = NameInfo(graphQLDoctorInput.nameInfo),
         dateOfBirth = graphQLDoctorInput.dateOfBirth?.toDate(),
         addresses = graphQLDoctorInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
         emails = graphQLDoctorInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
         phones = graphQLDoctorInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),
         user = user,
-        // patients handled in following block
+        clinic = clinic,
         title = graphQLDoctorInput.title,
     ) {
         patients.forEach { it.addDoctor(this) }
@@ -63,16 +69,17 @@ class Doctor(
         phone = graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone
         user = new_user ?: user
         title = graphQLDoctorEditInput.title ?: title
+        clinic = when (val optionalInput = graphQLDoctorEditInput.clinic) {
+            OptionalInput.Undefined -> clinic
+            is OptionalInput.Defined -> optionalInput.value?.let { session.get(Clinic::class.java, it.toLong()) }
+            null -> null
+        }
         if (graphQLDoctorEditInput.patients != null) {
             clearPatients()
             graphQLDoctorEditInput.patients.map { session.get(Patient::class.java, it.toLong()).addDoctor(this) }
         }
     }
 }
-
-
-
-
 
 
 

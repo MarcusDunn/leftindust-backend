@@ -1,6 +1,8 @@
 package com.leftindust.mockingbird.graphql.types.input
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
 
 @GraphQLName("DoctorInput")
@@ -10,6 +12,7 @@ data class GraphQLDoctorInput(
     val nameInfo: GraphQLNameInfoInput,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
+    val clinic: ID? = null,
     val dateOfBirth: GraphQLDateInput? = null,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
@@ -30,6 +33,8 @@ data class GraphQLDoctorEditInput(
     val nameInfo: GraphQLNameInfoEditInput? = null,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
+    @GraphQLDescription("setting to null will remove the doctor from the clinic")
+    val clinic: OptionalInput<ID>? = null,
     val dateOfBirth: GraphQLDateInput? = null,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
