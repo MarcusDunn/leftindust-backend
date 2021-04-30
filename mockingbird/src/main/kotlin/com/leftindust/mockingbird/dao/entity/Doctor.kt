@@ -6,10 +6,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.hibernate.Session
 import java.sql.Date
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @Entity
 class Doctor(
@@ -23,6 +20,9 @@ class Doctor(
     var title: String? = null,
     @Column(name = "date_of_birth", nullable = true)
     var dateOfBirth: Date? = null,
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", nullable = true)
+    var clinic: Clinic? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
 ) : Person(nameInfo, addresses, emails, phones, user, schedule) {
@@ -36,7 +36,7 @@ class Doctor(
         // patients handled in following block
         title = graphQLDoctorInput.title,
     ) {
-        this.patients = patients.map { DoctorPatient(it, this) }.toSet()
+        patients.forEach { it.addDoctor(this) }
     }
 
     fun addPatient(patient: Patient): Doctor {

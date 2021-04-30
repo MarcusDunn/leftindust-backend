@@ -737,4 +737,44 @@
     <changeSet author="marcus (generated)" id="1619734001481-1">
         <dropNotNullConstraint columnDataType="date" columnName="date_of_birth" tableName="doctor"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-1">
+        <createTable tableName="clinic">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clinicPK"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-2">
+        <createTable tableName="clinic_doctors">
+            <column name="clinic_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="doctors_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-3">
+        <addColumn tableName="doctor">
+            <column name="clinic_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-4">
+        <addUniqueConstraint columnNames="doctors_id" constraintName="UK_m2fqkorxrltscphn4v4sxjt0u" tableName="clinic_doctors"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-5">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="clinic" constraintName="FK15djxm3mj8bmp7mv7gdm6m1du" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-6">
+        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="clinic_doctors" constraintName="FK3ykc88sbg8rbo0nd5u468asmg" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-7">
+        <addForeignKeyConstraint baseColumnNames="clinic_id" baseTableName="doctor" constraintName="FKaqgufpq4bfr4au915m6u0s4dm" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="clinic" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-8">
+        <addForeignKeyConstraint baseColumnNames="clinic_id" baseTableName="clinic_doctors" constraintName="FKqpu1mv6pds879afuru3fllsqe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="clinic" validate="true"/>
+    </changeSet>
 </databaseChangeLog>
