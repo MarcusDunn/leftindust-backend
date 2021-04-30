@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -27,7 +28,7 @@ internal class ClinicMutationTest {
             every { id } returns 1000L
         }
 
-        every { clinicDao.addClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
+        coEvery { clinicDao.addClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
 
         val clinicMutation = ClinicMutation(clinicDao)
 
