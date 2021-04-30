@@ -96,14 +96,7 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            /**
-             * I use this one for update
-             **/
-            "changeLogFile" to "/IdeaProjects/leftindust-backend/mockingbird/src/main/resources/dbchangelog_fresh.xml",
-            /**
-             * And this one for diffChangeLog
-             **/
-            //"changeLogFile" to "src/main/resources/dbchangelog_fresh.xml",
+            "changeLogFile" to "src/main/resources/dbchangelog_fresh.xml",
             "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",

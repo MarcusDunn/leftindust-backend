@@ -777,4 +777,9 @@
     <changeSet author="marcus (generated)" id="1619737343672-8">
         <addForeignKeyConstraint baseColumnNames="clinic_id" baseTableName="clinic_doctors" constraintName="FKqpu1mv6pds879afuru3fllsqe" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="clinic" validate="true"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1619807404019-1">
+        <addColumn tableName="clinic">
+            <column name="name" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
