@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.UserDao
@@ -35,7 +36,7 @@ data class GraphQLDoctor(
         lastName = doctor.nameInfo.lastName,
         phones = doctor.phone.map { GraphQLPhone(it) },
         title = doctor.title,
-        dateOfBirth = doctor.dateOfBirth?.let {GraphQLDate(it.toLocalDate()) },
+        dateOfBirth = doctor.dateOfBirth?.let { GraphQLDate(it.toLocalDate()) },
         addresses = doctor.address.map { GraphQLAddress(it) },
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
@@ -43,6 +44,10 @@ data class GraphQLDoctor(
         if (doctor.id == null || doctor.id != id) {
             throw IllegalArgumentException("doctor.id does not match id where doctor.id is ${doctor.id} and id is $id")
         }
+    }
+
+    suspend fun clinic(@GraphQLIgnore @Autowired clinicDao: ClinicDao): GraphQLClinic {
+        TODO("not yet implemented $clinicDao")
     }
 
     suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? {
