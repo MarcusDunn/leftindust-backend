@@ -95,7 +95,7 @@ class EventMutationTest(
         val newDescription = "some fancy new description"
 
         val event = GraphQLEventEditInput(
-            eid = gqlID(eid),
+            eid = eid,
             description = OptionalInput.Defined(newDescription),
         )
 
@@ -142,7 +142,7 @@ class EventMutationTest(
         val newDescription = "some fancy new description"
 
         val event = GraphQLEventEditInput(
-            eid = gqlID(eid),
+            eid = eid,
             description = OptionalInput.Defined(newDescription),
         )
 

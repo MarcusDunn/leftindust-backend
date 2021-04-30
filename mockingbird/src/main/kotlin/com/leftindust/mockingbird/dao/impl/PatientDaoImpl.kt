@@ -8,10 +8,7 @@ import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
+import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -22,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
 
 
 @Transactional
@@ -32,9 +28,9 @@ class PatientDaoImpl(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
+    @Autowired private val eventRepository: HibernateEventRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val sessionFactory: SessionFactory,
-    @Autowired private val entityManager: EntityManager
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pID: Long, requester: MediqToken): Patient {
@@ -123,6 +119,15 @@ class PatientDaoImpl(
             }
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
+        }
+    }
+
+    override suspend fun getByEvent(eid: ID, requester: MediqToken): Collection<Patient> {
+        val readEventsAndReadPatient = listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Patient)
+        return if (requester can readEventsAndReadPatient) {
+            eventRepository.getOne(eid.toLong()).patients
+        } else {
+            throw NotAuthorizedException(requester, *readEventsAndReadPatient.toTypedArray())
         }
     }
 

@@ -12,28 +12,21 @@ class CountryState(
     province: String,
 ) {
     init {
-        if (isValidStateForCountry(province)) {
-            // ok
-        } else {
-            throw IllegalArgumentException(
-                """
-                    |the province must be contained within the country, possible values are
-                    | ${country.associatedStates().asStrings()} or ${country.associatedStates().asShortStrings()}
-                    | """.trimMargin()
-            )
-        }
+        isValidStateForCountryOrThrow(province)
     }
 
     var province = province
-        set(value) {
-            if (isValidStateForCountry(value)) {
-                field = value
-            } else {
-                throw IllegalArgumentException("the province must be contained within the country, possible values are ${country.associatedStates()}")
-            }
-        }
+        set(value) = isValidStateForCountryOrThrow(value)
 
-    private fun isValidStateForCountry(value: String) = with(country.associatedStates()) {
-        this.asShortStrings().contains(value) || this.asStrings().contains(value)
+
+    private fun isValidStateForCountryOrThrow(value: String) = with(country.associatedStates()) {
+        if (!this.asShortStrings().contains(value) && !this.asStrings().contains(value)) {
+            throw IllegalArgumentException(
+                """
+                        |the province must be contained within the country, possible values are
+                        | ${country.associatedStates().asStrings()} or ${country.associatedStates().asShortStrings()}
+                        | """.trimMargin()
+            )
+        }
     }
 }

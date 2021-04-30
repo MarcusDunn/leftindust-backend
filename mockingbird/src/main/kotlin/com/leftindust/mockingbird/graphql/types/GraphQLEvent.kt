@@ -2,15 +2,18 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("Event")
 data class GraphQLEvent(
-    val eid: Long,
+    val eid: ID,
     val title: String,
     val description: String?,
     val startTime: GraphQLUtcTime?,
@@ -20,7 +23,7 @@ data class GraphQLEvent(
     private val authContext: GraphQLAuthContext,
 ) {
     constructor(event: Event, authContext: GraphQLAuthContext) : this(
-        eid = event.id!!.toLong(),
+        eid = gqlID(event.id!!.toLong()),
         title = event.title,
         description = event.description,
         startTime = GraphQLUtcTime(event.startTime),
@@ -33,7 +36,7 @@ data class GraphQLEvent(
     suspend fun doctors(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao
     ): List<GraphQLDoctor> {
-        return doctorDao.getByEvent(eid, authContext.mediqAuthToken)
+        return doctorDao.getByEvent(eid.toLong(), authContext.mediqAuthToken)
             .map { GraphQLDoctor(it, it.id!!, authContext) }
     }
 

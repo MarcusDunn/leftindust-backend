@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component
 @Component
 class ClinicMutation(private val clinicDao: ClinicDao) : Mutation {
     suspend fun addClinic(clinic: GraphQLClinicInput, authContext: GraphQLAuthContext): GraphQLClinic {
-        TODO()
+        return clinicDao.addClinic(clinic, authContext.mediqAuthToken).let { GraphQLClinic(it, it.id!!, authContext) }
     }
 }
