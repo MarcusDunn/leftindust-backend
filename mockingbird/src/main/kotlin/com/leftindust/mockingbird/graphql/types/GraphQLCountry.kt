@@ -12,4 +12,14 @@ enum class GraphQLCountry {
             Canada -> GraphQLCanadianProvince
         }
     }
+
+    @GraphQLIgnore
+    fun provinceLongToShort(province: String): String {
+        return associatedStates().longToShort(province)
+    }
+
+    @GraphQLIgnore
+    fun provinceShortToLong(province: String): String {
+        return associatedStates().longToShort(province)
+    }
 }
