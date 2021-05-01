@@ -53,11 +53,6 @@ data class GraphQLUser(
         }
     }
 
-    data class Settings(
-        val version: Int,
-        val settings: GraphQLJsonObject
-    )
-
     data class Group(
         val gid: ID,
         val name: String

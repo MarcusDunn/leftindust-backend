@@ -1,8 +1,10 @@
 package com.leftindust.mockingbird.graphql.types.input
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 
+@GraphQLName("ClinicInput")
 data class GraphQLClinicInput(
     val name: String,
     val address: GraphQLAddressInput,
@@ -10,6 +12,7 @@ data class GraphQLClinicInput(
     val doctors: List<ID>? = null
 )
 
+@GraphQLName("ClinicEditInput")
 data class GraphQLClinicEditInput(
     val id: ID,
     val name: String? = null,

@@ -1,7 +1,9 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 
+@GraphQLName("CanadianProvince")
 object GraphQLCanadianProvince : GraphQLProvince {
     enum class Provinces {
         BritishColumbia,

@@ -1,11 +1,13 @@
 package com.leftindust.mockingbird.graphql.types.input
 
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.GraphQLMonth
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.ZoneId
 
+@GraphQLName("DateInput")
 data class GraphQLDateInput(
     val day: Int,
     val month: GraphQLMonth,

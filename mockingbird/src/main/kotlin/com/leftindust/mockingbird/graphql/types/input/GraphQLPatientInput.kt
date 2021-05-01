@@ -51,6 +51,7 @@ data class GraphQLPatientInput(
     }
 }
 
+@GraphQLName("PatientEditInput")
 data class GraphQLPatientEditInput(
     @GraphQLDescription("required. Determines what patient is being updated")
     val pid: ID,

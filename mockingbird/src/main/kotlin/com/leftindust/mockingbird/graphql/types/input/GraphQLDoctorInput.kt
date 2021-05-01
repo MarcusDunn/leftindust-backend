@@ -7,7 +7,6 @@ import com.expediagroup.graphql.generator.scalars.ID
 
 @GraphQLName("DoctorInput")
 data class GraphQLDoctorInput(
-    val did: ID? = null,
     val user: GraphQLUserInput? = null,
     val nameInfo: GraphQLNameInfoInput,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
@@ -27,6 +26,7 @@ data class GraphQLDoctorInput(
     }
 }
 
+@GraphQLName("DoctorEditInput")
 data class GraphQLDoctorEditInput(
     val did: ID,
     val user_uid: String? = null,

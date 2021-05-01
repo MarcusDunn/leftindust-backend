@@ -4,7 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.GraphQLAddressType
 import com.leftindust.mockingbird.graphql.types.GraphQLCountry
 
-@GraphQLName("Address")
+@GraphQLName("AddressInput")
 data class GraphQLAddressInput(
     val addressType: GraphQLAddressType,
     val address: String,
@@ -14,6 +14,7 @@ data class GraphQLAddressInput(
     val postalCode: String,
 )
 
+@GraphQLName("AddressEditInput")
 data class GraphQLAddressEditInput(
     val addressType: GraphQLAddressType? = null,
     val address: String? = null,
