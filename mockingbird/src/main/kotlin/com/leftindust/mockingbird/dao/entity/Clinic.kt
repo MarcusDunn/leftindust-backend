@@ -5,18 +5,16 @@ import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import org.hibernate.Session
-import javax.persistence.Entity
-import javax.persistence.JoinColumn
-import javax.persistence.OneToMany
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity(name = "clinic")
 class Clinic(
     var name: String,
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(nullable = false)
     var address: Address,
     @OneToMany
+    @JoinTable(name = "clinic_doctors")
     var doctors: Set<Doctor>,
 ) : AbstractJpaPersistable<Long>() {
     fun setByGqlInput(clinic: GraphQLClinicEditInput, session: Session) {

@@ -147,4 +147,15 @@ object EntityStore {
         doctors = emptySet(),
         patients = emptySet()
     )
+
+    fun address(testName: String) = Address(
+            type = GraphQLAddressType.Other,
+            address = testName,
+            city = "East Vancouver",
+            countryState = CountryState(
+                country = GraphQLCountry.Canada,
+                province = GraphQLCanadianProvince.Provinces.Yukon.name
+            ),
+            postalCode = "23efa",
+    )
 }

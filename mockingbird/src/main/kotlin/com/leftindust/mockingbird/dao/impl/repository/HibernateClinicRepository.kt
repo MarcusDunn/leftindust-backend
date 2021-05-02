@@ -5,5 +5,5 @@ import com.leftindust.mockingbird.dao.entity.Doctor
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface HibernateClinicRepository : JpaRepository<Clinic, Long> {
-    fun getAllByDoctors(doctors: MutableSet<Doctor>): Collection<Clinic>
+    fun getAllByDoctorsContains(doctor: Doctor): Collection<Clinic>
 }

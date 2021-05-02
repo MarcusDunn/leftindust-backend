@@ -53,7 +53,7 @@ class ClinicDaoImpl(
         val readClinic =  Crud.READ to Tables.Clinic
         return if (requester can readClinic) {
             val doctorEntity = doctorRepository.getOne(doctor.toLong())
-            clinicRepository.getAllByDoctors(doctors = mutableSetOf(doctorEntity))
+            clinicRepository.getAllByDoctorsContains(doctorEntity)
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }

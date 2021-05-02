@@ -128,7 +128,7 @@ internal class ClinicDaoImplTest {
 
         every { doctorRepository.getOne(100L) } returns mockkDoctor
 
-        every { clinicRepository.getAllByDoctors(mutableSetOf(mockkDoctor)) } returns listOf(mockkClinic)
+        every { clinicRepository.getAllByDoctorsContains(mockkDoctor) } returns listOf(mockkClinic)
 
         val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
 
