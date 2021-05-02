@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
+import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -8,6 +9,7 @@ import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ClinicDaoImpl(
     private val clinicRepository: HibernateClinicRepository,
+    private val doctorRepository: HibernateDoctorRepository,
     private val sessionFactory: SessionFactory,
     authorizer: Authorizer
 ) : ClinicDao,
@@ -43,6 +46,16 @@ class ClinicDaoImpl(
             return clinicEntity
         } else {
             throw NotAuthorizedException(requester, createClinic)
+        }
+    }
+
+    override suspend fun getByDoctor(doctor: ID, requester: MediqToken): Collection<Clinic> {
+        val readClinic =  Crud.READ to Tables.Clinic
+        return if (requester can readClinic) {
+            val doctorEntity = doctorRepository.getOne(doctor.toLong())
+            clinicRepository.getAllByDoctors(doctors = mutableSetOf(doctorEntity))
+        } else {
+            throw NotAuthorizedException(requester, readClinic)
         }
     }
 }
