@@ -23,7 +23,7 @@ data class GraphQLClinic(
         assert(clinic.id == id)
     }
 
-    fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
-        TODO("$doctorDao")
+    suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
+        return doctorDao.getByClinic(cid, authContext.mediqAuthToken).map {GraphQLDoctor(it, it.id!!, authContext)}
     }
 }

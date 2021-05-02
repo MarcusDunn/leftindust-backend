@@ -1,17 +1,12 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.leftindust.mockingbird.auth.Authorizer
-import com.leftindust.mockingbird.auth.Crud
-import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.auth.NotAuthorizedException
+import com.expediagroup.graphql.generator.scalars.ID
+import com.leftindust.mockingbird.auth.*
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
@@ -29,6 +24,7 @@ class DoctorDaoImpl(
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val eventRepository: HibernateEventRepository,
+    @Autowired private val clinicRepository: HibernateClinicRepository,
     @Autowired private val sessionFactory: SessionFactory,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
     override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Doctor> {
@@ -82,6 +78,15 @@ class DoctorDaoImpl(
             return doctorEntity
         } else {
             throw NotAuthorizedException(requester, updateDoctor)
+        }
+    }
+
+    override suspend fun getByClinic(clinic: ID, requester: MediqToken): Collection<Doctor> {
+        val readDoctors = Crud.READ to Tables.Doctor
+        return if (requester can readDoctors) {
+            clinicRepository.getOne(clinic.toLong()).doctors
+        } else {
+            throw NotAuthorizedException(requester, readDoctors)
         }
     }
 }
