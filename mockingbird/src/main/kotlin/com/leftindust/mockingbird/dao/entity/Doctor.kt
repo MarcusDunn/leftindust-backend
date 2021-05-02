@@ -61,13 +61,13 @@ class Doctor(
         }
     }
 
-    fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, new_user: MediqUser? = null) {
+    fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, newUser: MediqUser? = null) {
         nameInfo.setByGqlInput(graphQLDoctorEditInput.nameInfo)
         dateOfBirth = graphQLDoctorEditInput.dateOfBirth?.toDate() ?: dateOfBirth
         address = graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet() ?: address
         email = graphQLDoctorEditInput.emails?.map { Email(it) }?.toSet() ?: email
         phone = graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone
-        user = new_user ?: user
+        user = newUser ?: user
         title = graphQLDoctorEditInput.title ?: title
         clinic = when (val optionalInput = graphQLDoctorEditInput.clinic) {
             OptionalInput.Undefined -> clinic

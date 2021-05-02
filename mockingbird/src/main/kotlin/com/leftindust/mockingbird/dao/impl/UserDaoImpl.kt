@@ -49,7 +49,7 @@ class UserDaoImpl(
         requester: MediqToken
     ): MediqUser {
         return if (requester can (Crud.CREATE to Tables.User)) {
-            val group = user.group_id?.let { groupRepository.getOne(it.toLong()) }
+            val group = user.group?.let { groupRepository.getOne(it.toLong()) }
             val mediqUser = MediqUser(user, group)
             userRepository.save(mediqUser)
         } else {
@@ -71,9 +71,9 @@ class UserDaoImpl(
     override suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser {
         return if (requester can (Crud.UPDATE to Tables.User)) {
             userRepository.getByUniqueId(user.uid).apply {
-                group = when (user.group_id) {
+                group = when (user.group) {
                     is OptionalInput.Undefined -> this.group
-                    is OptionalInput.Defined -> user.group_id.value?.let { groupRepository.getOne(it.toLong()) }
+                    is OptionalInput.Defined -> user.group.value?.let { groupRepository.getOne(it.toLong()) }
                 }
             }
         } else {

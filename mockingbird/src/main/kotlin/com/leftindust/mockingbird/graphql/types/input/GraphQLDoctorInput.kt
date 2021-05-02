@@ -29,7 +29,7 @@ data class GraphQLDoctorInput(
 @GraphQLName("DoctorEditInput")
 data class GraphQLDoctorEditInput(
     val did: ID,
-    val user_uid: String? = null,
+    val userUid: String? = null,
     val nameInfo: GraphQLNameInfoEditInput? = null,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
