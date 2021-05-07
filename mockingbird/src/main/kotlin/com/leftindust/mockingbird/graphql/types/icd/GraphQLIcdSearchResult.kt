@@ -9,7 +9,7 @@ data class GraphQLIcdSearchResult(
     val errorMessage: String?,
     val resultChopped: Boolean,
     val wordSuggestionsChopped: Boolean,
-    val guessType: GraphQLIcdGuessType,
+    val guessType: GraphQLIcdGuessType?,
     val uniqueSearchId: Boolean,
     val words: List<GraphQLIcdGuessWord>?,
 )

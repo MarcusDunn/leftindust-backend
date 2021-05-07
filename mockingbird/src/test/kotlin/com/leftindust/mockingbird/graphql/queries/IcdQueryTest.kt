@@ -21,6 +21,8 @@ internal class IcdQueryTest {
             every { destinationEntities } returns emptyList()
         }
 
+        every { mockkIcdSearchResult.copy(any(), any(), any(), any(), any(), any()) } returns mockkIcdSearchResult
+
         coEvery { client.search(any(), any(), any()) } returns mockkIcdSearchResult
 
         every { authContext.mediqAuthToken } returns mockk {
@@ -41,6 +43,8 @@ internal class IcdQueryTest {
         }
 
         coEvery { client.linearizationSearch(any(), any(), any(), any()) } returns mockkIcdSearchResult
+
+        every { mockkIcdSearchResult.copy(any(), any(), any(), any(), any(), any()) } returns mockkIcdSearchResult
 
         val icdQuery = IcdQuery(client)
 

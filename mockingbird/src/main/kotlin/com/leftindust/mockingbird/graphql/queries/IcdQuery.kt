@@ -37,11 +37,7 @@ class IcdQuery(
             return client
                 .search(query, nnFlexiSearch, nnFlatResults)
                 .let { searchResult ->
-                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
-                        it.id(
-                            asUrl = true
-                        )
-                    })
+                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id(asUrl = true) })
                 }
         } else throw GraphQLKotlinException("not authorized")
     }
@@ -62,13 +58,8 @@ class IcdQuery(
                     flatResults ?: false
                 )
                 .let { searchResult ->
-                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
-                        it.id(
-                            asUrl = true
-                        )
-                    })
+                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id(asUrl = true) })
                 }
-
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }
