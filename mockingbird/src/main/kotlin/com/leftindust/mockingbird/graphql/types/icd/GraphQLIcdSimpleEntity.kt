@@ -3,8 +3,6 @@ package com.leftindust.mockingbird.graphql.types.icd
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.external.icd.IcdFetcher
-import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
-import io.ktor.client.call.*
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("IcdSimpleEntity")
@@ -30,15 +28,14 @@ data class GraphQLIcdSimpleEntity(
     val descendants: List<GraphQLIcdSimpleEntity>,
 ) {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
-            return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
+        return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
     }
 
     fun id(asUrl: Boolean? = false): String? {
-        val nnAsUrl = asUrl ?: false
-        return if (nnAsUrl) {
+        return if (asUrl == true) {
             id
         } else {
-            id?.split("/")?.last()
+            id?.let { FoundationIcdCode(it).value }
         }
     }
 

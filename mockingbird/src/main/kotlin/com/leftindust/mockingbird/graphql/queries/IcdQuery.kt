@@ -36,6 +36,13 @@ class IcdQuery(
             val nnFlatResults = flatResults ?: flatResultsDefaultValue
             return client
                 .search(query, nnFlexiSearch, nnFlatResults)
+                .let { searchResult ->
+                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
+                        it.id(
+                            asUrl = true
+                        )
+                    })
+                }
         } else throw GraphQLKotlinException("not authorized")
     }
 
@@ -48,7 +55,20 @@ class IcdQuery(
     ): GraphQLIcdSearchResult {
         if (authContext.mediqAuthToken.isVerified()) {
             return client
-                .linearizationSearch(releaseId ?: GraphQLReleaseIdInput.R_2020_09, linearizationName ?: "mms", query, flatResults ?: false)
+                .linearizationSearch(
+                    releaseId ?: GraphQLReleaseIdInput.R_2020_09,
+                    linearizationName ?: "mms",
+                    query,
+                    flatResults ?: false
+                )
+                .let { searchResult ->
+                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
+                        it.id(
+                            asUrl = true
+                        )
+                    })
+                }
+
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }
