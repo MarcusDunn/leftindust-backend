@@ -17,7 +17,9 @@ internal class IcdQueryTest {
 
     @Test
     fun searchIcd() {
-        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>()
+        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>() {
+            every { destinationEntities } returns emptyList()
+        }
 
         coEvery { client.search(any(), any(), any()) } returns mockkIcdSearchResult
 
@@ -34,9 +36,11 @@ internal class IcdQueryTest {
 
     @Test
     fun searchIcdLinearization() {
-        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>()
+        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>() {
+            every { destinationEntities } returns emptyList()
+        }
 
-        coEvery { client.linearizationSearch(any(), any(), any(), any())} returns mockkIcdSearchResult
+        coEvery { client.linearizationSearch(any(), any(), any(), any()) } returns mockkIcdSearchResult
 
         val icdQuery = IcdQuery(client)
 
