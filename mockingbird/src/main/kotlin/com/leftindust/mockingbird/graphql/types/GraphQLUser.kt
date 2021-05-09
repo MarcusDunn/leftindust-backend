@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.AuthorizationDao
+import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.NameInfoDao
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
@@ -39,6 +40,10 @@ data class GraphQLUser(
 
     suspend fun permissions(@GraphQLIgnore @Autowired authorizationDao: AuthorizationDao): GraphQLPermissions {
         return GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
+    }
+
+    suspend fun associatedDoctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
+        return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, it.id!!, authContext) }
     }
 
     suspend fun hasPermission(

@@ -1,7 +1,10 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.auth.*
+import com.leftindust.mockingbird.auth.Authorizer
+import com.leftindust.mockingbird.auth.Crud
+import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
@@ -85,6 +88,16 @@ class DoctorDaoImpl(
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             clinicRepository.getOne(clinic.toLong()).doctors
+        } else {
+            throw NotAuthorizedException(requester, readDoctors)
+        }
+    }
+
+    override suspend fun getByUser(uid: String, requester: MediqToken): Doctor? {
+        val readDoctors = Crud.READ to Tables.Doctor
+        val readUsers = Crud.READ to Tables.User
+        return if (requester can listOf(readDoctors, readUsers)) {
+            doctorRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
