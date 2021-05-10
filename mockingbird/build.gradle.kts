@@ -28,6 +28,7 @@ dependencies {
     val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
     val springBootVersion = "2.4.4"
+    val jsonFlattenerVersion = "0.12.0"
 
 
     // spring
@@ -41,6 +42,9 @@ dependencies {
     implementation("org.jetbrains.kotlin", "kotlin-reflect")
     implementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
+
+    //json flattener
+    implementation("com.github.wnameless.json", "json-flattener", jsonFlattenerVersion)
 
     // graphql kotlin
     implementation("com.expediagroup", "graphql-kotlin-spring-server", graphQLKotlinVersion)
@@ -82,6 +86,7 @@ dependencies {
 
     testImplementation("com.ninja-squad", "springmockk", "3.0.1")
 }
+
 
 // remove logback in favor of slf4j
 configurations {
