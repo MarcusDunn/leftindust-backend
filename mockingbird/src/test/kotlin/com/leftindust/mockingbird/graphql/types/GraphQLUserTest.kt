@@ -108,7 +108,7 @@ internal class GraphQLUserTest {
         val result = runBlocking {
             GraphQLUser("uid", null, authContext).hasPermission(
                 authorizationDao,
-                GraphQLPermission(Action(Crud.UPDATE to Tables.Patient))
+                GraphQLPermission(Action(Crud.UPDATE to Tables.Patient).apply { id = 10 }, 10)
             )
         }
 

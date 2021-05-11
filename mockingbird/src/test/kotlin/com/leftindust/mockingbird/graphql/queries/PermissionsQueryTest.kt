@@ -17,7 +17,9 @@ internal class PermissionsQueryTest {
 
     @Test
     fun permissions() {
-        val acl = mockk<AccessControlList>(relaxed = true)
+        val acl = mockk<AccessControlList>(relaxed = true) {
+            every { action.id } returns 10
+        }
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true
         }

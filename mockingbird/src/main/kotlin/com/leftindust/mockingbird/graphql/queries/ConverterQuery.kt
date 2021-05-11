@@ -16,13 +16,15 @@ class ConverterQuery : Query {
     }
 
     fun convert(json: String, target: ConvertTarget, authContext: GraphQLAuthContext): String {
+        val asJsonArray = JsonParser.parseString(json).asJsonArray
         return when (target) {
-            ConvertTarget.Json -> JsonParser.parseString(json).toString()
+            ConvertTarget.Json -> {
+                asJsonArray.toString()
+            }
             ConvertTarget.Csv -> {
                 var lastKeySet: Set<String>? = null
-                val parsedJson = JsonParser.parseString(json)
                 val rows = emptyList<JsonObject>().toMutableList()
-                for (jsonElement in parsedJson.asJsonArray) {
+                for (jsonElement in asJsonArray) {
                     val flattened = JsonFlattener.flatten(jsonElement.toString())
                     val flattenedJsonObject = JsonParser.parseString(flattened).asJsonObject
                     if (lastKeySet == null || lastKeySet == flattenedJsonObject.keySet()) {
@@ -33,7 +35,10 @@ class ConverterQuery : Query {
                     }
                 }
                 StringBuilder().apply {
-                    append(lastKeySet!!.fold("") { acc: String, s: String -> "$acc,$s" }.drop(1) + ",")
+                    for (key in lastKeySet!!) {
+                        append(key)
+                        append(",")
+                    }
                     append("\n")
                     for (row in rows) {
                         for (key in lastKeySet) {

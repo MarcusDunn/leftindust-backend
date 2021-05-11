@@ -1,14 +1,15 @@
 package com.leftindust.mockingbird.graphql.types
 
-import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.extensions.gqlID
 
 @GraphQLName("Permission")
 data class GraphQLPermission(
+    val pid: ID,
     val referencedTableName: Tables,
     val permissionType: Crud,
     val startTime: GraphQLUtcTime? = null,
@@ -65,13 +66,16 @@ data class GraphQLPermission(
         return result
     }
 
-    constructor(action: Action) : this(
+    constructor(action: Action, id: Long) : this(
+        pid = gqlID(id),
         referencedTableName = action.referencedTableName,
         permissionType = action.permissionType,
         startTime = action.startTime?.let { GraphQLUtcTime(it) },
         endTime = action.endTime?.let { GraphQLUtcTime(it) },
         rowId = action.rowId?.let { ID(it.toString()) }, // let needed as toString on null is a valid call
         columnName = action.columnName,
-    )
+    ) {
+        assert(action.id == id) {"action.id ${action.id} should equal id $id"}
+    }
 
 }
