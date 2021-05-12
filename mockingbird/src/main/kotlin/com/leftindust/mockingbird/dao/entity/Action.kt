@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPermission
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import java.sql.Timestamp
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -34,7 +35,7 @@ class Action(
         referencedTableName = pair.second,
     )
 
-    constructor(graphQLPermission: GraphQLPermission) : this(
+    constructor(graphQLPermission: GraphQLPermissionInput) : this(
         referencedTableName = graphQLPermission.referencedTableName,
         permissionType = graphQLPermission.permissionType,
         startTime = graphQLPermission.startTime?.toTimestamp(),

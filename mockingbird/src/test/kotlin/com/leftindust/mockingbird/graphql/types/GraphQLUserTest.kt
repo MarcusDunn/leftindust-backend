@@ -9,6 +9,7 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.external.firebase.UserFetcher
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -108,7 +109,7 @@ internal class GraphQLUserTest {
         val result = runBlocking {
             GraphQLUser("uid", null, authContext).hasPermission(
                 authorizationDao,
-                GraphQLPermission(Action(Crud.UPDATE to Tables.Patient).apply { id = 10 }, 10)
+                GraphQLPermissionInput(referencedTableName = Tables.Patient, permissionType = Crud.UPDATE)
             )
         }
 

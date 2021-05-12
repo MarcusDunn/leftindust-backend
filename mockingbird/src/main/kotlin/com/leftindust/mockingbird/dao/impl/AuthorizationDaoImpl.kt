@@ -4,6 +4,8 @@ import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.dao.entity.AccessControlList
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
+import com.leftindust.mockingbird.graphql.types.GraphQLPermission
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

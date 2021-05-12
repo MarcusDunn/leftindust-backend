@@ -13,6 +13,7 @@ import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.external.firebase.UserFetcher
+import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("User")
@@ -48,7 +49,7 @@ data class GraphQLUser(
 
     suspend fun hasPermission(
         @GraphQLIgnore @Autowired authorizationDao: AuthorizationDao,
-        perm: GraphQLPermission
+        perm: GraphQLPermissionInput
     ): Boolean {
         val action = Action(perm)
         return authorizationDao.getRolesForUserByUid(uid).any {

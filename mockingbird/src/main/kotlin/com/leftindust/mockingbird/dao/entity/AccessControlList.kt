@@ -5,11 +5,11 @@ import javax.persistence.*
 
 @Entity(name = "access_control_list")
 class AccessControlList(
-    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
-    val group: MediqGroup?,
+    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.EAGER)
+    val group: MediqGroup? = null,
     @OneToOne(orphanRemoval = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "mediq_user")
-    val mediqUser: MediqUser?,
-    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
+    val mediqUser: MediqUser? = null,
+    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.EAGER)
     val action: Action,
 ) : AbstractJpaPersistable<Long>()
