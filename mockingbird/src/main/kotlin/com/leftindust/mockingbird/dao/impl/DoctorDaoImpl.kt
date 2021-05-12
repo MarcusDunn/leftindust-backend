@@ -14,6 +14,7 @@ import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -98,6 +99,15 @@ class DoctorDaoImpl(
         val readUsers = Crud.READ to Tables.User
         return if (requester can listOf(readDoctors, readUsers)) {
             doctorRepository.findByUser_UniqueId(uid)
+        } else {
+            throw NotAuthorizedException(requester, readDoctors)
+        }
+    }
+
+    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor> {
+        val readDoctors = Crud.READ to Tables.Doctor
+        return if (requester can readDoctors) {
+            doctorRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
