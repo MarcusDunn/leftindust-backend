@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.graphql.queries
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.google.firebase.auth.ExportedUserRecord
@@ -23,6 +24,7 @@ class UserQuery(
     @GraphQLDescription("attempts to find the mediq-registered user by uid, if the user does not exist in the DB")
     suspend fun user(uid: ID, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         val strUid = uid.value
+        if (strUid == "admin") throw GraphQLKotlinException("you trying to break something?")
         val user = userDao.findUserByUid(strUid, graphQLAuthContext.mediqAuthToken)
         return if (user == null) {
             if (graphQLAuthContext.mediqAuthToken.isVerified()) {
@@ -50,7 +52,7 @@ class UserQuery(
             uniqueIds != null -> uniqueIds.map { userDao.findUserByUid(it.value, graphQLAuthContext.mediqAuthToken)!! }
             range != null -> userDao.getUsers(range, graphQLAuthContext.mediqAuthToken)
             else -> throw IllegalArgumentException("invalid argument combination to users")
-        }.map { GraphQLUser(it, graphQLAuthContext) }
+        }.filter { it.uniqueId != "admin" }.map { GraphQLUser(it, graphQLAuthContext) }
     }
 
     @GraphQLDescription(
