@@ -55,12 +55,12 @@ class Patient(
         sex = graphQLPatientInput.sex,
         gender = graphQLPatientInput.gender ?: graphQLPatientInput.sex.toString(),
         ethnicity = graphQLPatientInput.ethnicity,
-        phones = graphQLPatientInput.phoneNumbers?.map { Phone(it) }?.toSet() ?: emptySet(),
+        phones = graphQLPatientInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),
         addresses = graphQLPatientInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
         emails = graphQLPatientInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
     ) {
 
-        contacts = graphQLPatientInput.emergencyContact?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
+        contacts = graphQLPatientInput.emergencyContacts?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
 
         if (graphQLPatientInput.doctors != null) {
             clearDoctors()
@@ -119,7 +119,7 @@ class Patient(
         dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
         address = patientInput.addresses?.map { Address(it) }?.toSet() ?: address
         email = patientInput.emails?.map { Email(it) }?.toSet() ?: emptySet()
-        phone = patientInput.phoneNumbers?.map { Phone(it) }?.toSet() ?: phone
+        phone = patientInput.phones?.map { Phone(it) }?.toSet() ?: phone
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex ?: sex
         gender = patientInput.gender ?: gender

@@ -20,7 +20,7 @@ data class GraphQLPatientInput(
     @GraphQLDescription("required")
     val nameInfo: GraphQLNameInfoInput,
     @GraphQLDescription("defaults to emptyList")
-    val phoneNumbers: List<GraphQLPhoneInput>? = null,
+    val phones: List<GraphQLPhoneInput>? = null,
     @GraphQLDescription("required")
     val dateOfBirth: GraphQLDateInput,
     @GraphQLDescription("defaults to emptyList")
@@ -36,7 +36,7 @@ data class GraphQLPatientInput(
     @GraphQLDescription("defaults to null")
     val ethnicity: Ethnicity? = null,
     @GraphQLDescription("defaults to emptyList")
-    val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
+    val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("defaults to emptyList")
     val doctors: List<ID>? = null,
 ) {
@@ -58,7 +58,7 @@ data class GraphQLPatientEditInput(
     @GraphQLDescription("setting nameInfoEditInput to null will have no effect on update")
     val nameInfoEditInput: GraphQLNameInfoEditInput? = null,
     @GraphQLDescription("setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList")
-    val phoneNumbers: List<GraphQLPhoneInput>? = null,
+    val phones: List<GraphQLPhoneInput>? = null,
     @GraphQLDescription("setting dateOfBirth to null will have no effect on update")
     val dateOfBirth: GraphQLDateInput? = null,
     @GraphQLDescription("setting addresses to null will have no effect on update. to remove, pass an emptyList")
@@ -74,7 +74,7 @@ data class GraphQLPatientEditInput(
     @GraphQLDescription("setting to null will delete prior ethnicity, leaving blank will keep old ethnicity")
     val ethnicity: OptionalInput<Ethnicity> = OptionalInput.Undefined,
     @GraphQLDescription("setting emergencyContact to null will have no effect on update. to remove, pass an emptyList")
-    val emergencyContact: List<GraphQLEmergencyContactInput>? = null,
+    val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("setting doctors to null will have no effect on update. to remove, pass an emptyList")
     val doctors: List<ID>? = null,
 ) {

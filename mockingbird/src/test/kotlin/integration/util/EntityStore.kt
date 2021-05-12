@@ -73,7 +73,7 @@ object EntityStore {
             middleName = testName,
             lastName = "gaite",
         ),
-        phoneNumbers = listOf(
+        phones = listOf(
             GraphQLPhoneInput(
                 number = 11111111,
                 type = GraphQLPhoneType.Work,
@@ -103,7 +103,7 @@ object EntityStore {
         insuranceNumber = gqlID(111111111),
         sex = Sex.Male,
         ethnicity = Ethnicity.AmericanAboriginal,
-        emergencyContact = listOf(
+        emergencyContacts = listOf(
             GraphQLEmergencyContactInput(
                 firstName = "mom firstName",
                 middleName = "mom middleName",
