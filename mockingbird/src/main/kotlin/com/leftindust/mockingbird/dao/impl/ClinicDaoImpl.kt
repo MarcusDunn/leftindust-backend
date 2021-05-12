@@ -50,10 +50,19 @@ class ClinicDaoImpl(
     }
 
     override suspend fun getByDoctor(doctor: ID, requester: MediqToken): Collection<Clinic> {
-        val readClinic =  Crud.READ to Tables.Clinic
+        val readClinic = Crud.READ to Tables.Clinic
         return if (requester can readClinic) {
             val doctorEntity = doctorRepository.getOne(doctor.toLong())
             clinicRepository.getAllByDoctorsContains(doctorEntity)
+        } else {
+            throw NotAuthorizedException(requester, readClinic)
+        }
+    }
+
+    override suspend fun getByCid(cid: ID, requester: MediqToken): Clinic {
+        val readClinic = Crud.READ to Tables.Clinic
+        return if (requester can readClinic) {
+            clinicRepository.getOne(cid.toLong())
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }
