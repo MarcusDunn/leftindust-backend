@@ -1,15 +1,32 @@
 package com.leftindust.mockingbird.graphql.queries
 
-import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.server.operations.Query
 import com.github.wnameless.json.flattener.JsonFlattener
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import org.springframework.stereotype.Component
 
 @Component
 class ConverterQuery : Query {
+    data class Csv(val inner: List<Map<String, JsonElement>>) {
+        override fun toString(): String {
+            val headers = inner.flatMap { it.keys }.distinct()
+            return StringBuilder().apply {
+                for (i in headers.indices) {
+                    append(headers[i])
+                    append(if (i == headers.size - 1) "\n" else ",")
+                }
+                for (map in inner) {
+                    for (i in headers.indices) {
+                        append(map[headers[i]])
+                        append(if (i == headers.size - 1) "\n" else ",")
+                    }
+                }
+            }.toString()
+        }
+    }
+
     enum class ConvertTarget {
         Json,
         Csv,
@@ -22,32 +39,12 @@ class ConverterQuery : Query {
                 asJsonArray.toString()
             }
             ConvertTarget.Csv -> {
-                var lastKeySet: Set<String>? = null
-                val rows = emptyList<JsonObject>().toMutableList()
-                for (jsonElement in asJsonArray) {
-                    val flattened = JsonFlattener.flatten(jsonElement.toString())
-                    val flattenedJsonObject = JsonParser.parseString(flattened).asJsonObject
-                    if (lastKeySet == null || lastKeySet == flattenedJsonObject.keySet()) {
-                        lastKeySet = flattenedJsonObject.keySet()
-                        rows.add(flattenedJsonObject)
-                    } else {
-                        throw GraphQLKotlinException("invalid input json, all elements of the array must be equal")
-                    }
-                }
-                StringBuilder().apply {
-                    for (key in lastKeySet!!) {
-                        append(key)
-                        append(",")
-                    }
-                    append("\n")
-                    for (row in rows) {
-                        for (key in lastKeySet) {
-                            append(row[key])
-                            append(",")
-                        }
-                        append("\n")
-                    }
-                }.toString()
+                Csv(asJsonArray
+                    .map { jsonElement -> JsonFlattener.flatten(jsonElement.toString()) }
+                    .map { flattened -> JsonParser.parseString(flattened).asJsonObject }
+                    .map { jsonObject -> jsonObject.keySet().map { key -> key to jsonObject[key] } }
+                    .map { it.toMap() }
+                ).toString()
             }
         }
     }
