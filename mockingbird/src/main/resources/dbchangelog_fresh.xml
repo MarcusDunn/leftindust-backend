@@ -782,4 +782,7 @@
             <column name="name" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1619807404012" author="marcus">
+        <modifyDataType tableName="phone" columnName="number" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

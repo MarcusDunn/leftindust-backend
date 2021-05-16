@@ -5,6 +5,6 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPhoneType
 
 @GraphQLName("PhoneInput")
 data class GraphQLPhoneInput(
-    val number: Long,
+    val number: String,
     val type: GraphQLPhoneType
 )

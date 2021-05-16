@@ -13,13 +13,13 @@ class ConverterQuery : Query {
         override fun toString(): String {
             val headers = inner.flatMap { it.keys }.distinct()
             return StringBuilder().apply {
-                for (i in headers.indices) {
-                    append(headers[i])
+                for ((i, inner) in headers.withIndex()) {
+                    append(inner)
                     append(if (i == headers.size - 1) "\n" else ",")
                 }
                 for (map in inner) {
-                    for (i in headers.indices) {
-                        append(map[headers[i]])
+                    for ((i, header) in headers.withIndex()) {
+                        append(map[header])
                         append(if (i == headers.size - 1) "\n" else ",")
                     }
                 }
@@ -35,17 +35,12 @@ class ConverterQuery : Query {
     fun convert(json: String, target: ConvertTarget, authContext: GraphQLAuthContext): String {
         val asJsonArray = JsonParser.parseString(json).asJsonArray
         return when (target) {
-            ConvertTarget.Json -> {
-                asJsonArray.toString()
-            }
-            ConvertTarget.Csv -> {
-                Csv(asJsonArray
-                    .map { jsonElement -> JsonFlattener.flatten(jsonElement.toString()) }
-                    .map { flattened -> JsonParser.parseString(flattened).asJsonObject }
-                    .map { jsonObject -> jsonObject.keySet().map { key -> key to jsonObject[key] } }
-                    .map { it.toMap() }
-                ).toString()
-            }
+            ConvertTarget.Json -> asJsonArray.toString()
+            ConvertTarget.Csv -> Csv(asJsonArray
+                .map { jsonElement -> JsonFlattener.flatten(jsonElement.toString()) }
+                .map { flattened -> JsonParser.parseString(flattened).asJsonObject }
+                .map { jsonObject -> jsonObject.keySet().map { key -> key to jsonObject[key] } }
+                .map { it.toMap() }).toString()
         }
     }
 }

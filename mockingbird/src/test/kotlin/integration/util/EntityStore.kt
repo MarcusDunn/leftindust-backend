@@ -32,7 +32,7 @@ object EntityStore {
             )
         ),
         emails = setOf(Email(email = "hello@world.ca", type = GraphQLEmailType.Personal)),
-        phones = setOf(Phone(6632231111, GraphQLPhoneType.Home)),
+        phones = setOf(Phone("6632231111", GraphQLPhoneType.Home)),
         sex = Sex.Male,
         gender = Sex.Male.name,
         ethnicity = Ethnicity.White,
@@ -61,7 +61,7 @@ object EntityStore {
             )
         ),
         emails = setOf(Email(email = "world@hello.ca", type = GraphQLEmailType.Personal)),
-        phones = setOf(Phone(6632231211, GraphQLPhoneType.Home)),
+        phones = setOf(Phone("6632231211", GraphQLPhoneType.Home)),
         title = "sir",
         patients = emptySet(),
         schedule = Schedule(),
@@ -75,7 +75,7 @@ object EntityStore {
         ),
         phones = listOf(
             GraphQLPhoneInput(
-                number = 11111111,
+                number = "11111111",
                 type = GraphQLPhoneType.Work,
             )
         ),
@@ -111,11 +111,11 @@ object EntityStore {
                 relationship = Relationship.Parent,
                 phones = listOf(
                     GraphQLPhoneInput(
-                        number = 111111111,
+                        number = "111111111",
                         type = GraphQLPhoneType.Work,
                     ),
                     GraphQLPhoneInput(
-                        number = 223223222,
+                        number = "223223222",
                         type = GraphQLPhoneType.Home,
                     ),
                 ),

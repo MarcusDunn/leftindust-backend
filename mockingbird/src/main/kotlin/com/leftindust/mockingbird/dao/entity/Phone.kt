@@ -11,7 +11,7 @@ import javax.persistence.Enumerated
 @Entity(name = "phone")
 class Phone(
     @Column(name = "number", nullable = false)
-    var number: Long,
+    var number: String,
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     var type: GraphQLPhoneType
