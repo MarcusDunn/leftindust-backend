@@ -56,7 +56,7 @@ data class GraphQLPatientEditInput(
     @GraphQLDescription("required. Determines what patient is being updated")
     val pid: ID,
     @GraphQLDescription("setting nameInfoEditInput to null will have no effect on update")
-    val nameInfoEditInput: GraphQLNameInfoEditInput? = null,
+    val nameInfo: GraphQLNameInfoEditInput? = null,
     @GraphQLDescription("setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList")
     val phones: List<GraphQLPhoneInput>? = null,
     @GraphQLDescription("setting dateOfBirth to null will have no effect on update")

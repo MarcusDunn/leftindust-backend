@@ -16,7 +16,7 @@ data class GraphQLNameInfoEditInput(
     @GraphQLDescription("setting firstName to null will have no effect on updates")
     val firstName: String? = null,
     @GraphQLDescription("setting middleName to null will remove a prior middleName")
-    val middleName: OptionalInput<String?> = OptionalInput.Undefined,
+    val middleName: OptionalInput<String> = OptionalInput.Undefined,
     @GraphQLDescription("setting lastName to null will have no effect on updates")
     val lastName: String? = null,
 )

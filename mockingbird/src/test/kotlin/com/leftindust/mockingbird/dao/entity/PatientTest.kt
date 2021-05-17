@@ -48,13 +48,13 @@ internal class PatientTest {
 
         val gqlInput = GraphQLPatientEditInput(
             pid = gqlID(1),
-            nameInfoEditInput = GraphQLNameInfoEditInput(
+            nameInfo = GraphQLNameInfoEditInput(
                 firstName = "grape"
             )
         )
 
         patient.setByGqlInput(gqlInput, mockk())
 
-        assertEquals(gqlInput.nameInfoEditInput!!.firstName, patient.nameInfo.firstName)
+        assertEquals(gqlInput.nameInfo!!.firstName, patient.nameInfo.firstName)
     }
 }
