@@ -27,6 +27,7 @@ data class GraphQLPatient(
     val addresses: List<GraphQLAddress> = emptyList(),
     val insuranceNumber: String? = null,
     val sex: Sex,
+    val gender: String = sex.toString(),
     val ethnicity: Ethnicity? = null,
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
@@ -42,6 +43,7 @@ data class GraphQLPatient(
         emails = patient.email.map { GraphQLEmail(it) },
         insuranceNumber = patient.insuranceNumber,
         sex = patient.sex,
+        gender = patient.gender,
         ethnicity = patient.ethnicity,
         authContext = authContext,
     ) {
