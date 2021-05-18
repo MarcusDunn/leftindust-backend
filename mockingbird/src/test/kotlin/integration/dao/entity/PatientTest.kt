@@ -42,7 +42,7 @@ class PatientTest(
         patient.setByGqlInput(gqlInput, sessionFactory.currentSession)
 
         assertEquals(newDoctor, patient.doctors.firstOrNull()?.doctor)
-        assert(attachedDoctor.patients.isEmpty())
+        assertEquals(0, attachedDoctor.patients.size)
         assertFalse(patient.doctors.any { it.doctor == attachedDoctor })
     }
 }

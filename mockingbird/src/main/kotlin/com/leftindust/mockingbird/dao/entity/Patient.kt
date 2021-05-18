@@ -40,7 +40,7 @@ class Patient(
     )
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
-    var doctors: Set<DoctorPatient> = emptySet(),
+    var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule) {
 
     /**
@@ -64,22 +64,13 @@ class Patient(
         contacts = graphQLPatientInput.emergencyContacts?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
 
         if (graphQLPatientInput.doctors != null) {
-            clearDoctors()
+            doctors.clear()
             graphQLPatientInput.doctors.forEach { did ->
                 addDoctor(
                     session.get(Doctor::class.java, did.value.toLong())
                         ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
                 )
             }
-        }
-    }
-
-    private fun clearDoctors() {
-        for (doctorPatient in doctors) {
-            doctorPatient.doctor.patients = doctorPatient.doctor.patients.toMutableSet().apply {
-                removeIf { it.patient.id == this@Patient.id }
-            }
-            this.doctors = emptySet()
         }
     }
 
@@ -127,7 +118,10 @@ class Patient(
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
 
         if (patientInput.doctors != null) {
-            clearDoctors()
+            for (doctorPatient in doctors) {
+                doctorPatient.doctor.patients.removeIf { it.patient.id == this.id }
+            }
+            doctors.clear()
             patientInput.doctors.map { session.get(Doctor::class.java, it.toLong()).addPatient(this) }
         }
     }

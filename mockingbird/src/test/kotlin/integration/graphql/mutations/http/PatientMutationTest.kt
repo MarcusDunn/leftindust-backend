@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
 @Tag("Integration")
-@Transactional
 class PatientMutationTest(
     @Autowired private val testClient: WebTestClient,
     @Autowired private val patientRepository: HibernatePatientRepository,
@@ -35,6 +34,7 @@ class PatientMutationTest(
     private lateinit var contextFactory: ContextFactory
 
     @Test
+    @Transactional
     internal fun `create patient with address`() {
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
             every { mediqAuthToken } returns mockk() {

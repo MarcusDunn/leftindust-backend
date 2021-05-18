@@ -18,7 +18,7 @@ internal class PatientTest {
         val patient = EntityStore.patient("PatientTest.addDoctor")
 
         val doctor = spyk<Doctor>() {
-            patients = emptySet()
+            patients = mutableSetOf()
         }
 
         patient.addDoctor(doctor)

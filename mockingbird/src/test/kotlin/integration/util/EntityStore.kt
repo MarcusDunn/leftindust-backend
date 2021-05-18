@@ -38,7 +38,7 @@ object EntityStore {
         ethnicity = Ethnicity.White,
         insuranceNumber = "marcus",
         contacts = emptySet(),
-        doctors = emptySet(),
+        doctors = mutableSetOf(),
     )
 
     fun doctor(testName: String) = Doctor(
@@ -63,7 +63,7 @@ object EntityStore {
         emails = setOf(Email(email = "world@hello.ca", type = GraphQLEmailType.Personal)),
         phones = setOf(Phone("6632231211", GraphQLPhoneType.Home)),
         title = "sir",
-        patients = emptySet(),
+        patients = mutableSetOf(),
         schedule = Schedule(),
     )
 
