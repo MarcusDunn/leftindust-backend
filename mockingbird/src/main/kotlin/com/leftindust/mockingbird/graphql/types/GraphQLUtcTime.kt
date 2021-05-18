@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import com.expediagroup.graphql.generator.annotations.GraphQLDirective
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
@@ -58,7 +57,8 @@ data class GraphQLDate(
 ) {
     constructor(date: LocalDate) : this(
         day = date.dayOfMonth,
-        month = GraphQLMonth.fromInt(date.monthValue)!!,
+        month = GraphQLMonth.fromInt(date.monthValue - 1)
+            ?: throw RuntimeException("could not transform ${date.month} into a GraphQLnth"),
         year = date.year
     )
 
