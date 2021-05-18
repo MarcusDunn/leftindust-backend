@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
+import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
@@ -26,7 +27,7 @@ class Doctor(
     var clinic: Clinic? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: Set<DoctorPatient> = emptySet(),
-) : Person(nameInfo, addresses, emails, phones, user, schedule) {
+) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule) {
     constructor(
         graphQLDoctorInput: GraphQLDoctorInput,
         user: MediqUser?,
@@ -64,9 +65,9 @@ class Doctor(
     fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, newUser: MediqUser? = null) {
         nameInfo.setByGqlInput(graphQLDoctorEditInput.nameInfo)
         dateOfBirth = graphQLDoctorEditInput.dateOfBirth?.toDate() ?: dateOfBirth
-        address = graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet() ?: address
-        email = graphQLDoctorEditInput.emails?.map { Email(it) }?.toSet() ?: email
-        phone = graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone
+        address.replaceAllIfNotNull(graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet())
+        email.replaceAllIfNotNull(graphQLDoctorEditInput.emails?.map { Email(it) }?.toSet())
+        phone.replaceAllIfNotNull(graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone)
         user = newUser ?: user
         title = graphQLDoctorEditInput.title ?: title
         clinic = when (val optionalInput = graphQLDoctorEditInput.clinic) {

@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.onUndefined
+import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -40,7 +41,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: Set<DoctorPatient> = emptySet(),
-) : Person(nameInfo, addresses, emails, phones, user, schedule) {
+) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule) {
 
     /**
      * see [GraphQLPatientInput] for details on how updates should behave
@@ -117,9 +118,9 @@ class Patient(
         if (patientInput.pid.toLong() != this.id!!) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
         nameInfo.setByGqlInput(patientInput.nameInfo)
         dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
-        address = patientInput.addresses?.map { Address(it) }?.toSet() ?: address
-        email = patientInput.emails?.map { Email(it) }?.toSet() ?: emptySet()
-        phone = patientInput.phones?.map { Phone(it) }?.toSet() ?: phone
+        address.replaceAllIfNotNull(patientInput.addresses?.map { Address(it) }?.toSet())
+        email.replaceAllIfNotNull(patientInput.emails?.map { Email(it) }?.toSet())
+        phone.replaceAllIfNotNull(patientInput.phones?.map { Phone(it) }?.toSet())
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex ?: sex
         gender = patientInput.gender ?: gender

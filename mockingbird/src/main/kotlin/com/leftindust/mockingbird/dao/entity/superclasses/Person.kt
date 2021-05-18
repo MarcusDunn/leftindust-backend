@@ -10,11 +10,11 @@ abstract class Person(
     @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var address: Set<Address> = emptySet(),
+    var address: MutableSet<Address> = mutableSetOf(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var email: Set<Email> = emptySet(),
+    var email: MutableSet<Email> = mutableSetOf(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var phone: Set<Phone> = emptySet(),
+    var phone: MutableSet<Phone> = mutableSetOf(),
     @OneToOne
     var user: MediqUser? = null,
     @Embedded
