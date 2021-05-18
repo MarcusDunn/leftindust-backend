@@ -785,4 +785,7 @@
     <changeSet id="1619807404012" author="marcus">
         <modifyDataType tableName="phone" columnName="number" newDataType="varchar(255)"/>
     </changeSet>
+    <changeSet id="1619807404013" author="marcus">
+        <addUniqueConstraint tableName="doctor_patient" columnNames="doctor_id, patient_id"/>
+    </changeSet>
 </databaseChangeLog>
