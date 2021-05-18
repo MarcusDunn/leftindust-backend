@@ -57,8 +57,7 @@ data class GraphQLDate(
 ) {
     constructor(date: LocalDate) : this(
         day = date.dayOfMonth,
-        month = GraphQLMonth.fromInt(date.monthValue - 1)
-            ?: throw RuntimeException("could not transform ${date.month} into a GraphQLnth"),
+        month = GraphQLMonth.fromJavaMonth(date.month),
         year = date.year
     )
 
@@ -105,7 +104,20 @@ enum class GraphQLMonth {
     }
 
     companion object {
-        fun fromInt(month: Int): GraphQLMonth? = values().getOrNull(month)
+        fun fromJavaMonth(month: Month): GraphQLMonth = when (month) {
+            Month.JANUARY -> Jan
+            Month.FEBRUARY -> Feb
+            Month.MARCH -> Mar
+            Month.APRIL -> Apr
+            Month.MAY -> May
+            Month.JUNE -> Jun
+            Month.JULY -> Jul
+            Month.AUGUST -> Aug
+            Month.SEPTEMBER -> Sep
+            Month.OCTOBER -> Oct
+            Month.NOVEMBER -> Nov
+            Month.DECEMBER -> Dec
+        }
     }
 }
 
