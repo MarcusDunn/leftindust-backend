@@ -6,6 +6,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
@@ -62,5 +63,10 @@ data class GraphQLPatient(
     ): List<GraphQLVisit> {
         return visitDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
             .map { visit -> GraphQLVisit(visit, visit.id!!, authContext) }
+    }
+
+    suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {
+        return eventDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
+            .map { event -> GraphQLEvent(event, authContext) }
     }
 }
