@@ -180,4 +180,13 @@ class EventDaoImpl(
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
         }
     }
+
+    override suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event> {
+        val readEvents = Crud.READ to Tables.Event
+        return if (requester can readEvents) {
+            hibernateEventRepository.findAllByStartTimeAfterAndEndTimeBeforeOrReoccurrenceIsNotNull(range.start.toTimestamp(), range.end.toTimestamp())
+        } else {
+            throw NotAuthorizedException(requester, readEvents)
+        }
+    }
 }

@@ -39,4 +39,6 @@ interface EventDao {
         requester: MediqToken,
         recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event
+
+    suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event>
 }

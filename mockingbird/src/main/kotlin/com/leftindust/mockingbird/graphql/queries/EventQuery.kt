@@ -20,7 +20,7 @@ class EventQuery(
     suspend fun events(
         doctors: List<ID>? = null,
         patients: List<ID>? = null,
-        range: GraphQLTimeRangeInput? = null, // todo make not-nullable
+        range: GraphQLTimeRangeInput? = null,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLEvent> {
         return when {
@@ -31,6 +31,8 @@ class EventQuery(
             }
             doctors != null -> getEventsByDoctor(doctors, graphQLAuthContext)
             patients != null -> getEventsByPatient(patients, graphQLAuthContext)
+            range != null -> eventDao.getBetween(range, graphQLAuthContext.mediqAuthToken)
+                .map { GraphQLEvent(it, graphQLAuthContext) }
             else -> throw IllegalArgumentException("invalid argument combination to events")
         }
     }
