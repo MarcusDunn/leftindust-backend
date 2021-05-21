@@ -65,7 +65,7 @@ class VisitDaoImpl(
 
     override suspend fun getByPatient(pid: Long, requester: MediqToken): List<Visit> {
         return if (requester can listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Visit)) {
-            patientRepository.getOne(pid).schedule.events.map { visitRepository.getByEvent_Id(it.id!!) }
+            patientRepository.getOne(pid).schedule.events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
