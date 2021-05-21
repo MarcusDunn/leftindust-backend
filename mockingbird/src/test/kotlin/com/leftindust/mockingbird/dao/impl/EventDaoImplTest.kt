@@ -14,14 +14,12 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.GraphQLDayOfWeek
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import integration.util.EntityStore
-import io.ktor.http.*
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -109,7 +107,7 @@ internal class EventDaoImplTest {
             hibernateDoctorRepository, hibernateVisitRepository, authorizer
         )
 
-        val mockkStart = mockk<GraphQLTimeInput> {
+        val mockkStart = mockk<GraphQLUtcTime> {
             every { before(any()) } returns true
             every { toTimestamp() } returns mockk()
         }

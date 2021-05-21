@@ -41,6 +41,9 @@ data class GraphQLUtcTime(
 
     @GraphQLIgnore
     fun toTimestamp() = Timestamp(unixMilliseconds)
+    fun before(end: GraphQLUtcTime): Boolean {
+        return this.toTimestamp().before(end.toTimestamp())
+    }
 
     constructor(instant: Instant) : this(
         unixMilliseconds = instant.toEpochMilli()
@@ -118,29 +121,6 @@ enum class GraphQLMonth {
             Month.NOVEMBER -> Nov
             Month.DECEMBER -> Dec
         }
-    }
-}
-
-@GraphQLName("TimeInput")
-@GraphQLDescription("Sum type over time or date")
-data class GraphQLTimeInput(
-    val time: GraphQLUtcTime? = null,
-    val date: GraphQLDateInput? = null
-) {
-    constructor(time: Timestamp) : this(time = GraphQLUtcTime(time), date = null)
-
-    init { // validates sum typeyness
-        if ((time == null) xor (date == null)) {
-            // valid input
-        } else {
-            throw IllegalArgumentException("TimeInput cannot contain both time or date or neither")
-        }
-    }
-
-    fun toTimestamp(): Timestamp = time?.toTimestamp() ?: date!!.toTimeStamp()
-
-    fun before(other: GraphQLTimeInput): Boolean {
-        return toTimestamp().time < other.toTimestamp().time
     }
 }
 

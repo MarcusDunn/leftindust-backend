@@ -4,7 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
+import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 
 
 @GraphQLName("EventInput")
@@ -12,9 +12,9 @@ data class GraphQLEventInput(
     val title: String,
     val description: String? = null,
     @GraphQLDescription("UTC")
-    val start: GraphQLTimeInput,
+    val start: GraphQLUtcTime,
     @GraphQLDescription("UTC only can be unset / set to null if allDay is true")
-    val end: GraphQLTimeInput? = null,
+    val end: GraphQLUtcTime? = null,
     @GraphQLDescription("defaults to false even if explicitly passed null")
     val allDay: Boolean? = false,
     val doctors: List<ID>? = emptyList(),
@@ -38,9 +38,9 @@ data class GraphQLEventEditInput(
     @GraphQLDescription("The new description. Can be set to null to remove the old description")
     val description: OptionalInput<String?> = OptionalInput.Undefined,
     @GraphQLDescription("The new start of the event. Cannot be null")
-    val start: GraphQLTimeInput? = null,
+    val start: GraphQLUtcTime? = null,
     @GraphQLDescription("The new end of the event. Can only be null if the event is allDay")
-    val end: OptionalInput<GraphQLTimeInput?> = OptionalInput.Undefined,
+    val end: OptionalInput<GraphQLUtcTime?> = OptionalInput.Undefined,
     @GraphQLDescription(" weather the event is all day or not. Cannot be null and must be false if and only if end is not null")
     val allDay: Boolean? = null,
     @GraphQLDescription("the doctors attached to this event. if set to null, no changes will be made, to clear the list you must pass an empty list")

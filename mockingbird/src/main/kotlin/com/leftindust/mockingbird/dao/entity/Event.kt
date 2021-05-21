@@ -4,7 +4,6 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.onUndefined
-import com.leftindust.mockingbird.graphql.types.GraphQLTimeInput
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
@@ -75,7 +74,7 @@ class Event(
             title = event.title ?: title,
             description = event.description.onUndefined(description),
             startTime = event.start?.toTimestamp() ?: startTime,
-            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLTimeInput(GraphQLUtcTime(it)) })?.toTimestamp(),
+            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp(),
             allDay = event.allDay ?: allDay,
             doctors = newDoctors ?: doctors, // we call toMutableSet to avoid shared references to a collection
             patients = newPatients ?: patients,

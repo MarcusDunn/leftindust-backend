@@ -52,8 +52,8 @@ class EventMutationTest(
                 |mutation { $mutation(event: {
                     |title: "MY EVENT",
                     |description: "YO YO YO this do be an event doe",
-                    |start: {time: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 09:01:15").time}}},
-                    |end: {time: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 10:01:15").time}}}
+                    |start: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 09:01:15").time}},
+                    |end: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 10:01:15").time}}
                 |}) {
                 |   title
                 |   }

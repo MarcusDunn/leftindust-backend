@@ -133,8 +133,8 @@ object EntityStore {
         GraphQLEventInput(
             title = testName,
             description = "some description",
-            start = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 09:00:00")),
-            end = GraphQLTimeInput(Timestamp.valueOf("2020-01-02 10:00:00")),
+            start = GraphQLUtcTime(Timestamp.valueOf("2020-01-02 09:00:00")),
+            end = GraphQLUtcTime(Timestamp.valueOf("2020-01-02 10:00:00")),
             doctors = listOf(),
             patients = listOf(),
         )
