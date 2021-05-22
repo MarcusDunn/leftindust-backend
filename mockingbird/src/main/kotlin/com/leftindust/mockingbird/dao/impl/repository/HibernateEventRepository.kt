@@ -9,8 +9,7 @@ import java.sql.Timestamp
 interface HibernateEventRepository : JpaRepository<Event, Long> {
     fun getAllByTitleEquals(title: String): List<Event>
 
-    // TODO: 2021-04-13 make this not shit
-    fun findAllByStartTimeAfterAndEndTimeBeforeOrReoccurrenceIsNotNull(
+    fun findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(
         startTime: Timestamp,
         endTime: Timestamp
     ): List<Event>
@@ -18,4 +17,4 @@ interface HibernateEventRepository : JpaRepository<Event, Long> {
 
 fun HibernateEventRepository.getAllMatchingOrHasRecurrence(
     time: Timestamp
-): List<Event> = this.findAllByStartTimeAfterAndEndTimeBeforeOrReoccurrenceIsNotNull(time, time)
+): List<Event> = this.findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(time, time)
