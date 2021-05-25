@@ -147,7 +147,6 @@ val performanceTest = task<Test>("performanceTest") {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        useIR = true
         jvmTarget = "${JavaVersion.VERSION_1_8}"
         allWarningsAsErrors = true
     }

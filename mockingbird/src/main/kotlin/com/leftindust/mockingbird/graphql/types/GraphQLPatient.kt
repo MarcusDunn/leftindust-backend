@@ -33,8 +33,9 @@ data class GraphQLPatient(
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
 
+
     constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
-        pid = gqlID(id).also { LogManager.getLogger().trace(patient) },
+        pid = gqlID(id),
         firstName = patient.nameInfo.firstName,
         middleName = patient.nameInfo.middleName,
         lastName = patient.nameInfo.lastName,
