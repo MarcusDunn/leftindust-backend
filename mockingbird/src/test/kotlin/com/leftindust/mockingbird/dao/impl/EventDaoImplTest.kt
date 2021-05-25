@@ -85,7 +85,7 @@ internal class EventDaoImplTest {
     }
 
     @Test
-    fun getMany() {
+    fun getBetween() {
         coEvery {
             authorizer.getAuthorization(
                 match { Action(Crud.READ to Tables.Event).isSuperset(it) },
@@ -96,7 +96,7 @@ internal class EventDaoImplTest {
         val listOfMockkEvents = mockk<List<Event>>()
 
         every {
-            hibernateEventRepository.findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(
+            hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(
                 any(),
                 any()
             )
@@ -112,14 +112,19 @@ internal class EventDaoImplTest {
             every { toTimestamp() } returns mockk()
         }
 
-        val result = runBlocking { eventDao.getMany(GraphQLTimeRangeInput(mockkStart, mockk()), mockk()) }
+        val mockkEnd = mockk<GraphQLUtcTime> {
+            every { before(any()) } returns true
+            every { toTimestamp() } returns mockk()
+        }
+
+        val result = runBlocking { eventDao.getBetween(GraphQLTimeRangeInput(mockkStart, mockkEnd), mockk()) }
 
 
         coVerifyAll {
             authorizer.getAuthorization(any(), any())
             mockkStart.before(any())
             mockkStart.toTimestamp()
-            hibernateEventRepository.findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(any(), any())
+            hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(any(), any())
         }
 
         confirmVerified(mockkStart, listOfMockkEvents)

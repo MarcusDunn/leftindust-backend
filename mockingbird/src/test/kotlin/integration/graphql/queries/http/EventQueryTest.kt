@@ -69,9 +69,8 @@ class EventQueryTest(
                 |""".trimMargin()
             )
             .exchange()
-            .print()
             .verifyOnlyDataExists(query)
-            .jsonPath("$DATA_JSON_PATH.$query")
+            .jsonPath("$DATA_JSON_PATH.$query[0].eid")
             .isEqualTo(event.id!!)
 
         hibernateEventRepository.delete(event)

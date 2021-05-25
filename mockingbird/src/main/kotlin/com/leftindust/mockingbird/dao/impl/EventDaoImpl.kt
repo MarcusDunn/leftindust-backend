@@ -43,17 +43,6 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getMany(
-        range: GraphQLTimeRangeInput,
-        requester: MediqToken
-    ): Collection<Event> {
-        if (requester can (Crud.READ to Tables.Event)) {
-            return hibernateEventRepository.getAllMatchingOrHasRecurrence(range.start.toTimestamp())
-        } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
-        }
-    }
-
     override suspend fun getById(eid: ID, requester: MediqToken): Event {
         return if (requester can (Crud.READ to Tables.Event)) {
             hibernateEventRepository.getOne(eid.toLong())
@@ -184,7 +173,7 @@ class EventDaoImpl(
     override suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event> {
         val readEvents = Crud.READ to Tables.Event
         return if (requester can readEvents) {
-            hibernateEventRepository.findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(range.start.toTimestamp(), range.end.toTimestamp())
+            hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(range.start.toTimestamp(), range.end.toTimestamp())
         } else {
             throw NotAuthorizedException(requester, readEvents)
         }

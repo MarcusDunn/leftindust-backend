@@ -11,7 +11,7 @@ class Reoccurrence(
     val startDate: LocalDate,
     @Column(name = "end_date")
     val endDate: LocalDate,
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     val days: List<GraphQLDayOfWeek>,
 ) {

@@ -52,7 +52,7 @@ data class GraphQLUtcTime(
     constructor(timestamp: Timestamp) : this(timestamp.toInstant())
 }
 
-
+@GraphQLName("Date")
 data class GraphQLDate(
     val day: Int,
     val month: GraphQLMonth,

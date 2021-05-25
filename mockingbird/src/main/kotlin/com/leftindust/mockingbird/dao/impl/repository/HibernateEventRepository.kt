@@ -2,6 +2,8 @@ package com.leftindust.mockingbird.dao.impl.repository
 
 import com.leftindust.mockingbird.dao.entity.Event
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
 
@@ -9,12 +11,9 @@ import java.sql.Timestamp
 interface HibernateEventRepository : JpaRepository<Event, Long> {
     fun getAllByTitleEquals(title: String): List<Event>
 
-    fun findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(
-        startTime: Timestamp,
-        endTime: Timestamp
+    @Query("select e from event e where (e.startTime between :rangeStart and :rangeEnd and e.endTime between :rangeStart and :rangeEnd) or e.reoccurrence is not null")
+    fun getAllInRangeOrReoccurrenceIsNotNull(
+        @Param("rangeStart") rangeStart: Timestamp,
+        @Param("rangeEnd") rangeEnd: Timestamp
     ): List<Event>
 }
-
-fun HibernateEventRepository.getAllMatchingOrHasRecurrence(
-    time: Timestamp
-): List<Event> = this.findAllByStartTimeBeforeAndEndTimeAfterOrReoccurrenceIsNotNull(time, time)

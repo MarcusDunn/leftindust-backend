@@ -31,8 +31,10 @@ class EventQuery(
             }
             doctors != null -> getEventsByDoctor(doctors, graphQLAuthContext)
             patients != null -> getEventsByPatient(patients, graphQLAuthContext)
-            range != null -> eventDao.getBetween(range, graphQLAuthContext.mediqAuthToken)
-                .map { GraphQLEvent(it, graphQLAuthContext) }
+            range != null -> {
+                eventDao.getBetween(range, graphQLAuthContext.mediqAuthToken)
+                    .map { GraphQLEvent(it, graphQLAuthContext) }
+            }
             else -> throw IllegalArgumentException("invalid argument combination to events")
         }
     }
@@ -42,7 +44,7 @@ class EventQuery(
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLEvent> {
         return eventDao
-            .getMany(range = range, requester = graphQLAuthContext.mediqAuthToken)
+            .getBetween(range = range, requester = graphQLAuthContext.mediqAuthToken)
             .map { GraphQLEvent(it, graphQLAuthContext) }
     }
 

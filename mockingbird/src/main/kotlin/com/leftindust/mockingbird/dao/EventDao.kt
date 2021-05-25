@@ -15,12 +15,6 @@ interface EventDao {
         event: GraphQLEventInput,
         requester: MediqToken
     ): Event
-
-    suspend fun getMany(
-        range: GraphQLTimeRangeInput,
-        requester: MediqToken
-    ): Collection<Event>
-
     suspend fun getById(eid: ID, requester: MediqToken): Event
 
     suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event>
@@ -40,5 +34,5 @@ interface EventDao {
         recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event
 
-    suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event>
+    suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): Collection<Event>
 }
