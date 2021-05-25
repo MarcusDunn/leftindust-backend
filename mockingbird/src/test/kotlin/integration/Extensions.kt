@@ -15,6 +15,11 @@ fun WebTestClient.ResponseSpec.verifyOnlyDataExists(expectedQuery: String): WebT
     }
 }
 
+fun WebTestClient.ResponseSpec.print() : WebTestClient.ResponseSpec{
+    println(this.returnResult<String>())
+    return this
+}
+
 fun WebTestClient.ResponseSpec.verifyData(
     expectedQuery: String,
     expectedData: String
