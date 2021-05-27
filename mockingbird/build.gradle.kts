@@ -27,7 +27,7 @@ dependencies {
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
-    val springBootVersion = "2.4.4"
+    val springBootVersion = "2.5.0"
     val jsonFlattenerVersion = "0.12.0"
 
 
@@ -48,6 +48,7 @@ dependencies {
 
     // graphql kotlin
     implementation("com.expediagroup", "graphql-kotlin-spring-server", graphQLKotlinVersion)
+    implementation("com.expediagroup", "graphql-kotlin-hooks-provider", graphQLKotlinVersion)
 
     // ktor
     implementation("io.ktor", "ktor-client", ktorVersion)

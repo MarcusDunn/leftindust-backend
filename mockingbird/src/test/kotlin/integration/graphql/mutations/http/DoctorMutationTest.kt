@@ -1,9 +1,12 @@
 package integration.graphql.mutations.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import graphql.Assert.assertNotNull
 import integration.APPLICATION_JSON_MEDIA_TYPE
@@ -35,46 +38,46 @@ class DoctorMutationTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun `create doctor with user`() {
+        val mediqToken = mockk<MediqToken>()
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
-
-        val mutation = "addDoctor"
-
-        val uid = "new uid"
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """mutation { $mutation(doctor: {user: {uid: "$uid", nameInfo: {firstName: "doc", lastName: "james"}}, nameInfo: {firstName: "doc", lastName: "james"}, title: "khan", dateOfBirth: {day: 23, month: Jan, year: 1999}}) {
+                //language=GraphQL
+                """mutation { addDoctor(doctor: {user: {uid: "new uid", nameInfo: {firstName: "doc", lastName: "james"}}, nameInfo: {firstName: "doc", lastName: "james"}, title: "khan", dateOfBirth: {day: 23, month: Jan, year: 1999}}) {
                 | firstName
                 |   }
                 |}
                 |""".trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(mutation)
+            .verifyOnlyDataExists("addDoctor")
 
         val result =
             doctorRepository.findAll().find { it.nameInfo.firstName == "doc" && it.nameInfo.lastName == "james" }
-        val userResult = userRepository.findAll().find { it.uniqueId == uid }
+        val userResult = userRepository.findAll().find { it.uniqueId == "new uid" }
         assertNotNull(result)
         assertNotNull(userResult)
     }
 
     @Test
     internal fun `create doctor with address`() {
+        val mediqToken = mockk<MediqToken>()
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         val mutation = "addDoctor"
 

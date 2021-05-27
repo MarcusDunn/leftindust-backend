@@ -64,7 +64,7 @@ class Doctor(
         title = graphQLDoctorEditInput.title ?: title
         clinic = when (val optionalInput = graphQLDoctorEditInput.clinic) {
             OptionalInput.Undefined -> clinic
-            is OptionalInput.Defined -> optionalInput.value?.let { session.get(Clinic::class.java, it.toLong()) }
+            is OptionalInput.Defined -> optionalInput.value?.let { session.get(Clinic::class.java, it.id) }
             null -> null
         }
         if (graphQLDoctorEditInput.patients != null) {
@@ -72,7 +72,7 @@ class Doctor(
                 doctorPatient.patient.doctors.removeIf { it.doctor.id == this.id }
             }
             patients.clear()
-            graphQLDoctorEditInput.patients.map { session.get(Patient::class.java, it.toLong()).addDoctor(this) }
+            graphQLDoctorEditInput.patients.map { session.get(Patient::class.java, it.id).addDoctor(this) }
         }
     }
 }

@@ -1,14 +1,20 @@
 package com.leftindust.mockingbird
 
 
+import com.leftindust.mockingbird.graphql.hooks.CustomSchemaGeneratorHooks
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
 
 
 @SpringBootApplication
 @EnableConfigurationProperties
-class MockingbirdApplication
+class MockingbirdApplication {
+
+    @Bean
+    fun hooks() = CustomSchemaGeneratorHooks(emptyList())
+}
 
 /**
  * Entry point into the application, starts doing the spring magic

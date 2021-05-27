@@ -1,10 +1,11 @@
 package com.leftindust.mockingbird.dao
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.extensions.CustomResult
-import com.leftindust.mockingbird.graphql.mutations.EventMutation
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
@@ -15,13 +16,14 @@ interface EventDao {
         event: GraphQLEventInput,
         requester: MediqToken
     ): Event
-    suspend fun getById(eid: ID, requester: MediqToken): Event
 
-    suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event>
+    suspend fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event
 
-    suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event>
+    suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event>
 
-    suspend fun getByVisit(vid: Long, requester: MediqToken): Event
+    suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event>
+
+    suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event
 
     suspend fun editEvent(
         event: GraphQLEventEditInput,

@@ -19,7 +19,7 @@ abstract class Person(
     var user: MediqUser? = null,
     @Embedded
     var schedule: Schedule = Schedule(),
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
     init {
         // if user exists, set the user nameInfo to the info stored on the person instead to prevent inconsistencies
         user?.let { it.nameInfo = nameInfo }

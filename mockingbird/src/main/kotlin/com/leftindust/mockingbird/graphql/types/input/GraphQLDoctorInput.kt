@@ -4,6 +4,9 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
+import com.leftindust.mockingbird.graphql.types.GraphQLClinic
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 
 @GraphQLName("DoctorInput")
 data class GraphQLDoctorInput(
@@ -11,11 +14,11 @@ data class GraphQLDoctorInput(
     val nameInfo: GraphQLNameInfoInput,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
-    val clinic: ID? = null,
+    val clinic: GraphQLClinic.ID? = null,
     val dateOfBirth: GraphQLDateInput? = null,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
-    val patients: List<ID>? = emptyList(),
+    val patients: List<GraphQLPatient.ID>? = emptyList(),
 ) {
     init {
         if (user?.nameInfo == nameInfo || user == null) {
@@ -28,15 +31,15 @@ data class GraphQLDoctorInput(
 
 @GraphQLName("DoctorEditInput")
 data class GraphQLDoctorEditInput(
-    val did: ID,
+    val did: GraphQLDoctor.ID,
     val userUid: String? = null,
     val nameInfo: GraphQLNameInfoEditInput? = null,
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
     @GraphQLDescription("setting to null will remove the doctor from the clinic")
-    val clinic: OptionalInput<ID>? = null,
+    val clinic: OptionalInput<GraphQLClinic.ID>? = null,
     val dateOfBirth: GraphQLDateInput? = null,
     val addresses: List<GraphQLAddressInput>? = emptyList(),
     val emails: List<GraphQLEmailInput>? = emptyList(),
-    val patients: List<ID>? = emptyList(),
+    val patients: List<GraphQLPatient.ID>? = emptyList(),
 )

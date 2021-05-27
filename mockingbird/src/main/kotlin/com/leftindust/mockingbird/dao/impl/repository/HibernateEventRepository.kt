@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
+import java.util.*
 
 @Repository
-interface HibernateEventRepository : JpaRepository<Event, Long> {
+interface HibernateEventRepository : JpaRepository<Event, UUID> {
     fun getAllByTitleEquals(title: String): List<Event>
 
     @Query("select e from event e where (e.startTime between :rangeStart and :rangeEnd and e.endTime between :rangeStart and :rangeEnd) or e.reoccurrence is not null")

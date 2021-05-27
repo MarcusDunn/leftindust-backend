@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -9,7 +8,10 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.*
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -33,9 +35,9 @@ class PatientDaoImpl(
     @Autowired private val sessionFactory: SessionFactory,
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
-    override suspend fun getByPID(pID: Long, requester: MediqToken): Patient {
+    override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
         if (requester can (Crud.READ to Tables.Patient)) {
-            return patientRepository.getOne(pID)
+            return patientRepository.getById(pid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
@@ -53,9 +55,9 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun removeByPID(pid: Long, requester: MediqToken): Patient {
+    override suspend fun removeByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
         return if (requester can (Crud.DELETE to Tables.Patient)) {
-            val toBeDeleted = patientRepository.getOne(pid)
+            val toBeDeleted = patientRepository.getById(pid.id)
             patientRepository.delete(toBeDeleted)
             toBeDeleted
         } else {
@@ -63,32 +65,32 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Patient> {
+    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Patient> {
         if (requester can (Crud.READ to Tables.Patient)) {
-            val doctor = doctorRepository.getOne(did)
-            return doctorPatientRepository.getAllByDoctorId(doctor.id).map { it.patient }
+            val doctor = doctorRepository.getById(did.id)
+            return doctorPatientRepository.getAllByDoctorId(doctor.id!!).map { it.patient }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 
-    override suspend fun getByVisit(vid: Long, requester: MediqToken): Collection<Patient> {
+    override suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            visitRepository.getOne(vid).event.patients
+            visitRepository.getById(vid.id).event.patients
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
 
     override suspend fun addDoctorToPatient(
-        patientInput: ID,
-        doctorInput: ID,
+        pid: GraphQLPatient.ID,
+        did: GraphQLDoctor.ID,
         requester: MediqToken
     ): Patient {
         val permissions = listOf(Crud.UPDATE to Tables.Doctor, Crud.UPDATE to Tables.Doctor)
         return if (requester can permissions) {
-            val patient = patientRepository.getOne(patientInput.toLong())
-            val doctor = doctorRepository.getOne(doctorInput.toLong())
+            val patient = patientRepository.getById(pid.id)
+            val doctor = doctorRepository.getById(did.id)
             patient.addDoctor(doctor)
         } else {
             throw NotAuthorizedException(requester, *permissions.toTypedArray())
@@ -113,7 +115,7 @@ class PatientDaoImpl(
         requester: MediqToken
     ): Patient {
         return if (requester can (Crud.UPDATE to Tables.Patient)) {
-            val patient = patientRepository.getOne(patientInput.pid.toLong())
+            val patient = patientRepository.getById(patientInput.pid.id)
             patient.apply {
                 setByGqlInput(patientInput, sessionFactory.currentSession)
             }
@@ -122,18 +124,18 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByEvent(eid: ID, requester: MediqToken): Collection<Patient> {
+    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient> {
         val readEventsAndReadPatient = listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Patient)
         return if (requester can readEventsAndReadPatient) {
-            eventRepository.getOne(eid.toLong()).patients
+            eventRepository.getById(eid.id).patients
         } else {
             throw NotAuthorizedException(requester, *readEventsAndReadPatient.toTypedArray())
         }
     }
 
-    override suspend fun getPatientsByPids(pids: List<ID>, requester: MediqToken): Collection<Patient> {
+    override suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            patientRepository.findAllById(pids.map { it.toLong() })
+            patientRepository.findAllById(pids.map { it.id })
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

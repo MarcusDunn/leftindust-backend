@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.dao.entity.MediqRecord
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.RecordType
 import com.leftindust.mockingbird.extensions.gqlID
+import java.util.*
 
 @GraphQLName("Record")
 data class GraphQLRecord(
@@ -16,16 +17,18 @@ data class GraphQLRecord(
     private val patient: Patient,
     private val authContext: GraphQLAuthContext,
 ) {
-    constructor(record: MediqRecord, id: Long, graphQLAuthContext: GraphQLAuthContext) : this(
-        rid = gqlID(id),
+    @GraphQLName("RecordId")
+    data class ID(val id: UUID)
+
+    constructor(record: MediqRecord, graphQLAuthContext: GraphQLAuthContext) : this(
+        rid = ID(record.id!!),
         creationDate = GraphQLUtcTime(record.creationDate),
         type = record.type,
         patient = record.patient,
         authContext = graphQLAuthContext,
     )
 
-    fun measurements(): List<Measurement> = TODO()
-    fun patient(): GraphQLPatient = GraphQLPatient(patient, patient.id!!, authContext)
+    fun patient(): GraphQLPatient = GraphQLPatient(patient, authContext)
 
     data class Measurement(
         val name: String,

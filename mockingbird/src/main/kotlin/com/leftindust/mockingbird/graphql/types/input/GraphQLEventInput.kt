@@ -4,6 +4,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
+import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 
 
@@ -17,8 +21,8 @@ data class GraphQLEventInput(
     val end: GraphQLUtcTime? = null,
     @GraphQLDescription("defaults to false even if explicitly passed null")
     val allDay: Boolean? = false,
-    val doctors: List<ID>? = emptyList(),
-    val patients: List<ID>? = emptyList(),
+    val doctors: List<GraphQLDoctor.ID>? = emptyList(),
+    val patients: List<GraphQLPatient.ID>? = emptyList(),
     val recurrence: GraphQLRecurrenceInput? = null
 )
 
@@ -32,7 +36,7 @@ data class GraphQLEventInput(
 )
 data class GraphQLEventEditInput(
     @GraphQLDescription("the id of the event you are looking to edit")
-    val eid: ID,
+    val eid: GraphQLEvent.ID,
     @GraphQLDescription("The new title of the event. Cannot be set to null")
     val title: String? = null,
     @GraphQLDescription("The new description. Can be set to null to remove the old description")
@@ -44,9 +48,9 @@ data class GraphQLEventEditInput(
     @GraphQLDescription(" weather the event is all day or not. Cannot be null and must be false if and only if end is not null")
     val allDay: Boolean? = null,
     @GraphQLDescription("the doctors attached to this event. if set to null, no changes will be made, to clear the list you must pass an empty list")
-    val doctors: List<ID>? = null,
+    val doctors: List<GraphQLDoctor.ID>? = null,
     @GraphQLDescription("the patients attached to this event. see doctors for nullability rules")
-    val patients: List<ID>? = null,
+    val patients: List<GraphQLPatient.ID>? = null,
     @GraphQLDescription("the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite the whole recurrence object, leaving fields blank will __not__ retain prior values")
     val recurrence: OptionalInput<GraphQLRecurrenceInput> = OptionalInput.Undefined
 )

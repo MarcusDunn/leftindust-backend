@@ -1,7 +1,9 @@
 package integration.graphql.mutations.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Patient
@@ -9,6 +11,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
@@ -38,42 +41,49 @@ class VisitMutationTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun createVisit() {
+        val mediqToken = mockk<MediqToken>()
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
+
         val event = addEvent()
         val doctor = addDoctor()
         val patient = addPatient()
         doctor.addPatient(patient)
 
-        val mutation = "addVisit"
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """ mutation { $mutation(visit: {
-                |   event: "${event.id}",
-                |   title: "my visit from testing",
-                |   description: "patient has lost thier left foot",
-                |   foundationIcdCode: {code: "122222"},
-                |   })  {
-                |   vid
-                |   }
-                |} """.trimMargin()
+                //language=GraphQL
+                """mutation { addVisit(visit: {
+                    |   eid: {id: "${event.id}"},
+                    |   title: "my visit from testing",
+                    |   description: "patient has lost thier left foot",
+                    |   foundationIcdCode: {code: "122222"},
+                    |   })  {
+                    |   vid {
+                    |    id
+                    |    }
+                    |   }
+                    |} """.trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(mutation)
+            .verifyOnlyDataExists("addVisit")
 
         removeVisitsByEvent(event)
         removeEvent(event)
         removeDoctor(doctor)
         removePatient(patient)
+
     }
 
     private fun removeDoctor(doctor: Doctor) {

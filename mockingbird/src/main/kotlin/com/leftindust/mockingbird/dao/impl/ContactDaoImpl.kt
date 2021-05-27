@@ -9,6 +9,7 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.impl.repository.HibernateContactRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -22,11 +23,11 @@ class ContactDaoImpl(
 ) : AbstractHibernateDao(authorizer), ContactDao {
 
     override suspend fun getByPatient(
-        pid: Long,
+        pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<EmergencyContact> {
         return if (requester can (Crud.READ to Tables.Patient)) {
-            contactRepository.getAllByPatient_Id(pid)
+            contactRepository.getAllByPatient_Id(pid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

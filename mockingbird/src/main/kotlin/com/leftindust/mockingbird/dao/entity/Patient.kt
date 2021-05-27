@@ -106,7 +106,7 @@ class Patient(
 
     @Throws(IllegalArgumentException::class)
     fun setByGqlInput(patientInput: GraphQLPatientEditInput, session: Session) {
-        if (patientInput.pid.toLong() != this.id!!) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
+        if (patientInput.pid.id != this.id) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
         nameInfo.setByGqlInput(patientInput.nameInfo)
         dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
         address.replaceAllIfNotNull(patientInput.addresses?.map { Address(it) }?.toSet())
@@ -122,7 +122,7 @@ class Patient(
                 doctorPatient.doctor.patients.removeIf { it.patient.id == this.id }
             }
             doctors.clear()
-            patientInput.doctors.map { session.get(Doctor::class.java, it.toLong()).addPatient(this) }
+            patientInput.doctors.map { session.get(Doctor::class.java, it.id).addPatient(this) }
         }
     }
 

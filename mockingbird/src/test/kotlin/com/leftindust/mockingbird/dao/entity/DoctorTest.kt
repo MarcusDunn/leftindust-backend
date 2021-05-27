@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoEditInput
 import integration.util.EntityStore
@@ -9,6 +9,7 @@ import io.mockk.spyk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Transactional
 internal class DoctorTest {
@@ -29,12 +30,13 @@ internal class DoctorTest {
 
     @Test
     fun setByGqlInput() {
+        val doctorID = UUID.randomUUID()
         val doctor = EntityStore.doctor("DoctorTest.setByGqlInput")
 
         val oldMiddleName = doctor.nameInfo.middleName
 
         val gqlInput = GraphQLDoctorEditInput(
-            did = gqlID(1000),
+            did = GraphQLDoctor.ID(doctorID),
             nameInfo = GraphQLNameInfoEditInput(firstName = "new name", lastName = "new LN")
         )
 

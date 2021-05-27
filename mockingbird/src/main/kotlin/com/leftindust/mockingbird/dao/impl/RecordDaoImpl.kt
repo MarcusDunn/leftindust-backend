@@ -9,6 +9,8 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.MediqRecord
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -20,23 +22,20 @@ class RecordDaoImpl(
     @Autowired private val recordRepository: HibernateRecordRepository,
     @Autowired private val patientRepository: HibernatePatientRepository,
 ) : AbstractHibernateDao(authorizer), RecordDao {
-    override suspend fun getRecordByRecordId(
-        rid: Long,
-        requester: MediqToken
-    ): MediqRecord {
+    override suspend fun getRecordByRecordId(rid: GraphQLRecord.ID, requester: MediqToken): MediqRecord {
         return if (requester can (Crud.READ to Tables.Record)) {
-            recordRepository.getOne(rid)
+            recordRepository.getById(rid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Record)
         }
     }
 
     override suspend fun getRecordsByPatientPid(
-        pid: Long,
+        pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<MediqRecord> {
         if (requester can (Crud.READ to Tables.Record)) {
-            val patient = patientRepository.getOne(pid)
+            val patient = patientRepository.getById(pid.id)
             return recordRepository.getAllByPatientId(patient.id!!)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Record)

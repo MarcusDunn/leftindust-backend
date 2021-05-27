@@ -1,11 +1,16 @@
 package integration.graphql.mutations
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.mutations.PatientMutation
+import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -26,17 +31,21 @@ class PatientMutationTest(
     @Autowired private val patientMutation: PatientMutation,
     @Autowired private val patientRepository: HibernatePatientRepository
 ) {
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun addPatient() {
+        val mediqToken = mockk<MediqToken>()
         val authContext = mockk<GraphQLAuthContext>() {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
+
         val patientInput = EntityStore.graphQLPatientInput("PatientMutationTest.addPatient")
         val result = runBlocking { patientMutation.addPatient(patientInput, authContext) }
-        assertEquals(true, patientRepository.findById(result.pid.toLong()).isPresent)
-        patientRepository.delete(patientRepository.getOne(result.pid.toLong()))
-        assertEquals(false, patientRepository.findById(result.pid.toLong()).isPresent)
+        assertEquals(true, patientRepository.findById(result.pid.id).isPresent)
+        patientRepository.delete(patientRepository.getById(result.pid.id))
+        assertEquals(false, patientRepository.findById(result.pid.id).isPresent)
     }
 }

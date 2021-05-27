@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class UserMutationTest {
     private val userDao = mockk<UserDao>()
@@ -20,9 +21,11 @@ internal class UserMutationTest {
 
     @Test
     fun addUser() {
+        val userId = UUID.randomUUID()
+
         val mockkUser = mockk<MediqUser>(relaxed = true) {
             every { group } returns mockk(relaxed = true) {
-                every { id } returns 1000
+                every { id } returns userId
             }
         }
 

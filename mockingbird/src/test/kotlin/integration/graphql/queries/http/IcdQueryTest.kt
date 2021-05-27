@@ -1,6 +1,7 @@
 package integration.graphql.queries.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.ninjasquad.springmockk.MockkBean
@@ -33,14 +34,13 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             every { isVerified() } returns true
         }, mockk(relaxed = true))
 
-        val query = "searchIcdLinearization"
-
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """query { $query(query: "hiv") { 
+                //language=Graphql
+                """query { searchIcdLinearization(query: "hiv") { 
                 |   words { 
                 |       label
                 |       }
@@ -68,6 +68,6 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
                 |} """.trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(query)
+            .verifyOnlyDataExists("searchIcdLinearization")
     }
 }

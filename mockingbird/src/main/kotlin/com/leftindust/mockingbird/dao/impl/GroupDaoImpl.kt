@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -9,7 +8,7 @@ import com.leftindust.mockingbird.dao.GroupDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class GroupDaoImpl(
     @Autowired authorizer: Authorizer,
     @Autowired private val groupRepository: HibernateGroupRepository,
-    ) : GroupDao, AbstractHibernateDao(authorizer) {
+) : GroupDao, AbstractHibernateDao(authorizer) {
     override suspend fun addGroup(group: GraphQLGroupInput, requester: MediqToken): MediqGroup {
         if (requester can (Crud.CREATE to Tables.Group)) {
             val groupEntity = MediqGroup(group)
@@ -31,9 +30,9 @@ class GroupDaoImpl(
         }
     }
 
-    override suspend fun getGroupById(gid: ID, requester: MediqToken): MediqGroup {
+    override suspend fun getGroupById(gid: GraphQLUser.Group.ID, requester: MediqToken): MediqGroup {
         if (requester can (Crud.READ to Tables.Group)) {
-            return groupRepository.getOne(gid.toLong())
+            return groupRepository.getById(gid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
         }

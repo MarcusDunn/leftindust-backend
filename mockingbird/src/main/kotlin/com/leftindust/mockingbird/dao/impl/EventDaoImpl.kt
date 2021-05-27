@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -9,9 +8,15 @@ import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Reoccurrence
-import com.leftindust.mockingbird.dao.impl.repository.*
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.getByIds
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
@@ -34,8 +39,10 @@ class EventDaoImpl(
         requester: MediqToken
     ): Event {
         return if (requester can (Crud.CREATE to Tables.Event)) {
-            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) } ?: emptySet()
-            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) } ?: emptySet()
+            val patients =
+                event.patients?.let { hibernatePatientRepository.getByIds(it.map { pid -> pid.id }) } ?: emptySet()
+            val doctors =
+                event.doctors?.let { hibernateDoctorRepository.getByIds(it.map { did -> did.id }) } ?: emptySet()
             val eventEntity = Event(event, doctors, patients)
             hibernateEventRepository.save(eventEntity)
         } else {
@@ -43,33 +50,33 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getById(eid: ID, requester: MediqToken): Event {
+    override suspend fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event {
         return if (requester can (Crud.READ to Tables.Event)) {
-            hibernateEventRepository.getOne(eid.toLong())
+            hibernateEventRepository.getById(eid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
     }
 
-    override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Event> {
+    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
-            return hibernatePatientRepository.getOne(pid).schedule.events
+            return hibernatePatientRepository.getById(pid.id).schedule.events
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient, Crud.READ to Tables.Event)
         }
     }
 
-    override suspend fun getByDoctor(did: Long, requester: MediqToken): Collection<Event> {
+    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)) {
-            return hibernateDoctorRepository.getOne(did).schedule.events
+            return hibernateDoctorRepository.getById(did.id).schedule.events
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
     }
 
-    override suspend fun getByVisit(vid: Long, requester: MediqToken): Event {
+    override suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event {
         if (requester can listOf(Crud.READ to Tables.Visit, Crud.READ to Tables.Event)) {
-            return hibernateVisitRepository.getOne(vid).event
+            return hibernateVisitRepository.getById(vid.id).event
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
@@ -80,14 +87,14 @@ class EventDaoImpl(
         requester: MediqToken
     ): Event {
         if (requester can (Crud.UPDATE to Tables.Event)) {
-            val entity = hibernateEventRepository.getOne(event.eid.toLong())
+            val entity = hibernateEventRepository.getById(event.eid.id)
 
             if (entity.reoccurrence != null) {
                 throw IllegalArgumentException("cannot call editEvent on a recurring event")
             }
 
-            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) }
-            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) }
+            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it.map { did -> did.id }) }
+            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it.map { pid -> pid.id }) }
             val updatedEntity = entity.update(event, newDoctors = doctors, newPatients = patients)
 
             // prevents double references to collections between updatedEntity and entity
@@ -113,7 +120,7 @@ class EventDaoImpl(
         recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event {
         if (requester can (Crud.UPDATE to Tables.Event)) {
-            val entity = hibernateEventRepository.getOne(event.eid.toLong())
+            val entity = hibernateEventRepository.getById(event.eid.id)
 
             if (entity.reoccurrence == null) {
                 throw IllegalArgumentException("cannot call editRecurringEvent on a non-recurring event")
@@ -152,8 +159,8 @@ class EventDaoImpl(
                 hibernateEventRepository.save(priorEntity)
             }
 
-            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it) }
-            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it) }
+            val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it.map { did -> did.id }) }
+            val patients = event.patients?.let { hibernatePatientRepository.getByIds(it.map { pid -> pid.id }) }
             val updatedEntity = entity.clone().apply { // we keep the same id
                 reoccurrence = Reoccurrence(
                     startDate = recurrenceSettings.editStart.toLocalDate(),
@@ -173,7 +180,10 @@ class EventDaoImpl(
     override suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event> {
         val readEvents = Crud.READ to Tables.Event
         return if (requester can readEvents) {
-            hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(range.start.toTimestamp(), range.end.toTimestamp())
+            hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(
+                range.start.toTimestamp(),
+                range.end.toTimestamp()
+            )
         } else {
             throw NotAuthorizedException(requester, readEvents)
         }

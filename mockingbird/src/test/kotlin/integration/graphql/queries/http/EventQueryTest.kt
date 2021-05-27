@@ -1,8 +1,12 @@
 package integration.graphql.queries.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import integration.*
 import integration.util.EntityStore
@@ -31,6 +35,9 @@ class EventQueryTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @BeforeEach
     internal fun setUp() {
         assert(hibernateEventRepository.count() == count) { "leaked events in EventQueryTest" }
@@ -43,14 +50,11 @@ class EventQueryTest(
 
     @Test
     internal fun `test get events by time range`() {
-        coEvery { contextFactory.generateContext(any()) } returns mockk() {
-            every { getHTTPRequestHeader(any()) } returns "yeet"
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+        val mediqToken = mockk<MediqToken>()
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mediqToken
         }
-
-        val query = "events"
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         val event = hibernateEventRepository.save(EntityStore.event("EventQueryTest.test get events by time range"))
 
@@ -59,19 +63,22 @@ class EventQueryTest(
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """query{
-                |   $query(range: {start: {unixMilliseconds: ${
-                    event.startTime.toInstant().toEpochMilli() - 1000
-                }}, end: {unixMilliseconds: ${event.endTime!!.toInstant().toEpochMilli() + 1000}}}) {
-                |       eid
+                //language=GraphQL
+                """query{ events(range: {
+                |   start: {unixMilliseconds: ${event.startTime.toInstant().toEpochMilli() - 1}},
+                |   end: {unixMilliseconds: ${event.endTime!!.toInstant().toEpochMilli() + 1}}
+                |   }) {
+                |       eid {
+                |        id
+                |       }
                 |   }
                 |}
                 |""".trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(query)
-            .jsonPath("$DATA_JSON_PATH.$query[0].eid")
-            .isEqualTo(event.id!!)
+            .verifyOnlyDataExists("events")
+            .jsonPath("$DATA_JSON_PATH.events[0].eid.id")
+            .isEqualTo(event.id!!.toString())
 
         hibernateEventRepository.delete(event)
     }

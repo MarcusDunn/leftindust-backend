@@ -12,7 +12,7 @@ class VisitMutation(
     private val visitDao: VisitDao
 ) : Mutation {
     suspend fun addVisit(visit: GraphQLVisitInput, graphQLAuthContext: GraphQLAuthContext): GraphQLVisit {
-        return visitDao.addVisit(visit, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLVisit(it, it.id!!, graphQLAuthContext) } // safe nn call as we just persisted this visit
+        val visitEntity = visitDao.addVisit(visit, graphQLAuthContext.mediqAuthToken)
+        return GraphQLVisit(visitEntity, graphQLAuthContext) // safe nn call as we just persisted this visit
     }
 }

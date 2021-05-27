@@ -10,6 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class PermissionsQueryTest {
     private val authorizer = mockk<AuthorizationDao>()
@@ -17,8 +18,10 @@ internal class PermissionsQueryTest {
 
     @Test
     fun permissions() {
+        val actionID = UUID.randomUUID()
+
         val acl = mockk<AccessControlList>(relaxed = true) {
-            every { action.id } returns 10
+            every { action.id } returns actionID
         }
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true

@@ -12,12 +12,14 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class ClinicMutationTest {
     private val clinicDao = mockk<ClinicDao>()
 
     @Test
     fun addClinic() {
+        val clinicID = UUID.randomUUID()
 
         val authContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
@@ -26,7 +28,7 @@ internal class ClinicMutationTest {
         val clinic = mockk<GraphQLClinicInput>()
 
         val mockkClinic = mockk<Clinic>(relaxed = true) {
-            every { id } returns 1000L
+            every { id } returns clinicID
         }
 
         coEvery { clinicDao.addClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
@@ -35,11 +37,13 @@ internal class ClinicMutationTest {
 
         val result = runBlocking { clinicMutation.addClinic(clinic, authContext) }
 
-        assertEquals(GraphQLClinic(mockkClinic, mockkClinic.id!!, authContext), result)
+        assertEquals(GraphQLClinic(mockkClinic,  authContext), result)
     }
 
     @Test
     fun editClinic() {
+        val clinicID = UUID.randomUUID()
+
         val authContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
@@ -47,7 +51,7 @@ internal class ClinicMutationTest {
         val clinic = mockk<GraphQLClinicEditInput>()
 
         val mockkClinic = mockk<Clinic>(relaxed = true) {
-            every { id } returns 1000L
+            every { id } returns clinicID
         }
 
         coEvery { clinicDao.editClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
@@ -56,6 +60,6 @@ internal class ClinicMutationTest {
 
         val result = runBlocking { clinicMutation.editClinic(clinic, authContext) }
 
-        assertEquals(GraphQLClinic(mockkClinic, mockkClinic.id!!, authContext), result)
+        assertEquals(GraphQLClinic(mockkClinic, authContext), result)
     }
 }

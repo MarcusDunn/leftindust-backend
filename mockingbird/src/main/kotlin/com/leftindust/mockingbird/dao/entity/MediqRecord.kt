@@ -10,11 +10,12 @@ import javax.persistence.*
 class MediqRecord(
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var patient: Patient,
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", nullable = false)
     val creationDate: Timestamp,
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     val type: RecordType,
     @Column(name = "json_blob", length = 10_000)
     @Basic(fetch = FetchType.LAZY)
     val jsonBlob: String? = JsonObject().toString()
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable()

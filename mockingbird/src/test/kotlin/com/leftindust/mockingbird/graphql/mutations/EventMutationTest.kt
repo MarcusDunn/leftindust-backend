@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class EventMutationTest {
     private val eventDao = mockk<EventDao>()
@@ -24,11 +25,13 @@ internal class EventMutationTest {
 
     @Test
     fun addEvent() {
+        val eventID = UUID.randomUUID()
+
         val mockkContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
         val mockkEvent = mockk<Event>(relaxed = true) {
-            every { id } returns 1000
+            every { id } returns eventID
         }
 
         coEvery { eventDao.addEvent(any(), any()) } returns mockkEvent
@@ -62,6 +65,9 @@ internal class EventMutationTest {
 
     @Test
     internal fun `edit event`() {
+        val eventID = UUID.randomUUID()
+
+
         val mockkContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
@@ -69,7 +75,7 @@ internal class EventMutationTest {
         val eventMutation = EventMutation(eventDao)
 
         val mockkEvent = mockk<Event>(relaxed = true) {
-            every { id } returns 1000
+            every { id } returns eventID
         }
 
         coEvery { eventDao.editEvent(any(), any()) } returns mockkEvent
@@ -77,7 +83,7 @@ internal class EventMutationTest {
         val result = runBlocking {
             eventMutation.editEvent(
                 GraphQLEventEditInput(
-                    gqlID(1000),
+                    GraphQLEvent.ID(eventID),
                     description = OptionalInput.Defined("new descr")
                 ), mockkContext
             )
@@ -104,8 +110,10 @@ internal class EventMutationTest {
 
     @Test
     internal fun `edit event with recurrence`() {
+        val eventID = UUID.randomUUID()
+
         val editedEvent = mockk<Event>(relaxed = true) {
-            every { id } returns 1000
+            every { id } returns eventID
         }
 
         coEvery { eventDao.editRecurringEvent(any(), any(), any()) } returns editedEvent

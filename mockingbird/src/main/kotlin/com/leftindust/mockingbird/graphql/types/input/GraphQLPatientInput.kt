@@ -6,6 +6,8 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 
 @GraphQLName("PatientInput")
 @GraphQLDescription(
@@ -53,7 +55,7 @@ data class GraphQLPatientInput(
 @GraphQLName("PatientEditInput")
 data class GraphQLPatientEditInput(
     @GraphQLDescription("required. Determines what patient is being updated")
-    val pid: ID,
+    val pid: GraphQLPatient.ID,
     @GraphQLDescription("setting nameInfoEditInput to null will have no effect on update")
     val nameInfo: GraphQLNameInfoEditInput? = null,
     @GraphQLDescription("setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList")
@@ -75,7 +77,7 @@ data class GraphQLPatientEditInput(
     @GraphQLDescription("setting emergencyContact to null will have no effect on update. to remove, pass an emptyList")
     val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("setting doctors to null will have no effect on update. to remove, pass an emptyList")
-    val doctors: List<ID>? = null,
+    val doctors: List<GraphQLDoctor.ID>? = null,
 ) {
     init {
         if (emails != null) {

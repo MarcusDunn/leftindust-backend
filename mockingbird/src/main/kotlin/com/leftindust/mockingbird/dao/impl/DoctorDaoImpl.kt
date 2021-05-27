@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -11,7 +10,10 @@ import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.getByIds
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLClinic
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -31,29 +33,29 @@ class DoctorDaoImpl(
     @Autowired private val clinicRepository: HibernateClinicRepository,
     @Autowired private val sessionFactory: SessionFactory,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getByPatient(pid: Long, requester: MediqToken): Collection<Doctor> {
+    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            val patient = patientRepository.getOne(pid)
+            val patient = patientRepository.getById(pid.id)
             doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
     }
 
-    override suspend fun getByEvent(eid: Long, requester: MediqToken): Collection<Doctor> {
+    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            eventRepository.getOne(eid).doctors
+            eventRepository.getById(eid.id).doctors
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
     }
 
-    override suspend fun getByDoctor(did: Long, requester: MediqToken): Doctor {
+    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            doctorRepository.getOne(did)
+            doctorRepository.getById(did.id)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
@@ -66,7 +68,7 @@ class DoctorDaoImpl(
     ): Doctor {
         val createDoctor = Crud.CREATE to Tables.Doctor
         return if (requester can createDoctor) {
-            val patients = doctor.patients?.let { patientRepository.getByIds(it) } ?: emptySet()
+            val patients = doctor.patients?.let { patientRepository.getByIds(it.map { pid -> pid.id }) } ?: emptySet()
             val doctorEntity = Doctor(doctor, user, patients)
             doctorRepository.save(doctorEntity)
         } else {
@@ -77,7 +79,7 @@ class DoctorDaoImpl(
     override suspend fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
         val updateDoctor = Crud.UPDATE to Tables.Doctor
         if (requester can updateDoctor) {
-            val doctorEntity = doctorRepository.getOne(doctor.did.toLong())
+            val doctorEntity = doctorRepository.getById(doctor.did.id)
             doctorEntity.setByGqlInput(doctor, sessionFactory.currentSession)
             return doctorEntity
         } else {
@@ -85,10 +87,10 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByClinic(clinic: ID, requester: MediqToken): Collection<Doctor> {
+    override suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            clinicRepository.getOne(clinic.toLong()).doctors
+            clinicRepository.getById(clinic.id).doctors
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }

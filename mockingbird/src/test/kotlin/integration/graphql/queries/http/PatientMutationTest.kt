@@ -1,9 +1,12 @@
 package integration.graphql.queries.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
@@ -44,11 +47,15 @@ class PatientMutationTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun `update patient`() {
         coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
             every { uid } returns "admin"
         }, mockk(relaxed = true))
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
         val original = hibernatePatientRepository.save(EntityStore.patient("PatientMutationTest.update patient"))
 
@@ -60,9 +67,10 @@ class PatientMutationTest(
                 .accept(APPLICATION_JSON_MEDIA_TYPE)
                 .contentType(GRAPHQL_MEDIA_TYPE)
                 .bodyValue(
+                    //language=GraphQL
                     """
-                    |mutation { $query(patient: {
-                    |   pid:${original.id!!},
+                    |mutation { updatePatient(patient: {
+                    |   pid: {id: "${original.id!!}"},
                     |   nameInfo: {
                     |       firstName:"Ryan",
                     |       middleName:"Rodney",
@@ -108,7 +116,12 @@ class PatientMutationTest(
                     |           type:Cell
                     |       }
                     |   ]
-                    |}) {pid}}
+                    |}) {
+                    |    pid {
+                    |            id
+                    |        }
+                    |    }
+                    |}
                 """.trimMargin()
                 )
                 .exchange()

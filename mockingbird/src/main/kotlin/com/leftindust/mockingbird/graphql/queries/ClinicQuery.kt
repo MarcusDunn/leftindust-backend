@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class ClinicQuery(private val clinicDao: ClinicDao) : Query {
-    suspend fun clinic(cid: ID, authContext: GraphQLAuthContext): GraphQLClinic {
-        return clinicDao.getByCid(cid, authContext.mediqAuthToken).let { GraphQLClinic(it, it.id!!, authContext) }
+    suspend fun clinic(cid: GraphQLClinic.ID, authContext: GraphQLAuthContext): GraphQLClinic {
+        val clinic = clinicDao.getByCid(cid, authContext.mediqAuthToken)
+        return GraphQLClinic(clinic, authContext)
     }
 }

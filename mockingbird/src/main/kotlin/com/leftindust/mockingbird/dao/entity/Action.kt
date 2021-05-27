@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.GraphQLPermission
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import java.sql.Timestamp
+import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -25,10 +26,10 @@ class Action(
     @Column(name = "end_time")
     val endTime: Timestamp? = null,
     @Column(name = "row_id")
-    val rowId: Long? = null,
+    val rowId: UUID? = null,
     @Column(name = "column_name")
     val columnName: String? = null,
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
 
     constructor(pair: Pair<Crud, Tables>) : this(
         permissionType = pair.first,
@@ -40,7 +41,7 @@ class Action(
         permissionType = graphQLPermission.permissionType,
         startTime = graphQLPermission.startTime?.toTimestamp(),
         endTime = graphQLPermission.endTime?.toTimestamp(),
-        rowId = graphQLPermission.rowId?.toLong(),
+        rowId = graphQLPermission.rowId,
         columnName = graphQLPermission.columnName,
     )
 

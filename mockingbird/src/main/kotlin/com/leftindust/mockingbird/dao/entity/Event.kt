@@ -28,7 +28,7 @@ class Event(
     val patients: Set<Patient>,
     @Embedded
     var reoccurrence: Reoccurrence? = null,
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
 
     init { // validation logic
         if (allDay && endTime != null) {

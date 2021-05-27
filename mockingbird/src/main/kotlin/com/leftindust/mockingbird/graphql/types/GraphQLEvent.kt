@@ -10,6 +10,7 @@ import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
 @GraphQLName("Event")
 data class GraphQLEvent(
@@ -22,12 +23,15 @@ data class GraphQLEvent(
     val reoccurrence: GraphQLRecurrence?,
     private val authContext: GraphQLAuthContext,
 ) {
+    @GraphQLName("EventId")
+    data class ID(val id: UUID)
+
     // we need the `senseless comparison` because hibernate handles nullability for embedded fields
     // (such as reoccurrence) in the most unintuitive way possible. reoccurrence CANNOT BE NULL instead hibernate sets
     // all of its fields to null because hibernate hates you and would kill your dog if it had the chance.
     @Suppress("SENSELESS_COMPARISON")
     constructor(event: Event, authContext: GraphQLAuthContext) : this(
-        eid = gqlID(event.id!!.toLong()),
+        eid = ID(event.id!!),
         title = event.title,
         description = event.description,
         startTime = GraphQLUtcTime(event.startTime),
@@ -46,12 +50,12 @@ data class GraphQLEvent(
     suspend fun doctors(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao
     ): List<GraphQLDoctor> {
-        return doctorDao.getByEvent(eid.toLong(), authContext.mediqAuthToken)
-            .map { GraphQLDoctor(it, it.id!!, authContext) }
+        return doctorDao.getByEvent(eid, authContext.mediqAuthToken)
+            .map { GraphQLDoctor(it, authContext) }
     }
 
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> {
         return patientDao.getByEvent(eid, authContext.mediqAuthToken)
-            .map { GraphQLPatient(it, it.id!!, authContext) }
+            .map { GraphQLPatient(it, authContext) }
     }
 }

@@ -19,7 +19,7 @@ class EmergencyContact(
     var phone: Set<Phone> = emptySet(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var email: Set<Email> = emptySet(),
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
     constructor(graphQLEmergencyContactInput: GraphQLEmergencyContactInput, patient: Patient) : this(
         patient = patient,
         relationship = graphQLEmergencyContactInput.relationship,

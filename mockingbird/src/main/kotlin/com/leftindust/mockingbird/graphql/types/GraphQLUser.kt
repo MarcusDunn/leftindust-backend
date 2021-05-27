@@ -15,6 +15,7 @@ import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
 @GraphQLName("User")
 data class GraphQLUser(
@@ -44,7 +45,7 @@ data class GraphQLUser(
     }
 
     suspend fun associatedDoctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
-        return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, it.id!!, authContext) }
+        return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
     }
 
     suspend fun hasPermission(
@@ -63,8 +64,11 @@ data class GraphQLUser(
         val gid: ID,
         val name: String
     ) {
+        @GraphQLName("GroupId")
+        data class ID(val id: UUID)
+
         constructor(group: MediqGroup) : this(
-            gid = gqlID(group.id!!),
+            gid = ID(group.id!!),
             name = group.name
         )
     }

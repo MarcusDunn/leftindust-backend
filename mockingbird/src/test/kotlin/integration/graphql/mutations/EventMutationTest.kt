@@ -2,14 +2,19 @@ package integration.graphql.mutations
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.mutations.EventMutation
 import com.leftindust.mockingbird.graphql.types.GraphQLDayOfWeek
 import com.leftindust.mockingbird.graphql.types.GraphQLMonth
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.*
+import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -19,6 +24,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 
@@ -29,16 +35,18 @@ class EventMutationTest(
     @Autowired private val eventMutation: EventMutation,
     @Autowired private val hibernateEventRepository: HibernateEventRepository
 ) {
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun `add event no recurrence`() {
         val event = EntityStore.graphQLEventInput("EventMutationTest.add event no recurrence")
 
+        val mediqToken = mockk<MediqToken>()
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
-
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
         assertDoesNotThrow {
@@ -63,11 +71,11 @@ class EventMutationTest(
             ),
         )
 
+        val mediqToken = mockk<MediqToken>()
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         runBlocking { eventMutation.addEvent(event, graphQLAuthContext) }
 
@@ -78,11 +86,11 @@ class EventMutationTest(
 
     @Test
     internal fun `edit event`() {
+        val mediqToken = mockk<MediqToken>()
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         val eid = runBlocking {
             eventMutation.addEvent(
@@ -115,11 +123,11 @@ class EventMutationTest(
 
     @Test
     internal fun `edit event with recurrence`() {
+        val mediqToken = mockk<MediqToken>()
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
         val recurrence = GraphQLRecurrenceInput(
             startDate = GraphQLDateInput(1, GraphQLMonth.Mar, 2020),

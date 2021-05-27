@@ -5,13 +5,14 @@ import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PermissionDao
 import com.leftindust.mockingbird.graphql.types.GraphQLPermission
+import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.stereotype.Component
 
 @Component
 class PermissionMutation(private val permissionDao: PermissionDao) : Mutation {
     suspend fun addPermission(
-        groupId: ID? = null,
+        groupId: GraphQLUser.Group.ID? = null,
         userUid: String? = null,
         permission: GraphQLPermissionInput,
         graphQLAuthContext: GraphQLAuthContext
@@ -22,14 +23,14 @@ class PermissionMutation(private val permissionDao: PermissionDao) : Mutation {
                     userUid,
                     permission,
                     graphQLAuthContext.mediqAuthToken
-                ).action.let { GraphQLPermission(it, it.id!!) }
+                ).action.let { GraphQLPermission(it) }
             }
             groupId != null && userUid == null -> {
                 permissionDao.addGroupPermission(
                     groupId,
                     permission,
                     graphQLAuthContext.mediqAuthToken
-                ).action.let { GraphQLPermission(it, it.id!!) }
+                ).action.let { GraphQLPermission(it) }
             }
             else -> throw IllegalArgumentException("ONE of group or user must be specified when adding permissions")
         }

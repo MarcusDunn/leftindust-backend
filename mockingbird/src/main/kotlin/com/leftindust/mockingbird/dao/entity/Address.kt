@@ -19,7 +19,7 @@ class Address(
     var countryState: CountryState,
     @Column(name = "postal_code", nullable = false)
     var postalCode: String, //todo validation
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
     constructor(graphQLAddress: GraphQLAddressInput) : this(
         type = graphQLAddress.addressType,
         address = graphQLAddress.address,

@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -10,7 +9,8 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLClinic
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import org.hibernate.SessionFactory
@@ -41,7 +41,7 @@ class ClinicDaoImpl(
     override suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic {
         val createClinic = Crud.UPDATE to Tables.Clinic
         if (requester can createClinic) {
-            val clinicEntity = clinicRepository.getOne(clinic.id.toLong())
+            val clinicEntity = clinicRepository.getById(clinic.cid.id)
             clinicEntity.setByGqlInput(clinic, sessionFactory.currentSession)
             return clinicEntity
         } else {
@@ -49,20 +49,20 @@ class ClinicDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(doctor: ID, requester: MediqToken): Collection<Clinic> {
+    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic> {
         val readClinic = Crud.READ to Tables.Clinic
         return if (requester can readClinic) {
-            val doctorEntity = doctorRepository.getOne(doctor.toLong())
+            val doctorEntity = doctorRepository.getById(did.id)
             clinicRepository.getAllByDoctorsContains(doctorEntity)
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }
     }
 
-    override suspend fun getByCid(cid: ID, requester: MediqToken): Clinic {
+    override suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic {
         val readClinic = Crud.READ to Tables.Clinic
         return if (requester can readClinic) {
-            clinicRepository.getOne(cid.toLong())
+            clinicRepository.getById(cid.id)
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }

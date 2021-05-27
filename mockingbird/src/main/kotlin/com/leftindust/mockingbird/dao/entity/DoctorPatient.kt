@@ -19,4 +19,4 @@ class DoctorPatient(
     val doctor: Doctor,
     @Column(name = "date_created")
     val dateCreated: Timestamp = Timestamp.from(Instant.now())
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable()

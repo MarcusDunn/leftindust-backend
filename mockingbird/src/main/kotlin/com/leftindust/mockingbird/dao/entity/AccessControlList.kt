@@ -8,8 +8,8 @@ class AccessControlList(
     @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.EAGER)
     val group: MediqGroup? = null,
     @OneToOne(orphanRemoval = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mediq_user")
+    @JoinColumn(name = "mediq_user_id")
     val mediqUser: MediqUser? = null,
     @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.EAGER)
     val action: Action,
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable()

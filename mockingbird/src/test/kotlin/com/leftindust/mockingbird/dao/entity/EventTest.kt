@@ -1,21 +1,23 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import integration.util.EntityStore
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class EventTest {
 
     @Test
     fun update() {
+        val eventID = UUID.randomUUID()
         val event = EntityStore.event("EventTest.update")
-            .apply { id = 1000 }
+            .apply { id = eventID }
         val result = event.update(
             GraphQLEventEditInput(
-                eid = gqlID(1000),
+                eid = GraphQLEvent.ID(eventID),
                 description = OptionalInput.Defined("new fancy description"),
                 allDay = true,
                 end = OptionalInput.Defined(null)

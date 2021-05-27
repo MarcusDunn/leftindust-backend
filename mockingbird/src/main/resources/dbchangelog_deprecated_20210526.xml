@@ -1,0 +1,918 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="marcus (generated)" id="1618335280849-1">
+        <createTable tableName="doctor">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctorPK"/>
+            </column>
+            <column name="date_of_birth" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-2">
+        <createTable tableName="doctor_address">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_address_pkey"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_address_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-3">
+        <createTable tableName="prescription">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="prescriptionPK"/>
+            </column>
+            <column name="amount_magnitude" type="FLOAT4"/>
+            <column name="amount_unit" type="VARCHAR(255)"/>
+            <column name="consumption_method" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filing_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frequency_recurrence_rule" type="VARCHAR(255)"/>
+            <column name="generic_permitted" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="medication_dosage_magnitude" type="FLOAT4"/>
+            <column name="medication_dosage_unit" type="VARCHAR(255)"/>
+            <column name="medication_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number_of_refills" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="doctor_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-4">
+        <createTable tableName="doctor_patient">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_patientPK"/>
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="doctor_id" type="BIGINT"/>
+            <column name="patient_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-5">
+        <createTable tableName="patient">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patientPK"/>
+            </column>
+            <column name="date_of_birth" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(255)"/>
+            <column name="insurance_number" type="VARCHAR(255)"/>
+            <column name="gender" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sex" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ethnicity" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-6">
+        <createTable tableName="patient_email">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_email_pkey"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_email_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-7">
+        <createTable tableName="access_control_list">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="access_control_listPK"/>
+            </column>
+            <column name="action_id" type="BIGINT"/>
+            <column name="group_id" type="BIGINT"/>
+            <column name="mediq_user" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-8">
+        <createTable tableName="mediq_group">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mediq_groupPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-9">
+        <createTable tableName="event_patient">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="event_patient_pkey"/>
+            </column>
+            <column name="patients_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="event_patient_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-10">
+        <createTable tableName="mediq_user">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mediq_userPK"/>
+            </column>
+            <column name="unique_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-11">
+        <createTable tableName="email">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="emailPK"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-12">
+        <createTable tableName="event_doctor">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="event_doctor_pkey"/>
+            </column>
+            <column name="doctors_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="event_doctor_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-13">
+        <createTable tableName="doctor_email">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_email_pkey"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_email_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-14">
+        <createTable tableName="emergency_contact">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="emergency_contactPK"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(255)"/>
+            <column name="patient_id" type="BIGINT"/>
+            <column name="relationship" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-15">
+        <createTable tableName="doctor_phone">
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_phone_pkey"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="doctor_phone_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-16">
+        <createTable tableName="address">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="addressPK"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="province" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-17">
+        <createTable tableName="comments">
+            <column name="prescription_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-18">
+        <createTable tableName="emergency_contact_phone">
+            <column name="emergency_contact_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="emergency_contact_phone_pkey"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="emergency_contact_phone_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-19">
+        <createTable tableName="phone">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="phonePK"/>
+            </column>
+            <column name="number" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-20">
+        <createTable tableName="patient_address">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_address_pkey"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_address_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-21">
+        <createTable tableName="patient_phone">
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_phone_pkey"/>
+            </column>
+            <column name="phone_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="patient_phone_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-22">
+        <createTable tableName="mediq_record">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mediq_recordPK"/>
+            </column>
+            <column name="creation_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="json_blob" type="VARCHAR(10000)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="patient_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-23">
+        <createTable tableName="event">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="eventPK"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="start_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="duration_millis" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-24">
+        <createTable tableName="visit">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="visitPK"/>
+            </column>
+            <column name="description" type="VARCHAR(2000)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="icd_foundation_code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-25">
+        <createTable tableName="action">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="actionPK"/>
+            </column>
+            <column name="column_name" type="VARCHAR(255)"/>
+            <column name="end_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="permission_type" type="VARCHAR(255)"/>
+            <column name="referenced_table_name" type="VARCHAR(255)"/>
+            <column name="row_id" type="INTEGER"/>
+            <column name="start_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-26">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_address"
+                                 constraintName="FK1df6cs9ahivrta22qji30hnhs" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-27">
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_plnygrxm1nd1p78eiu6q18va9"
+                             tableName="doctor_address"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-28">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="prescription"
+                                 constraintName="FK1ppr8greedyrey8nchpr0v4dn" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-29">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_patient"
+                                 constraintName="FK1vod5519v8g177r669gytdahb" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-30">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_email"
+                                 constraintName="FK29sbaet85x7k857frak9svbwt" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-31">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_14i0nucacpiaraf22i1isdqt5"
+                             tableName="patient_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-32">
+        <addForeignKeyConstraint baseColumnNames="patients_id" baseTableName="event_patient"
+                                 constraintName="FK4i9kcs465pejbskygu8tov29e" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-33">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="mediq_user"
+                                 constraintName="FKnjj016wpsoo9mxhdj8qs418ch" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mediq_group" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-34">
+        <addUniqueConstraint columnNames="unique_id" constraintName="uc_mediq_userunique_id_col"
+                             tableName="mediq_user"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-35">
+        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="event_doctor"
+                                 constraintName="FK7gcq41ycgvrabe0joymhyuynm" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-36">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="doctor_email"
+                                 constraintName="FK7uxef8upsqo71f596u2v1mwus" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-37">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_email"
+                                 constraintName="FKq23ug4o2ut08hdvox5bun83a6" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-38">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_2eusdpc80yqfy4h3mgdvdm0og"
+                             tableName="doctor_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-39">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="emergency_contact"
+                                 constraintName="FK89nspxrjggthmmdr3o72n264x" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-40">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_phone"
+                                 constraintName="FKabd8fy0l940wakuwbss93r088" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-41">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_kjricuojdfn4aif5lgihwdwct"
+                             tableName="doctor_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-42">
+        <addForeignKeyConstraint baseColumnNames="prescription_id" baseTableName="comments"
+                                 constraintName="FKb6lhyncrpl14mnxpq8mo9aiej" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="prescription" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-43">
+        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_phone"
+                                 constraintName="FKrp70w2pt1fqwhgapoi0f7yq38" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="emergency_contact" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-44">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_k1pki3s4ptwoswhlu9g38tqw3"
+                             tableName="emergency_contact_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-45">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="patient_address"
+                                 constraintName="FKew7hqtesa8lq5kfdjckx7fxl9" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-46">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_address"
+                                 constraintName="FKssuovng95msegtbxwjljpahwu" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-47">
+        <addUniqueConstraint columnNames="address_id" constraintName="UK_9hb8te7y2dgo0o2rf7df3uh4u"
+                             tableName="patient_address"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-48">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="patient_phone"
+                                 constraintName="FKjmi3mpfmf37cmtrl7ppd4prfh" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-49">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_phone"
+                                 constraintName="FKqfd8fjrue9vxnd55vkd68p3me" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-50">
+        <addUniqueConstraint columnNames="phone_id" constraintName="UK_b1r6fls3wo602lpghuyqfcgkc"
+                             tableName="patient_phone"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-51">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="mediq_record"
+                                 constraintName="FKoegm7gi1uldmqj394e8jac5wn" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-52">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="visit"
+                                 constraintName="FKom1f1n6vcem0rnyhg8bfw1h8s" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-53">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="doctor"
+                                 constraintName="FKtrhh1tqlua01uigq052cssevm" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-54">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="doctor_address"
+                                 constraintName="FKawnnpcv2yl4q314pg8yw5s0r2" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="address" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-55">
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="doctor_patient"
+                                 constraintName="FKoee3w1lhncf3q845n6vatov1j" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-56">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="patient"
+                                 constraintName="FK4ppqmsg1b23u41q4aaa7hf2pe" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-57">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="patient_email"
+                                 constraintName="FK6722f75t4iilmpunn4b302cwf" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="email" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-58">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="access_control_list"
+                                 constraintName="FK3qsbueo2t6qm863mqou11iya1" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mediq_group" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-59">
+        <addForeignKeyConstraint baseColumnNames="mediq_user" baseTableName="access_control_list"
+                                 constraintName="FKny8nnu4rxqvf3l7s4u707h77n" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-60">
+        <addForeignKeyConstraint baseColumnNames="action_id" baseTableName="access_control_list"
+                                 constraintName="FKq3ad617xa91r5urxhxodardev" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="action" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-61">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_patient"
+                                 constraintName="FKrxmrv8u5d91btf3wor3roruko" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-62">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_doctor"
+                                 constraintName="FKopfwr1t8xe176661qbvbqfa2t" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="event" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-63">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="doctor_phone"
+                                 constraintName="FKgdqj1ckhh58pn16opiiukuwvv" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618335280849-64">
+        <addForeignKeyConstraint baseColumnNames="phone_id" baseTableName="emergency_contact_phone"
+                                 constraintName="FKca13q3h3se45r2bdji3rgc52i" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="phone" validate="true"/>
+    </changeSet>
+    <changeSet id="1618335280850-1" author="marcus">
+        <insert tableName="mediq_group">
+            <column name="id" value="1"/>
+            <column name="name" value="admin"/>
+        </insert>
+    </changeSet>
+    <changeSet id="1618335280850-2" author="marcus">
+        <insert tableName="mediq_user">
+            <column name="id" value="0"/>
+            <column name="unique_id" value="admin"/>
+            <column name="group_id" value="1"/>
+        </insert>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618337259495-1">
+        <addColumn tableName="event">
+            <column name="all_day" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-1">
+        <createTable tableName="event_days">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-2">
+        <addColumn tableName="event">
+            <column name="end_date" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-3">
+        <addColumn tableName="event">
+            <column name="start_date" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-4">
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_days"
+                                 constraintName="FKpbioph7kp09qbgtjmc4s2la61" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-5">
+        <dropForeignKeyConstraint baseTableName="prescription" constraintName="FK1ppr8greedyrey8nchpr0v4dn"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-6">
+        <dropForeignKeyConstraint baseTableName="comments" constraintName="FKb6lhyncrpl14mnxpq8mo9aiej"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-7">
+        <dropTable tableName="comments"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618353521091-8">
+        <dropTable tableName="prescription"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618612037085-1">
+        <addColumn tableName="event">
+            <column name="end_time" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1618612037085-2">
+        <dropColumn columnName="duration_millis" tableName="event"/>
+    </changeSet>
+    <changeSet id="marcus" author="1618612037086">
+        <update tableName="mediq_group">
+            <column name="name" value="Administrator"/>
+            <where>name='admin'</where>
+        </update>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-1">
+        <createTable tableName="name_info">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="name_infoPK"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-2">
+        <addColumn tableName="doctor">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-3">
+        <addColumn tableName="mediq_user">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-4">
+        <addColumn tableName="patient">
+            <column name="name_info_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-5">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="patient"
+                                 constraintName="FK7o051o7jeffmkglcq8ql2pusp" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-6">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="doctor"
+                                 constraintName="FKf6k6oe3l8fjge6x9x47djwo1p" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-7">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="mediq_user"
+                                 constraintName="FKjh63v3p54suwqkuk79ynjj507" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-8">
+        <dropColumn columnName="first_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-9">
+        <dropColumn columnName="first_name" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-10">
+        <dropColumn columnName="last_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-11">
+        <dropColumn columnName="last_name" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-12">
+        <dropColumn columnName="middle_name" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619471914348-13">
+        <dropColumn columnName="middle_name" tableName="patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619566523248-1">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="doctor" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619566523248-2">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="patient" validate="true"/>
+    </changeSet>
+    <changeSet id="1619566601536" author="marcus">
+        <insert tableName="name_info">
+            <column name="id" value="1"/>
+            <column name="first_name" value="admin_FN"/>
+            <column name="last_name" value="admin_LN"/>
+        </insert>
+        <update tableName="mediq_user">
+            <column name="name_info_id" value="1"/>
+            <where>unique_id='admin'</where>
+        </update>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619566601537-1">
+        <addNotNullConstraint columnDataType="bigint" columnName="name_info_id" tableName="mediq_user" validate="true"/>
+    </changeSet>
+    <changeSet id="1619566601538" author="marcus">
+        <insert tableName="name_info">
+            <column name="id" value="0"/>
+            <column name="first_name" value="admin_FN"/>
+            <column name="last_name" value="admin_LN"/>
+        </insert>
+        <update tableName="mediq_user">
+            <column name="name_info_id" value="0"/>
+            <where>unique_id='admin'</where>
+        </update>
+        <delete tableName="name_info">
+            <where>id=1</where>
+        </delete>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-1">
+        <addColumn tableName="emergency_contact">
+            <column name="name_info_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-2">
+        <addForeignKeyConstraint baseColumnNames="name_info_id" baseTableName="emergency_contact"
+                                 constraintName="FKnclxop3u6i5d7fb3fgkfugory" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="name_info"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-3">
+        <dropColumn columnName="first_name" tableName="emergency_contact"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-4">
+        <dropColumn columnName="last_name" tableName="emergency_contact"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619630799139-5">
+        <dropColumn columnName="middle_name" tableName="emergency_contact"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-1">
+        <createTable tableName="emergency_contact_email">
+            <column name="emergency_contact_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-2">
+        <addUniqueConstraint columnNames="email_id" constraintName="UK_6n8qhyud44ujr78p2x2ufinnf"
+                             tableName="emergency_contact_email"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-3">
+        <addForeignKeyConstraint baseColumnNames="emergency_contact_id" baseTableName="emergency_contact_email"
+                                 constraintName="FK4t5hp6dayoki596rcbl2n83gl" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="emergency_contact" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619631123408-4">
+        <addForeignKeyConstraint baseColumnNames="email_id" baseTableName="emergency_contact_email"
+                                 constraintName="FKexdx1twosjfnvg8xpx7b2b9fn" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="email"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619734001481-1">
+        <dropNotNullConstraint columnDataType="date" columnName="date_of_birth" tableName="doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-1">
+        <createTable tableName="clinic">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clinicPK"/>
+            </column>
+            <column name="address_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-2">
+        <createTable tableName="clinic_doctors">
+            <column name="clinic_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="doctors_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-3">
+        <addColumn tableName="doctor">
+            <column name="clinic_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-4">
+        <addUniqueConstraint columnNames="doctors_id" constraintName="UK_m2fqkorxrltscphn4v4sxjt0u"
+                             tableName="clinic_doctors"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-5">
+        <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="clinic"
+                                 constraintName="FK15djxm3mj8bmp7mv7gdm6m1du" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="address"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-6">
+        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="clinic_doctors"
+                                 constraintName="FK3ykc88sbg8rbo0nd5u468asmg" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-7">
+        <addForeignKeyConstraint baseColumnNames="clinic_id" baseTableName="doctor"
+                                 constraintName="FKaqgufpq4bfr4au915m6u0s4dm" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="clinic"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619737343672-8">
+        <addForeignKeyConstraint baseColumnNames="clinic_id" baseTableName="clinic_doctors"
+                                 constraintName="FKqpu1mv6pds879afuru3fllsqe" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="clinic"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1619807404019-1">
+        <addColumn tableName="clinic">
+            <column name="name" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1619807404012" author="marcus">
+        <modifyDataType tableName="phone" columnName="number" newDataType="varchar(255)"/>
+    </changeSet>
+    <changeSet id="1619807404013" author="marcus">
+        <addUniqueConstraint tableName="doctor_patient" columnNames="doctor_id, patient_id"/>
+    </changeSet>
+    <changeSet id="1619807404014-1" author="">
+        <delete tableName="mediq_user"/>
+        <delete tableName="name_info"/>
+        <delete tableName="mediq_group"/>
+        <delete tableName="access_control_list"/>
+    </changeSet>
+    <changeSet id="16198074040134-2" author="marcus">
+        <modifyDataType tableName="access_control_list" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="access_control_list" columnName="action_id" newDataType="UUID"/>
+        <modifyDataType tableName="access_control_list" columnName="group_id" newDataType="UUID"/>
+        <modifyDataType tableName="access_control_list" columnName="mediq_user" newDataType="UUID"/>
+
+        <modifyDataType tableName="action" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="action" columnName="row_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="address" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="clinic" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="clinic" columnName="address_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="clinic_doctors" columnName="clinic_id" newDataType="UUID"/>
+        <modifyDataType tableName="clinic_doctors" columnName="doctors_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="doctor" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor" columnName="user_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor" columnName="clinic_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor" columnName="name_info_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="doctor_address" columnName="doctor_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor_address" columnName="address_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="doctor_email" columnName="doctor_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor_email" columnName="email_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="doctor_patient" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor_patient" columnName="doctor_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor_patient" columnName="patient_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="doctor_phone" columnName="doctor_id" newDataType="UUID"/>
+        <modifyDataType tableName="doctor_phone" columnName="phone_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="email" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="emergency_contact" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="emergency_contact" columnName="patient_id" newDataType="UUID"/>
+        <modifyDataType tableName="emergency_contact" columnName="name_info_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="emergency_contact_email" columnName="emergency_contact_id" newDataType="UUID"/>
+        <modifyDataType tableName="emergency_contact_email" columnName="email_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="emergency_contact_phone" columnName="emergency_contact_id" newDataType="UUID"/>
+        <modifyDataType tableName="emergency_contact_phone" columnName="phone_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="event" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="event_days" columnName="event_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="event_doctor" columnName="event_id" newDataType="UUID"/>
+        <modifyDataType tableName="event_doctor" columnName="doctors_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="event_patient" columnName="event_id" newDataType="UUID"/>
+        <modifyDataType tableName="event_patient" columnName="patients_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="mediq_group" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="mediq_record" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="mediq_record" columnName="patient_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="mediq_user" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="mediq_user" columnName="group_id" newDataType="UUID"/>
+        <modifyDataType tableName="mediq_user" columnName="name_info_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="name_info" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="patient" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="patient" columnName="name_info_id" newDataType="UUID"/>
+        <modifyDataType tableName="patient" columnName="user_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="patient_address" columnName="patient_id" newDataType="UUID"/>
+        <modifyDataType tableName="patient_address" columnName="address_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="patient_email" columnName="patient_id" newDataType="UUID"/>
+        <modifyDataType tableName="patient_email" columnName="email_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="patient_phone" columnName="patient_id" newDataType="UUID"/>
+        <modifyDataType tableName="patient_phone" columnName="phone_id" newDataType="UUID"/>
+
+        <modifyDataType tableName="phone" columnName="id" newDataType="UUID"/>
+
+        <modifyDataType tableName="visit" columnName="id" newDataType="UUID"/>
+        <modifyDataType tableName="visit" columnName="event_id" newDataType="UUID"/>
+    </changeSet>
+</databaseChangeLog>

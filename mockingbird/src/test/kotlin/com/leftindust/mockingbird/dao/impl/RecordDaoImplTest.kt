@@ -6,11 +6,14 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLRecord
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class RecordDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -25,16 +28,19 @@ internal class RecordDaoImplTest {
     @Test
     fun getRecordByRecordId() {
         val mockkRecord = mockk<MediqRecord>()
+
+        val recordId = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { recordRepository.getOne(1000) } returns mockkRecord
+        every { recordRepository.getById(recordId) } returns mockkRecord
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordByRecordId(1000, mockk()) }
+        val result = runBlocking { recordDaoImpl.getRecordByRecordId(GraphQLRecord.ID(recordId), mockk()) }
 
         coVerifyAll {
             authorizer.getAuthorization(any(), any())
-            recordRepository.getOne(1000)
+            recordRepository.getById(recordId)
         }
 
         confirmVerified(mockkRecord)
@@ -45,23 +51,25 @@ internal class RecordDaoImplTest {
     @Test
     fun getRecordsByPatientPid() {
         val mockkRecord = mockk<MediqRecord>()
+        val patientID = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
         val mockkPatient = mockk<Patient> {
-            every { id } returns 100
+            every { id } returns patientID
         }
 
-        every { patientRepository.getOne(1000) } returns mockkPatient
-        every { recordRepository.getAllByPatientId(100L) } returns listOf(mockkRecord)
+        every { patientRepository.getById(patientID) } returns mockkPatient
+        every { recordRepository.getAllByPatientId(patientID) } returns listOf(mockkRecord)
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(1000, mockk()) }
+        val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(GraphQLPatient.ID(patientID), mockk()) }
 
         coVerifyAll {
             authorizer.getAuthorization(any(), any())
-            patientRepository.getOne(1000)
-            recordRepository.getAllByPatientId(100)
+            patientRepository.getById(patientID)
+            recordRepository.getAllByPatientId(patientID)
             mockkPatient.id
         }
 

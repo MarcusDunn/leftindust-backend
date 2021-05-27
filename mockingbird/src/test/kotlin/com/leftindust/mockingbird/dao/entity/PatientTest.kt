@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import integration.util.EntityStore
@@ -10,6 +10,7 @@ import io.mockk.spyk
 import org.hibernate.Session
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class PatientTest {
 
@@ -44,10 +45,11 @@ internal class PatientTest {
 
     @Test
     fun setByGqlInput() {
-        val patient = EntityStore.patient("PatientTest.setByGqlInput").apply { id = 1 }
+        val patientID = UUID.randomUUID()
+        val patient = EntityStore.patient("PatientTest.setByGqlInput").apply { id = patientID }
 
         val gqlInput = GraphQLPatientEditInput(
-            pid = gqlID(1),
+            pid = GraphQLPatient.ID(patientID),
             nameInfo = GraphQLNameInfoEditInput(
                 firstName = "grape"
             )

@@ -4,6 +4,8 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import integration.util.EntityStore
 import org.hibernate.SessionFactory
@@ -35,8 +37,8 @@ class PatientTest(
         val newDoctor = doctorRepository.save(EntityStore.doctor("PatientTest.set by gql input with patients 2"))
 
         val gqlInput = GraphQLPatientEditInput(
-            pid = gqlID(patient.id!!),
-            doctors = listOf(gqlID(newDoctor.id!!))
+            pid = GraphQLPatient.ID(patient.id!!),
+            doctors = listOf(GraphQLDoctor.ID(newDoctor.id!!))
         )
 
         patient.setByGqlInput(gqlInput, sessionFactory.currentSession)

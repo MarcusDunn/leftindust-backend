@@ -1,16 +1,19 @@
 package integration.dao
 
 import com.leftindust.mockingbird.MockingbirdApplication
-import com.leftindust.mockingbird.auth.ContextFactory
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
+import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,10 +31,15 @@ class ClinicDaoTest(
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val clinicRepository: HibernateClinicRepository,
 ) {
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun `test get clinic by doctor`() {
-        val doctor =
-            doctorRepository.save(EntityStore.doctor("ClinicDaoTest.test get clinic by doctor"))
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val doctor = doctorRepository.save(
+            EntityStore.doctor("ClinicDaoTest.test get clinic by doctor"))
 
         val clinic = clinicRepository.save(
             Clinic(
@@ -45,7 +53,7 @@ class ClinicDaoTest(
             every { uid } returns "admin"
         }
 
-        val result = runBlocking { clinicDao.getByDoctor(gqlID(doctor.id!!), requester) }
+        val result = runBlocking { clinicDao.getByDoctor(GraphQLDoctor.ID(doctor.id!!), requester) }
 
         assertEquals(listOf(clinic), result)
     }

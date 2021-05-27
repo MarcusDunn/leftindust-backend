@@ -13,7 +13,7 @@ class MediqUser(
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
     constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(
         nameInfo = NameInfo(graphQLUserInput.nameInfo),
         uniqueId = graphQLUserInput.uid,

@@ -1,10 +1,11 @@
 package integration.graphql.mutations.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import graphql.Assert
 import integration.APPLICATION_JSON_MEDIA_TYPE
@@ -33,41 +34,47 @@ class PatientMutationTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     @Transactional
     internal fun `create patient with address`() {
+        val mediqToken = mockk<MediqToken>()
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
-            every { mediqAuthToken } returns mockk() {
-                every { uid } returns "admin"
-            }
+            every { mediqAuthToken } returns mediqToken
         }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
-        val mutation = "addPatient"
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
-                """mutation { $mutation(patient: {
-                |    nameInfo: {firstName: "patient", lastName: "heck"},
+                //language=Graphql
+                """mutation { addPatient(patient: {
+                |    nameInfo: {firstName: "patient", lastName: "joe"},
                 |    dateOfBirth: {day: 23, month: Jan, year: 1999}, 
-                |    addresses: [{addressType: Apartment, address: "1444 Poo poo st", city: "Vancouver", country: Canada, province: "Alberta", postalCode: "Poopoo"}],
+                |    addresses: [{addressType: Apartment, address: "1444 main st", city: "Vancouver", country: Canada, province: "Alberta", postalCode: "weuhfw"}],
                 |    sex: Male
                 |})
-                | {
-                | firstName
-                |   }
+                |    {
+                |    pid {
+                |        id
+                |    }
+                |    firstName
+                |    }
                 |}
                 |""".trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(mutation)
+            .verifyOnlyDataExists("addPatient")
 
         val result = patientRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
-            .find { it.address.firstOrNull()?.address == "1444 Poo poo st" }
+            .find { it.address.firstOrNull()?.address == "1444 main st" }
         Assert.assertNotNull(result)
     }
 }

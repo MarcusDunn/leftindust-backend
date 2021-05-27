@@ -15,7 +15,7 @@ class Visit(
     @Column(name = "icd_foundation_code", nullable = false)
     @Convert(converter = IcdCodeConverter::class)
     var icdFoundationCode: FoundationIcdCode,
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
 
     constructor(visitInput: GraphQLVisitInput, event: Event) : this(
         event = event,

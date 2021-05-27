@@ -1,9 +1,12 @@
 package integration.graphql.mutations.http
 
 import com.leftindust.mockingbird.MockingbirdApplication
+import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
@@ -34,33 +37,37 @@ class EventMutationTest(
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
+    @MockkBean
+    private lateinit var authorizer: Authorizer
+
     @Test
     internal fun testAddEvent() {
-        coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
-            every { isVerified() } returns true
-            every { uid } returns "admin"
-        }, mockk(relaxed = true))
+        val mediqToken = mockk<MediqToken>()
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mediqToken
+        }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
-        val mutation = "addEvent"
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
+                //language=GraphQL
                 """
-                |mutation { $mutation(event: {
-                    |title: "MY EVENT",
-                    |description: "YO YO YO this do be an event doe",
-                    |start: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 09:01:15").time}},
-                    |end: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 10:01:15").time}}
+                |mutation { addEvent(event: {
+                |    title: "MY EVENT",
+                |    description: "YO YO YO this do be an event doe",
+                |    start: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 09:01:15").time}},
+                |    end: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 10:01:15").time}}
                 |}) {
                 |   title
                 |   }
                 |} """.trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists(mutation)
+            .verifyOnlyDataExists("addEvent")
 
         assertNotNull(hibernateEventRepository.findAll().find { it.title == "MY EVENT" })
     }

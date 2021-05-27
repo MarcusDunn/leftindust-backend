@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
@@ -37,7 +38,7 @@ class PatientsQueryPerfTest(
             patientRepository.save(EntityStore.patient("PatientsQueryPerfTest.test getting patients by pid $it"))
         }
             .map { it.id!! }
-            .map { gqlID(it) }
+            .map { GraphQLPatient.ID(it) }
 
         assertPerf("PatientQuery.patients by pids", runs = 10, maxNanos = Duration.ofMillis(70).toNanos()) {
             runBlocking { patientQuery.patients(pids = pids, authContext = authContext) }

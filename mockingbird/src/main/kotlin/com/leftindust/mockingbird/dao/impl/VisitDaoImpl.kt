@@ -10,7 +10,9 @@ import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -29,9 +31,9 @@ class VisitDaoImpl(
 ) : VisitDao, AbstractHibernateDao(authorizer) {
     private val logger: Logger = LogManager.getLogger()
 
-    override suspend fun getVisitByVid(vid: Long, requester: MediqToken): Visit {
+    override suspend fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit {
         return if (requester can (Crud.READ to Tables.Visit)) {
-            visitRepository.getOne(vid)
+            visitRepository.getById(vid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Visit)
         }
@@ -48,24 +50,24 @@ class VisitDaoImpl(
         )
 
         return if (requester can requiredPermissions) {
-            val event = eventRepository.getOne(visitInput.event.toLong())
+            val event = eventRepository.getById(visitInput.eid.id)
             visitRepository.save(Visit(visitInput, event))
         } else {
             throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
         }
     }
 
-    override suspend fun getByEvent(id: Long, requester: MediqToken): Visit {
+    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit {
         return if (requester can (Crud.READ to Tables.Event)) {
-            visitRepository.getByEvent_Id(id)
+            visitRepository.getByEvent_Id(eid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
     }
 
-    override suspend fun getByPatient(pid: Long, requester: MediqToken): List<Visit> {
+    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit> {
         return if (requester can listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Visit)) {
-            patientRepository.getOne(pid).schedule.events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
+            patientRepository.getById(pid.id).schedule.events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }

@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -12,7 +11,7 @@ import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
@@ -32,7 +31,7 @@ class PermissionDaoImpl(
     ): AccessControlList {
         val createAcl = Crud.CREATE to Tables.AccessControlList
         return if (requester can createAcl) {
-            val user = userRepository.getByUniqueId(uid);
+            val user = userRepository.getByUniqueId(uid)
             val action = Action(permission)
             val acl = AccessControlList(mediqUser = user, action = action)
             aclRepository.save(acl)
@@ -42,13 +41,13 @@ class PermissionDaoImpl(
     }
 
     override suspend fun addGroupPermission(
-        gid: ID,
+        gid: GraphQLUser.Group.ID,
         permission: GraphQLPermissionInput,
         requester: MediqToken
     ): AccessControlList {
         val createAcl = Crud.CREATE to Tables.AccessControlList
         return if (requester can createAcl) {
-            val group = groupRepository.getOne(gid.toLong())
+            val group = groupRepository.getById(gid.id)
             val action = Action(permission)
             val acl = AccessControlList(group = group, action = action)
             aclRepository.save(acl)

@@ -6,8 +6,8 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.entity.Clinic
-import com.leftindust.mockingbird.extensions.gqlID
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
 @GraphQLName("Clinic")
 data class GraphQLClinic(
@@ -15,15 +15,19 @@ data class GraphQLClinic(
     val address: GraphQLAddress,
     private val authContext: GraphQLAuthContext
 ) {
-    constructor(clinic: Clinic, id: Long, authContext: GraphQLAuthContext) : this(
-        cid = gqlID(id),
+
+    @GraphQLName("ClinicId")
+    data class ID(val id: UUID)
+
+    constructor(clinic: Clinic, authContext: GraphQLAuthContext) : this(
+        cid = ID(clinic.id!!),
         address = GraphQLAddress(clinic.address),
         authContext = authContext,
-    ) {
-        assert(clinic.id == id)
-    }
+    )
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
-        return doctorDao.getByClinic(cid, authContext.mediqAuthToken).map {GraphQLDoctor(it, it.id!!, authContext)}
+        return doctorDao
+            .getByClinic(cid, authContext.mediqAuthToken)
+            .map { GraphQLDoctor(it, authContext) }
     }
 }

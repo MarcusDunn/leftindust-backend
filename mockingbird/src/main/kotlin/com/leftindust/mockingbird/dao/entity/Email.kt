@@ -14,6 +14,6 @@ class Email(
     var type: GraphQLEmailType,
     @Column(name = "email", nullable = false)
     var email: String,
-) : AbstractJpaPersistable<Long>() {
+) : AbstractJpaPersistable() {
     constructor(graphQLEmail: GraphQLEmailInput) : this(graphQLEmail.type, graphQLEmail.email)
 }

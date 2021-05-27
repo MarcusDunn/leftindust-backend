@@ -7,7 +7,9 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import org.springframework.stereotype.Component
 
@@ -18,8 +20,8 @@ class EventQuery(
     private val doctorDao: DoctorDao,
 ) : Query {
     suspend fun events(
-        doctors: List<ID>? = null,
-        patients: List<ID>? = null,
+        doctors: List<GraphQLDoctor.ID>? = null,
+        patients: List<GraphQLPatient.ID>? = null,
         range: GraphQLTimeRangeInput? = null,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLEvent> {
@@ -49,11 +51,11 @@ class EventQuery(
     }
 
     private suspend fun getEventsByPatient(
-        patients: List<ID>,
+        patients: List<GraphQLPatient.ID>,
         graphQLAuthContext: GraphQLAuthContext,
     ): List<GraphQLEvent> {
         return patients
-            .map { patientDao.getByPID(it.toLong(), graphQLAuthContext.mediqAuthToken) }
+            .map { patientDao.getByPID(it, graphQLAuthContext.mediqAuthToken) }
             .flatMap { patient ->
                 patient.schedule.events.map {
                     GraphQLEvent(
@@ -65,10 +67,10 @@ class EventQuery(
     }
 
     private suspend fun getEventsByDoctor(
-        doctors: List<ID>,
+        doctors: List<GraphQLDoctor.ID>,
         graphQLAuthContext: GraphQLAuthContext
     ) = doctors
-        .map { doctorDao.getByDoctor(it.toLong(), graphQLAuthContext.mediqAuthToken) }
+        .map { doctorDao.getByDoctor(it, graphQLAuthContext.mediqAuthToken) }
         .flatMap { doc ->
             doc.schedule.events.map {
                 GraphQLEvent(

@@ -18,7 +18,7 @@ class PatientMutation(
     suspend fun updatePatient(patient: GraphQLPatientEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
         return patientDao
             .update(patient, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) } // safe nn assert as we just got from DB
+            .let { GraphQLPatient(it, graphQLAuthContext) } // safe nn assert as we just got from DB
     }
 
     @GraphQLDescription(
@@ -31,6 +31,6 @@ class PatientMutation(
                 patient = patient,
                 requester = graphQLAuthContext.mediqAuthToken
             )
-            .let { GraphQLPatient(it, it.id!!, graphQLAuthContext) }  // safe nn assert as we just added from DB
+            .let { GraphQLPatient(it, graphQLAuthContext) }  // safe nn assert as we just added from DB
     }
 }

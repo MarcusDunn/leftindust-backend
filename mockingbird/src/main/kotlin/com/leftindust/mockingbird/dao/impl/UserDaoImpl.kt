@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
@@ -12,7 +11,7 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.toLong
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
@@ -49,7 +48,7 @@ class UserDaoImpl(
         requester: MediqToken
     ): MediqUser {
         return if (requester can (Crud.CREATE to Tables.User)) {
-            val group = user.group?.let { groupRepository.getOne(it.toLong()) }
+            val group = user.group?.let { groupRepository.getById(it.id) }
             val mediqUser = MediqUser(user, group)
             userRepository.save(mediqUser)
         } else {
@@ -73,7 +72,7 @@ class UserDaoImpl(
             userRepository.getByUniqueId(user.uid).apply {
                 group = when (user.group) {
                     is OptionalInput.Undefined -> this.group
-                    is OptionalInput.Defined -> user.group.value?.let { groupRepository.getOne(it.toLong()) }
+                    is OptionalInput.Defined -> user.group.value?.let { groupRepository.getById(it.id) }
                 }
             }
         } else {
@@ -81,9 +80,9 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun findByDoctor(did: ID, requester: MediqToken): MediqUser? {
+    override suspend fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser? {
         return if (requester can listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)) {
-            doctorRepository.getOne(did.toLong()).user
+            doctorRepository.getById(did.id).user
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.User)
         }

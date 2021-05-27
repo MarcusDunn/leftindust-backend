@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
@@ -9,8 +8,9 @@ import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.GraphQLCountry
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import io.mockk.*
@@ -19,6 +19,7 @@ import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 internal class ClinicDaoImplTest {
     private val clinicRepository = mockk<HibernateClinicRepository>()
@@ -28,12 +29,15 @@ internal class ClinicDaoImplTest {
 
     @Test
     fun addClinic() {
+        val doctorID = UUID.randomUUID()
+
+
         val mockkClinic = mockk<Clinic>()
 
         every { clinicRepository.save(any()) } returns mockkClinic
 
         every { sessionFactory.currentSession } returns mockk() {
-            every { get(Doctor::class.java, 10L) } returns mockk()
+            every { get(Doctor::class.java, doctorID) } returns mockk()
         }
 
 
@@ -47,7 +51,7 @@ internal class ClinicDaoImplTest {
                 every { country } returns GraphQLCountry.Canada
                 every { province } returns "BritishColumbia"
             },
-            doctors = listOf(ID("10"))
+            doctors = listOf(GraphQLDoctor.ID(doctorID))
         )
 
         val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
@@ -59,6 +63,8 @@ internal class ClinicDaoImplTest {
 
     @Test
     fun `addClinic with insufficient perms`() {
+        val doctorID = UUID.randomUUID()
+
         val mockkClinic = mockk<Clinic>()
 
         every { clinicRepository.save(any()) } returns mockkClinic
@@ -73,7 +79,7 @@ internal class ClinicDaoImplTest {
                 every { country } returns GraphQLCountry.Canada
                 every { province } returns "BritishColumbia"
             },
-            doctors = listOf(ID("10"))
+            doctors = listOf(GraphQLDoctor.ID(doctorID))
         )
 
         val requester = mockk<MediqToken>()
@@ -93,8 +99,9 @@ internal class ClinicDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), requester) } returns Authorization.Allowed
 
+        val clinicId = UUID.randomUUID()
         val mockkGqlClinicInput = GraphQLClinicEditInput(
-            id = gqlID(1000),
+            cid = GraphQLClinic.ID(clinicId),
             address = mockk(relaxed = true) {
                 every { country } returns GraphQLCountry.Canada
                 every { province } returns "BritishColumbia"
@@ -107,7 +114,7 @@ internal class ClinicDaoImplTest {
             every { setByGqlInput(mockkGqlClinicInput, any()) } just runs
         }
 
-        every { clinicRepository.getOne(1000L) } returns mockkClinic
+        every { clinicRepository.getById(clinicId) } returns mockkClinic
 
         val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
 
@@ -118,6 +125,8 @@ internal class ClinicDaoImplTest {
 
     @Test
     fun getByDoctor() {
+        val doctorID = UUID.randomUUID()
+
         val requester = mockk<MediqToken>()
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
@@ -126,13 +135,14 @@ internal class ClinicDaoImplTest {
 
         val mockkDoctor = mockk<Doctor>()
 
-        every { doctorRepository.getOne(100L) } returns mockkDoctor
+        every { doctorRepository.getById(doctorID) } returns mockkDoctor
 
         every { clinicRepository.getAllByDoctorsContains(mockkDoctor) } returns listOf(mockkClinic)
 
         val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
 
-        val result = runBlocking { clinicDao.getByDoctor(gqlID(100), requester) }
+
+        val result = runBlocking { clinicDao.getByDoctor(GraphQLDoctor.ID(doctorID), requester) }
 
         assertEquals(listOf(mockkClinic), result)
     }

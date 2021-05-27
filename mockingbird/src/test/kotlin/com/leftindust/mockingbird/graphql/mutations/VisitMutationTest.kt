@@ -11,6 +11,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class VisitMutationTest {
     private val visitDao = mockk<VisitDao>()
@@ -18,10 +19,12 @@ internal class VisitMutationTest {
 
     @Test
     fun addVisit() {
+        val visitId = UUID.randomUUID()
+
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
 
         val mockkVisit = mockk<Visit>(relaxed = true) {
-            every { id } returns 1000L
+            every { id } returns visitId
         }
 
         coEvery { visitDao.addVisit(any(), any()) } returns mockkVisit
@@ -32,6 +35,6 @@ internal class VisitMutationTest {
 
         val result = runBlocking { visitMutation.addVisit(visitMockk, graphQLAuthContext) }
 
-        assertEquals(GraphQLVisit(mockkVisit, mockkVisit.id!!, graphQLAuthContext), result)
+        assertEquals(GraphQLVisit(mockkVisit, graphQLAuthContext), result)
     }
 }

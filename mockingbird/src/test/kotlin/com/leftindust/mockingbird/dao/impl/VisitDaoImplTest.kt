@@ -8,17 +8,18 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeInput
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 import javax.persistence.EntityManager
-import javax.persistence.criteria.CriteriaQuery
 
 internal class VisitDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -32,9 +33,11 @@ internal class VisitDaoImplTest {
     fun getVisitByVid() {
         val mockkVisit = mockk<Visit>()
 
+        val visitID = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        every { visitRepository.getOne(1000) } returns mockkVisit
+        every { visitRepository.getById(visitID) } returns mockkVisit
 
         val visitDaoImpl = VisitDaoImpl(
             authorizer,
@@ -44,24 +47,28 @@ internal class VisitDaoImplTest {
             patientRepository
         )
 
-        val result = runBlocking { visitDaoImpl.getVisitByVid(1000, mockk()) }
+        val result = runBlocking { visitDaoImpl.getVisitByVid(GraphQLVisit.ID(visitID), mockk()) }
 
         assertEquals(mockkVisit, result)
     }
 
     @Test
     fun addVisit() {
+        val doctorID = UUID.randomUUID()
+        val patientID = UUID.randomUUID()
+        val eventID = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-        every { doctorRepository.getOne(1000) } returns mockk {
-            every { id } returns 1000
+        every { doctorRepository.getById(doctorID) } returns mockk {
+            every { id } returns doctorID
             every { schedule } returns Schedule()
         }
-        every { patientRepository.getOne(2000) } returns mockk {
-            every { id } returns 2000
+        every { patientRepository.getById(patientID) } returns mockk {
+            every { id } returns patientID
             every { schedule } returns Schedule()
         }
 
-        every { eventRepository.getOne(4000) } returns mockk()
+        every { eventRepository.getById(eventID) } returns mockk()
 
         val mockkVisit = mockk<Visit>()
 
@@ -71,7 +78,7 @@ internal class VisitDaoImplTest {
         )
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
-            every { event } returns gqlID(4000)
+            every { eid } returns GraphQLEvent.ID(eventID)
             every { foundationIcdCode } returns FoundationIcdCodeInput("1222121")
         }
 

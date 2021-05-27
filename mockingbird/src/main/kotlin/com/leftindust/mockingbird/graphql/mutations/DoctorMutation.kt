@@ -22,12 +22,12 @@ class DoctorMutation(private val doctorDao: DoctorDao, private val userDao: User
 
         return doctorDao
             .addDoctor(doctor, graphQLAuthContext.mediqAuthToken, user = user)
-            .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
+            .let { GraphQLDoctor(it, graphQLAuthContext) }
     }
 
     suspend fun updateDoctor(doctor: GraphQLDoctorEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLDoctor {
         return doctorDao
             .editDoctor(doctor, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLDoctor(it, it.id!!, graphQLAuthContext) }
+            .let { GraphQLDoctor(it, graphQLAuthContext) }
     }
 }

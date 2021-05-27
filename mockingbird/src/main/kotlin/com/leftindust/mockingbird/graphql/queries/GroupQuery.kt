@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @Component
 class GroupQuery(private val groupDao: GroupDao): Query {
     suspend fun groups(
-        gids: List<ID>? = null,
+        gids: List<GraphQLUser.Group.ID>? = null,
         range: GraphQLRangeInput? = null,
         graphQLAuthContext: GraphQLAuthContext): List<GraphQLUser.Group> {
         return when {

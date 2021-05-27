@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.DoctorDao
@@ -12,9 +11,8 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.extensions.toLong
-import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
 @GraphQLName("Patient")
 data class GraphQLPatient(
@@ -33,9 +31,12 @@ data class GraphQLPatient(
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
 
+    @GraphQLName("PatientId")
+    data class ID(val id: UUID)
 
-    constructor(patient: Patient, id: Long, authContext: GraphQLAuthContext) : this(
-        pid = gqlID(id),
+
+    constructor(patient: Patient, authContext: GraphQLAuthContext) : this(
+        pid = ID(patient.id!!),
         firstName = patient.nameInfo.firstName,
         middleName = patient.nameInfo.middleName,
         lastName = patient.nameInfo.lastName,
@@ -48,26 +49,25 @@ data class GraphQLPatient(
         gender = patient.gender,
         ethnicity = patient.ethnicity,
         authContext = authContext,
-    ) {
-        assert(patient.id == null || patient.id == id)
-    }
+    )
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
-        contactDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
+        contactDao.getByPatient(pid, authContext.mediqAuthToken)
             .map { GraphQLEmergencyContact(it, authContext) }
 
     suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> =
-        doctorDao.getByPatient(pid.toLong(), authContext.mediqAuthToken).map { GraphQLDoctor(it, it.id!!, authContext) }
+        doctorDao.getByPatient(pid, authContext.mediqAuthToken).map { GraphQLDoctor(it, authContext) }
 
     suspend fun visits(
         @GraphQLIgnore @Autowired visitDao: VisitDao,
     ): List<GraphQLVisit> {
-        return visitDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
-            .map { visit -> GraphQLVisit(visit, visit.id!!, authContext) }
+        return visitDao
+            .getByPatient(pid, authContext.mediqAuthToken)
+            .map { visit -> GraphQLVisit(visit, authContext) }
     }
 
     suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {
-        return eventDao.getByPatient(pid.toLong(), authContext.mediqAuthToken)
+        return eventDao.getByPatient(pid, authContext.mediqAuthToken)
             .map { event -> GraphQLEvent(event, authContext) }
     }
 }

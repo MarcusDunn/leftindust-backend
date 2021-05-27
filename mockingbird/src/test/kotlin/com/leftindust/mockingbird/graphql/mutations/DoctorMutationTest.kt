@@ -10,17 +10,20 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class DoctorMutationTest {
 
     @Test
     fun addDoctor() {
+        val doctorID = UUID.randomUUID()
+
         val mockkGraphQLAuthContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
 
         val mockkDoctor = mockk<Doctor>(relaxed = true) {
-            every { id } returns 1000L
+            every { id } returns doctorID
         }
 
         val mockkDoctorDao = mockk<DoctorDao>() {
@@ -35,19 +38,20 @@ internal class DoctorMutationTest {
 
         val result = runBlocking { doctorMutation.addDoctor(mockkGraphQLDoctorInput, mockkGraphQLAuthContext) }
 
-        val expected = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, mockkGraphQLAuthContext)
+        val expected = GraphQLDoctor(mockkDoctor, mockkGraphQLAuthContext)
 
         assertEquals(expected, result)
     }
 
     @Test
     fun updateDoctor() {
+        val doctorID = UUID.randomUUID()
         val mockkGraphQLAuthContext = mockk<GraphQLAuthContext>() {
             every { mediqAuthToken } returns mockk()
         }
 
         val mockkDoctor = mockk<Doctor>(relaxed = true) {
-            every { id } returns 1000L
+            every { id } returns doctorID
         }
 
         val mockkDoctorDao = mockk<DoctorDao>() {
@@ -60,7 +64,7 @@ internal class DoctorMutationTest {
 
         val result = runBlocking { doctorMutation.updateDoctor(mockkGraphQLDoctorInput, mockkGraphQLAuthContext) }
 
-        val expected = GraphQLDoctor(mockkDoctor, mockkDoctor.id!!, mockkGraphQLAuthContext)
+        val expected = GraphQLDoctor(mockkDoctor, mockkGraphQLAuthContext)
 
         assertEquals(expected, result)
     }

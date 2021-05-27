@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.extensions.gqlID
+import java.util.*
 
 @GraphQLName("Permission")
 data class GraphQLPermission(
@@ -14,33 +15,12 @@ data class GraphQLPermission(
     val permissionType: Crud,
     val startTime: GraphQLUtcTime? = null,
     val endTime: GraphQLUtcTime? = null,
-    val rowId: ID? = null,
+    val rowId: UUID? = null,
     val columnName: String? = null,
 ) {
 
-    fun friendlyName(): String {
-        return StringBuilder().apply {
-            append("${permissionType.name} to ${referencedTableName.name} ")
-            if (startTime != null) {
-                append("between ${startTime.unixMilliseconds} ")
-                if (endTime != null) {
-                    append("to ${endTime.unixMilliseconds} ")
-                } else {
-                    append("and forever")
-                }
-            } else {
-                if (endTime != null) {
-                    append("before $endTime ")
-                }
-            }
-            if (rowId != null) {
-                append("on row with primary key $rowId")
-            }
-            if (columnName != null) {
-                append("on the $columnName column")
-            }
-        }.toString()
-    }
+    @GraphQLName("PermissionId")
+    data class ID(val id: UUID)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -66,16 +46,14 @@ data class GraphQLPermission(
         return result
     }
 
-    constructor(action: Action, id: Long) : this(
-        pid = gqlID(id),
+    constructor(action: Action) : this(
+        pid = ID(action.id!!),
         referencedTableName = action.referencedTableName,
         permissionType = action.permissionType,
         startTime = action.startTime?.let { GraphQLUtcTime(it) },
         endTime = action.endTime?.let { GraphQLUtcTime(it) },
-        rowId = action.rowId?.let { ID(it.toString()) }, // let needed as toString on null is a valid call
+        rowId = action.rowId,
         columnName = action.columnName,
-    ) {
-        assert(action.id == id) {"action.id ${action.id} should equal id $id"}
-    }
+    )
 
 }

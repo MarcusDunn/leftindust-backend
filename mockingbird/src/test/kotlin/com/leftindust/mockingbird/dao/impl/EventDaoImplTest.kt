@@ -13,8 +13,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDayOfWeek
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
@@ -25,6 +25,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class EventDaoImplTest {
     private val hibernateEventRepository = mockk<HibernateEventRepository>()
@@ -135,6 +136,8 @@ internal class EventDaoImplTest {
 
     @Test
     fun editEvent() {
+        val eventID = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
         val eventDao = EventDaoImpl(
@@ -142,7 +145,8 @@ internal class EventDaoImplTest {
             hibernateDoctorRepository, hibernateVisitRepository, authorizer
         )
 
-        val eventUpdateInput = GraphQLEventEditInput(gqlID(1000), description = OptionalInput.Defined("fancy descr"))
+        val eventUpdateInput =
+            GraphQLEventEditInput(GraphQLEvent.ID(eventID), description = OptionalInput.Defined("fancy descr"))
 
         val updateEventMockk = mockk<Event>()
 
@@ -151,7 +155,7 @@ internal class EventDaoImplTest {
             every { update(eventUpdateInput, null, null) } returns updateEventMockk
         }
 
-        every { hibernateEventRepository.getOne(1000) } returns originalEventMockk
+        every { hibernateEventRepository.getById(eventID) } returns originalEventMockk
 
         every { hibernateEventRepository.save(updateEventMockk) } returns updateEventMockk
 
@@ -168,7 +172,7 @@ internal class EventDaoImplTest {
             originalEventMockk.reoccurrence
             authorizer.getAuthorization(any(), any())
             originalEventMockk.update(eventUpdateInput, null, null)
-            hibernateEventRepository.getOne(1000)
+            hibernateEventRepository.getById(eventID)
             hibernateEventRepository.save(updateEventMockk)
             hibernateEventRepository.delete(originalEventMockk)
         }
@@ -180,12 +184,14 @@ internal class EventDaoImplTest {
 
     @Test
     internal fun `edit event with recurrence`() {
+        val eventID = UUID.randomUUID()
+
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
         val newEvent = mockk<Event>()
 
         val eventEditInput = mockk<GraphQLEventEditInput>() {
-            every { eid } returns gqlID(1000)
+            every { eid } returns GraphQLEvent.ID(eventID)
             every { doctors } returns null
             every { patients } returns null
         }
@@ -205,7 +211,7 @@ internal class EventDaoImplTest {
 
         every { oldEvent.clone() } returns oldEvent
 
-        every { hibernateEventRepository.getOne(1000) } returns oldEvent
+        every { hibernateEventRepository.getById(eventID) } returns oldEvent
         every { hibernateEventRepository.delete(oldEvent) } just runs
         every { hibernateEventRepository.save(newEvent) } returns newEvent
         every { hibernateEventRepository.save(match { it != newEvent }) } returns mockk()
@@ -230,7 +236,7 @@ internal class EventDaoImplTest {
 
         coVerifyAll {
             authorizer.getAuthorization(any(), any())
-            hibernateEventRepository.getOne(1000)
+            hibernateEventRepository.getById(eventID)
             hibernateEventRepository.delete(any())
             hibernateEventRepository.save(any())
         }

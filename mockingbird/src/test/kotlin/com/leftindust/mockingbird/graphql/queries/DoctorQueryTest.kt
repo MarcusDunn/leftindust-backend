@@ -4,6 +4,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
@@ -11,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class DoctorQueryTest {
     private val doctorDao = mockk<DoctorDao>()
@@ -18,38 +20,43 @@ internal class DoctorQueryTest {
 
     @Test
     fun getDoctorsByPatient() {
+        val doctorID = UUID.randomUUID()
+        val patientID = UUID.randomUUID()
+
         val doctor = EntityStore.doctor("DoctorQueryTest.getDoctorsByPatient").apply {
-            id = 2000
+            id = doctorID
         }
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
+        val graphQLDoctor = GraphQLDoctor(doctor, authContext)
 
-        coEvery { doctorDao.getByPatient(1000, authContext.mediqAuthToken) } returns listOf(doctor)
+        coEvery { doctorDao.getByPatient(GraphQLPatient.ID(patientID), authContext.mediqAuthToken) } returns listOf(doctor)
 
         val doctorQuery = DoctorQuery(doctorDao)
 
-        val result = runBlocking { doctorQuery.doctors(pid = gqlID(1000), authContext = authContext) }
+        val result = runBlocking { doctorQuery.doctors(pid = GraphQLPatient.ID(patientID), authContext = authContext) }
 
         assertEquals(listOf(graphQLDoctor), result)
     }
 
     @Test
     internal fun doctors() {
+        val doctorID = UUID.randomUUID()
+
         val doctor = EntityStore.doctor("DoctorQueryTest.doctors").apply {
-            id = 1000
+            id = doctorID
         }
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        val graphQLDoctor = GraphQLDoctor(doctor, doctor.id!!, authContext)
+        val graphQLDoctor = GraphQLDoctor(doctor, authContext)
 
-        coEvery { doctorDao.getByDoctor(1000, any()) } returns doctor
+        coEvery { doctorDao.getByDoctor(GraphQLDoctor.ID(doctorID), any()) } returns doctor
 
         val doctorQuery = DoctorQuery(doctorDao)
 
-        val result = runBlocking { doctorQuery.doctors(dids = listOf(gqlID(1000)), authContext = authContext) }
+        val result = runBlocking { doctorQuery.doctors(dids = listOf(GraphQLDoctor.ID(doctorID)), authContext = authContext) }
 
         assertEquals(listOf(graphQLDoctor), result)
     }
