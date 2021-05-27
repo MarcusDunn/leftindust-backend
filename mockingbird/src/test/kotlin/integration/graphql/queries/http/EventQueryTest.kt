@@ -71,6 +71,28 @@ class EventQueryTest(
                 |       eid {
                 |        id
                 |       }
+                |       allDay
+                |       description
+                |       endTime {unixMilliseconds}
+                |       doctors {
+                |        did {id}
+                |        firstName
+                |        lastName
+                |        title
+                |       }
+                |       patients {
+                |        pid {id}
+                |        firstName
+                |        lastName
+                |        dateOfBirth {
+                |            day
+                |            month
+                |            year
+                |        }
+                |        sex
+                |       }
+                |       startTime {unixMilliseconds}
+                |       title
                 |   }
                 |}
                 |""".trimMargin()

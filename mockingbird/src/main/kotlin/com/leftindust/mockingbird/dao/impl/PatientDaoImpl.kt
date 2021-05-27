@@ -16,6 +16,7 @@ import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import org.hibernate.Hibernate
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
@@ -127,7 +128,7 @@ class PatientDaoImpl(
     override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient> {
         val readEventsAndReadPatient = listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Patient)
         return if (requester can readEventsAndReadPatient) {
-            eventRepository.getById(eid.id).patients
+            eventRepository.getById(eid.id).patients.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, *readEventsAndReadPatient.toTypedArray())
         }

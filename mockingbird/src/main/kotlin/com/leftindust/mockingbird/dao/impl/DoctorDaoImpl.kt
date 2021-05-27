@@ -17,6 +17,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import org.hibernate.Hibernate
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -46,7 +47,7 @@ class DoctorDaoImpl(
     override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            eventRepository.getById(eid.id).doctors
+            eventRepository.getById(eid.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
@@ -90,7 +91,7 @@ class DoctorDaoImpl(
     override suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
-            clinicRepository.getById(clinic.id).doctors
+            clinicRepository.getById(clinic.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
         }
