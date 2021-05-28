@@ -79,7 +79,7 @@ class PatientQueryTest(
                 |""".trimMargin()
             )
             .exchange()
-            .debug_print()
+            .debugPrint()
             .expectBody()
             .jsonPath("$DATA_JSON_PATH.patients[0].firstName")
             .isEqualTo("marcus + 0")

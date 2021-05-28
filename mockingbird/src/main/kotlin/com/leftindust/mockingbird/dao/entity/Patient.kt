@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.onUndefined
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
-import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import org.hibernate.Session
@@ -63,15 +62,9 @@ class Patient(
 
         contacts = graphQLPatientInput.emergencyContacts?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
 
-        if (graphQLPatientInput.doctors != null) {
-            doctors.clear()
-            graphQLPatientInput.doctors.forEach { did ->
-                addDoctor(
-                    session.get(Doctor::class.java, did.value.toLong())
-                        ?: throw IllegalArgumentException("could not find doctor with did: ${did.value}")
-                )
-            }
-        }
+        graphQLPatientInput.doctors
+            ?.map { did -> session.get(Doctor::class.java, did.id) }
+            ?.forEach { it.addPatient(this) }
     }
 
     fun addDoctor(doctor: Doctor): Patient {

@@ -1,4 +1,4 @@
-FROM gradle:jdk15
+FROM gradle:7.0
 COPY --chown=gradle:gradle settings.gradle.kts .
 COPY --chown=gradle:gradle build.gradle.kts .
 COPY --chown=gradle:gradle gradle.properties .

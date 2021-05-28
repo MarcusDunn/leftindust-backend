@@ -39,7 +39,7 @@ data class GraphQLPatientInput(
     @GraphQLDescription("defaults to emptyList")
     val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("defaults to emptyList")
-    val doctors: List<ID>? = null,
+    val doctors: List<GraphQLDoctor.ID>? = null,
 ) {
     init {
         if (emails != null) {
