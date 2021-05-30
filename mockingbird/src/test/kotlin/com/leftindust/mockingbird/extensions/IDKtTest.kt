@@ -16,16 +16,4 @@ internal class IDKtTest {
     fun `testGqlID with longs`() {
         assertEquals(ID("10"), gqlID(10L))
     }
-
-    @Test
-    fun `toLong with valid long`() {
-        assertEquals(20L, ID("20").toLong())
-    }
-
-    @Test
-    fun `toLong with invalid long`() {
-        assertThrows(NumberFormatException::class.java) {
-            ID("twenty").toLong()
-        }
-    }
 }

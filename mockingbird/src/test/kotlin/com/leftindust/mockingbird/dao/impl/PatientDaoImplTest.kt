@@ -130,7 +130,7 @@ internal class PatientDaoImplTest {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { visitRepository.getById(visitID) } returns mockk {
             every { event } returns mockk {
-                every { patients } returns setOf(mockkPatient)
+                every { patients } returns mutableSetOf(mockkPatient)
             }
         }
 

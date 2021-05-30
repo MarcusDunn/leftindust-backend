@@ -137,6 +137,7 @@ object EntityStore {
             end = GraphQLUtcTime(Timestamp.valueOf("2020-01-02 10:00:00")),
             doctors = listOf(),
             patients = listOf(),
+            allDay = false
         )
 
     fun event(testName: String) = Event(
@@ -144,8 +145,8 @@ object EntityStore {
         description = "some other description",
         startTime = Timestamp.valueOf("2020-01-02 11:00:00"),
         endTime = Timestamp.valueOf("2020-01-02 12:00:00"),
-        doctors = emptySet(),
-        patients = emptySet()
+        doctors = mutableSetOf(),
+        patients = mutableSetOf()
     )
 
     fun address(testName: String) = Address(

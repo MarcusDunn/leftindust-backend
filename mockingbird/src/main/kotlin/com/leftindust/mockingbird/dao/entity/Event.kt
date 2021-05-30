@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.onUndefined
+import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
@@ -12,31 +13,23 @@ import javax.persistence.*
 
 @Entity(name = "event")
 class Event(
-    val title: String,
-    val description: String?,
+    var title: String,
+    var description: String?,
     @Column(name = "start_time")
     var startTime: Timestamp,
     @Column(name = "end_time")
-    val endTime: Timestamp?,
+    var endTime: Timestamp?,
     @Column(name = "all_day")
-    val allDay: Boolean = false,
+    var allDay: Boolean = false,
     @ManyToMany
     @JoinTable(name = "event_doctor")
-    val doctors: Set<Doctor>,
+    val doctors: MutableSet<Doctor>,
     @ManyToMany
     @JoinTable(name = "event_patient")
-    val patients: Set<Patient>,
+    val patients: MutableSet<Patient>,
     @Embedded
     var reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable() {
-
-    init { // validation logic
-        if (allDay && endTime != null) {
-            throw IllegalArgumentException("you cannot set `durationMillis` and `allDay`")
-        } else if (!allDay && endTime == null) {
-            throw IllegalArgumentException("you must set `startTime/durationMillis` or `allDay`")
-        }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -69,31 +62,29 @@ class Event(
     }
 
 
-    fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?): Event {
-        return Event(
-            title = event.title ?: title,
-            description = event.description.onUndefined(description),
-            startTime = event.start?.toTimestamp() ?: startTime,
-            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp(),
-            allDay = event.allDay ?: allDay,
-            doctors = newDoctors ?: doctors, // we call toMutableSet to avoid shared references to a collection
-            patients = newPatients ?: patients,
+    fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?) {
+            title = event.title ?: title
+            description = event.description.onUndefined(description)
+            startTime = event.start?.toTimestamp() ?: startTime
+            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp()
+            allDay = event.allDay ?: allDay
+            doctors.replaceAllIfNotNull(newDoctors?.toMutableSet() ?: mutableSetOf())// we call toMutableSet to avoid shared references to a collection
+            patients.replaceAllIfNotNull(newPatients?.toMutableSet() ?: mutableSetOf())
             reoccurrence = if (event.recurrence is OptionalInput.Undefined)
                 reoccurrence
             else
                 event.recurrence.getOrThrow().let { Reoccurrence(it) }
-        )
     }
 
     constructor(graphQLEventInput: GraphQLEventInput, doctors: Set<Doctor>, patients: Set<Patient>) : this(
         title = graphQLEventInput.title,
         description = graphQLEventInput.description,
         startTime = graphQLEventInput.start.toTimestamp(),
-        endTime = graphQLEventInput.end?.toTimestamp(),
-        allDay = graphQLEventInput.allDay ?: false,
+        endTime = graphQLEventInput.end.toTimestamp(),
+        allDay = graphQLEventInput.allDay,
         reoccurrence = graphQLEventInput.recurrence?.let { Reoccurrence(it) },
-        doctors = doctors,
-        patients = patients
+        doctors = doctors.toMutableSet(),
+        patients = patients.toMutableSet()
     )
 
     fun clone(): Event {
@@ -103,9 +94,7 @@ class Event(
             startTime = startTime,
             endTime = endTime,
             allDay = allDay,
-            // toMutableSet clones the collection to avoid shared references to a collection
             doctors = doctors.toMutableSet(),
-            // toMutableSet clones the collection to avoid shared references to a collection
             patients = patients.toMutableSet(),
             reoccurrence = reoccurrence,
         )

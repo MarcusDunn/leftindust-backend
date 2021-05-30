@@ -153,5 +153,5 @@ tasks.withType<KotlinCompile> {
 }
 
 kapt {
-    includeCompileClasspath = false
+    strictMode = true
 }

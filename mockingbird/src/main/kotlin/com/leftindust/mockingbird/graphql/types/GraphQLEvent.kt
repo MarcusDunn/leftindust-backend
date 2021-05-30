@@ -7,8 +7,6 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.extensions.gqlID
-import com.leftindust.mockingbird.extensions.toLong
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 

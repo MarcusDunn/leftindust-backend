@@ -17,10 +17,9 @@ data class GraphQLEventInput(
     val description: String? = null,
     @GraphQLDescription("UTC")
     val start: GraphQLUtcTime,
-    @GraphQLDescription("UTC only can be unset / set to null if allDay is true")
-    val end: GraphQLUtcTime? = null,
-    @GraphQLDescription("defaults to false even if explicitly passed null")
-    val allDay: Boolean? = false,
+    @GraphQLDescription("UTC")
+    val end: GraphQLUtcTime,
+    val allDay: Boolean,
     val doctors: List<GraphQLDoctor.ID>? = emptyList(),
     val patients: List<GraphQLPatient.ID>? = emptyList(),
     val recurrence: GraphQLRecurrenceInput? = null

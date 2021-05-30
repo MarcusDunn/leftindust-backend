@@ -148,20 +148,17 @@ internal class EventDaoImplTest {
         val eventUpdateInput =
             GraphQLEventEditInput(GraphQLEvent.ID(eventID), description = OptionalInput.Defined("fancy descr"))
 
-        val updateEventMockk = mockk<Event>()
-
         val originalEventMockk = mockk<Event>() {
             every { reoccurrence } returns null
-            every { update(eventUpdateInput, null, null) } returns updateEventMockk
+            every { update(eventUpdateInput, null, null) } just runs
         }
 
         every { hibernateEventRepository.getById(eventID) } returns originalEventMockk
 
-        every { hibernateEventRepository.save(updateEventMockk) } returns updateEventMockk
 
         every { hibernateEventRepository.delete(originalEventMockk) } just runs
 
-        val result = runBlocking {
+        runBlocking {
             eventDao.editEvent(
                 eventUpdateInput,
                 mockk()
@@ -171,76 +168,10 @@ internal class EventDaoImplTest {
         coVerifyAll {
             originalEventMockk.reoccurrence
             authorizer.getAuthorization(any(), any())
-            originalEventMockk.update(eventUpdateInput, null, null)
+            originalEventMockk.update(eventUpdateInput, null, null) // all that matters is this was called
             hibernateEventRepository.getById(eventID)
-            hibernateEventRepository.save(updateEventMockk)
-            hibernateEventRepository.delete(originalEventMockk)
         }
 
-        confirmVerified(updateEventMockk, originalEventMockk)
-
-        assertEquals(updateEventMockk, result)
-    }
-
-    @Test
-    internal fun `edit event with recurrence`() {
-        val eventID = UUID.randomUUID()
-
-        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
-
-        val newEvent = mockk<Event>()
-
-        val eventEditInput = mockk<GraphQLEventEditInput>() {
-            every { eid } returns GraphQLEvent.ID(eventID)
-            every { doctors } returns null
-            every { patients } returns null
-        }
-
-        val oldEvent = mockk<Event>(relaxed = true) {
-            every { reoccurrence } returns mockk() {
-                every { startDate } returns mockk() {
-                    every { isBefore(any()) } returns true
-                }
-                every { endDate } returns mockk() {
-                    every { isAfter(any()) } returns true
-                }
-                every { days } returns listOf(GraphQLDayOfWeek.Mon)
-            }
-            every { update(eventEditInput, null, null) } returns newEvent
-        }
-
-        every { oldEvent.clone() } returns oldEvent
-
-        every { hibernateEventRepository.getById(eventID) } returns oldEvent
-        every { hibernateEventRepository.delete(oldEvent) } just runs
-        every { hibernateEventRepository.save(newEvent) } returns newEvent
-        every { hibernateEventRepository.save(match { it != newEvent }) } returns mockk()
-
-
-        val eventDao = EventDaoImpl(
-            hibernateEventRepository, hibernatePatientRepository,
-            hibernateDoctorRepository, hibernateVisitRepository, authorizer
-        )
-
-
-        val recurrenceSettings = mockk<GraphQLRecurrenceEditSettings>() {
-            every { editEnd } returns mockk {
-                every { toLocalDate() } returns mockk()
-            }
-            every { editStart } returns mockk() {
-                every { toLocalDate() } returns mockk()
-            }
-        }
-
-        val result = runBlocking { eventDao.editRecurringEvent(eventEditInput, mockk(), recurrenceSettings) }
-
-        coVerifyAll {
-            authorizer.getAuthorization(any(), any())
-            hibernateEventRepository.getById(eventID)
-            hibernateEventRepository.delete(any())
-            hibernateEventRepository.save(any())
-        }
-
-        assertEquals(newEvent, result)
+        confirmVerified(originalEventMockk)
     }
 }

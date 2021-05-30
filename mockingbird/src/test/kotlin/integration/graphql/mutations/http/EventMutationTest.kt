@@ -42,7 +42,7 @@ class EventMutationTest(
     @AfterEach
     internal fun countRemainsUnchanged() {
         assert(eventCount == hibernateEventRepository.count()) {"leaked events in EventMutationTest"}
-        assert(patientCount == hibernateEventRepository.count()) {"leaked patients in EventMutationTest"}
+        assert(patientCount == hibernatePatientRepository.count()) {"leaked patients in EventMutationTest"}
     }
 
     @MockkBean
@@ -84,7 +84,6 @@ class EventMutationTest(
                 |}""".trimMargin()
             )
             .exchange()
-            .debugPrint()
             .verifyOnlyDataExists("addEvent")
 
         val addedEvent = hibernateEventRepository.findAll().find { it.title == "MY EVENT" }

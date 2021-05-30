@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.mutations.PatientMutation
 import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
@@ -37,7 +36,7 @@ class PatientMutationTest(
     @Test
     internal fun addPatient() {
         val mediqToken = mockk<MediqToken>()
-        val authContext = mockk<GraphQLAuthContext>() {
+        val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mediqToken
         }
         coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed

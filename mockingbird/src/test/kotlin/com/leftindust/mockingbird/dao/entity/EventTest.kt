@@ -15,7 +15,7 @@ internal class EventTest {
         val eventID = UUID.randomUUID()
         val event = EntityStore.event("EventTest.update")
             .apply { id = eventID }
-        val result = event.update(
+        event.update(
             GraphQLEventEditInput(
                 eid = GraphQLEvent.ID(eventID),
                 description = OptionalInput.Defined("new fancy description"),
@@ -25,9 +25,9 @@ internal class EventTest {
             emptySet(),
             emptySet()
         )
-        assertEquals("new fancy description", result.description)
-        assertEquals(true, result.allDay)
-        assertEquals(event.startTime, result.startTime)
-        assertEquals(null, result.endTime)
+        assertEquals("new fancy description", event.description)
+        assertEquals(true, event.allDay)
+        assertEquals(event.startTime, event.startTime)
+        assertEquals(null, event.endTime)
     }
 }

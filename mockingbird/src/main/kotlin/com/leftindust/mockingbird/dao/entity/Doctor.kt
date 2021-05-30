@@ -2,9 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
-import com.leftindust.mockingbird.extensions.replaceAll
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
-import com.leftindust.mockingbird.extensions.toLong
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import org.hibernate.Session
@@ -66,6 +64,17 @@ class Doctor(
             OptionalInput.Undefined -> clinic
             is OptionalInput.Defined -> optionalInput.value?.let { session.get(Clinic::class.java, it.id) }
             null -> null
+        }
+        if (graphQLDoctorEditInput.patients != null) {
+            for (doctorPatient in patients) {
+                val forRemoval = doctorPatient.patient.doctors.filter { it.doctor.id == this.id }
+                for (toBeRemoved in forRemoval) {
+                    toBeRemoved.removeFromLists()
+                    session.delete(toBeRemoved)
+                }
+            }
+            assert(this.patients.isEmpty())
+            graphQLDoctorEditInput.patients.map { this.addPatient(session.get(Patient::class.java, it.id)) }
         }
         if (graphQLDoctorEditInput.patients != null) {
             for (doctorPatient in patients) {

@@ -72,7 +72,7 @@ internal class DoctorDaoImplTest {
         val mockkDoctor = mockk<Doctor>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         val mockkEvent = mockk<Event> {
-            every { doctors } returns setOf(mockkDoctor)
+            every { doctors } returns mutableSetOf(mockkDoctor)
         }
         val eventID = UUID.randomUUID()
 

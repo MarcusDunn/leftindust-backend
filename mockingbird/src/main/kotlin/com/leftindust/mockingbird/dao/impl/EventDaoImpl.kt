@@ -21,6 +21,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
+import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -60,7 +61,7 @@ class EventDaoImpl(
 
     override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
-            return hibernatePatientRepository.getById(pid.id).schedule.events
+            return hibernatePatientRepository.getById(pid.id).schedule.events.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient, Crud.READ to Tables.Event)
         }
@@ -95,12 +96,9 @@ class EventDaoImpl(
 
             val doctors = event.doctors?.let { hibernateDoctorRepository.getByIds(it.map { did -> did.id }) }
             val patients = event.patients?.let { hibernatePatientRepository.getByIds(it.map { pid -> pid.id }) }
-            val updatedEntity = entity.update(event, newDoctors = doctors, newPatients = patients)
+            entity.update(event, newDoctors = doctors, newPatients = patients)
 
-            // prevents double references to collections between updatedEntity and entity
-            hibernateEventRepository.delete(entity)
-
-            return hibernateEventRepository.save(updatedEntity)
+            return entity
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
         }
@@ -168,10 +166,9 @@ class EventDaoImpl(
                     // toMutableList clones the collection to avoid shared references to a collection
                     days = reoccurrence!!.days.toMutableList()
                 )
-            }.update(event, newDoctors = doctors, newPatients = patients)
-
+                update(event, newDoctors = doctors, newPatients = patients)
+            }
             return hibernateEventRepository.save(updatedEntity)
-
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Event)
         }

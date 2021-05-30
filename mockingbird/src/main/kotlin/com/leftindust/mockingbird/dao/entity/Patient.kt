@@ -112,9 +112,13 @@ class Patient(
 
         if (patientInput.doctors != null) {
             for (doctorPatient in doctors) {
-                doctorPatient.doctor.patients.removeIf { it.patient.id == this.id }
+                val forRemoval = doctorPatient.doctor.patients.filter { it.patient.id == this.id }
+                for (toBeRemoved in forRemoval) {
+                    toBeRemoved.removeFromLists()
+                    session.delete(toBeRemoved)
+                }
             }
-            doctors.clear()
+            assert(this.doctors.isEmpty())
             patientInput.doctors.map { session.get(Doctor::class.java, it.id).addPatient(this) }
         }
     }
