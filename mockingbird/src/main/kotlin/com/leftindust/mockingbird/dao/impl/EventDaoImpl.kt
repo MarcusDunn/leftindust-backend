@@ -90,7 +90,7 @@ class EventDaoImpl(
         if (requester can (Crud.UPDATE to Tables.Event)) {
             val entity = hibernateEventRepository.getById(event.eid.id)
 
-            if (entity.reoccurrence != null) {
+            if (entity.reoccurrence?.days != null && entity.reoccurrence?.startDate != null && entity.reoccurrence?.endDate != null) {
                 throw IllegalArgumentException("cannot call editEvent on a recurring event")
             }
 
@@ -120,7 +120,7 @@ class EventDaoImpl(
         if (requester can (Crud.UPDATE to Tables.Event)) {
             val entity = hibernateEventRepository.getById(event.eid.id)
 
-            if (entity.reoccurrence == null) {
+            if (entity.reoccurrence?.days == null && entity.reoccurrence?.startDate == null && entity.reoccurrence?.endDate == null) {
                 throw IllegalArgumentException("cannot call editRecurringEvent on a non-recurring event")
             }
 
