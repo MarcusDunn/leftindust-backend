@@ -91,7 +91,7 @@ class EventMutationTest(
 
         val session = sessionFactory.openSession()
         try {
-            patient.schedule.events.clear()
+            patient.events.clear()
             hibernateEventRepository.delete(addedEvent!!)
             hibernatePatientRepository.delete(patient)
         } catch (e: Exception) {

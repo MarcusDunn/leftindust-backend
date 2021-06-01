@@ -67,7 +67,7 @@ class VisitDaoImpl(
 
     override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit> {
         return if (requester can listOf(Crud.READ to Tables.Event, Crud.READ to Tables.Visit)) {
-            patientRepository.getById(pid.id).schedule.events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
+            patientRepository.getById(pid.id).events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }

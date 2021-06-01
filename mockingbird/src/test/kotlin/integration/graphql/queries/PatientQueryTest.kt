@@ -3,9 +3,9 @@ package integration.graphql.queries
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
@@ -55,7 +55,10 @@ class PatientQueryTest {
 
             // action
             val patients =
-                patientQuery.patients(pids = listOf(GraphQLPatient.ID(patientEntity.id!!)), authContext = mockkAuthContext)
+                patientQuery.patients(
+                    pids = listOf(GraphQLPatient.ID(patientEntity.id!!)),
+                    authContext = mockkAuthContext
+                )
 
             // assert
             val expected = GraphQLPatient(patientEntity, authContext = mockkAuthContext)
@@ -76,7 +79,10 @@ class PatientQueryTest {
 
             // action
             val patients =
-                patientQuery.patients(pids = listOf(GraphQLPatient.ID(patientEntity.id!!)), authContext = mockkAuthContext)
+                patientQuery.patients(
+                    pids = listOf(GraphQLPatient.ID(patientEntity.id!!)),
+                    authContext = mockkAuthContext
+                )
 
             // assert
             val expected = GraphQLPatient(patientEntity, authContext = mockkAuthContext)

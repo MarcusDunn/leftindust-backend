@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import javax.transaction.Transactional
 
-@SpringBootTest(classes = [MockingbirdApplication::class])
-@Tag("Integration")
+    @SpringBootTest(classes = [MockingbirdApplication::class])
+    @Tag("Integration")
 @Transactional
 class ClinicDaoTest(
     @Autowired private val clinicDao: ClinicDao,

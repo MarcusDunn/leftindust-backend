@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.dao.impl
 
 import com.leftindust.mockingbird.auth.Authorizer
-import com.leftindust.mockingbird.dao.entity.Schedule
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
@@ -61,11 +60,11 @@ internal class VisitDaoImplTest {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { doctorRepository.getById(doctorID) } returns mockk {
             every { id } returns doctorID
-            every { schedule } returns Schedule()
+            every { events } returns mutableSetOf()
         }
         every { patientRepository.getById(patientID) } returns mockk {
             every { id } returns patientID
-            every { schedule } returns Schedule()
+            every { events } returns mutableSetOf()
         }
 
         every { eventRepository.getById(eventID) } returns mockk()

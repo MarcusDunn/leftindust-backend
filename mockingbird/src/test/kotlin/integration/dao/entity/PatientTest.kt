@@ -47,4 +47,16 @@ class PatientTest(
         assertEquals(0, attachedDoctor.patients.size)
         assertFalse(patient.doctors.any { it.doctor == attachedDoctor })
     }
+
+    @Test
+    fun addEvent() {
+            val patient = patientRepository.save(
+                EntityStore.patient("ScheduleTest.addEvent")
+                    .apply { addEvent(EntityStore.event("ScheduleTest.addEvent")) }
+            )
+
+        val events = patientRepository.getById(patient.id!!).events
+
+        assertEquals(1, events.size)
+    }
 }

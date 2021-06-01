@@ -6,8 +6,6 @@ import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
@@ -31,11 +29,11 @@ internal class EventQueryTest {
 
         val expected = mockk<Doctor> {
             every { id } returns doctorID
-            every { schedule } returns mockk {
-                every { events } returns mutableSetOf(mockk(relaxed = true) {
-                    every { id } returns eventID
-                })
-            }
+
+            every { events } returns mutableSetOf(mockk(relaxed = true) {
+                every { id } returns eventID
+            })
+
         }
         coEvery { doctorDao.getByDoctor(GraphQLDoctor.ID(doctorID), any()) } returns expected
 
@@ -46,9 +44,14 @@ internal class EventQueryTest {
         }
 
         val result =
-            runBlocking { eventQuery.events(doctors = listOf(GraphQLDoctor.ID(doctorID)), graphQLAuthContext = graphQLAuthContext) }
+            runBlocking {
+                eventQuery.events(
+                    doctors = listOf(GraphQLDoctor.ID(doctorID)),
+                    graphQLAuthContext = graphQLAuthContext
+                )
+            }
 
-        assertEquals(expected.schedule.events.map {
+        assertEquals(expected.events.map {
             GraphQLEvent(
                 event = it,
                 authContext = graphQLAuthContext
@@ -63,11 +66,10 @@ internal class EventQueryTest {
 
         val expected = mockk<Patient> {
             every { id } returns patientID
-            every { schedule } returns mockk {
                 every { events } returns mutableSetOf(mockk(relaxed = true) {
                     every { id } returns eventID
                 })
-            }
+
         }
         coEvery { patientDao.getByPID(GraphQLPatient.ID(patientID), any()) } returns expected
 
@@ -77,9 +79,14 @@ internal class EventQueryTest {
             every { mediqAuthToken } returns mockk()
         }
         val result =
-            runBlocking { eventQuery.events(patients = listOf(GraphQLPatient.ID(patientID)), graphQLAuthContext = graphQLAuthContext) }
+            runBlocking {
+                eventQuery.events(
+                    patients = listOf(GraphQLPatient.ID(patientID)),
+                    graphQLAuthContext = graphQLAuthContext
+                )
+            }
 
-        assertEquals(expected.schedule.events.map {
+        assertEquals(expected.events.map {
             GraphQLEvent(
                 event = it,
                 authContext = graphQLAuthContext

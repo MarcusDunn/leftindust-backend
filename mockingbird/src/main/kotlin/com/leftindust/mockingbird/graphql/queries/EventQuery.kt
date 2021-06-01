@@ -55,7 +55,7 @@ class EventQuery(
         return patients
             .map { patientDao.getByPID(it, graphQLAuthContext.mediqAuthToken) }
             .flatMap { patient ->
-                patient.schedule.events.map {
+                patient.events.map {
                     GraphQLEvent(
                         event = it,
                         authContext = graphQLAuthContext,
@@ -70,7 +70,7 @@ class EventQuery(
     ) = doctors
         .map { doctorDao.getByDoctor(it, graphQLAuthContext.mediqAuthToken) }
         .flatMap { doc ->
-            doc.schedule.events.map {
+            doc.events.map {
                 GraphQLEvent(
                     event = it,
                     authContext = graphQLAuthContext,

@@ -64,7 +64,7 @@ object EntityStore {
         phones = setOf(Phone("6632231211", GraphQLPhoneType.Home)),
         title = "sir",
         patients = mutableSetOf(),
-        schedule = Schedule(),
+        schedule = emptySet(),
     )
 
     fun graphQLPatientInput(testName: String) = GraphQLPatientInput(

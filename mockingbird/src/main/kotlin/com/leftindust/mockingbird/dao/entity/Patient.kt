@@ -18,7 +18,7 @@ class Patient(
     addresses: Set<Address> = emptySet(),
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
-    schedule: Schedule = Schedule(),
+    schedule: Set<Event> = emptySet(),
     user: MediqUser? = null,
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -40,7 +40,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
-) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule) {
+) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
 
     /**
      * see [GraphQLPatientInput] for details on how updates should behave
@@ -149,9 +149,5 @@ class Patient(
         result = 31 * result + contacts.hashCode()
         result = 31 * result + doctors.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return "Patient(sex=$sex, gender='$gender', ethnicity=$ethnicity, insuranceNumber=$insuranceNumber, contacts=$contacts, doctors=$doctors) ${super.toString()}"
     }
 }

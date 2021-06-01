@@ -16,7 +16,7 @@ class Doctor(
     emails: Set<Email> = emptySet(),
     phones: Set<Phone> = emptySet(),
     user: MediqUser? = null,
-    schedule: Schedule = Schedule(),
+    schedule: Set<Event> = emptySet(),
     @Column(name = "title", nullable = true)
     var title: String? = null,
     @Column(name = "date_of_birth", nullable = true)
@@ -26,7 +26,7 @@ class Doctor(
     var clinic: Clinic? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
     var patients: MutableSet<DoctorPatient> = mutableSetOf(),
-) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule) {
+) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
     constructor(
         graphQLDoctorInput: GraphQLDoctorInput,
         user: MediqUser?,

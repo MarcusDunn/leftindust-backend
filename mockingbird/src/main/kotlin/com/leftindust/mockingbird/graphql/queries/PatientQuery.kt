@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component
 class PatientQuery(
     private val patientDao: PatientDao,
 ) : Query {
-
     suspend fun patients(
         range: GraphQLRangeInput? = null,
         pids: List<GraphQLPatient.ID>? = null,
@@ -23,15 +22,17 @@ class PatientQuery(
         authContext: GraphQLAuthContext
     ): List<GraphQLPatient> {
         return when {
-            range != null && sortedBy != null -> patientDao
+            range != null && sortedBy != null && example == null && pids == null -> patientDao
                 .getMany(range, sortedBy, authContext.mediqAuthToken)
-            range != null && sortedBy == null -> patientDao
+            range != null && sortedBy == null && pids == null && example == null -> patientDao
                 .getMany(range, requester = authContext.mediqAuthToken)
-            pids != null && sortedBy != null -> patientDao
+            pids != null && sortedBy != null && example == null && range == null -> patientDao
                 .getPatientsByPids(pids, authContext.mediqAuthToken)
                 .sortedBy { sortedBy.instanceValue(it) }
-            pids != null && sortedBy == null -> patientDao.getPatientsByPids(pids, authContext.mediqAuthToken)
-            example != null -> patientDao.searchByExample(example, authContext.mediqAuthToken)
+            pids != null && sortedBy == null && example == null && range == null -> patientDao
+                .getPatientsByPids(pids, authContext.mediqAuthToken)
+            example != null && pids == null && sortedBy == null && range == null -> patientDao
+                .searchByExample(example, authContext.mediqAuthToken)
             else -> throw GraphQLKotlinException("invalid arguments")
         }.map { GraphQLPatient(it, authContext) }
     }
