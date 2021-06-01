@@ -48,7 +48,7 @@ class PatientQueryTest(
     lateinit var authorizer: Authorizer
 
     @Test
-    internal fun `get events via patient`(@Autowired sessionFactory: SessionFactory) {
+    internal fun `get events via patient`() {
         val mediqToken = mockk<MediqToken>()
         coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
             every { mediqAuthToken } returns mediqToken
@@ -134,5 +134,42 @@ class PatientQueryTest(
             .isEqualTo("marcus + 0")
 
         patients.forEach { hibernatePatientRepository.delete(it) }
+    }
+
+    @Test
+    internal fun search() {
+        val mediqToken = mockk<MediqToken>()
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mediqToken
+        }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
+
+        val patient = hibernatePatientRepository.save(EntityStore.patient("PatientQueryTest.get events via patient"))
+
+        try {
+            testClient.post()
+                .uri(GRAPHQL_ENDPOINT)
+                .accept(APPLICATION_JSON_MEDIA_TYPE)
+                .contentType(GRAPHQL_MEDIA_TYPE)
+                .bodyValue(
+                    //language=Graphql
+                    """query {patients(example: {firstName: {contains: "arcu", strict: true} strict: true}) {
+                |        firstName
+                |        lastName
+                |        middleName
+                |        }
+                |    }
+                """.trimMargin()
+                )
+                .exchange()
+                .debugPrint()
+                .expectBody()
+                .jsonPath("$DATA_JSON_PATH.patients[0].firstName")
+                .isEqualTo(patient.nameInfo.firstName)
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            hibernatePatientRepository.deleteById(patient.id!!)
+        }
     }
 }
