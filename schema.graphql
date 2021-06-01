@@ -13,905 +13,904 @@ directive @provides(fields: String!) on FIELD_DEFINITION
 directive @requires(fields: String!) on FIELD_DEFINITION
 
 type Address {
-  address: String!
-  addressType: AddressType
-  city: String!
-  country: Country!
-  postalCode: String!
-  province: String!
+    address: String!
+    addressType: AddressType
+    city: String!
+    country: Country!
+    postalCode: String!
+    province: String!
 }
 
 input AddressEditInput {
-  address: String
-  addressType: AddressType
-  city: String
-  country: Country
-  postalCode: String
-  province: String
+    address: String
+    addressType: AddressType
+    city: String
+    country: Country
+    postalCode: String
+    province: String
 }
 
 input AddressInput {
-  address: String!
-  addressType: AddressType!
-  city: String!
-  country: Country!
-  postalCode: String!
-  province: String!
+    address: String!
+    addressType: AddressType!
+    city: String!
+    country: Country!
+    postalCode: String!
+    province: String!
 }
 
 enum AddressType {
-  Apartment
-  Home
-  Other
-  School
-  Work
+    Apartment
+    Home
+    Other
+    School
+    Work
 }
 
 type CanadianProvince implements GraphQLProvince {
-  asShortStrings: [String!]!
-  asStrings: [String!]!
-  longToShort(province: String!): String!
-  shortToLong(province: String!): String!
+    asShortStrings: [String!]!
+    asStrings: [String!]!
+    longToShort(province: String!): String!
+    shortToLong(province: String!): String!
 }
 
 type Clinic {
-  address: Address!
-  cid: ClinicId!
-  doctors: [Doctor!]!
+    address: Address!
+    cid: ClinicId!
+    doctors: [Doctor!]!
 }
 
 input ClinicEditInput {
-  address: AddressEditInput
-  cid: ClinicIdInput!
+    address: AddressEditInput
+    cid: ClinicIdInput!
 
-  # passing null will not update, to clear: pass an empty list
-  doctors: [DoctorIdInput!]
-  name: String
+    # passing null will not update, to clear: pass an empty list
+    doctors: [DoctorIdInput!]
+    name: String
 }
 
 type ClinicId {
-  id: UUID!
+    id: UUID!
 }
 
 input ClinicIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 input ClinicInput {
-  address: AddressInput!
+    address: AddressInput!
 
-  # defaults to empty list
-  doctors: [DoctorIdInput!]
-  name: String!
+    # defaults to empty list
+    doctors: [DoctorIdInput!]
+    name: String!
 }
 
 enum ConvertTarget {
-  Csv
-  Json
+    Csv
+    Json
 }
 
 enum Country {
-  Canada
+    Canada
 }
 
 enum Crud {
-  CREATE
-  DELETE
-  READ
-  UPDATE
+    CREATE
+    DELETE
+    READ
+    UPDATE
 }
 
 type Date {
-  day: Int!
-  month: Month!
-  toUtcTime: UtcTime!
+    day: Int!
+    month: Month!
+    toUtcTime: UtcTime!
     @deprecated(
-      reason: "will be removed before 1.0, replace with using the information I send you"
+        reason: "will be removed before 1.0, replace with using the information I send you"
     )
-  year: Int!
+    year: Int!
 }
 
 input DateFilterInput {
-  after: DateInput
-  before: DateInput
-  strict: Boolean!
+    after: DateInput
+    before: DateInput
+    strict: Boolean!
 }
 
 input DateInput {
-  day: Int!
-  month: Month!
-  year: Int!
+    day: Int!
+    month: Month!
+    year: Int!
 }
 
 enum DayOfWeek {
-  Fri
-  Mon
-  Sat
-  Sun
-  Thu
-  Tue
-  Wed
+    Fri
+    Mon
+    Sat
+    Sun
+    Thu
+    Tue
+    Wed
 }
 
 type Doctor implements Person {
-  addresses: [Address!]!
-  clinic: Clinic!
-  dateOfBirth: Date
-  did: DoctorId!
-  emails: [Email!]!
-  firstName: String!
-  lastName: String!
-  middleName: String
-  patients: [Patient!]!
-  phones: [Phone!]!
-  schedule(from: UtcTimeInput!, to: UtcTimeInput!): [Event!]!
-  title: String
-  user: User
+    addresses: [Address!]!
+    clinic: Clinic!
+    dateOfBirth: Date
+    did: DoctorId!
+    emails: [Email!]!
+    firstName: String!
+    lastName: String!
+    middleName: String
+    patients: [Patient!]!
+    phones: [Phone!]!
+    schedule(from: UtcTimeInput!, to: UtcTimeInput!): [Event!]!
+    title: String
+    user: User
 }
 
 input DoctorEditInput {
-  addresses: [AddressInput!]
+    addresses: [AddressInput!]
 
-  # setting to null will remove the doctor from the clinic
-  clinic: ClinicIdInput
-  dateOfBirth: DateInput
-  did: DoctorIdInput!
-  emails: [EmailInput!]
-  nameInfo: NameEditInput
-  patients: [PatientIdInput!]
-  phones: [PhoneInput!]
-  title: String
-  userUid: String
+    # setting to null will remove the doctor from the clinic
+    clinic: ClinicIdInput
+    dateOfBirth: DateInput
+    did: DoctorIdInput!
+    emails: [EmailInput!]
+    nameInfo: NameEditInput
+    patients: [PatientIdInput!]
+    phones: [PhoneInput!]
+    title: String
+    userUid: String
 }
 
 type DoctorId {
-  id: UUID!
+    id: UUID!
 }
 
 input DoctorIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 input DoctorInput {
-  addresses: [AddressInput!]
-  clinic: ClinicIdInput
-  dateOfBirth: DateInput
-  emails: [EmailInput!]
-  nameInfo: NameInput!
-  patients: [PatientIdInput!]
-  phones: [PhoneInput!]
-  title: String
-  user: UserInput
+    addresses: [AddressInput!]
+    clinic: ClinicIdInput
+    dateOfBirth: DateInput
+    emails: [EmailInput!]
+    nameInfo: NameInput!
+    patients: [PatientIdInput!]
+    phones: [PhoneInput!]
+    title: String
+    user: UserInput
 }
 
 type Email {
-  email: String!
-  type: EmailType!
+    email: String!
+    type: EmailType!
 }
 
 input EmailInput {
-  email: String!
-  type: EmailType!
+    email: String!
+    type: EmailType!
 }
 
 enum EmailType {
-  Other
-  Personal
-  School
-  Work
+    Other
+    Personal
+    School
+    Work
 }
 
 type EmergencyContact implements Person {
-  emails: [Email!]!
-  firstName: String!
-  lastName: String!
-  middleName: String
-  phones: [Phone!]!
-  relationship: Relationship!
+    emails: [Email!]!
+    firstName: String!
+    lastName: String!
+    middleName: String
+    phones: [Phone!]!
+    relationship: Relationship!
 }
 
 # either phones or emails MUST contain at least one element
 input EmergencyContactInput {
-  # defaults to empty list
-  emails: [EmailInput!]
-  firstName: String!
-  lastName: String!
-  middleName: String
+    # defaults to empty list
+    emails: [EmailInput!]
+    firstName: String!
+    lastName: String!
+    middleName: String
 
-  # defaults to empty list
-  phones: [PhoneInput!]
-  relationship: Relationship!
+    # defaults to empty list
+    phones: [PhoneInput!]
+    relationship: Relationship!
 }
 
 enum Ethnicity {
-  AmericanAboriginal
-  Asian
-  Black
-  Hispanic
-  PacificIslander
-  White
+    AmericanAboriginal
+    Asian
+    Black
+    Hispanic
+    PacificIslander
+    White
 }
 
 type Event {
-  allDay: Boolean!
-  description: String
-  doctors: [Doctor!]!
-  eid: EventId!
-  endTime: UtcTime
-  patients: [Patient!]!
-  reoccurrence: Recurrence
-  startTime: UtcTime
-  title: String!
+    allDay: Boolean!
+    description: String
+    doctors: [Doctor!]!
+    eid: EventId!
+    endTime: UtcTime
+    patients: [Patient!]!
+    reoccurrence: Recurrence
+    startTime: UtcTime
+    title: String!
 }
 
 # passing explicit nulls will unset the value (provided that leaves the event in a valid state) and not setting a value
 #  will leave it unchanged. The same consistency rules around start/end/allDay still apply and it is the callers
 #  responsibility to pass a valid series of arguments
 input EventEditInput {
-  #  weather the event is all day or not. Cannot be null and must be false if and only if end is not null
-  allDay: Boolean
+    #  weather the event is all day or not. Cannot be null and must be false if and only if end is not null
+    allDay: Boolean
 
-  # The new description. Can be set to null to remove the old description
-  description: String
+    # The new description. Can be set to null to remove the old description
+    description: String
 
-  # the doctors attached to this event. if set to null, no changes will be made, to clear the list you must pass an empty list
-  doctors: [DoctorIdInput!]
+    # the doctors attached to this event. if set to null, no changes will be made, to clear the list you must pass an empty list
+    doctors: [DoctorIdInput!]
 
-  # the id of the event you are looking to edit
-  eid: EventIdInput!
+    # the id of the event you are looking to edit
+    eid: EventIdInput!
 
-  # The new end of the event. Can only be null if the event is allDay
-  end: UtcTimeInput
+    # The new end of the event. Can only be null if the event is allDay
+    end: UtcTimeInput
 
-  # the patients attached to this event. see doctors for nullability rules
-  patients: [PatientIdInput!]
+    # the patients attached to this event. see doctors for nullability rules
+    patients: [PatientIdInput!]
 
-  # the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite the whole recurrence object, leaving fields blank will __not__ retain prior values
-  recurrence: RecurrenceInput
+    # the rules surrounding recurrence of the event, Can be set to null. Setting this value will overwrite the whole recurrence object, leaving fields blank will __not__ retain prior values
+    recurrence: RecurrenceInput
 
-  # The new start of the event. Cannot be null
-  start: UtcTimeInput
+    # The new start of the event. Cannot be null
+    start: UtcTimeInput
 
-  # The new title of the event. Cannot be set to null
-  title: String
+    # The new title of the event. Cannot be set to null
+    title: String
 }
 
 type EventId {
-  id: UUID!
+    id: UUID!
 }
 
 input EventIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 input EventInput {
-  # defaults to false even if explicitly passed null
-  allDay: Boolean
-  description: String
-  doctors: [DoctorIdInput!]
+    allDay: Boolean!
+    description: String
+    doctors: [DoctorIdInput!]
 
-  # UTC only can be unset / set to null if allDay is true
-  end: UtcTimeInput
-  patients: [PatientIdInput!]
-  recurrence: RecurrenceInput
+    # UTC
+    end: UtcTimeInput!
+    patients: [PatientIdInput!]
+    recurrence: RecurrenceInput
 
-  # UTC
-  start: UtcTimeInput!
-  title: String!
+    # UTC
+    start: UtcTimeInput!
+    title: String!
 }
 
 type FirebaseInfo {
-  displayName: String
-  email: String
-  phoneNumber: String
-  photoUrl: String
-  tenantId: String
-  tokensValidAfterTimestamp: Long
-  uid: String
+    displayName: String
+    email: String
+    phoneNumber: String
+    photoUrl: String
+    tenantId: String
+    tokensValidAfterTimestamp: Long
+    uid: String
 }
 
 input FoundationIcdCodeInput {
-  code: String!
+    code: String!
 }
 
 input GraphQLPermissionInput {
-  columnName: String
-  endTime: UtcTimeInput
-  permissionType: Crud!
-  referencedTableName: Tables!
-  rowId: UUID
-  startTime: UtcTimeInput
+    columnName: String
+    endTime: UtcTimeInput
+    permissionType: Crud!
+    referencedTableName: Tables!
+    rowId: UUID
+    startTime: UtcTimeInput
 }
 
 interface GraphQLProvince {
-  asShortStrings: [String!]!
-  asStrings: [String!]!
+    asShortStrings: [String!]!
+    asStrings: [String!]!
 }
 
 type Group {
-  gid: GroupId!
-  name: String!
+    gid: GroupId!
+    name: String!
 }
 
 type GroupId {
-  id: UUID!
+    id: UUID!
 }
 
 input GroupIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 input GroupInput {
-  name: String!
+    name: String!
 }
 
 enum IcdEntityType {
-  One
-  Two
-  Zero
+    One
+    Two
+    Zero
 }
 
 type IcdFoundationEntity {
-  browserUrl: String
-  child: [String!]
-  context: String
-  definition: IcdLanguageSpecificText
-  exclusion: [IcdTerm!]
-  fullySpecifiedName: IcdLanguageSpecificText
-  id: String
-  inclusion: [IcdTerm!]
-  longDefinition: IcdLanguageSpecificText
-  narrowerTerm: [IcdTerm!]
-  parent: [String!]
-  synonym: [IcdTerm!]
-  title: IcdLanguageSpecificText
+    browserUrl: String
+    child: [String!]
+    context: String
+    definition: IcdLanguageSpecificText
+    exclusion: [IcdTerm!]
+    fullySpecifiedName: IcdLanguageSpecificText
+    id: String
+    inclusion: [IcdTerm!]
+    longDefinition: IcdLanguageSpecificText
+    narrowerTerm: [IcdTerm!]
+    parent: [String!]
+    synonym: [IcdTerm!]
+    title: IcdLanguageSpecificText
 }
 
 enum IcdGuessType {
-  One
-  Two
-  Zero
+    One
+    Two
+    Zero
 }
 
 type IcdGuessWord {
-  dontChangeResult: String!
-  label: String
+    dontChangeResult: String!
+    label: String
 }
 
 type IcdLanguageSpecificText {
-  language: String
-  value: String
+    language: String
+    value: String
 }
 
 type IcdMultiVersion {
-  context: String
-  id: String
-  title: IcdLanguageSpecificText!
+    context: String
+    id: String
+    title: IcdLanguageSpecificText!
 }
 
 enum IcdPostcoordinationAvailability {
-  One
-  Three
-  Two
+    One
+    Three
+    Two
 }
 
 type IcdSearchResult {
-  destinationEntities: [IcdSimpleEntity!]
-  error: Boolean!
-  errorMessage: String
-  guessType: IcdGuessType
-  resultChopped: Boolean!
-  uniqueSearchId: Boolean!
-  wordSuggestionsChopped: Boolean!
-  words: [IcdGuessWord!]
+    destinationEntities: [IcdSimpleEntity!]
+    error: Boolean!
+    errorMessage: String
+    guessType: IcdGuessType
+    resultChopped: Boolean!
+    uniqueSearchId: Boolean!
+    wordSuggestionsChopped: Boolean!
+    words: [IcdGuessWord!]
 }
 
 type IcdSimpleEntity {
-  chapter: String
-  descendants: [IcdSimpleEntity!]!
-  entity: IcdFoundationEntity
-  entityType: IcdEntityType!
-  hasCodingNote: Boolean!
-  hasMaternalChapterLink: Boolean!
-  id(asUrl: Boolean): String
-  important: Boolean!
-  isLeaf: Boolean!
-  isResidualOther: Boolean!
-  isResidualUnspecified: Boolean!
-  linearization(linearizationName: String): IcdMultiVersion
-  matchingPVs: [IcdSimplePropertyValue!]!
-  postcoordinationAvailability: IcdPostcoordinationAvailability!
-  propertiesTruncated: Boolean!
-  score: Float!
-  stemId: String
-  theCode: String
-  title(withTags: Boolean): String
-  titleIsASearchResult: Boolean!
-  titleIsTopScore: Boolean!
+    chapter: String
+    descendants: [IcdSimpleEntity!]!
+    entity: IcdFoundationEntity
+    entityType: IcdEntityType!
+    hasCodingNote: Boolean!
+    hasMaternalChapterLink: Boolean!
+    id(asUrl: Boolean): String
+    important: Boolean!
+    isLeaf: Boolean!
+    isResidualOther: Boolean!
+    isResidualUnspecified: Boolean!
+    linearization(linearizationName: String): IcdMultiVersion
+    matchingPVs: [IcdSimplePropertyValue!]!
+    postcoordinationAvailability: IcdPostcoordinationAvailability!
+    propertiesTruncated: Boolean!
+    score: Float!
+    stemId: String
+    theCode: String
+    title(withTags: Boolean): String
+    titleIsASearchResult: Boolean!
+    titleIsTopScore: Boolean!
 }
 
 type IcdSimplePropertyValue {
-  important: Boolean
-  label: String
-  propertyId: String
-  score: Float
+    important: Boolean
+    label: String
+    propertyId: String
+    score: Float
 }
 
 type IcdTerm {
-  foundationReference: String
-  label: IcdLanguageSpecificText!
-  linearizationReference: String
+    foundationReference: String
+    label: IcdLanguageSpecificText!
+    linearizationReference: String
 }
 
 # Long type
 scalar Long
 
 enum Month {
-  Apr
-  Aug
-  Dec
-  Feb
-  Jan
-  Jul
-  Jun
-  Mar
-  May
-  Nov
-  Oct
-  Sep
+    Apr
+    Aug
+    Dec
+    Feb
+    Jan
+    Jul
+    Jun
+    Mar
+    May
+    Nov
+    Oct
+    Sep
 }
 
 type Mutation {
-  addClinic(clinic: ClinicInput!): Clinic!
-  addDoctor(doctor: DoctorInput!): Doctor!
-  addEvent(event: EventInput!): Event!
-  addGroup(group: GroupInput!): Group!
+    addClinic(clinic: ClinicInput!): Clinic!
+    addDoctor(doctor: DoctorInput!): Doctor!
+    addEvent(event: EventInput!): Event!
+    addGroup(group: GroupInput!): Group!
 
-  # adds a new patient and connects them to already existing doctors and contacts
-  #         contacts and doctors default to empty lists
-  addPatient(patient: PatientInput!): Patient!
-  addPermission(
-    groupId: GroupIdInput
-    permission: GraphQLPermissionInput!
-    userUid: String
-  ): Permission!
-  addUser(user: UserInput!): User!
-  addVisit(visit: VisitInput!): Visit!
-  editClinic(clinic: ClinicEditInput!): Clinic!
+    # adds a new patient and connects them to already existing doctors and contacts
+    #         contacts and doctors default to empty lists
+    addPatient(patient: PatientInput!): Patient!
+    addPermission(
+        groupId: GroupIdInput
+        permission: GraphQLPermissionInput!
+        userUid: String
+    ): Permission!
+    addUser(user: UserInput!): User!
+    addVisit(visit: VisitInput!): Visit!
+    editClinic(clinic: ClinicEditInput!): Clinic!
 
-  # edits the event referenced by eid
-  editEvent(event: EventEditInput!): Event!
+    # edits the event referenced by eid
+    editEvent(event: EventEditInput!): Event!
 
-  # edits the event referenced by eid
-  editRecurringEvent(
-    event: EventEditInput!
-    recurrenceSettings: RecurrenceEditSettingsInput!
-  ): Event!
-  editUser(user: UserEditInput!): User!
-  updateDoctor(doctor: DoctorEditInput!): Doctor!
+    # edits the event referenced by eid
+    editRecurringEvent(
+        event: EventEditInput!
+        recurrenceSettings: RecurrenceEditSettingsInput!
+    ): Event!
+    editUser(user: UserEditInput!): User!
+    updateDoctor(doctor: DoctorEditInput!): Doctor!
 
-  # updates a patient by their pid, only the not null fields are updated, pid MUST be defined
-  updatePatient(patient: PatientEditInput!): Patient!
+    # updates a patient by their pid, only the not null fields are updated, pid MUST be defined
+    updatePatient(patient: PatientEditInput!): Patient!
 }
 
 input NameEditInput {
-  # setting firstName to null will have no effect on updates
-  firstName: String
+    # setting firstName to null will have no effect on updates
+    firstName: String
 
-  # setting lastName to null will have no effect on updates
-  lastName: String
+    # setting lastName to null will have no effect on updates
+    lastName: String
 
-  # setting middleName to null will remove a prior middleName
-  middleName: String
+    # setting middleName to null will remove a prior middleName
+    middleName: String
 }
 
 type NameInfo {
-  firstName: String!
-  lastName: String!
-  middleName: String
+    firstName: String!
+    lastName: String!
+    middleName: String
 }
 
 input NameInput {
-  firstName: String!
-  lastName: String!
-  middleName: String
+    firstName: String!
+    lastName: String!
+    middleName: String
 }
 
 type Patient implements Person {
-  addresses: [Address!]!
-  contacts: [Person!]!
-  dateOfBirth: Date!
-  doctors: [Doctor!]!
-  emails: [Email!]!
-  ethnicity: Ethnicity
-  events: [Event!]!
-  firstName: String!
-  gender: String!
-  insuranceNumber: String
-  lastName: String!
-  middleName: String
-  phones: [Phone!]!
-  pid: PatientId!
-  sex: Sex!
-  visits: [Visit!]!
+    addresses: [Address!]!
+    contacts: [Person!]!
+    dateOfBirth: Date!
+    doctors: [Doctor!]!
+    emails: [Email!]!
+    ethnicity: Ethnicity
+    events: [Event!]!
+    firstName: String!
+    gender: String!
+    insuranceNumber: String
+    lastName: String!
+    middleName: String
+    phones: [Phone!]!
+    pid: PatientId!
+    sex: Sex!
+    visits: [Visit!]!
 }
 
 input PatientEditInput {
-  # setting addresses to null will have no effect on update. to remove, pass an emptyList
-  addresses: [AddressInput!]
+    # setting addresses to null will have no effect on update. to remove, pass an emptyList
+    addresses: [AddressInput!]
 
-  # setting dateOfBirth to null will have no effect on update
-  dateOfBirth: DateInput
+    # setting dateOfBirth to null will have no effect on update
+    dateOfBirth: DateInput
 
-  # setting doctors to null will have no effect on update. to remove, pass an emptyList
-  doctors: [DoctorIdInput!]
+    # setting doctors to null will have no effect on update. to remove, pass an emptyList
+    doctors: [DoctorIdInput!]
 
-  # setting emails to null will have no effect on update. to remove, pass an emptyList
-  emails: [EmailInput!]
+    # setting emails to null will have no effect on update. to remove, pass an emptyList
+    emails: [EmailInput!]
 
-  # setting emergencyContact to null will have no effect on update. to remove, pass an emptyList
-  emergencyContacts: [EmergencyContactInput!]
+    # setting emergencyContact to null will have no effect on update. to remove, pass an emptyList
+    emergencyContacts: [EmergencyContactInput!]
 
-  # setting to null will delete prior ethnicity, leaving blank will keep old ethnicity
-  ethnicity: Ethnicity
+    # setting to null will delete prior ethnicity, leaving blank will keep old ethnicity
+    ethnicity: Ethnicity
 
-  # setting gender to null will have no effect on update
-  gender: String
+    # setting gender to null will have no effect on update
+    gender: String
 
-  # setting to null will delete prior insuranceNumber, leaving blank will keep old insuranceNumber
-  insuranceNumber: ID
+    # setting to null will delete prior insuranceNumber, leaving blank will keep old insuranceNumber
+    insuranceNumber: ID
 
-  # setting nameInfoEditInput to null will have no effect on update
-  nameInfo: NameEditInput
+    # setting nameInfoEditInput to null will have no effect on update
+    nameInfo: NameEditInput
 
-  # setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList
-  phones: [PhoneInput!]
+    # setting phoneNumbers to null will have no effect on update. to remove, pass an emptyList
+    phones: [PhoneInput!]
 
-  # required. Determines what patient is being updated
-  pid: PatientIdInput!
+    # required. Determines what patient is being updated
+    pid: PatientIdInput!
 
-  # setting sex to null will have no effect on update
-  sex: Sex
+    # setting sex to null will have no effect on update
+    sex: Sex
 }
 
 input PatientExampleInput {
-  dateOfBirth: DateFilterInput
-  firstName: StringFilerInput
-  lastName: StringFilerInput
+    dateOfBirth: DateFilterInput
+    firstName: StringFilerInput
+    lastName: StringFilerInput
 
-  # weather to connect multiple parameters with and (strict) or or (non-strict)
-  strict: Boolean!
+    # weather to connect multiple parameters with and (strict) or or (non-strict)
+    strict: Boolean!
 }
 
 type PatientId {
-  id: UUID!
+    id: UUID!
 }
 
 input PatientIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 # The input side of Patient. Note that relations to other types are passed as ID's
 # if you want to clear a list, pass an empty list, explicitly setting a list to null or leaving blank will have no effect on
 # update operations and will result in empty list for create operations.
 input PatientInput {
-  # defaults to emptyList
-  addresses: [AddressInput!]
+    # defaults to emptyList
+    addresses: [AddressInput!]
 
-  # required
-  dateOfBirth: DateInput!
+    # required
+    dateOfBirth: DateInput!
 
-  # defaults to emptyList
-  doctors: [ID!]
+    # defaults to emptyList
+    doctors: [DoctorIdInput!]
 
-  # defaults to emptyList
-  emails: [EmailInput!]
+    # defaults to emptyList
+    emails: [EmailInput!]
 
-  # defaults to emptyList
-  emergencyContacts: [EmergencyContactInput!]
+    # defaults to emptyList
+    emergencyContacts: [EmergencyContactInput!]
 
-  # defaults to null
-  ethnicity: Ethnicity
+    # defaults to null
+    ethnicity: Ethnicity
 
-  # defaults to sex
-  gender: String
+    # defaults to sex
+    gender: String
 
-  # defaults to null
-  insuranceNumber: ID
+    # defaults to null
+    insuranceNumber: ID
 
-  # required
-  nameInfo: NameInput!
+    # required
+    nameInfo: NameInput!
 
-  # defaults to emptyList
-  phones: [PhoneInput!]
+    # defaults to emptyList
+    phones: [PhoneInput!]
 
-  # required
-  sex: Sex!
+    # required
+    sex: Sex!
 }
 
 type Permission {
-  columnName: String
-  endTime: UtcTime
-  permissionType: Crud!
-  pid: PermissionId!
-  referencedTableName: Tables!
-  rowId: UUID
-  startTime: UtcTime
+    columnName: String
+    endTime: UtcTime
+    permissionType: Crud!
+    pid: PermissionId!
+    referencedTableName: Tables!
+    rowId: UUID
+    startTime: UtcTime
 }
 
 type PermissionId {
-  id: UUID!
+    id: UUID!
 }
 
 type Permissions {
-  groupPerms: [Permission!]!
-  userPerms: [Permission!]!
+    groupPerms: [Permission!]!
+    userPerms: [Permission!]!
 }
 
 interface Person {
-  emails: [Email!]!
-  firstName: String!
-  lastName: String!
-  middleName: String
-  phones: [Phone!]!
+    emails: [Email!]!
+    firstName: String!
+    lastName: String!
+    middleName: String
+    phones: [Phone!]!
 }
 
 type Phone {
-  number: String!
-  type: PhoneType!
+    number: String!
+    type: PhoneType!
 }
 
 input PhoneInput {
-  number: String!
-  type: PhoneType!
+    number: String!
+    type: PhoneType!
 }
 
 enum PhoneType {
-  Cell
-  Home
-  Other
-  Pager
-  Work
+    Cell
+    Home
+    Other
+    Pager
+    Work
 }
 
 type Query {
-  clinic(cid: ClinicIdInput!): Clinic!
-  convert(json: String!, target: ConvertTarget!): String!
-  country(country: Country!): GraphQLProvince!
+    clinic(cid: ClinicIdInput!): Clinic!
+    convert(json: String!, target: ConvertTarget!): String!
+    country(country: Country!): GraphQLProvince!
 
-  # only pass one variable
-  doctors(
-    dids: [DoctorIdInput!]
-    pid: PatientIdInput
-    range: RangeInput
-  ): [Doctor!]!
-  events(
-    doctors: [DoctorIdInput!]
-    patients: [PatientIdInput!]
-    range: TimeRangeInput
-  ): [Event!]!
+    # only pass one variable
+    doctors(
+        dids: [DoctorIdInput!]
+        pid: PatientIdInput
+        range: RangeInput
+    ): [Doctor!]!
+    events(
+        doctors: [DoctorIdInput!]
+        patients: [PatientIdInput!]
+        range: TimeRangeInput
+    ): [Event!]!
 
-  # gets all users from firebase, you can
-  # filter out already registered
-  # users by setting filterRegistered
-  # to true (defaults to false)
-  firebaseUsers(filterRegistered: Boolean, range: RangeInput): [FirebaseInfo!]!
-  getContactsByPatient(pid: PatientIdInput!): [Person!]!
-  getRecord(rid: RecordIdInput!): Record!
-  getRecords(pid: PatientIdInput!): [Record!]!
-  groups(gids: [GroupIdInput!], range: RangeInput): [Group!]!
-  icd(icdCode: String!): IcdFoundationEntity!
-  mockingbirdIsAlive: Boolean!
-  patients(
-    example: PatientExampleInput
-    pids: [PatientIdInput!]
-    range: RangeInput
-    sortedBy: SortableField
-  ): [Patient!]!
-  permissions(uid: String!): Permissions!
-  searchIcd(
-    flatResults: Boolean
-    flexiSearch: Boolean
-    query: String!
-  ): IcdSearchResult!
-  searchIcdLinearization(
-    flatResults: Boolean
-    linearizationName: String
-    query: String!
-    releaseId: ReleaseIdInput
-  ): IcdSearchResult!
+    # gets all users from firebase, you can
+    # filter out already registered
+    # users by setting filterRegistered
+    # to true (defaults to false)
+    firebaseUsers(filterRegistered: Boolean, range: RangeInput): [FirebaseInfo!]!
+    getContactsByPatient(pid: PatientIdInput!): [Person!]!
+    getRecord(rid: RecordIdInput!): Record!
+    getRecords(pid: PatientIdInput!): [Record!]!
+    groups(gids: [GroupIdInput!], range: RangeInput): [Group!]!
+    icd(icdCode: String!): IcdFoundationEntity!
+    mockingbirdIsAlive: Boolean!
+    patients(
+        example: PatientExampleInput
+        pids: [PatientIdInput!]
+        range: RangeInput
+        sortedBy: SortableField
+    ): [Patient!]!
+    permissions(uid: String!): Permissions!
+    searchIcd(
+        flatResults: Boolean
+        flexiSearch: Boolean
+        query: String!
+    ): IcdSearchResult!
+    searchIcdLinearization(
+        flatResults: Boolean
+        linearizationName: String
+        query: String!
+        releaseId: ReleaseIdInput
+    ): IcdSearchResult!
 
-  # attempts to find the mediq-registered user by uid, if the user does not exist in the DB
-  user(uid: ID!): User!
+    # attempts to find the mediq-registered user by uid, if the user does not exist in the DB
+    user(uid: ID!): User!
 
-  # returns a list of users, only one argument should be specified
-  users(range: RangeInput, uniqueIds: [ID!]): [User!]!
-  visits(
-    did: DoctorIdInput
-    pid: PatientIdInput
-    strict: Boolean!
-    vids: [VisitIdInput!]
-  ): [Visit!]!
+    # returns a list of users, only one argument should be specified
+    users(range: RangeInput, uniqueIds: [ID!]): [User!]!
+    visits(
+        did: DoctorIdInput
+        pid: PatientIdInput
+        strict: Boolean!
+        vids: [VisitIdInput!]
+    ): [Visit!]!
 }
 
 input RangeInput {
-  from: Int!
-  to: Int!
+    from: Int!
+    to: Int!
 }
 
 type Record {
-  creationDate: UtcTime!
-  patient: Patient!
-  rid: RecordId!
-  type: RecordType!
+    creationDate: UtcTime!
+    patient: Patient!
+    rid: RecordId!
+    type: RecordType!
 }
 
 type RecordId {
-  id: UUID!
+    id: UUID!
 }
 
 input RecordIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 enum RecordType {
-  Blood
+    Blood
 }
 
 type Recurrence {
-  daysOfWeek: [DayOfWeek!]!
-  endDate: Date!
-  startDate: Date!
+    daysOfWeek: [DayOfWeek!]!
+    endDate: Date!
+    startDate: Date!
 }
 
 # the date range that the edits will effect the reoccurring event. This allows things such as editing a
 #             single event of a reoccurring event or leaving the past events untouched but editing future ones
 input RecurrenceEditSettingsInput {
-  # the end of the events that the edit should take place on
-  editEnd: DateInput!
+    # the end of the events that the edit should take place on
+    editEnd: DateInput!
 
-  # the start of events that the edit should take place on
-  editStart: DateInput!
+    # the start of events that the edit should take place on
+    editStart: DateInput!
 }
 
 input RecurrenceInput {
-  daysOfWeek: [DayOfWeek!]!
-  endDate: DateInput!
-  startDate: DateInput!
+    daysOfWeek: [DayOfWeek!]!
+    endDate: DateInput!
+    startDate: DateInput!
 }
 
 enum Relationship {
-  Aunt
-  Child
-  Cousin
-  Grandchild
-  Grandparent
-  Guardian
-  Other
-  Parent
-  Partner
-  Sibling
-  Uncle
+    Aunt
+    Child
+    Cousin
+    Grandchild
+    Grandparent
+    Guardian
+    Other
+    Parent
+    Partner
+    Sibling
+    Uncle
 }
 
 # release ids for icd-11. See https://icd.who.int/icdapi/docs2/SupportedClassifications/
 enum ReleaseIdInput {
-  R_2018
-  R_2019_04
-  R_2020_09
+    R_2018
+    R_2019_04
+    R_2020_09
 }
 
 enum Sex {
-  Female
-  Intersex
-  Male
+    Female
+    Intersex
+    Male
 }
 
 enum SortableField {
-  FIRST_NAME
-  LAST_NAME
-  PID
+    FIRST_NAME
+    LAST_NAME
+    PID
 }
 
 input StringFilerInput {
-  contains: String
-  endsWith: String
-  eq: String
-  ne: String
-  notContain: String
-  notEndWith: String
-  notStartWith: String
-  startsWith: String
+    contains: String
+    endsWith: String
+    eq: String
+    ne: String
+    notContain: String
+    notEndWith: String
+    notStartWith: String
+    startsWith: String
 
-  # weather to connect multiple filters with and (strict) or or (non-strict)
-  strict: Boolean!
+    # weather to connect multiple filters with and (strict) or or (non-strict)
+    strict: Boolean!
 }
 
 enum Tables {
-  AccessControlList
-  Action
-  Clinic
-  Doctor
-  EmergencyContact
-  Event
-  Group
-  IcdCode
-  Patient
-  Record
-  User
-  Visit
+    AccessControlList
+    Action
+    Clinic
+    Doctor
+    EmergencyContact
+    Event
+    Group
+    IcdCode
+    Patient
+    Record
+    User
+    Visit
 }
 
 input TimeRangeInput {
-  end: UtcTimeInput!
-  start: UtcTimeInput!
+    end: UtcTimeInput!
+    start: UtcTimeInput!
 }
 
 type TimeZonedTime {
-  timeZone: String!
-  unixMilliseconds: Long!
+    timeZone: String!
+    unixMilliseconds: Long!
 }
 
 type User {
-  associatedDoctor: Doctor
-  firebaseUserInfo: FirebaseInfo!
-  group: Group
-  hasPermission(perm: GraphQLPermissionInput!): Boolean!
-  isRegistered: Boolean!
-  names: NameInfo
-  permissions: Permissions!
-  uid: String!
+    associatedDoctor: Doctor
+    firebaseUserInfo: FirebaseInfo!
+    group: Group
+    hasPermission(perm: GraphQLPermissionInput!): Boolean!
+    isRegistered: Boolean!
+    names: NameInfo
+    permissions: Permissions!
+    uid: String!
 }
 
 # edits the user with the given uid, fields left unset will not be edited
 input UserEditInput {
-  group: GroupIdInput
-  uid: String!
+    group: GroupIdInput
+    uid: String!
 }
 
 input UserInput {
-  group: GroupIdInput
-  nameInfo: NameInput!
-  uid: String!
+    group: GroupIdInput
+    nameInfo: NameInput!
+    uid: String!
 }
 
 type UtcTime {
-  before(end: UtcTimeInput!): Boolean!
-  unixMilliseconds: Long!
+    before(end: UtcTimeInput!): Boolean!
+    unixMilliseconds: Long!
 
-  # the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  # eg. America/Los_Angeles for British Columbia's time zone (generally referred to as PST)
-  withRespectTo(timeZone: String!): TimeZonedTime!
+    # the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    # eg. America/Los_Angeles for British Columbia's time zone (generally referred to as PST)
+    withRespectTo(timeZone: String!): TimeZonedTime!
 }
 
 input UtcTimeInput {
-  unixMilliseconds: Long!
+    unixMilliseconds: Long!
 }
 
 # A type representing a formatted java.util.UUID
 scalar UUID
 
 type Visit {
-  description: String
-  event: Event!
-  icd: IcdSimpleEntity!
-  title: String
+    description: String
+    event: Event!
+    icd: IcdSimpleEntity!
+    title: String
 
-  # the id of the visit, will be null if the visit is not persisted to the database
-  vid: VisitId!
+    # the id of the visit, will be null if the visit is not persisted to the database
+    vid: VisitId!
 }
 
 type VisitId {
-  id: UUID!
+    id: UUID!
 }
 
 input VisitIdInput {
-  id: UUID!
+    id: UUID!
 }
 
 input VisitInput {
-  description: String
-  eid: EventIdInput!
-  foundationIcdCode: FoundationIcdCodeInput!
-  title: String
+    description: String
+    eid: EventIdInput!
+    foundationIcdCode: FoundationIcdCodeInput!
+    title: String
 }
