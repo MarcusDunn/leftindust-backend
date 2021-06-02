@@ -26,25 +26,11 @@ internal class StringFilterTest {
         val mockkCombinedPredicate = mockk<Predicate>()
 
         every { mockkRoot.get(mockkColumnName) } returns mockkPath
-        every { mockkCriteriaBuilder.equal(mockkPath, stringFiler.eq) } returns mockkPredicate
+        every { mockkCriteriaBuilder.equal(mockkPath, stringFiler.eq!!.uppercase()) } returns mockkPredicate
         every { mockkCriteriaBuilder.and(mockkPredicate) } returns mockkCombinedPredicate
+        every { mockkCriteriaBuilder.upper(any()) } returns mockkPath
 
         val result = stringFiler.toPredicate(mockkCriteriaBuilder, mockkRoot, mockkColumnName)
-
-        verifyAll {
-            mockkCriteriaBuilder.equal(mockkPath, stringFiler.eq)
-            mockkCriteriaBuilder.and(mockkPredicate)
-            mockkRoot.get(mockkColumnName)
-        }
-
-        confirmVerified(
-            mockkRoot,
-            mockkCriteriaBuilder,
-            mockkColumnName,
-            mockkPath,
-            mockkPredicate,
-            mockkCombinedPredicate
-        )
 
         assertEquals(mockkCombinedPredicate, result)
     }
