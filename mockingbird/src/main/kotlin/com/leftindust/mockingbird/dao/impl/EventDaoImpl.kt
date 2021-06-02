@@ -39,13 +39,19 @@ class EventDaoImpl(
         event: GraphQLEventInput,
         requester: MediqToken
     ): Event {
-        return if (requester can (Crud.CREATE to Tables.Event)) {
+        if (requester can (Crud.CREATE to Tables.Event)) {
             val patients =
                 event.patients?.let { hibernatePatientRepository.getByIds(it.map { pid -> pid.id }) } ?: emptySet()
             val doctors =
                 event.doctors?.let { hibernateDoctorRepository.getByIds(it.map { did -> did.id }) } ?: emptySet()
-            val eventEntity = Event(event, doctors, patients)
-            hibernateEventRepository.save(eventEntity)
+
+            val newEvent = Event(event, doctors, patients)
+            val eventEntity = hibernateEventRepository.save(newEvent)
+
+            patients.forEach { it.addEvent(eventEntity) }
+            doctors.forEach { it.addEvent(eventEntity) }
+
+            return eventEntity
         } else {
             throw NotAuthorizedException(requester, Crud.CREATE to Tables.Event)
         }

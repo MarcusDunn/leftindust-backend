@@ -4,7 +4,6 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -26,7 +25,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
@@ -88,21 +86,18 @@ class PatientMutationTest(
         val result = patientRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
-            .find { it.address.firstOrNull()?.address == "1444 main st" }
-        Assert.assertNotNull(result)
+            .find { it.address.firstOrNull()?.address == "1444 main st" }!!
 
         val session = sessionFactory.openSession()
         try {
             doctor.patients.clear()
-            result!!.doctors.clear()
-
+            result.doctors.clear()
             doctorRepository.delete(doctor)
             patientRepository.delete(result)
-        } catch(e: Exception) {
-
+        } catch (e: Exception) {
+            throw e
         } finally {
             session.close()
         }
-
     }
 }
