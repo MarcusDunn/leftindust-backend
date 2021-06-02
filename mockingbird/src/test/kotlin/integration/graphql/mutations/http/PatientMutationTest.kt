@@ -4,11 +4,12 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.dao.entity.Doctor
+import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
-import graphql.Assert
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
 import integration.GRAPHQL_MEDIA_TYPE
@@ -83,17 +84,20 @@ class PatientMutationTest(
             .exchange()
             .verifyOnlyDataExists("addPatient")
 
-        val result = patientRepository.findAll(PageRequest.of(0, 10))
+        val patientResult = patientRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
             .find { it.address.firstOrNull()?.address == "1444 main st" }!!
 
         val session = sessionFactory.openSession()
+        println("session.isOpen: ${session.isOpen}")
         try {
-            doctor.patients.clear()
-            result.doctors.clear()
-            doctorRepository.delete(doctor)
-            patientRepository.delete(result)
+            val patientFromSess = session.get(Patient::class.java, patientResult.id!!)
+            patientFromSess.doctors.clear()
+            val doctorFromSess = session.get(Doctor::class.java, doctor.id!!)
+            doctorFromSess.patients.clear()
+            session.delete(patientFromSess)
+            session.delete(doctorFromSess)
         } catch (e: Exception) {
             throw e
         } finally {

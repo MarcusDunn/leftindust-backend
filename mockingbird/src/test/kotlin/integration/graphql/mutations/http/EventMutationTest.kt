@@ -4,6 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
@@ -91,9 +91,9 @@ class EventMutationTest(
 
         val session = sessionFactory.openSession()
         try {
-            patient.events.clear()
-            hibernateEventRepository.delete(addedEvent!!)
-            hibernatePatientRepository.delete(patient)
+            val patientFromSess = session.get(Patient::class.java, patient.id!!)
+            patientFromSess.events.clear()
+            hibernatePatientRepository.delete(patientFromSess)
         } catch (e: Exception) {
             throw e
         } finally {

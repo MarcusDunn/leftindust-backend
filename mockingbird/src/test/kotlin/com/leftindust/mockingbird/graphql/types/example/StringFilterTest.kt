@@ -13,11 +13,11 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 import javax.persistence.metamodel.SingularAttribute
 
-internal class StringFilerTest {
+internal class StringFilterTest {
 
     @Test
     fun toPredicate() {
-        val stringFiler = StringFiler(eq = "whoa", strict = true)
+        val stringFiler = StringFilter(eq = "whoa", strict = true)
         val mockkRoot = mockk<Root<NameInfo>>()
         val mockkCriteriaBuilder = mockk<CriteriaBuilder>()
         val mockkColumnName = mockk<SingularAttribute<NameInfo, String>>()

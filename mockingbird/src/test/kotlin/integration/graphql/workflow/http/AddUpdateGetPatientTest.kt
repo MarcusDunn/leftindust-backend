@@ -11,7 +11,7 @@ import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
-import com.leftindust.mockingbird.graphql.types.example.StringFiler
+import com.leftindust.mockingbird.graphql.types.example.StringFilter
 import com.ninjasquad.springmockk.MockkBean
 import integration.*
 import io.mockk.coEvery
@@ -122,10 +122,10 @@ class AddUpdateGetPatientTest(
         val id = runBlocking {
             patientDao.searchByExample(
                 GraphQLPatientExample(
-                    firstName = StringFiler(
+                    firstName = StringFilter(
                         eq = "Clyde",
                         strict = true
-                    ), lastName = StringFiler(
+                    ), lastName = StringFilter(
                         eq = "Bronstone",
                         strict = true
                     ),

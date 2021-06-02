@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional
 @AutoConfigureWebTestClient
 @Tag("Integration")
 @Transactional
-
 class DoctorMutationTest(
     @Autowired private val testClient: WebTestClient,
     @Autowired private val doctorRepository: HibernateDoctorRepository,

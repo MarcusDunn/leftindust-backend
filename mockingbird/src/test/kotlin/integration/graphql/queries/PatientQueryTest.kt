@@ -8,7 +8,7 @@ import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
-import com.leftindust.mockingbird.graphql.types.example.StringFiler
+import com.leftindust.mockingbird.graphql.types.example.StringFilter
 import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
 import io.mockk.coEvery
@@ -101,7 +101,7 @@ class PatientQueryTest {
 
             val result = patientQuery.patients(
                 example = GraphQLPatientExample(
-                    firstName = StringFiler(
+                    firstName = StringFilter(
                         eq = patientEntity.nameInfo.firstName,
                         strict = true
                     ),

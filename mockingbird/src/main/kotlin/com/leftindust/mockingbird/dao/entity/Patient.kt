@@ -38,7 +38,7 @@ class Patient(
         fetch = FetchType.LAZY,
     )
     var contacts: Set<EmergencyContact> = emptySet(),
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
 

@@ -24,7 +24,7 @@ class Doctor(
     @ManyToOne
     @JoinColumn(name = "clinic_id", nullable = true)
     var clinic: Clinic? = null,
-    @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL], orphanRemoval = true)
     var patients: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
     constructor(

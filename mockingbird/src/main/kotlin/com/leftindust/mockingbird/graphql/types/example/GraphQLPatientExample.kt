@@ -35,22 +35,13 @@ interface Filter<G> : PredicateInput {
         root: From<Z, X>,
         columnName: SingularAttribute<X, G>
     ): Predicate
-
-    fun applyStrict(criteriaBuilder: CriteriaBuilder, vararg predicates: Predicate): Predicate {
-        return if (strict) {
-            criteriaBuilder.and(*predicates)
-        } else {
-            criteriaBuilder.or(*predicates)
-        }
-    }
 }
 
 @GraphQLName("PatientExample")
 data class GraphQLPatientExample(
-    val firstName: StringFiler? = null,
-    val lastName: StringFiler? = null,
+    val firstName: StringFilter? = null,
+    val lastName: StringFilter? = null,
     val dateOfBirth: DateFilter? = null,
-    @GraphQLDescription("weather to connect multiple parameters with and (strict) or or (non-strict)")
     override val strict: Boolean,
 ) : @GraphQLIgnore Example<Patient> {
     @GraphQLIgnore
@@ -85,11 +76,11 @@ data class DateFilter(
             before?.let { criteriaBuilder.greaterThanOrEqualTo(root.get(columnName), before.toDate()) },
             after?.let { criteriaBuilder.lessThanOrEqualTo(root.get(columnName), after.toDate()) },
         ).toTypedArray()
-        return applyStrict(criteriaBuilder, *toTypedArray)
+        return combineWithStrict(criteriaBuilder, *toTypedArray)
     }
 }
 
-data class StringFiler(
+data class StringFilter(
     val eq: String? = null,
     val ne: String? = null,
     val contains: String? = null,
@@ -108,37 +99,17 @@ data class StringFiler(
         root: From<Z, X>,
         columnName: SingularAttribute<X, String>
     ): Predicate {
-        val column = root.get(columnName)
+        val column = criteriaBuilder.upper(root.get(columnName))
         val toTypedArray = listOfNotNull(
-            eq?.let { criteriaBuilder.equal(column, eq) },
-            ne?.let { criteriaBuilder.notEqual(column, ne) },
-            contains?.let {
-                criteriaBuilder.or(
-                    criteriaBuilder.like(column, "%$contains%"),
-                    criteriaBuilder.like(column, "%$contains"),
-                    criteriaBuilder.equal(column, "$contains")
-                )
-            },
-            notContain?.let { criteriaBuilder.notLike(column, "%$notContain%") },
-            startsWith?.let {
-                criteriaBuilder.or(
-                    criteriaBuilder.like(column, "$startsWith%"),
-                    criteriaBuilder.equal(column, "$startsWith")
-                )
-            },
-            notStartWith?.let { criteriaBuilder.notLike(column, "$notStartWith%") },
-            endsWith?.let {
-                criteriaBuilder.or(
-                    criteriaBuilder.like(column, "%$endsWith"),
-                    criteriaBuilder.equal(column, "$endsWith")
-                )
-            },
-            notEndWith?.let { criteriaBuilder.notLike(column, "%$notEndWith") },
+            eq?.let { criteriaBuilder.equal(column, eq.uppercase()) },
+            ne?.let { criteriaBuilder.notEqual(column, ne.uppercase()) },
+            contains?.let { criteriaBuilder.like(column, "%$contains%".uppercase()) },
+            notContain?.let { criteriaBuilder.notLike(column, "%$notContain%".uppercase()) },
+            startsWith?.let { criteriaBuilder.like(column, "$startsWith%".uppercase()) },
+            notStartWith?.let { criteriaBuilder.notLike(column, "$notStartWith%".uppercase()) },
+            endsWith?.let { criteriaBuilder.like(column, "%$endsWith".uppercase()) },
+            notEndWith?.let { criteriaBuilder.notLike(column, "%$notEndWith".uppercase()) },
         ).toTypedArray()
-        return if (strict) {
-            criteriaBuilder.and(*toTypedArray)
-        } else {
-            criteriaBuilder.or(*toTypedArray)
-        }
+        return combineWithStrict(criteriaBuilder, *toTypedArray)
     }
 }
