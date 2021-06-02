@@ -68,16 +68,16 @@ class PatientQueryTest(
                 .bodyValue(
                     //language=Graphql
                     """query {patients(pids: [{id: "${patient.id}"}]) {
-                |events {
-                |    title
-                |    startTime {
-                |        unixMilliseconds
+                |    events {
+                |        title
+                |        startTime {
+                |            unixMilliseconds
+                |        }
+                |        endTime {
+                |            unixMilliseconds
+                |        }
+                |        allDay
                 |    }
-                |    endTime {
-                |        unixMilliseconds
-                |    }
-                |    allDay
-                |}
                 |}
                 |}
                 """.trimMargin()
@@ -153,7 +153,7 @@ class PatientQueryTest(
                 .contentType(GRAPHQL_MEDIA_TYPE)
                 .bodyValue(
                     //language=Graphql
-                    """query {patients(example: {firstName: {contains: "arcu", strict: true} strict: true}) {
+                    """query {patients(example: {firstName: {contains: "marcus", strict: true} strict: true}) {
                 |        firstName
                 |        lastName
                 |        middleName

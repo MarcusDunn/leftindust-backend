@@ -3,7 +3,6 @@ package integration.graphql.queries
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
@@ -103,8 +102,10 @@ class PatientQueryTest {
             val result = patientQuery.patients(
                 example = GraphQLPatientExample(
                     firstName = StringFiler(
-                        eq = patientEntity.nameInfo.firstName
-                    )
+                        eq = patientEntity.nameInfo.firstName,
+                        strict = true
+                    ),
+                    strict = true,
                 ),
                 authContext = mockkAuthContext
             )
