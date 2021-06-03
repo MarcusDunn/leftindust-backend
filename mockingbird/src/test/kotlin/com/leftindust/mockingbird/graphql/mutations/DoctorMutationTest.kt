@@ -62,7 +62,7 @@ internal class DoctorMutationTest {
 
         val doctorMutation = DoctorMutation(mockkDoctorDao, mockk())
 
-        val result = runBlocking { doctorMutation.updateDoctor(mockkGraphQLDoctorInput, mockkGraphQLAuthContext) }
+        val result = runBlocking { doctorMutation.editDoctor(mockkGraphQLDoctorInput, mockkGraphQLAuthContext) }
 
         val expected = GraphQLDoctor(mockkDoctor, mockkGraphQLAuthContext)
 

@@ -145,7 +145,7 @@ class DoctorMutationTest(
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
                 //language=GraphQL
-                """mutation { updateDoctor(doctor: {did: {id: "${doctor.id!!}"}, nameInfo: {firstName: "biggus", lastName: "dickus"}, title: "Senator", emails: [{type: Work, email: "boss@leftindust.ca"}], phones: [{type: Cell, number: "+1 888 952 7421"}]})
+                """mutation { editDoctor(doctor: {did: {id: "${doctor.id!!}"}, nameInfo: {firstName: "biggus", lastName: "dickus"}, title: "Senator", emails: [{type: Work, email: "boss@leftindust.ca"}], phones: [{type: Cell, number: "+1 888 952 7421"}]})
                 | {
                 | did {
                 |    id,
@@ -158,10 +158,10 @@ class DoctorMutationTest(
                 |""".trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists("updateDoctor")
-            .jsonPath("data.updateDoctor.did.id")
+            .verifyOnlyDataExists("editDoctor")
+            .jsonPath("data.editDoctor.did.id")
             .isEqualTo(doctor.id!!.toString())
-            .jsonPath("data.updateDoctor.firstName")
+            .jsonPath("data.editDoctor.firstName")
             .isEqualTo("biggus")
 
         doctorRepository.deleteById(doctor.id!!)
