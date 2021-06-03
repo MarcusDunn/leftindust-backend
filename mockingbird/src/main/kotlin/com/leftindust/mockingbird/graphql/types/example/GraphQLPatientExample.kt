@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.graphql.types.example
 
-import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.dao.entity.NameInfo_
@@ -14,8 +13,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 import javax.persistence.metamodel.SingularAttribute
 
+@GraphQLIgnore
 interface PredicateInput {
     val strict: Boolean
+    @GraphQLIgnore
     fun combineWithStrict(criteriaBuilder: CriteriaBuilder, vararg predicates: Predicate): Predicate {
         return if (strict) {
             criteriaBuilder.and(*predicates)
@@ -25,11 +26,15 @@ interface PredicateInput {
     }
 }
 
+@GraphQLIgnore
 interface Example<T> : PredicateInput {
+    @GraphQLIgnore
     fun toPredicate(criteriaBuilder: CriteriaBuilder, root: Root<T>): Predicate
 }
 
+@GraphQLIgnore
 interface Filter<G> : PredicateInput {
+    @GraphQLIgnore
     fun <Z, X> toPredicate(
         criteriaBuilder: CriteriaBuilder,
         root: From<Z, X>,
@@ -44,21 +49,16 @@ data class GraphQLPatientExample(
     val dateOfBirth: DateFilter? = null,
     val insuranceNumber: StringFilter? = null,
     override val strict: Boolean,
-) : @GraphQLIgnore Example<Patient> {
-    @GraphQLIgnore
+): Example<Patient> {
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Patient>): Predicate {
-        val toTypedArray = predicates(criteriaBuilder, root).toTypedArray()
-        return combineWithStrict(criteriaBuilder, *toTypedArray)
-    }
-
-    private fun predicates(criteriaBuilder: CriteriaBuilder, root: Root<Patient>): List<Predicate> {
-        val patientNameJoin = root.join(Patient_.nameInfo)
-        return listOfNotNull(
-            firstName?.toPredicate(criteriaBuilder, patientNameJoin, NameInfo_.firstName),
-            lastName?.toPredicate(criteriaBuilder, patientNameJoin, NameInfo_.lastName),
+        val patientNameInfoJoin = root.join(Patient_.nameInfo)
+        val predicates = listOfNotNull(
+            firstName?.toPredicate(criteriaBuilder, patientNameInfoJoin, NameInfo_.firstName),
+            lastName?.toPredicate(criteriaBuilder, patientNameInfoJoin, NameInfo_.lastName),
             dateOfBirth?.toPredicate(criteriaBuilder, root, Patient_.dateOfBirth),
             insuranceNumber?.toPredicate(criteriaBuilder, root, Patient_.insuranceNumber)
-        )
+        ).toTypedArray()
+        return combineWithStrict(criteriaBuilder, *predicates)
     }
 }
 
@@ -66,9 +66,8 @@ data class DateFilter(
     val before: GraphQLDateInput? = null,
     val after: GraphQLDateInput? = null,
     override val strict: Boolean,
-) : @GraphQLIgnore Filter<Date> {
+): Filter<Date> {
 
-    @GraphQLIgnore
     override fun <Z, X> toPredicate(
         criteriaBuilder: CriteriaBuilder,
         root: From<Z, X>,
@@ -91,18 +90,16 @@ data class StringFilter(
     val notStartWith: String? = null,
     val endsWith: String? = null,
     val notEndWith: String? = null,
-    @GraphQLDescription("weather to connect multiple filters with and (strict) or or (non-strict)")
     override val strict: Boolean,
-) : @GraphQLIgnore Filter<String> {
+) : Filter<String> {
 
-    @GraphQLIgnore
     override fun <Z, X> toPredicate(
         criteriaBuilder: CriteriaBuilder,
         root: From<Z, X>,
         columnName: SingularAttribute<X, String>
     ): Predicate {
         val column = criteriaBuilder.upper(root.get(columnName))
-        val toTypedArray = listOfNotNull(
+        val predicates = listOfNotNull(
             eq?.let { criteriaBuilder.equal(column, eq.uppercase()) },
             ne?.let { criteriaBuilder.notEqual(column, ne.uppercase()) },
             contains?.let { criteriaBuilder.like(column, "%$contains%".uppercase()) },
@@ -112,6 +109,6 @@ data class StringFilter(
             endsWith?.let { criteriaBuilder.like(column, "%$endsWith".uppercase()) },
             notEndWith?.let { criteriaBuilder.notLike(column, "%$notEndWith".uppercase()) },
         ).toTypedArray()
-        return combineWithStrict(criteriaBuilder, *toTypedArray)
+        return combineWithStrict(criteriaBuilder, *predicates)
     }
 }
