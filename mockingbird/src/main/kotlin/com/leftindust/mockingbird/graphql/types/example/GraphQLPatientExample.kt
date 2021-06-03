@@ -42,6 +42,7 @@ data class GraphQLPatientExample(
     val firstName: StringFilter? = null,
     val lastName: StringFilter? = null,
     val dateOfBirth: DateFilter? = null,
+    val insuranceNumber: StringFilter? = null,
     override val strict: Boolean,
 ) : @GraphQLIgnore Example<Patient> {
     @GraphQLIgnore
@@ -55,7 +56,8 @@ data class GraphQLPatientExample(
         return listOfNotNull(
             firstName?.toPredicate(criteriaBuilder, patientNameJoin, NameInfo_.firstName),
             lastName?.toPredicate(criteriaBuilder, patientNameJoin, NameInfo_.lastName),
-            dateOfBirth?.toPredicate(criteriaBuilder, root, Patient_.dateOfBirth)
+            dateOfBirth?.toPredicate(criteriaBuilder, root, Patient_.dateOfBirth),
+            insuranceNumber?.toPredicate(criteriaBuilder, root, Patient_.insuranceNumber)
         )
     }
 }
