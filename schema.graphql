@@ -487,7 +487,7 @@ type Mutation {
         recurrenceSettings: RecurrenceEditSettingsInput!
     ): Event!
     editUser(user: UserEditInput!): User!
-    updateDoctor(doctor: DoctorEditInput!): Doctor!
+    editDoctor(doctor: DoctorEditInput!): Doctor!
 
     # updates a patient by their pid, only the not null fields are updated, pid MUST be defined
     updatePatient(patient: PatientEditInput!): Patient!
