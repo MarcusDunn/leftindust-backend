@@ -17,7 +17,7 @@ internal class StringFilterTest {
 
     @Test
     fun toPredicate() {
-        val stringFiler = StringFilter(eq = "whoa", strict = true)
+        val stringFiler = CaseAgnosticStringFilter(eq = "whoa", strict = true)
         val mockkRoot = mockk<Root<NameInfo>>()
         val mockkCriteriaBuilder = mockk<CriteriaBuilder>()
         val mockkColumnName = mockk<SingularAttribute<NameInfo, String>>()
