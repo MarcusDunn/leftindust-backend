@@ -4,18 +4,15 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.entity.Doctor
-import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
-import graphql.Assert.assertNotNull
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
 import integration.GRAPHQL_MEDIA_TYPE
+import integration.util.EntityStore
 import integration.verifyOnlyDataExists
-import io.ktor.http.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -52,8 +49,15 @@ class DoctorMutationTest(
     @BeforeEach
     @AfterEach
     internal fun setUp() {
-        assertEquals(doctorCount, doctorRepository.count()) { "Leaked doctors in DoctorMutationTest ${doctorRepository.findAll().map { it.nameInfo }}" }
-        assertEquals(userCount, userRepository.count()) { "Leaked users in DoctorMutationTest ${userRepository.findAll().map { it.nameInfo }}" }
+        assertEquals(
+            doctorCount,
+            doctorRepository.count()
+        ) { "Leaked doctors in DoctorMutationTest ${doctorRepository.findAll().map { it.nameInfo }}" }
+        assertEquals(userCount, userRepository.count()) {
+            "Leaked users in DoctorMutationTest ${
+                userRepository.findAll().map { it.nameInfo }
+            }"
+        }
     }
 
     @Test
@@ -124,42 +128,42 @@ class DoctorMutationTest(
 
         doctorRepository.deleteById(result.id!!)
     }
-//
-//    @Test
-//    internal fun `edit doctor`() {
-//        val mediqToken = mockk<MediqToken>()
-//        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
-//            every { mediqAuthToken } returns mediqToken
-//        }
-//        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
-//
-//       val doctor =  doctorRepository.save(EntityStore.doctor("DoctorMutationTest.`edit doctor`"))
-//
-//        testClient.post()
-//            .uri(GRAPHQL_ENDPOINT)
-//            .accept(APPLICATION_JSON_MEDIA_TYPE)
-//            .contentType(GRAPHQL_MEDIA_TYPE)
-//            .bodyValue(
-//                //language=GraphQL
-//                """mutation { updateDoctor(doctor: {did: {id: }})
-//                | {
-//                | firstName
-//                | }
-//                |}
-//                |""".trimMargin()
-//            )
-//            .exchange()
-//            .verifyOnlyDataExists("addDoctor")
-//            .jsonPath("data.addDoctor.firstName")
-//            .isEqualTo("doc")
-//
-//        val session = sessionFactory.openSession()
-//        try {
-//            session.delete(session.get(Doctor::class.java, doctor.id!!))
-//        }catch (e: Exception) {
-//            throw e
-//        } finally {
-//            session.close()
-//        }
-//    }
+
+    @Test
+    internal fun `edit doctor`() {
+        val mediqToken = mockk<MediqToken>()
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mediqToken
+        }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
+
+        val doctor = doctorRepository.save(EntityStore.doctor("DoctorMutationTest.`edit doctor`"))
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=GraphQL
+                """mutation { updateDoctor(doctor: {did: {id: "${doctor.id!!}"}, nameInfo: {firstName: "biggus", lastName: "dickus"}, title: "Senator", emails: [{type: Work, email: "boss@leftindust.ca"}], phones: [{type: Cell, number: "+1 888 952 7421"}]})
+                | {
+                | did {
+                |    id,
+                |    __typename  
+                |    }
+                | __typename
+                | firstName
+                | }
+                |}
+                |""".trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists("updateDoctor")
+            .jsonPath("data.updateDoctor.did.id")
+            .isEqualTo(doctor.id!!.toString())
+            .jsonPath("data.updateDoctor.firstName")
+            .isEqualTo("biggus")
+
+        doctorRepository.deleteById(doctor.id!!)
+    }
 }
