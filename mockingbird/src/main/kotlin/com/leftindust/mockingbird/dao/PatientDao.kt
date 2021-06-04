@@ -6,7 +6,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput

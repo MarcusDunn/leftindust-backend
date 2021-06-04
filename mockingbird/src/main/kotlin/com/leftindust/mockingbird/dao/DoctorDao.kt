@@ -11,6 +11,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLDoctorExample
 
 interface DoctorDao {
     suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor>
@@ -21,4 +22,5 @@ interface DoctorDao {
     suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor>
     suspend fun getByUser(uid: String, requester: MediqToken): Doctor?
     suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor>
+    suspend fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor>
 }

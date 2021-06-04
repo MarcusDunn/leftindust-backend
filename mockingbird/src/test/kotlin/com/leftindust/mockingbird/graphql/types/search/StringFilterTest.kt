@@ -1,10 +1,9 @@
-package com.leftindust.mockingbird.graphql.types.example
+package com.leftindust.mockingbird.graphql.types.search
 
 import com.leftindust.mockingbird.dao.entity.NameInfo
-import io.mockk.confirmVerified
+import com.leftindust.mockingbird.graphql.types.search.filter.CaseAgnosticStringFilter
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verifyAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import javax.persistence.criteria.CriteriaBuilder

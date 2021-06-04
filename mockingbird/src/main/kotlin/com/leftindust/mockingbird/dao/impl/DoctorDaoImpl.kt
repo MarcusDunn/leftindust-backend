@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
+import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
@@ -17,6 +18,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLDoctorExample
 import org.hibernate.Hibernate
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -113,6 +115,24 @@ class DoctorDaoImpl(
             doctorRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, readDoctors)
+        }
+    }
+
+    override suspend fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor> {
+        if (requester can (Crud.READ to Tables.Doctor)) {
+            val session = sessionFactory.currentSession
+
+            val criteriaBuilder = session.criteriaBuilder
+            val criteriaQuery = criteriaBuilder.createQuery(Doctor::class.java)
+            val root = criteriaQuery.from(Doctor::class.java)
+
+            val predicate = example.toPredicate(criteriaBuilder, root)
+
+            criteriaQuery.where(predicate)
+
+            return session.createQuery(criteriaQuery.where(predicate)).resultList
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor)
         }
     }
 }

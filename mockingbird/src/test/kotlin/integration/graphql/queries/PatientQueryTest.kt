@@ -7,8 +7,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.queries.PatientQuery
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.example.CaseAgnosticStringFilter
-import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.search.filter.CaseAgnosticStringFilter
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
 import io.mockk.coEvery

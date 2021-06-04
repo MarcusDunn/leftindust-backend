@@ -6,7 +6,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.example.GraphQLPatientExample
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.stereotype.Component
 
