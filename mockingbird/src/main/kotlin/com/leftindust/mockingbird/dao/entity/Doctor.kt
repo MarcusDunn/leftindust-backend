@@ -26,7 +26,14 @@ class Doctor(
     var clinic: Clinic? = null,
     @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL], orphanRemoval = true)
     var patients: MutableSet<DoctorPatient> = mutableSetOf(),
-) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
+) : Person(
+    nameInfo,
+    addresses.toMutableSet(),
+    emails.toMutableSet(),
+    phones.toMutableSet(),
+    user,
+    schedule.toMutableSet()
+) {
     constructor(
         graphQLDoctorInput: GraphQLDoctorInput,
         user: MediqUser?,
@@ -66,22 +73,18 @@ class Doctor(
             null -> null
         }
         if (graphQLDoctorEditInput.patients != null) {
-            for (doctorPatient in patients) {
-                val forRemoval = doctorPatient.patient.doctors.filter { it.doctor.id == this.id }
-                for (toBeRemoved in forRemoval) {
-                    toBeRemoved.removeFromLists()
-                    session.delete(toBeRemoved)
+            patients
+                .flatMap { doctorPatient -> doctorPatient.patient.doctors.filter { it.doctor.id == this.id } }
+                .forEach {
+                    it.removeFromLists()
+                    session.delete(it)
                 }
-            }
+
             assert(this.patients.isEmpty())
-            graphQLDoctorEditInput.patients.map { this.addPatient(session.get(Patient::class.java, it.id)) }
-        }
-        if (graphQLDoctorEditInput.patients != null) {
-            for (doctorPatient in patients) {
-                doctorPatient.patient.doctors.removeIf { it.doctor.id == this.id }
-            }
-            patients.clear()
-            graphQLDoctorEditInput.patients.map { session.get(Patient::class.java, it.id).addDoctor(this) }
+
+            graphQLDoctorEditInput.patients
+                .map { session.get(Patient::class.java, it.id) }
+                .forEach { this.addPatient(it) }
         }
     }
 }

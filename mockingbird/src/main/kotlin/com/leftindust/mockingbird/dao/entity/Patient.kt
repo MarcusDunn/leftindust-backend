@@ -40,7 +40,14 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
-) : Person(nameInfo, addresses.toMutableSet(), emails.toMutableSet(), phones.toMutableSet(), user, schedule.toMutableSet()) {
+) : Person(
+    nameInfo,
+    addresses.toMutableSet(),
+    emails.toMutableSet(),
+    phones.toMutableSet(),
+    user,
+    schedule.toMutableSet()
+) {
 
     /**
      * see [GraphQLPatientInput] for details on how updates should behave
@@ -111,15 +118,18 @@ class Patient(
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
 
         if (patientInput.doctors != null) {
-            for (doctorPatient in doctors) {
-                val forRemoval = doctorPatient.doctor.patients.filter { it.patient.id == this.id }
-                for (toBeRemoved in forRemoval) {
-                    toBeRemoved.removeFromLists()
-                    session.delete(toBeRemoved)
+            doctors
+                .flatMap { doctorPatient -> doctorPatient.doctor.patients.filter { it.patient.id == this.id } }
+                .forEach {
+                    it.removeFromLists()
+                    session.delete(it)
                 }
-            }
+
             assert(this.doctors.isEmpty())
-            patientInput.doctors.map { session.get(Doctor::class.java, it.id).addPatient(this) }
+
+            patientInput.doctors
+                .map { session.get(Doctor::class.java, it.id) }
+                .forEach { it.addPatient(this) }
         }
     }
 
