@@ -54,6 +54,18 @@ type CanadianProvince implements GraphQLProvince {
     shortToLong(province: String!): String!
 }
 
+input CaseAgnosticStringFilterInput {
+    contains: String
+    endsWith: String
+    eq: String
+    ne: String
+    notContain: String
+    notEndWith: String
+    notStartWith: String
+    startsWith: String
+    strict: Boolean!
+}
+
 type Clinic {
     address: Address!
     cid: ClinicId!
@@ -162,6 +174,12 @@ input DoctorEditInput {
     phones: [PhoneInput!]
     title: String
     userUid: String
+}
+
+input DoctorExampleInput {
+    firstName: CaseAgnosticStringFilterInput
+    lastName: CaseAgnosticStringFilterInput
+    strict: Boolean!
 }
 
 type DoctorId {
@@ -310,7 +328,8 @@ type FirebaseInfo {
 }
 
 input FoundationIcdCodeInput {
-    code: String!
+    # full A ICD-11 Foundation Code URL
+    url: String!
 }
 
 input GraphQLPermissionInput {
@@ -477,6 +496,7 @@ type Mutation {
     addUser(user: UserInput!): User!
     addVisit(visit: VisitInput!): Visit!
     editClinic(clinic: ClinicEditInput!): Clinic!
+    editDoctor(doctor: DoctorEditInput!): Doctor!
 
     # edits the event referenced by eid
     editEvent(event: EventEditInput!): Event!
@@ -487,7 +507,6 @@ type Mutation {
         recurrenceSettings: RecurrenceEditSettingsInput!
     ): Event!
     editUser(user: UserEditInput!): User!
-    editDoctor(doctor: DoctorEditInput!): Doctor!
 
     # updates a patient by their pid, only the not null fields are updated, pid MUST be defined
     updatePatient(patient: PatientEditInput!): Patient!
@@ -575,10 +594,9 @@ input PatientEditInput {
 
 input PatientExampleInput {
     dateOfBirth: DateFilterInput
-    firstName: StringFilerInput
-    lastName: StringFilerInput
-
-    # weather to connect multiple parameters with and (strict) or or (non-strict)
+    firstName: CaseAgnosticStringFilterInput
+    insuranceNumber: WhiteSpaceAgnosticStringFilterInput
+    lastName: CaseAgnosticStringFilterInput
     strict: Boolean!
 }
 
@@ -681,6 +699,7 @@ type Query {
     # only pass one variable
     doctors(
         dids: [DoctorIdInput!]
+        example: DoctorExampleInput
         pid: PatientIdInput
         range: RangeInput
     ): [Doctor!]!
@@ -812,20 +831,6 @@ enum SortableField {
     PID
 }
 
-input StringFilerInput {
-    contains: String
-    endsWith: String
-    eq: String
-    ne: String
-    notContain: String
-    notEndWith: String
-    notStartWith: String
-    startsWith: String
-
-    # weather to connect multiple filters with and (strict) or or (non-strict)
-    strict: Boolean!
-}
-
 enum Tables {
     AccessControlList
     Action
@@ -893,10 +898,8 @@ scalar UUID
 type Visit {
     description: String
     event: Event!
-    icd: IcdSimpleEntity!
+    icds: [IcdFoundationEntity!]!
     title: String
-
-    # the id of the visit, will be null if the visit is not persisted to the database
     vid: VisitId!
 }
 
@@ -911,6 +914,18 @@ input VisitIdInput {
 input VisitInput {
     description: String
     eid: EventIdInput!
-    foundationIcdCode: FoundationIcdCodeInput!
+    foundationIcdCodes: [FoundationIcdCodeInput!]!
     title: String
+}
+
+input WhiteSpaceAgnosticStringFilterInput {
+    contains: String
+    endsWith: String
+    eq: String
+    ne: String
+    notContain: String
+    notEndWith: String
+    notStartWith: String
+    startsWith: String
+    strict: Boolean!
 }
