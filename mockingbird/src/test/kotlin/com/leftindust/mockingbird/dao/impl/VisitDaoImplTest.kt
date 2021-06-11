@@ -9,7 +9,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeInput
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCodeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -78,7 +78,7 @@ internal class VisitDaoImplTest {
 
         val visitInput = mockk<GraphQLVisitInput>(relaxed = true) {
             every { eid } returns GraphQLEvent.ID(eventID)
-            every { foundationIcdCode } returns FoundationIcdCodeInput("1222121")
+            every { foundationIcdCodes } returns listOf(GraphQLFoundationIcdCodeInput("1222121"))
         }
 
         every { visitRepository.save(any()) } returns mockkVisit

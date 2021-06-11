@@ -28,9 +28,9 @@ class IcdFetcherImpl(
 
     override suspend fun linearization(
         linearizationName: String,
-        code: FoundationIcdCode
+        code: GraphQLFoundationIcdCode
     ): GraphQLIcdMultiVersion {
-        val url = "${config.BASE_URL}/release/11/$linearizationName/${code.value}"
+        val url = "${config.BASE_URL}/release/11/$linearizationName/${code.code}"
         return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
     }
 
@@ -45,9 +45,9 @@ class IcdFetcherImpl(
     }
 
     override suspend fun getDetails(
-        code: FoundationIcdCode,
+        code: GraphQLFoundationIcdCode,
     ): GraphQLIcdFoundationEntity {
-        val url = "${config.BASE_URL}/entity/${code.value}"
+        val url = "${config.BASE_URL}/entity/${code.code}"
         return GraphQLIcdFoundationEntity(getUrlWithIcdHeaders(url))
     }
 

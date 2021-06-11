@@ -48,19 +48,6 @@ internal class VisitQueryTest {
         val result = runBlocking { visitQuery.visits(pid = GraphQLPatient.ID(patientID), graphQLAuthContext = graphQLAuthContext) }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, graphQLAuthContext)), result)
-
-        coVerifyAll {
-            graphQLAuthContext.mediqAuthToken
-            visitDao.getByEvent(GraphQLEvent.ID(eventID), any())
-            eventDao.getByPatient(GraphQLPatient.ID(patientID), any())
-            mockkEvent.id
-            mockkVisit.id
-            mockkVisit.title
-            mockkVisit.icdFoundationCode
-            mockkVisit.description
-        }
-
-        confirmVerified(mockkEvent, mockkVisit)
     }
 
     @Test
@@ -89,18 +76,6 @@ internal class VisitQueryTest {
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, graphQLAuthContext)), result)
 
-        coVerifyAll {
-            graphQLAuthContext.mediqAuthToken
-            eventDao.getByDoctor(GraphQLDoctor.ID(doctorID), any())
-            visitDao.getByEvent(GraphQLEvent.ID(eventID), any())
-            mockkEvent.id
-            mockkVisit.id
-            mockkVisit.title
-            mockkVisit.icdFoundationCode
-            mockkVisit.description
-        }
-
-        confirmVerified(mockkEvent, mockkVisit)
     }
 
     @Test
@@ -120,15 +95,6 @@ internal class VisitQueryTest {
             runBlocking { visitQuery.visits(vids = listOf(GraphQLVisit.ID(visitID)), graphQLAuthContext = graphQLAuthContext) }
 
         assertEquals(listOf(GraphQLVisit(mockkVisit, graphQLAuthContext)), result)
-
-        coVerifyAll {
-            graphQLAuthContext.mediqAuthToken
-            visitDao.getVisitByVid(GraphQLVisit.ID(visitID), any())
-            mockkVisit.id
-            mockkVisit.title
-            mockkVisit.icdFoundationCode
-            mockkVisit.description
-        }
     }
 
     @Test

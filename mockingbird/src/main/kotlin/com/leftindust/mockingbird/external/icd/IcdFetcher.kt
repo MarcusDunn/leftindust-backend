@@ -10,8 +10,8 @@ interface IcdFetcher {
         flatResults: Boolean
     ): GraphQLIcdSearchResult
 
-    suspend fun getDetails(code: FoundationIcdCode): GraphQLIcdFoundationEntity
-    suspend fun linearization(linearizationName: String, code: FoundationIcdCode): GraphQLIcdMultiVersion
+    suspend fun getDetails(code: GraphQLFoundationIcdCode): GraphQLIcdFoundationEntity
+    suspend fun linearization(linearizationName: String, code: GraphQLFoundationIcdCode): GraphQLIcdMultiVersion
     suspend fun linearizationSearch(
         releaseId: GraphQLReleaseIdInput,
         linearizationName: String,

@@ -7,7 +7,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.external.icd.IcdFetcher
-import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCode
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
 import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
@@ -67,7 +67,7 @@ class IcdQuery(
 
     suspend fun icd(icdCode: String, authContext: GraphQLAuthContext): GraphQLIcdFoundationEntity {
         return if (authContext.mediqAuthToken.isVerified()) {
-            client.getDetails(FoundationIcdCode(icdCode))
+            client.getDetails(GraphQLFoundationIcdCode(icdCode))
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }

@@ -28,14 +28,14 @@ data class GraphQLIcdSimpleEntity(
     val descendants: List<GraphQLIcdSimpleEntity>,
 ) {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
-        return icdFetcher.getDetails(FoundationIcdCode(id ?: return null))
+        return icdFetcher.getDetails(GraphQLFoundationIcdCode(id ?: return null))
     }
 
     fun id(asUrl: Boolean? = false): String? {
         return if (asUrl == true) {
             id
         } else {
-            id?.let { FoundationIcdCode(it).value }
+            id?.let { GraphQLFoundationIcdCode(it).code }
         }
     }
 
@@ -52,6 +52,6 @@ data class GraphQLIcdSimpleEntity(
         @Autowired @GraphQLIgnore icdFetcher: IcdFetcher,
         linearizationName: String? = "mms"
     ): GraphQLIcdMultiVersion? {
-        return id?.let { icdFetcher.linearization(linearizationName ?: "mms", FoundationIcdCode(it)) }
+        return id?.let { icdFetcher.linearization(linearizationName ?: "mms", GraphQLFoundationIcdCode(it)) }
     }
 }

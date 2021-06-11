@@ -12,7 +12,7 @@ internal class FoundationIcdCodeTest {
             "http://id.who.int/icd/release/11/2020-09/mms/565740065/other",
         )
 
-        val results = inputs.map { FoundationIcdCode(it).value }
+        val results = inputs.map { GraphQLFoundationIcdCode(it).code }
 
         val expected = listOf(
             "236924369",
