@@ -798,4 +798,43 @@
     <changeSet author="marcus (generated)" id="1623084415935-8">
         <dropNotNullConstraint columnDataType="uuid" columnName="patient_id" tableName="doctor_patient"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1623442763913-9">
+        <createTable tableName="doctor_events">
+            <column name="doctors_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="events_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623442763913-10">
+        <createTable tableName="patient_events">
+            <column name="patients_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="events_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623442763913-11">
+        <createTable tableName="visit_icd_foundation_code">
+            <column name="visit_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="icd_foundation_code" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623442763913-13">
+        <addForeignKeyConstraint baseColumnNames="visit_id" baseTableName="visit_icd_foundation_code"
+                                 constraintName="FKibu9ca8psoy0n9dc17d3iie24" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="visit"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623442763913-27">
+        <dropColumn columnName="icd_foundation_code" tableName="visit"/>
+    </changeSet>
 </databaseChangeLog>
