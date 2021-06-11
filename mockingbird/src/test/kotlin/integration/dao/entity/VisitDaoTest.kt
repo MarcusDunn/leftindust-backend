@@ -10,6 +10,7 @@ import com.leftindust.mockingbird.graphql.types.icd.FoundationIcdCodeTest
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCodeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
+import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
@@ -17,6 +18,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager
@@ -26,12 +28,13 @@ import javax.transaction.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @Transactional
+@Tag("Integration")
 @AutoConfigureTestEntityManager
 class VisitDaoTest(
     @Autowired private val testEntityManager: TestEntityManager,
     @Autowired private val visitDao: VisitDao,
 ) {
-    @MockK
+    @MockkBean
     private lateinit var authorizer: Authorizer
 
     @Test
@@ -46,7 +49,7 @@ class VisitDaoTest(
             foundationIcdCodes = listOf(GraphQLFoundationIcdCodeInput("some url!"), GraphQLFoundationIcdCodeInput("some other url!")),
         )
         val result = runBlocking { visitDao.addVisit(visitInput, mockk()) }
-        val persisted = testEntityManager.getId(result.id!!, Visit::class.java)
+        val persisted = testEntityManager.find(Visit::class.java, result.id!!)
         assertNotNull(persisted.icdFoundationCode.find { it == "some url!" })
         assertNotNull(persisted.icdFoundationCode.find { it == "some other url!" })
         assertEquals("Some visit", result.title)
