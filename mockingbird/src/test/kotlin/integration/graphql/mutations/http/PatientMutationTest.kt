@@ -19,6 +19,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import org.hibernate.SessionFactory
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,13 +36,23 @@ class PatientMutationTest(
     @Autowired private val testClient: WebTestClient,
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
-    @Autowired private val sessionFactory: SessionFactory,
 ) {
+
+    val patientCount = patientRepository.count()
+    val doctorCount = doctorRepository.count()
+
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
     @MockkBean
     private lateinit var authorizer: Authorizer
+
+    @BeforeEach
+    @AfterEach
+    fun checkLeaks() {
+        assert(patientCount == patientRepository.count()){"leaked patients in PatientMutationTest"}
+        assert(doctorCount == doctorRepository.count()) {"leaked doctors in PatientMutationTest"}
+    }
 
     @Test
     internal fun `create patient with address`() {
@@ -89,19 +101,7 @@ class PatientMutationTest(
             .asSequence()
             .find { it.address.firstOrNull()?.address == "1444 main st" }!!
 
-        val session = sessionFactory.openSession()
-        println("session.isOpen: ${session.isOpen}")
-        try {
-            val patientFromSess = session.get(Patient::class.java, patientResult.id!!)
-            patientFromSess.doctors.clear()
-            val doctorFromSess = session.get(Doctor::class.java, doctor.id!!)
-            doctorFromSess.patients.clear()
-            session.delete(patientFromSess)
-            session.delete(doctorFromSess)
-        } catch (e: Exception) {
-            throw e
-        } finally {
-            session.close()
-        }
+        patientRepository.delete(patientResult)
+        doctorRepository.delete(doctor)
     }
 }

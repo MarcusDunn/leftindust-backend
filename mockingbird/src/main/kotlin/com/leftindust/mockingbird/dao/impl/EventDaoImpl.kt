@@ -67,7 +67,11 @@ class EventDaoImpl(
 
     override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
-            return hibernatePatientRepository.getById(pid.id).events.also { Hibernate.initialize(it) }
+            val byId = hibernatePatientRepository
+                .getById(pid.id)
+            return byId
+                .events
+                .also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient, Crud.READ to Tables.Event)
         }

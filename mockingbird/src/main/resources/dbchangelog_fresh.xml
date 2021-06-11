@@ -652,25 +652,42 @@
         </createTable>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-8">
-        <addUniqueConstraint columnNames="events_id" constraintName="UK_f48q8st0km8rk6keh5ujqemi2" tableName="patient_event"/>
+        <addUniqueConstraint columnNames="events_id" constraintName="UK_f48q8st0km8rk6keh5ujqemi2"
+                             tableName="patient_event"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-9">
-        <addUniqueConstraint columnNames="events_id" constraintName="UK_je4wisc9c6ys7tp0yewr2g0rj" tableName="doctor_event"/>
+        <addUniqueConstraint columnNames="events_id" constraintName="UK_je4wisc9c6ys7tp0yewr2g0rj"
+                             tableName="doctor_event"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-10">
-        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="patient_event" constraintName="FK3yggox65y9clj7vhrf7x6bvla" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="patient_event"
+                                 constraintName="FK3yggox65y9clj7vhrf7x6bvla" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-11">
-        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_event" constraintName="FK9w6g50jcfeapp4ejtfmjgxg5y" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="doctor_event"
+                                 constraintName="FK9w6g50jcfeapp4ejtfmjgxg5y" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-12">
-        <addForeignKeyConstraint baseColumnNames="mediq_user_id" baseTableName="access_control_list" constraintName="FKa0rkffb7hlsvc96oyk1hf5pl1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="mediq_user_id" baseTableName="access_control_list"
+                                 constraintName="FKa0rkffb7hlsvc96oyk1hf5pl1" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-13">
-        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="doctor_event" constraintName="FKew4x1wg40fl0d9qvls695uueu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="doctor_event"
+                                 constraintName="FKew4x1wg40fl0d9qvls695uueu" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="event"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-14">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_event" constraintName="FKh7bnwvbb9qalcb5ovndb4xhiw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_event"
+                                 constraintName="FKh7bnwvbb9qalcb5ovndb4xhiw" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-15">
         <dropForeignKeyConstraint baseTableName="access_control_list" constraintName="FKny8nnu4rxqvf3l7s4u707h77n"/>
@@ -679,7 +696,8 @@
         <dropUniqueConstraint constraintName="doctor_patient_doctor_id_patient_id_key" tableName="doctor_patient"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-1">
-        <addNotNullConstraint columnDataType="timestamp" columnName="creation_date" tableName="mediq_record" validate="true"/>
+        <addNotNullConstraint columnDataType="timestamp" columnName="creation_date" tableName="mediq_record"
+                              validate="true"/>
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-2">
         <addNotNullConstraint columnDataType="varchar(255)" columnName="name" tableName="clinic" validate="true"/>
@@ -689,5 +707,95 @@
     </changeSet>
     <changeSet author="marcus (generated)" id="1622529620196-4">
         <addNotNullConstraint columnDataType="varchar(255)" columnName="type" tableName="mediq_record" validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-13">
+        <dropForeignKeyConstraint baseTableName="event_patient" constraintName="FK4i9kcs465pejbskygu8tov29e"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-14">
+        <dropForeignKeyConstraint baseTableName="event_doctor" constraintName="FK7gcq41ycgvrabe0joymhyuynm"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-15">
+        <dropForeignKeyConstraint baseTableName="doctor_event" constraintName="FK9w6g50jcfeapp4ejtfmjgxg5y"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-16">
+        <dropForeignKeyConstraint baseTableName="patient_event" constraintName="FKh7bnwvbb9qalcb5ovndb4xhiw"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-17">
+        <dropForeignKeyConstraint baseTableName="event_doctor" constraintName="FKopfwr1t8xe176661qbvbqfa2t"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-18">
+        <dropForeignKeyConstraint baseTableName="event_patient" constraintName="FKrxmrv8u5d91btf3wor3roruko"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-19">
+        <dropUniqueConstraint constraintName="UK_f48q8st0km8rk6keh5ujqemi2" tableName="patient_event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-20">
+        <dropUniqueConstraint constraintName="UK_je4wisc9c6ys7tp0yewr2g0rj" tableName="doctor_event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-21">
+        <dropTable tableName="doctor_event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-22">
+        <dropTable tableName="event_doctor"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-23">
+        <dropTable tableName="event_patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-24">
+        <dropTable tableName="patient_event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-9">
+        <createTable tableName="doctor_event">
+            <column name="doctors_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="events_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-10">
+        <createTable tableName="patient_event">
+            <column name="patients_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="events_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-11">
+        <addForeignKeyConstraint baseColumnNames="patients_id" baseTableName="patient_event"
+                                 constraintName="FKgtjoydw7o39qjg1dujxxicmhp" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-12">
+        <addForeignKeyConstraint baseColumnNames="doctors_id" baseTableName="doctor_event"
+                                 constraintName="FKp06ler01f2ppdsfb614pyekya" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="doctor"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-2">
+        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="patient_event"
+                                 constraintName="FK3yggox65y9clj7vhrf7x6bvla" referencedColumnNames="id"
+                                 referencedTableName="event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-4">
+        <addForeignKeyConstraint baseColumnNames="events_id" baseTableName="doctor_event"
+                                 constraintName="FKew4x1wg40fl0d9qvls695uueu" referencedColumnNames="id"
+                                 referencedTableName="event"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-5">
+        <dropNotNullConstraint columnDataType="timestamp" columnName="date_created" tableName="doctor_patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-6">
+        <dropNotNullConstraint columnDataType="uuid" columnName="doctor_id" tableName="doctor_patient"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-7">
+        <dropNotNullConstraint columnDataType="uuid" columnName="event_id" tableName="visit"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623084415935-8">
+        <dropNotNullConstraint columnDataType="uuid" columnName="patient_id" tableName="doctor_patient"/>
     </changeSet>
 </databaseChangeLog>

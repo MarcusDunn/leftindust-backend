@@ -72,6 +72,7 @@ internal class EventQueryTest {
 
         }
         coEvery { patientDao.getByPID(GraphQLPatient.ID(patientID), any()) } returns expected
+        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns expected.events
 
         val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
 

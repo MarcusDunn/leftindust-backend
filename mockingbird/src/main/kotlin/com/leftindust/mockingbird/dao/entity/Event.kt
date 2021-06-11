@@ -21,11 +21,9 @@ class Event(
     var endTime: Timestamp?,
     @Column(name = "all_day")
     var allDay: Boolean = false,
-    @ManyToMany
-    @JoinTable(name = "event_doctor")
+    @ManyToMany(mappedBy = "events")
     val doctors: MutableSet<Doctor>,
-    @ManyToMany
-    @JoinTable(name = "event_patient")
+    @ManyToMany(mappedBy = "events")
     val patients: MutableSet<Patient>,
     @Embedded
     var reoccurrence: Reoccurrence? = null,
@@ -98,9 +96,5 @@ class Event(
             patients = patients.toMutableSet(),
             reoccurrence = reoccurrence,
         )
-    }
-
-    override fun toString(): String {
-        return "Event(title='$title', description=$description, startTime=$startTime, endTime=$endTime, allDay=$allDay, doctors=$doctors, patients=$patients, reoccurrence=$reoccurrence)"
     }
 }

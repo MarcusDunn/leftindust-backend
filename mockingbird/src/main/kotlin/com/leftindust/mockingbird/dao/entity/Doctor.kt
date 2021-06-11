@@ -87,6 +87,11 @@ class Doctor(
                 .forEach { this.addPatient(it) }
         }
     }
+
+    override fun addEvent(eventEntity: Event) {
+        this.events.add(eventEntity)
+        eventEntity.doctors.add(this)
+    }
 }
 
 

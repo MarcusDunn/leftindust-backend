@@ -53,14 +53,14 @@ class EventQuery(
         graphQLAuthContext: GraphQLAuthContext,
     ): List<GraphQLEvent> {
         return patients
-            .map { patientDao.getByPID(it, graphQLAuthContext.mediqAuthToken) }
-            .flatMap { patient ->
-                patient.events.map {
+            .map { eventDao.getByPatient(it, graphQLAuthContext.mediqAuthToken) }
+            .flatMap { event ->
+                event.map {
                     GraphQLEvent(
                         event = it,
                         authContext = graphQLAuthContext,
                     )
-                } // this will break
+                }
             }
     }
 

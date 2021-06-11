@@ -18,7 +18,7 @@ abstract class Person(
     var phone: MutableSet<Phone> = mutableSetOf(),
     @OneToOne
     var user: MediqUser? = null,
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @ManyToMany
     var events: MutableSet<Event> = emptySet<Event>().toMutableSet()
 ) : AbstractJpaPersistable() {
     init {
@@ -38,7 +38,5 @@ abstract class Person(
         return from.before(event.startTime) && to.after(event.startTime)
     }
 
-    fun addEvent(eventEntity: Event) {
-        events.add(eventEntity)
-    }
+    abstract fun addEvent(eventEntity: Event)
 }

@@ -29,7 +29,7 @@ data class GraphQLEvent(
     // all of its fields to null because hibernate hates you and would kill your dog if it had the chance.
     @Suppress("SENSELESS_COMPARISON")
     constructor(event: Event, authContext: GraphQLAuthContext) : this(
-        eid = ID(event.id!!),
+        eid = event.id?.let { ID(it) } ?: throw NullPointerException("id cannot be null when creating a GraphQLEvent"),
         title = event.title,
         description = event.description,
         startTime = GraphQLUtcTime(event.startTime),

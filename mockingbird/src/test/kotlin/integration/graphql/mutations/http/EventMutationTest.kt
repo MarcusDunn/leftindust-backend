@@ -4,20 +4,19 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.dao.EventDao
+import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.ninjasquad.springmockk.MockkBean
-import integration.*
-import integration.util.EntityStore
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import org.hibernate.SessionFactory
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
+import integration.APPLICATION_JSON_MEDIA_TYPE
+import integration.GRAPHQL_ENDPOINT
+import integration.GRAPHQL_MEDIA_TYPE
+import integration.verifyOnlyDataExists
+import io.mockk.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,31 +24,24 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.sql.Timestamp
+import java.util.*
+import kotlin.random.Random
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "P2DT3H4M")
 @Tag("Integration")
 class EventMutationTest(
     @Autowired private val testClient: WebTestClient,
-    @Autowired private val hibernateEventRepository: HibernateEventRepository,
-    @Autowired private val hibernatePatientRepository: HibernatePatientRepository,
-    @Autowired private val sessionFactory: SessionFactory,
 ) {
-    val eventCount = hibernateEventRepository.count()
-    val patientCount = hibernatePatientRepository.count()
-
-    @BeforeEach
-    @AfterEach
-    internal fun countRemainsUnchanged() {
-        assert(eventCount == hibernateEventRepository.count()) {"leaked events in EventMutationTest"}
-        assert(patientCount == hibernatePatientRepository.count()) {"leaked patients in EventMutationTest"}
-    }
 
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 
     @MockkBean
     private lateinit var authorizer: Authorizer
+
+    @MockkBean
+    private lateinit var eventDao: EventDao
 
     @Test
     internal fun testAddEvent() {
@@ -59,7 +51,12 @@ class EventMutationTest(
         }
         coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
 
-        val patient = hibernatePatientRepository.save(EntityStore.patient("EventMutationTest.testAddEvent"))
+        val patientUUID = UUID.nameUUIDFromBytes(Random(100).nextBytes(20))
+
+        val start = Timestamp.valueOf("2018-09-01 09:01:15")
+        val end = Timestamp.valueOf("2018-09-01 10:01:15")
+        val slot = slot<GraphQLEventInput>()
+        coEvery { eventDao.addEvent(capture(slot), any()) } answers { Event(slot.captured, emptySet(), emptySet()).apply { this.id = UUID.randomUUID() } }
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
@@ -72,9 +69,9 @@ class EventMutationTest(
                 |    title: "MY EVENT",
                 |    description: "YO YO YO this do be an event doe",
                 |    allDay: false,
-                |    start: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 09:01:15").time}},
-                |    end: {unixMilliseconds: ${Timestamp.valueOf("2018-09-01 10:01:15").time}},
-                |    patients: [{id: "${patient.id}"}]
+                |    start: {unixMilliseconds: ${start.time}},
+                |    end: {unixMilliseconds: ${end.time}},
+                |    patients: [{id: "$patientUUID"}]
                 |}) {
                 |   eid {
                 |       id
@@ -85,19 +82,7 @@ class EventMutationTest(
             )
             .exchange()
             .verifyOnlyDataExists("addEvent")
-
-        val addedEvent = hibernateEventRepository.findAll().find { it.title == "MY EVENT" }
-        assertNotNull(addedEvent)
-
-        val session = sessionFactory.openSession()
-        try {
-            val patientFromSess = session.get(Patient::class.java, patient.id!!)
-            patientFromSess.events.clear()
-            hibernatePatientRepository.delete(patientFromSess)
-        } catch (e: Exception) {
-            throw e
-        } finally {
-            session.close()
-        }
+            .jsonPath("data.addEvent.title")
+            .isEqualTo("MY EVENT")
     }
 }

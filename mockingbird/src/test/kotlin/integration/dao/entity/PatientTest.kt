@@ -2,6 +2,7 @@ package integration.dao.entity
 
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
@@ -24,6 +25,7 @@ class PatientTest(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val sessionFactory: SessionFactory,
+    @Autowired private val eventRepository: HibernateEventRepository,
 ) {
 
     @Test
@@ -50,10 +52,9 @@ class PatientTest(
 
     @Test
     fun addEvent() {
-            val patient = patientRepository.save(
-                EntityStore.patient("ScheduleTest.addEvent")
-                    .apply { addEvent(EntityStore.event("ScheduleTest.addEvent")) }
-            )
+        val patient = patientRepository.save(EntityStore.patient("ScheduleTest.addEvent"))
+        val event = eventRepository.save(EntityStore.event("ScheduleTest.addEvent"))
+        patient.addEvent(event)
 
         val events = patientRepository.getById(patient.id!!).events
 

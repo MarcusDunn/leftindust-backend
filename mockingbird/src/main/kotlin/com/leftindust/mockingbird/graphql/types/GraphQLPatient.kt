@@ -10,7 +10,6 @@ import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.extensions.gqlID
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
@@ -67,7 +66,8 @@ data class GraphQLPatient(
     }
 
     suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {
-        return eventDao.getByPatient(pid, authContext.mediqAuthToken)
+        val byPatient = eventDao.getByPatient(pid, authContext.mediqAuthToken)
+        return byPatient
             .map { event -> GraphQLEvent(event, authContext) }
     }
 }

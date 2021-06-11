@@ -133,6 +133,11 @@ class Patient(
         }
     }
 
+    override fun addEvent(eventEntity: Event) {
+        events.add(eventEntity)
+        eventEntity.patients.add(this)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
