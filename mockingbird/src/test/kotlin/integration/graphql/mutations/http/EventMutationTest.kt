@@ -6,17 +6,17 @@ import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
 import integration.GRAPHQL_MEDIA_TYPE
 import integration.verifyOnlyDataExists
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,7 +56,13 @@ class EventMutationTest(
         val start = Timestamp.valueOf("2018-09-01 09:01:15")
         val end = Timestamp.valueOf("2018-09-01 10:01:15")
         val slot = slot<GraphQLEventInput>()
-        coEvery { eventDao.addEvent(capture(slot), any()) } answers { Event(slot.captured, emptySet(), emptySet()).apply { this.id = UUID.randomUUID() } }
+        coEvery { eventDao.addEvent(capture(slot), any()) } answers {
+            Event(
+                slot.captured,
+                emptySet(),
+                emptySet()
+            ).apply { this.id = UUID.randomUUID() }
+        }
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
@@ -72,6 +78,59 @@ class EventMutationTest(
                 |    start: {unixMilliseconds: ${start.time}},
                 |    end: {unixMilliseconds: ${end.time}},
                 |    patients: [{id: "$patientUUID"}]
+                |}) {
+                |   eid {
+                |       id
+                |   }
+                |   title
+                |   }
+                |}""".trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists("addEvent")
+            .jsonPath("data.addEvent.title")
+            .isEqualTo("MY EVENT")
+    }
+
+    @Test
+    internal fun testAddEventWith2Patients() {
+        val mediqToken = mockk<MediqToken>()
+        coEvery { contextFactory.generateContext(any()) } returns mockk(relaxed = true) {
+            every { mediqAuthToken } returns mediqToken
+        }
+        coEvery { authorizer.getAuthorization(any(), mediqToken) } returns Authorization.Allowed
+
+        val random = Random(100)
+        val patient1UUID = UUID.nameUUIDFromBytes(random.nextBytes(20))
+        val patient2UUID = UUID.nameUUIDFromBytes(random.nextBytes(20))
+
+
+        val slot = slot<GraphQLEventInput>()
+        coEvery { eventDao.addEvent(capture(slot), any()) } answers {
+            Event(
+                slot.captured,
+                emptySet(),
+                emptySet()
+            ).apply { this.id = UUID.nameUUIDFromBytes(random.nextBytes(20)) }
+        }
+
+        val start = Timestamp.valueOf("2018-09-01 09:01:15")
+        val end = Timestamp.valueOf("2018-09-01 10:01:15")
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=GraphQL
+                """
+                |mutation { addEvent(event: {
+                |    title: "MY EVENT",
+                |    description: "YO YO YO this do be an event doe",
+                |    allDay: false,
+                |    start: {unixMilliseconds: ${start.time}},
+                |    end: {unixMilliseconds: ${end.time}},
+                |    patients: [{id: "$patient1UUID"},  {id: "$patient2UUID"}]
                 |}) {
                 |   eid {
                 |       id
