@@ -41,15 +41,21 @@ class VisitDaoTest(
     internal fun `add visit`() {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
+        val patient = testEntityManager.persist(EntityStore.patient("VisitDaoTest.`add visit`"))
         val event = testEntityManager.persist(EntityStore.event("VisitDaoTest.`add visit`"))
+        event.patients.add(patient)
+        testEntityManager.flush()
+
         val visitInput = GraphQLVisitInput(
             eid = GraphQLEvent.ID(event.id!!),
             title = "Some visit",
             description = "Some description",
             foundationIcdCodes = listOf(GraphQLFoundationIcdCodeInput("some url!"), GraphQLFoundationIcdCodeInput("some other url!")),
         )
+
         val result = runBlocking { visitDao.addVisit(visitInput, mockk()) }
         val persisted = testEntityManager.find(Visit::class.java, result.id!!)
+
         assertNotNull(persisted.icdFoundationCode.find { it == "some url!" })
         assertNotNull(persisted.icdFoundationCode.find { it == "some other url!" })
         assertEquals("Some visit", result.title)
