@@ -38,6 +38,7 @@ internal class UserDaoImplTest {
         val mockkUser = mockk<GraphQLUserInput>(relaxed = true) {
             every { uid } returns "uid"
             every { group } returns null
+            every { doctor } returns null
         }
         val mockkMediqUser = mockk<MediqUser>()
         every { userRepository.save(any()) } returns mockkMediqUser
