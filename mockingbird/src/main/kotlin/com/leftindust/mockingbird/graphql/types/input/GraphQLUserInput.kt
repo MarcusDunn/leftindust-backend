@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.graphql.types.input
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.execution.OptionalInput
-import com.expediagroup.graphql.generator.scalars.ID
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 
 @GraphQLName("UserInput")
@@ -11,6 +11,7 @@ data class GraphQLUserInput(
     val uid: String,
     val nameInfo: GraphQLNameInfoInput,
     val group: GraphQLUser.Group.ID? = null,
+    val doctor: GraphQLDoctor.ID? = null,
 )
 
 @GraphQLName("UserEditInput")
@@ -18,4 +19,5 @@ data class GraphQLUserInput(
 data class GraphQLUserEditInput(
     val uid: String,
     val group: OptionalInput<GraphQLUser.Group.ID?> = OptionalInput.Undefined,
+    val doctor: OptionalInput<GraphQLDoctor.ID?> = OptionalInput.Undefined,
 )

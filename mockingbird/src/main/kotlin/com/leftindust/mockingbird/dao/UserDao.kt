@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor

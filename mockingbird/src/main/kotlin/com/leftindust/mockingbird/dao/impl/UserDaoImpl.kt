@@ -50,7 +50,12 @@ class UserDaoImpl(
         return if (requester can (Crud.CREATE to Tables.User)) {
             val group = user.group?.let { groupRepository.getById(it.id) }
             val mediqUser = MediqUser(user, group)
-            userRepository.save(mediqUser)
+            val userEntity = userRepository.save(mediqUser)
+            if (user.doctor != null) {
+                val doctor = doctorRepository.getById(user.doctor.id)
+                doctor.user = userEntity
+            }
+            userEntity
         } else {
             throw NotAuthorizedException(requester, Crud.CREATE to Tables.User)
         }
@@ -68,13 +73,25 @@ class UserDaoImpl(
     }
 
     override suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser {
-        return if (requester can (Crud.UPDATE to Tables.User)) {
-            userRepository.getByUniqueId(user.uid).apply {
+        if (requester can (Crud.UPDATE to Tables.User)) {
+            val userEntity = userRepository.getByUniqueId(user.uid).apply {
                 group = when (user.group) {
                     is OptionalInput.Undefined -> this.group
                     is OptionalInput.Defined -> user.group.value?.let { groupRepository.getById(it.id) }
                 }
             }
+            when (user.doctor) {
+                OptionalInput.Undefined -> {/* no-op */}
+                is OptionalInput.Defined -> {
+                    val doctor = doctorRepository.getByUser_UniqueId(user.uid)
+                    if (user.doctor.value == null) {
+                        doctor.user = null
+                    } else {
+                        doctor.user = userEntity
+                    }
+                }
+            }
+            return userEntity
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
         }

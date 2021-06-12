@@ -44,7 +44,7 @@ data class GraphQLUser(
         return GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
     }
 
-    suspend fun associatedDoctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
+    suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
         return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
     }
 

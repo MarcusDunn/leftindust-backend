@@ -6,4 +6,5 @@ import java.util.*
 
 interface HibernateDoctorRepository : JpaRepository<Doctor, UUID> {
     fun findByUser_UniqueId(user_uniqueId: String): Doctor?
+    fun getByUser_UniqueId(user_uniqueId: String): Doctor
 }
