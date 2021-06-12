@@ -260,6 +260,7 @@ type Event {
     reoccurrence: Recurrence
     startTime: UtcTime
     title: String!
+    visit: Visit
 }
 
 # passing explicit nulls will unset the value (provided that leaves the event in a valid state) and not setting a value
