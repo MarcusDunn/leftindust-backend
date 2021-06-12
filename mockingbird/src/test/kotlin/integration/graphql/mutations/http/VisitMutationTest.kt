@@ -5,21 +5,14 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.VisitDao
-import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.Visit
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
 import integration.GRAPHQL_ENDPOINT
 import integration.GRAPHQL_MEDIA_TYPE
-import integration.util.EntityStore
 import integration.verifyOnlyDataExists
 import io.mockk.coEvery
 import io.mockk.every
@@ -32,7 +25,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
-import kotlin.random.Random
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
@@ -61,7 +53,10 @@ class VisitMutationTest(
             every { id } returns UUID.randomUUID()
         }
 
-        coEvery { visitDao.addVisit(capture(slot), any()) } answers { Visit(slot.captured, event).apply { id = UUID.randomUUID() } }
+        val visitUUID = UUID.randomUUID()
+        coEvery { visitDao.addVisit(capture(slot), any()) } answers { Visit(slot.captured, event).apply { id =
+            visitUUID
+        } }
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
@@ -83,5 +78,7 @@ class VisitMutationTest(
             )
             .exchange()
             .verifyOnlyDataExists("addVisit")
+            .jsonPath("data.addVisit.vid.id")
+            .isEqualTo(visitUUID.toString())
     }
 }

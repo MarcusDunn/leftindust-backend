@@ -10,8 +10,8 @@ class Visit(
     var event: Event,
     var title: String? = null,
     var description: String? = null,
-    @Column(name = "icd_foundation_code", nullable = false)
     @ElementCollection
+    @CollectionTable(name = "visit_icd_foundation_code")
     // stored as URLS to the code
     var icdFoundationCode: Set<String>,
 ) : AbstractJpaPersistable() {

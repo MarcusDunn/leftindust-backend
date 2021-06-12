@@ -58,6 +58,7 @@ class VisitDaoTest(
 
         assertNotNull(persisted.icdFoundationCode.find { it == "some url!" })
         assertNotNull(persisted.icdFoundationCode.find { it == "some other url!" })
+        assertEquals(persisted.event, event)
         assertEquals("Some visit", result.title)
         assertEquals("Some visit", persisted.title)
     }
