@@ -2,10 +2,10 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Event
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
@@ -55,5 +55,9 @@ data class GraphQLEvent(
     suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> {
         return patientDao.getByEvent(eid, authContext.mediqAuthToken)
             .map { GraphQLPatient(it, authContext) }
+    }
+
+    suspend fun visit(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLVisit? {
+        return visitDao.findByEvent(eid, authContext.mediqAuthToken)?.let { GraphQLVisit(it, authContext) }
     }
 }

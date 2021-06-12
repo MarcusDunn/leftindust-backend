@@ -36,11 +36,11 @@ class VisitQuery(
             }
             pid != null -> eventDao
                 .getByPatient(pid, graphQLAuthContext.mediqAuthToken)
-                .map { visitDao.getByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
+                .mapNotNull { visitDao.findByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
                 .map { GraphQLVisit(it, graphQLAuthContext) }
             did != null -> eventDao
                 .getByDoctor(did, graphQLAuthContext.mediqAuthToken)
-                .map { visitDao.getByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
+                .mapNotNull { visitDao.findByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
                 .map { GraphQLVisit(it, graphQLAuthContext) }
             else -> throw GraphQLKotlinException("invalid arguments to visits")
         }

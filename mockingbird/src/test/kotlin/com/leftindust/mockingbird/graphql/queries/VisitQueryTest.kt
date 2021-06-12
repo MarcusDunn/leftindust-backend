@@ -5,15 +5,12 @@ import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Visit
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -42,7 +39,7 @@ internal class VisitQueryTest {
             every { id } returns visitID
         }
 
-        coEvery { visitDao.getByEvent(GraphQLEvent.ID(eventID), any()) } returns mockkVisit
+        coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID), any()) } returns mockkVisit
 
         val visitQuery = VisitQuery(visitDao, eventDao)
         val result = runBlocking { visitQuery.visits(pid = GraphQLPatient.ID(patientID), graphQLAuthContext = graphQLAuthContext) }
@@ -68,7 +65,7 @@ internal class VisitQueryTest {
             every { id } returns visitID
         }
 
-        coEvery { visitDao.getByEvent(GraphQLEvent.ID(eventID), any()) } returns mockkVisit
+        coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID), any()) } returns mockkVisit
 
         val visitQuery = VisitQuery(visitDao, eventDao)
 
@@ -133,13 +130,13 @@ internal class VisitQueryTest {
 
         coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns listOf(mockkEvent1, mockkEvent3)
 
-        coEvery { visitDao.getByEvent(GraphQLEvent.ID(eventID1), any()) } returns mockkVisit1
+        coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID1), any()) } returns mockkVisit1
 
         coEvery { eventDao.getByDoctor(GraphQLDoctor.ID(doctorID), any()) } returns listOf(mockkEvent2)
 
-        coEvery { visitDao.getByEvent(GraphQLEvent.ID(eventID2), any()) } returns mockkVisit2
+        coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID2), any()) } returns mockkVisit2
 
-        coEvery { visitDao.getByEvent(GraphQLEvent.ID(eventID3), any()) } returns mockkVisit3
+        coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID3), any()) } returns mockkVisit3
 
         val visitQuery = VisitQuery(visitDao, eventDao)
 

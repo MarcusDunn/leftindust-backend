@@ -10,6 +10,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 interface VisitDao {
     suspend fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit
     suspend fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): Visit
-    suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit
+    suspend fun findByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit?
     suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit>
 }
