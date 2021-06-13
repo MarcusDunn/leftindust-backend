@@ -54,9 +54,12 @@ class VisitMutationTest(
         }
 
         val visitUUID = UUID.randomUUID()
-        coEvery { visitDao.addVisit(capture(slot), any()) } answers { Visit(slot.captured, event).apply { id =
-            visitUUID
-        } }
+        coEvery { visitDao.addVisit(capture(slot), any()) } answers {
+            Visit(slot.captured, event).apply {
+                id =
+                    visitUUID
+            }
+        }
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
