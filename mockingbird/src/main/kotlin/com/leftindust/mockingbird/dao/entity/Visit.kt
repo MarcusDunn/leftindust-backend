@@ -10,7 +10,7 @@ class Visit(
     var event: Event,
     var title: String? = null,
     var description: String? = null,
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     // stored as URLS to the code
     var icds: Set<String>,
 ) : AbstractJpaPersistable() {

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.boot.test.context.SpringBootTest
 import javax.transaction.Transactional
@@ -28,7 +29,7 @@ import javax.transaction.Transactional
 @Tag("Integration")
 @AutoConfigureTestEntityManager
 class VisitDaoTest(
-    @Autowired private val testEntityManager: TestEntityManager,
+    @Autowired private val entityManager: TestEntityManager,
     @Autowired private val visitDao: VisitDao,
 ) {
     @MockkBean
@@ -38,10 +39,10 @@ class VisitDaoTest(
     internal fun `add visit`() {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val patient = testEntityManager.persist(EntityStore.patient("VisitDaoTest.`add visit`"))
-        val event = testEntityManager.persist(EntityStore.event("VisitDaoTest.`add visit`"))
+        val patient = entityManager.persist(EntityStore.patient("VisitDaoTest.`add visit`"))
+        val event = entityManager.persist(EntityStore.event("VisitDaoTest.`add visit`"))
         event.patients.add(patient)
-        testEntityManager.flush()
+        entityManager.flush()
 
         val visitInput = GraphQLVisitInput(
             eid = GraphQLEvent.ID(event.id!!),
@@ -54,7 +55,7 @@ class VisitDaoTest(
         )
 
         val result = runBlocking { visitDao.addVisit(visitInput, mockk()) }
-        val persisted = testEntityManager.find(Visit::class.java, result.id!!)
+        val persisted = entityManager.find(Visit::class.java, result.id!!)
 
         assertNotNull(persisted.icds.find { it == "some url!" })
         assertNotNull(persisted.icds.find { it == "some other url!" })
