@@ -56,8 +56,8 @@ class VisitDaoTest(
         val result = runBlocking { visitDao.addVisit(visitInput, mockk()) }
         val persisted = testEntityManager.find(Visit::class.java, result.id!!)
 
-        assertNotNull(persisted.icdFoundationCode.find { it == "some url!" })
-        assertNotNull(persisted.icdFoundationCode.find { it == "some other url!" })
+        assertNotNull(persisted.icds.find { it == "some url!" })
+        assertNotNull(persisted.icds.find { it == "some other url!" })
         assertEquals(persisted.event, event)
         assertEquals("Some visit", result.title)
         assertEquals("Some visit", persisted.title)

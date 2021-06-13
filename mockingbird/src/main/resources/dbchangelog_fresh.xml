@@ -837,4 +837,25 @@
     <changeSet author="marcus (generated)" id="1623442763913-27">
         <dropColumn columnName="icd_foundation_code" tableName="visit"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1623562430527-9">
+        <createTable tableName="visit_icds">
+            <column name="visit_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icds" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623562430527-10">
+        <addForeignKeyConstraint baseColumnNames="visit_id" baseTableName="visit_icds"
+                                 constraintName="FKe0592r7i7n8c62qxkefm1ayrw" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="visit"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623562430527-11">
+        <dropForeignKeyConstraint baseTableName="visit_icd_foundation_code"
+                                  constraintName="FKibu9ca8psoy0n9dc17d3iie24"/>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1623562430527-14">
+        <dropTable tableName="visit_icd_foundation_code"/>
+    </changeSet>
 </databaseChangeLog>

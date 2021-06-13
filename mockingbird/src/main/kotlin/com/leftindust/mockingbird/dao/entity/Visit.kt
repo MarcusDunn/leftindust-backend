@@ -11,16 +11,14 @@ class Visit(
     var title: String? = null,
     var description: String? = null,
     @ElementCollection
-    @CollectionTable(name = "visit_icd_foundation_code")
-    @AttributeOverrides(AttributeOverride(name = "icdFoundationCode", column = Column(name = "icd_foundation_code")))
     // stored as URLS to the code
-    var icdFoundationCode: Set<String>,
+    var icds: Set<String>,
 ) : AbstractJpaPersistable() {
 
     constructor(visitInput: GraphQLVisitInput, event: Event) : this(
         event = event,
         title = visitInput.title,
         description = visitInput.description,
-        icdFoundationCode = visitInput.foundationIcdCodes.map { it.url }.toSet(),
+        icds = visitInput.foundationIcdCodes.map { it.url }.toSet(),
     )
 }

@@ -30,7 +30,7 @@ data class GraphQLVisit(
         title = visit.title,
         description = visit.description,
         authContext = graphQLAuthContext,
-        foundationIcdUrls = visit.icdFoundationCode.map { GraphQLFoundationIcdCode(it) }
+        foundationIcdUrls = visit.icds.map { GraphQLFoundationIcdCode(it) }
     )
 
     suspend fun event(@GraphQLIgnore @Autowired eventDao: EventDao): GraphQLEvent {
