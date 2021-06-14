@@ -36,9 +36,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl mockingbird:8080/sdl" ]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 15
+      retries: 60
   gladio:
     environment:
       - MOCKINGBIRD_URL=http://mockingbird:8080
