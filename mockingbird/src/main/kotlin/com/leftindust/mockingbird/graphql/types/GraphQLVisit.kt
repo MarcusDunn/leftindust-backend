@@ -47,8 +47,9 @@ data class GraphQLVisit(
 
     suspend fun icds(
         @GraphQLIgnore @Autowired icdFetcher: IcdFetcher,
-        releaseId: GraphQLReleaseIdInput = GraphQLReleaseIdInput.R_2020_09
+        releaseId: GraphQLReleaseIdInput? = GraphQLReleaseIdInput.R_2020_09
     ): List<GraphQLIcdLinearizationEntity> {
+        val releaseId = releaseId ?: GraphQLReleaseIdInput.R_2020_09
         return foundationIcdUrls.map { icdFetcher.linearizationEntity(releaseId = releaseId, code = it) }
     }
 }
