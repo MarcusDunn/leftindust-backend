@@ -7,7 +7,8 @@ import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
@@ -44,7 +45,10 @@ data class GraphQLVisit(
             }
     }
 
-    suspend fun icds(@GraphQLIgnore @Autowired icdFetcher: IcdFetcher): List<GraphQLIcdFoundationEntity> {
-        return foundationIcdUrls.map { icdFetcher.getDetails(it) }
+    suspend fun icds(
+        @GraphQLIgnore @Autowired icdFetcher: IcdFetcher,
+        releaseId: GraphQLReleaseIdInput = GraphQLReleaseIdInput.R_2020_09
+    ): List<GraphQLIcdLinearizationEntity> {
+        return foundationIcdUrls.map { icdFetcher.linearizationEntity(releaseId = releaseId, code = it) }
     }
 }

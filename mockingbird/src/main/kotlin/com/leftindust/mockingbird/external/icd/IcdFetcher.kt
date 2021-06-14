@@ -9,7 +9,7 @@ interface IcdFetcher {
         flexiSearch: Boolean,
         flatResults: Boolean
     ): GraphQLIcdSearchResult
-
+    suspend fun linearizationEntity(releaseId: GraphQLReleaseIdInput, code: GraphQLFoundationIcdCode): GraphQLIcdLinearizationEntity
     suspend fun getDetails(code: GraphQLFoundationIcdCode): GraphQLIcdFoundationEntity
     suspend fun linearization(linearizationName: String, code: GraphQLFoundationIcdCode): GraphQLIcdMultiVersion
     suspend fun linearizationSearch(
