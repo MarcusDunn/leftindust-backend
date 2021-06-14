@@ -49,6 +49,7 @@ data class GraphQLVisit(
         @GraphQLIgnore @Autowired icdFetcher: IcdFetcher,
         releaseId: GraphQLReleaseIdInput? = GraphQLReleaseIdInput.R_2020_09
     ): List<GraphQLIcdLinearizationEntity> {
+        @Suppress("NAME_SHADOWING")
         val releaseId = releaseId ?: GraphQLReleaseIdInput.R_2020_09
         return foundationIcdUrls.map { icdFetcher.linearizationEntity(releaseId = releaseId, code = it) }
     }
