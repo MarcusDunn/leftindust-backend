@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
 import com.expediagroup.graphql.generator.annotations.GraphQLName
+import com.leftindust.mockingbird.external.icd.impl.IcdLinearizationEntity
 
 @GraphQLName("IcdLinearizationEntity")
 data class GraphQLIcdLinearizationEntity(
@@ -24,4 +25,27 @@ data class GraphQLIcdLinearizationEntity(
     val exclusion: List<GraphQLIcdTerm>?,
     val postcoordinationScale: GraphQLIcdPostCoordinationScaleInfo?,
     val browserUrl: String?,
-)
+) {
+    constructor(icdLinearizationEntity: IcdLinearizationEntity) : this(
+        context = icdLinearizationEntity.`@context`,
+                id = icdLinearizationEntity.`@id`,
+                title = GraphQLIcdLanguageSpecificText(icdLinearizationEntity.title),
+                definition = GraphQLIcdLanguageSpecificText(icdLinearizationEntity.definition),
+                longDefinition = GraphQLIcdLanguageSpecificText(icdLinearizationEntity.longDefinition),
+                fullySpecifiedName = GraphQLIcdLanguageSpecificText(icdLinearizationEntity.fullySpecifiedName),
+                source = icdLinearizationEntity.source,
+                code = icdLinearizationEntity.code,
+                codingNote = GraphQLIcdLanguageSpecificText(icdLinearizationEntity.codingNote),
+                blockId = icdLinearizationEntity.blockId,
+                codeRange = icdLinearizationEntity.codeRange,
+                classKind = icdLinearizationEntity.classKind,
+                child = icdLinearizationEntity.child,
+                parent = icdLinearizationEntity.parent,
+                foundationChildElsewhere = icdLinearizationEntity.foundationChildElsewhere,
+                indexTerm = icdLinearizationEntity.indexTerm,
+                inclusion = icdLinearizationEntity.inclusion,
+                exclusion = icdLinearizationEntity.exclusion,
+                postcoordinationScale = icdLinearizationEntity.postcoordinationScale,
+                browserUrl = icdLinearizationEntity.browserUrl,
+    )
+}

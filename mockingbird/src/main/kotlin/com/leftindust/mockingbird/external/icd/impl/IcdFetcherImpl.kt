@@ -65,7 +65,7 @@ class IcdFetcherImpl(
         code: GraphQLFoundationIcdCode
     ): GraphQLIcdLinearizationEntity {
         val url = "${config.BASE_URL}/release/11/${releaseId}/mms/${code.code}"
-        return getUrlWithIcdHeaders(url)
+        return GraphQLIcdLinearizationEntity(getUrlWithIcdHeaders<IcdLinearizationEntity>(url))
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {
