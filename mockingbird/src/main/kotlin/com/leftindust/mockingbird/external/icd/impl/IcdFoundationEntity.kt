@@ -43,7 +43,7 @@ data class IcdLinearizationEntity(
     val indexTerm: List<GraphQLIcdTerm>?,
     val inclusion: List<GraphQLIcdTerm>?,
     val exclusion: List<GraphQLIcdTerm>?,
-    val postcoordinationScale: GraphQLIcdPostCoordinationScaleInfo?,
+    val postcoordinationScale: List<GraphQLIcdPostCoordinationScaleInfo?>?,
     val browserUrl: String?,
 )
 
