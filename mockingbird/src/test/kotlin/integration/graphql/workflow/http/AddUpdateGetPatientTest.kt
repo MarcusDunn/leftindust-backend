@@ -137,11 +137,12 @@ class AddUpdateGetPatientTest(
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
                 //language=GraphQL
-                """ mutation { updatePatient(patient: {pid: {id: "$id"} nameInfo: {middleName: "Galiano"}}) 
+                """ mutation { updatePatient(patient: {pid: {id: "$id"} nameInfo: {middleName: "Galiano"}, ethnicity: null}) 
                 | {
                 | firstName
                 | middleName
                 | pid {id}
+                | gender
                 | }
                 |}
             """.trimMargin()
@@ -155,6 +156,8 @@ class AddUpdateGetPatientTest(
             .isEqualTo("Clyde")
             .jsonPath("data.updatePatient.pid.id")
             .isEqualTo(id.toString())
+            .jsonPath("data.updatePatient.ethnicity")
+            .doesNotExist()
     }
 
     private fun getPatient(id: UUID) {

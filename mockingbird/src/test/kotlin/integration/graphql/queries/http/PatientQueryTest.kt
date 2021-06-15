@@ -55,9 +55,10 @@ class PatientQueryTest {
             .bodyValue(
                 //language=Graphql
                 """mutation { addPatient(patient: {
-                |    nameInfo: {firstName: "patient", lastName: "joe"},
+                |    nameInfo: {firstName: "Lillian", lastName: "joe"},
                 |    dateOfBirth: {day: 23, month: Jan, year: 1999}, 
-                |    sex: Male
+                |    sex: Male,
+                |    insuranceNumber: "he ll o wo r ld "
                 |})
                 |  {
                 |    pid {
@@ -71,7 +72,7 @@ class PatientQueryTest {
             .verifyOnlyDataExists("addPatient")
 
         val patient = patientRepository.findAll(Pageable.ofSize(10))
-            .find { it.nameInfo.firstName == "patient" && it.nameInfo.lastName == "joe" }!!
+            .find { it.nameInfo.firstName == "Lillian" && it.nameInfo.lastName == "joe" }!!
 
         val start = Timestamp.valueOf("2018-09-01 09:01:15")
         val end = Timestamp.valueOf("2018-09-01 10:01:15")
@@ -102,7 +103,7 @@ class PatientQueryTest {
             .verifyOnlyDataExists("addEvent")
 
         val event = patientRepository.findAll(Pageable.ofSize(10))
-            .find { it.nameInfo.firstName == "patient" && it.nameInfo.lastName == "joe" }!!.events.first()
+            .find { it.nameInfo.firstName == "Lillian" && it.nameInfo.lastName == "joe" }!!.events.first()
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
@@ -132,6 +133,45 @@ class PatientQueryTest {
             .bodyValue(
                 //language=GraphQL
                 """query { patients(example: {icdCodes: {strict: true, includes: [{url: "122222"}]}, strict: true})  {
+                    |   pid {
+                    |    id
+                    |    }
+                    |   }
+                    |} """.trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists("patients")
+            .jsonPath("data.patients[0].pid.id")
+            .isEqualTo(patient.id!!.toString())
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=GraphQL
+                """query { patients(example: {
+                    |         strict:false
+                    |         firstName:{
+                    |            startsWith:"lill"
+                    |            endsWith:"lill"
+                    |            contains:"lill"
+                    |            eq:"lill"
+                    |            strict:false
+                    |         }
+                    |         lastName:{
+                    |            startsWith:"lill"
+                    |            endsWith:"lill"
+                    |            contains:"lill"
+                    |            eq:"lill"
+                    |            strict:false
+                    |         },
+                    |         insuranceNumber:{
+                    |            eq:"lill"
+                    |            strict:true
+                    |         }
+                    |      }
+                    |)  {
                     |   pid {
                     |    id
                     |    }
