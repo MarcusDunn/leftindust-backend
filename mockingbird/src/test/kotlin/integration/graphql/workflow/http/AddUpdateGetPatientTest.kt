@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
@@ -120,20 +121,7 @@ class AddUpdateGetPatientTest(
             .jsonPath("data.addPatient.lastName")
             .isEqualTo("Bronstone")
 
-        val id = runBlocking {
-            patientDao.searchByExample(
-                GraphQLPatientExample(
-                    firstName = CaseAgnosticStringFilter(
-                        eq = "Clyde",
-                        strict = true
-                    ), lastName = CaseAgnosticStringFilter(
-                        eq = "Bronstone",
-                        strict = true
-                    ),
-                    strict = true
-                ), mockk()
-            )
-        }.first().id!!
+        val id = hibernatePatientRepository.findAll(Pageable.ofSize(10)).find { it.nameInfo.firstName == "Clyde" && it.nameInfo.lastName == "Bronstone"}!!.id!!
 
         response
             .jsonPath("data.addPatient.pid.id")
