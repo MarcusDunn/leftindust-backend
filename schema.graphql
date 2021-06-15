@@ -402,6 +402,35 @@ type IcdLanguageSpecificText {
     value: String
 }
 
+type IcdLinearizationEntity {
+    blockId: String
+    browserUrl: String
+    child: [String!]
+    classKind: String
+    code: String
+    codeRange: String
+    codingNote: IcdLanguageSpecificText
+    context: String
+    definition: IcdLanguageSpecificText
+    exclusion: [IcdTerm!]
+    foundationChildElsewhere: [IcdTerm!]
+    fullySpecifiedName: IcdLanguageSpecificText
+    id: String
+    inclusion: [IcdTerm!]
+    indexTerm: [IcdTerm!]
+    longDefinition: IcdLanguageSpecificText
+    parent: [String!]
+    postcoordinationScale: [IcdPostCoordinationScaleInfo]
+    source: String
+    title: IcdLanguageSpecificText
+}
+
+input IcdListFilterInput {
+    includes: [FoundationIcdCodeInput!]
+    notIncludes: [FoundationIcdCodeInput!]
+    strict: Boolean!
+}
+
 type IcdMultiVersion {
     context: String
     id: String
@@ -412,6 +441,14 @@ enum IcdPostcoordinationAvailability {
     One
     Three
     Two
+}
+
+type IcdPostCoordinationScaleInfo {
+    allowMultipleValues: String!
+    axisName: String
+    id: String
+    requiredPostcoordination: Boolean!
+    scaleEntity: [String!]!
 }
 
 type IcdSearchResult {
@@ -596,6 +633,7 @@ input PatientEditInput {
 input PatientExampleInput {
     dateOfBirth: DateFilterInput
     firstName: CaseAgnosticStringFilterInput
+    icdCodes: IcdListFilterInput
     insuranceNumber: WhiteSpaceAgnosticStringFilterInput
     lastName: CaseAgnosticStringFilterInput
     strict: Boolean!
@@ -706,6 +744,7 @@ type Query {
     ): [Doctor!]!
     events(
         doctors: [DoctorIdInput!]
+        events: [EventIdInput!]
         patients: [PatientIdInput!]
         range: TimeRangeInput
     ): [Event!]!
@@ -858,7 +897,7 @@ type TimeZonedTime {
 }
 
 type User {
-    associatedDoctor: Doctor
+    doctor: Doctor
     firebaseUserInfo: FirebaseInfo!
     group: Group
     hasPermission(perm: GraphQLPermissionInput!): Boolean!
@@ -870,11 +909,13 @@ type User {
 
 # edits the user with the given uid, fields left unset will not be edited
 input UserEditInput {
+    doctor: DoctorIdInput
     group: GroupIdInput
     uid: String!
 }
 
 input UserInput {
+    doctor: DoctorIdInput
     group: GroupIdInput
     nameInfo: NameInput!
     uid: String!
@@ -899,7 +940,7 @@ scalar UUID
 type Visit {
     description: String
     event: Event!
-    icds: [IcdFoundationEntity!]!
+    icds(releaseId: ReleaseIdInput): [IcdLinearizationEntity!]!
     title: String
     vid: VisitId!
 }
