@@ -858,4 +858,14 @@
     <changeSet author="marcus (generated)" id="1623562430527-14">
         <dropTable tableName="visit_icd_foundation_code"/>
     </changeSet>
+    <changeSet id="1623562430528-1" author="marcus">
+        <addColumn tableName="event">
+            <column name="visit_id" value="NULL" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1623562430528-2" author="marcus">
+        <addForeignKeyConstraint baseTableName="event" baseColumnNames="visit_id" constraintName="visit_id_fk_constaint"
+                                 referencedTableName="visit"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

@@ -25,6 +25,8 @@ class Event(
     val doctors: MutableSet<Doctor>,
     @ManyToMany(mappedBy = "events")
     val patients: MutableSet<Patient>,
+    @OneToOne(optional = true, mappedBy = "event")
+    val visit: Visit? = null,
     @Embedded
     var reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable() {
