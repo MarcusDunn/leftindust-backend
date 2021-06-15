@@ -18,34 +18,34 @@ class EventQuery(
     private val doctorDao: DoctorDao,
 ) : Query {
     suspend fun events(
+        events: List<GraphQLEvent.ID>? = null,
         doctors: List<GraphQLDoctor.ID>? = null,
         patients: List<GraphQLPatient.ID>? = null,
         range: GraphQLTimeRangeInput? = null,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLEvent> {
         return when {
-            doctors != null && patients != null -> {
+            doctors != null && patients != null && range == null && events == null -> {
                 val patientEvents = getEventsByPatient(patients = patients, graphQLAuthContext = graphQLAuthContext)
                 val doctorEvents = getEventsByDoctor(doctors = doctors, graphQLAuthContext = graphQLAuthContext)
                 listOf(patientEvents, doctorEvents).flatten()
             }
-            doctors != null -> getEventsByDoctor(doctors, graphQLAuthContext)
-            patients != null -> getEventsByPatient(patients, graphQLAuthContext)
-            range != null -> {
-                eventDao.getBetween(range, graphQLAuthContext.mediqAuthToken)
-                    .map { GraphQLEvent(it, graphQLAuthContext) }
-            }
+            doctors != null && patients == null && range == null && events == null -> getEventsByDoctor(
+                doctors,
+                graphQLAuthContext
+            )
+            patients != null && doctors == null && range == null && events == null -> getEventsByPatient(
+                patients,
+                graphQLAuthContext
+            )
+            range != null && patients == null && doctors == null && events == null -> eventDao
+                .getBetween(range, graphQLAuthContext.mediqAuthToken)
+                .map { GraphQLEvent(it, graphQLAuthContext) }
+            events != null && doctors == null && patients == null && range == null -> events
+                .map { eventDao.getById(it, graphQLAuthContext.mediqAuthToken) }
+                .map { GraphQLEvent(it, graphQLAuthContext) }
             else -> throw IllegalArgumentException("invalid argument combination to events")
         }
-    }
-
-    private suspend fun getEvents(
-        range: GraphQLTimeRangeInput,
-        graphQLAuthContext: GraphQLAuthContext
-    ): List<GraphQLEvent> {
-        return eventDao
-            .getBetween(range = range, requester = graphQLAuthContext.mediqAuthToken)
-            .map { GraphQLEvent(it, graphQLAuthContext) }
     }
 
     private suspend fun getEventsByPatient(
