@@ -22,13 +22,12 @@ data class GraphQLPatientExample(
 ) : Example<Patient> {
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Patient>): Predicate {
         val patientNameInfoJoin = root.join(Patient_.nameInfo)
-        val patientEventVisitJoin = root.join(Patient_.events).join(Event_.visit)
         val predicates = listOfNotNull(
             firstName?.toPredicate(criteriaBuilder, patientNameInfoJoin, NameInfo_.firstName),
             lastName?.toPredicate(criteriaBuilder, patientNameInfoJoin, NameInfo_.lastName),
             dateOfBirth?.toPredicate(criteriaBuilder, root, Patient_.dateOfBirth),
             insuranceNumber?.toPredicate(criteriaBuilder, root, Patient_.insuranceNumber),
-            icdCodes?.toPredicate(criteriaBuilder, patientEventVisitJoin, Visit_.icds)
+            icdCodes?.toPredicate(criteriaBuilder, root.join(Patient_.events).join(Event_.visit), Visit_.icds)
         ).toTypedArray()
         return combineWithStrict(criteriaBuilder, *predicates)
     }
