@@ -868,4 +868,7 @@
                                  referencedTableName="visit"
                                  referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="16235624305289-1" author="marcus">
+        <addUniqueConstraint tableName="visit" columnNames="event_id"/>
+    </changeSet>
 </databaseChangeLog>

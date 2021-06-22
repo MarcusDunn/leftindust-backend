@@ -13,9 +13,11 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
+import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.hibernate.SessionFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
@@ -26,7 +28,7 @@ class VisitDaoImpl(
     authorizer: Authorizer,
     private val eventRepository: HibernateEventRepository,
     private val visitRepository: HibernateVisitRepository,
-    private val entityManager: EntityManager,
+    private val sessionFactory: SessionFactory,
     private val patientRepository: HibernatePatientRepository,
 ) : VisitDao, AbstractHibernateDao(authorizer) {
     private val logger: Logger = LogManager.getLogger()
@@ -70,6 +72,17 @@ class VisitDaoImpl(
             patientRepository.getById(pid.id).events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
+        }
+    }
+
+    override suspend fun editVisit(visit: GraphQLVisitEditInput, requester: MediqToken): Visit {
+        val editVisit = Crud.UPDATE to Tables.Visit
+        return if (requester can editVisit) {
+            val visitEntity = visitRepository.getById(visit.vid.id)
+            visitEntity.setByGqlInput(visit, sessionFactory.currentSession)
+            visitEntity
+        } else {
+            throw NotAuthorizedException(requester, editVisit)
         }
     }
 }

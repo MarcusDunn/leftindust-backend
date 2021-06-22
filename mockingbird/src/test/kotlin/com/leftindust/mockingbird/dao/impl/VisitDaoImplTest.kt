@@ -15,10 +15,10 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
-import javax.persistence.EntityManager
 
 internal class VisitDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -26,7 +26,7 @@ internal class VisitDaoImplTest {
     private val visitRepository = mockk<HibernateVisitRepository>()
     private val doctorRepository = mockk<HibernateDoctorRepository>()
     private val patientRepository = mockk<HibernatePatientRepository>()
-    private val entityManager = mockk<EntityManager>()
+    private val sessionFactory = mockk<SessionFactory>()
 
     @Test
     fun getVisitByVid() {
@@ -42,7 +42,7 @@ internal class VisitDaoImplTest {
             authorizer,
             eventRepository,
             visitRepository,
-            entityManager,
+            sessionFactory,
             patientRepository
         )
 
@@ -72,7 +72,7 @@ internal class VisitDaoImplTest {
         val mockkVisit = mockk<Visit>()
 
         val visitDaoImpl = VisitDaoImpl(
-            authorizer, eventRepository, visitRepository, entityManager,
+            authorizer, eventRepository, visitRepository, sessionFactory,
             patientRepository
         )
 
