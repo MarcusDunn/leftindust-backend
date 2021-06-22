@@ -20,6 +20,7 @@ services:
       timeout: 5s
       retries: 10
   mockingbird:
+    restart: unless-stopped
     environment:
       - WHO_ICD_API=http://mockingbird-icd-api:80/icd
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
@@ -36,9 +37,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl mockingbird:8080/sdl" ]
-      interval: 5s
+      interval: 10s
       timeout: 1s
-      retries: 20
+      retries: 30
   gladio:
     environment:
       - MOCKINGBIRD_URL=http://mockingbird:8080
