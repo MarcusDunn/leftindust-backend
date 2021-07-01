@@ -63,17 +63,23 @@ class Event(
 
 
     fun update(event: GraphQLEventEditInput, newDoctors: Set<Doctor>?, newPatients: Set<Patient>?) {
-            title = event.title ?: title
-            description = event.description.onUndefined(description)
-            startTime = event.start?.toTimestamp() ?: startTime
-            endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp()
-            allDay = event.allDay ?: allDay
-            doctors.replaceAllIfNotNull(newDoctors?.toMutableSet() ?: mutableSetOf())// we call toMutableSet to avoid shared references to a collection
-            patients.replaceAllIfNotNull(newPatients?.toMutableSet() ?: mutableSetOf())
-            reoccurrence = if (event.recurrence is OptionalInput.Undefined)
-                reoccurrence
-            else
-                event.recurrence.getOrThrow().let { Reoccurrence(it) }
+        title = event.title ?: title
+        description = event.description.onUndefined(description)
+        startTime = event.start?.toTimestamp() ?: startTime
+        endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp()
+        allDay = event.allDay ?: allDay
+        newDoctors?.let {
+            doctors.clear()
+            doctors.addAll(it)
+        }
+        newPatients?.let {
+            patients.clear()
+            patients.addAll(it)
+        }
+        reoccurrence = when (val recc = event.recurrence) {
+            is OptionalInput.Undefined -> reoccurrence
+            is OptionalInput.Defined -> recc.value?.let { Reoccurrence(it) }
+        }
     }
 
     constructor(graphQLEventInput: GraphQLEventInput, doctors: Set<Doctor>, patients: Set<Patient>) : this(
