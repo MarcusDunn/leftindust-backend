@@ -37,15 +37,14 @@ class UserQuery(
             every { uid } returns "lf2fnZU6eEVHmeA9f2J68cmZrl72"
         }, mockk(relaxed = true))
 
-        val uid = "lf2fnZU6eEVHmeA9f2J68cmZrl72"
-
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
             .accept(APPLICATION_JSON_MEDIA_TYPE)
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
+                // language=GraphQL
                 """query {
-                |   user(uid:"$uid"){
+                |   user(uid:"lf2fnZU6eEVHmeA9f2J68cmZrl72"){
                 |      isRegistered
                 |      group{
                 |       name

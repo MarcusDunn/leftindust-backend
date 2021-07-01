@@ -4,6 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
@@ -34,6 +35,9 @@ class PatientQueryTest {
 
     @Autowired
     private lateinit var patientRepository: HibernatePatientRepository
+
+    @Autowired
+    private lateinit var hibernateEventRepository: HibernateEventRepository
 
     @MockkBean
     private lateinit var authorizer: Authorizer
@@ -85,7 +89,7 @@ class PatientQueryTest {
                 //language=GraphQL
                 """
                 |mutation { addEvent(event: {
-                |    title: "MY EVENT",
+                |    title: "MY EVENT + PatientQueryTest.search patient",
                 |    description: "YO YO YO this do be an event doe + PatientQueryTest.search patient",
                 |    allDay: false,
                 |    start: {unixMilliseconds: ${start.time}},
@@ -182,5 +186,7 @@ class PatientQueryTest {
             .verifyOnlyDataExists("patients")
             .jsonPath("data.patients[0].pid.id")
             .isEqualTo(patient.id!!.toString())
+
+        hibernateEventRepository.delete(hibernateEventRepository.findAll(Pageable.ofSize(10)).find { it.title == "MY EVENT + PatientQueryTest.search patient" }!!)
     }
 }
