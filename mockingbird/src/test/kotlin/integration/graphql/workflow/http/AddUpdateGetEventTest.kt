@@ -164,7 +164,7 @@ class AddUpdateGetEventTest(
                 """
                 |mutation { addEvent(event: {
                 |    title: "MY EVENT",
-                |    description: "YO YO YO this do be an event doe",
+                |    description: "YO YO YO this do be an event doe + AddUpdateGetEventTest",
                 |    allDay: false,
                 |    start: {unixMilliseconds: ${start.time}},
                 |    end: {unixMilliseconds: ${end.time}},

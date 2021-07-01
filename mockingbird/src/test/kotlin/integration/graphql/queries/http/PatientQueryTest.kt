@@ -86,7 +86,7 @@ class PatientQueryTest {
                 """
                 |mutation { addEvent(event: {
                 |    title: "MY EVENT",
-                |    description: "YO YO YO this do be an event doe",
+                |    description: "YO YO YO this do be an event doe + PatientQueryTest.search patient",
                 |    allDay: false,
                 |    start: {unixMilliseconds: ${start.time}},
                 |    end: {unixMilliseconds: ${end.time}},

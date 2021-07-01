@@ -73,7 +73,7 @@ class EventMutationTest(
                 """
                 |mutation { addEvent(event: {
                 |    title: "MY EVENT",
-                |    description: "YO YO YO this do be an event doe",
+                |    description: "YO YO YO this do be an event doe + EventMutationTest.testAddEvent",
                 |    allDay: false,
                 |    start: {unixMilliseconds: ${start.time}},
                 |    end: {unixMilliseconds: ${end.time}},
@@ -126,7 +126,7 @@ class EventMutationTest(
                 """
                 |mutation { addEvent(event: {
                 |    title: "MY EVENT",
-                |    description: "YO YO YO this do be an event doe",
+                |    description: "YO YO YO this do be an event doe + EventMutationTest.testAddEventWith2Patients",
                 |    allDay: false,
                 |    start: {unixMilliseconds: ${start.time}},
                 |    end: {unixMilliseconds: ${end.time}},
