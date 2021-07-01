@@ -95,10 +95,9 @@ class EventQueryTest(
                 |       title
                 |   }
                 |}
-                |""".trimMargin().also { println(it) }
+                |""".trimMargin()
             )
             .exchange()
-            .debugPrint()
             .verifyOnlyDataExists("events")
             .jsonPath("$DATA_JSON_PATH.events[0].eid.id")
             .isEqualTo(event.id!!.toString())

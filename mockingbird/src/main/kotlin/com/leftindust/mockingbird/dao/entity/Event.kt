@@ -2,9 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.extensions.getOrThrow
 import com.leftindust.mockingbird.extensions.onUndefined
-import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
@@ -68,13 +66,17 @@ class Event(
         startTime = event.start?.toTimestamp() ?: startTime
         endTime = event.end.onUndefined(endTime?.time?.let { GraphQLUtcTime(it) })?.toTimestamp()
         allDay = event.allDay ?: allDay
-        newDoctors?.let {
+        newDoctors?.let { notNullNewDoctors ->
+            doctors.forEach { it.events.removeIf { evnt -> evnt == this } }
             doctors.clear()
-            doctors.addAll(it)
+            doctors.addAll(notNullNewDoctors)
+            doctors.forEach { it.addEvent(this) }
         }
-        newPatients?.let {
+        newPatients?.let { notNullNewPatients ->
+            patients.forEach { it.events.removeIf { evnt -> evnt == this } }
             patients.clear()
-            patients.addAll(it)
+            patients.addAll(notNullNewPatients)
+            patients.forEach { it.addEvent(this) }
         }
         reoccurrence = when (val recc = event.recurrence) {
             is OptionalInput.Undefined -> reoccurrence
