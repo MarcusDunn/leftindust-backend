@@ -182,7 +182,7 @@ class AddUpdateGetEventTest(
             .isEqualTo("MY EVENT")
 
         val events = hibernateEventRepository.getAllByTitleEquals("MY EVENT")
-        assertEquals(1, events.size) { events.toString() }
+        assertEquals(1, events.size) { "events: " + events.map { it.id.toString() + " " + it.title + " " + it.description }.toString() }
         val first = events.first()
         assertEquals(false, first.allDay)
         return first.id!!
