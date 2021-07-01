@@ -2,12 +2,8 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.ClinicDao
-import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.PatientDao
-import com.leftindust.mockingbird.dao.UserDao
+import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Doctor
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
@@ -60,6 +56,11 @@ data class GraphQLDoctor(
             .map { GraphQLPatient(it, authContext) }
     }
 
+    suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {
+        return eventDao
+            .getByDoctor(did, authContext.mediqAuthToken)
+            .map { event -> GraphQLEvent(event, authContext) }
+    }
 
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
