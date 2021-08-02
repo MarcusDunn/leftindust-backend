@@ -871,4 +871,14 @@
     <changeSet id="16235624305289-1" author="marcus">
         <addUniqueConstraint tableName="visit" columnNames="event_id"/>
     </changeSet>
+    <changeSet author="marcus (generated)" id="1627863688866-11">
+        <addColumn tableName="doctor">
+            <column name="thumbnail" type="varchar(10000)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="marcus (generated)" id="1627863688866-12">
+        <addColumn tableName="patient">
+            <column name="thumbnail" type="varchar(10000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

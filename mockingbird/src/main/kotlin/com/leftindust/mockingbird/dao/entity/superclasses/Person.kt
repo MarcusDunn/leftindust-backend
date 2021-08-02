@@ -19,7 +19,9 @@ abstract class Person(
     @OneToOne
     var user: MediqUser? = null,
     @ManyToMany
-    var events: MutableSet<Event> = emptySet<Event>().toMutableSet()
+    var events: MutableSet<Event> = emptySet<Event>().toMutableSet(),
+    @Column(length = 10_000)
+    var thumbnail: String? = null
 ) : AbstractJpaPersistable() {
     init {
         // if user exists, set the user nameInfo to the info stored on the person instead to prevent inconsistencies
