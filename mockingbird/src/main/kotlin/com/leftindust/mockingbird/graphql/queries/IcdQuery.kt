@@ -9,6 +9,7 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
 import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.stereotype.Component
@@ -42,26 +43,14 @@ class IcdQuery(
         } else throw GraphQLKotlinException("not authorized")
     }
 
-    suspend fun searchIcdLinearization(
+    suspend fun searchIcdFoundation(
         query: String,
-        releaseId: GraphQLReleaseIdInput? = null,
-        linearizationName: String? = null,
-        flatResults: Boolean? = null,
+        flexiSearch: Boolean? = flexiSearchDefaultValue,
+        flatResults: Boolean? = flatResultsDefaultValue,
         authContext: GraphQLAuthContext
-    ): GraphQLIcdSearchResult {
-        if (authContext.mediqAuthToken.isVerified()) {
-            return client
-                .linearizationSearch(
-                    releaseId ?: GraphQLReleaseIdInput.R_2020_09,
-                    linearizationName ?: "mms",
-                    query,
-                    flatResults ?: false
-                )
-                .let { searchResult ->
-                    searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id(asUrl = true) })
-                }
-        } else {
-            throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
+    ): List<GraphQLIcdFoundationEntity?>? {
+        return searchIcd(query, flexiSearch, flatResults, authContext).destinationEntities?.map {
+            it.entity(client)
         }
     }
 

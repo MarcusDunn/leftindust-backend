@@ -26,7 +26,7 @@ data class GraphQLIcdSimpleEntity(
     val entityType: GraphQLIcdEntityType,
     val important: Boolean,
     val descendants: List<GraphQLIcdSimpleEntity>,
-) {
+): GraphQlIcdEntity {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
         return icdFetcher.getDetails(GraphQLFoundationIcdCode(id ?: return null))
     }

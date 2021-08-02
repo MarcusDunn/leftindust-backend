@@ -13,3 +13,4 @@ data class GraphQLIcdSearchResult(
     val uniqueSearchId: Boolean,
     val words: List<GraphQLIcdGuessWord>?,
 )
+

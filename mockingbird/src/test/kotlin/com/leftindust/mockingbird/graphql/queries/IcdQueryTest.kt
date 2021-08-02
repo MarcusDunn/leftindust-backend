@@ -37,27 +37,6 @@ internal class IcdQueryTest {
     }
 
     @Test
-    fun searchIcdLinearization() {
-        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>() {
-            every { destinationEntities } returns emptyList()
-        }
-
-        coEvery { client.linearizationSearch(any(), any(), any(), any()) } returns mockkIcdSearchResult
-
-        every { mockkIcdSearchResult.copy(any(), any(), any(), any(), any(), any()) } returns mockkIcdSearchResult
-
-        val icdQuery = IcdQuery(client)
-
-        every { authContext.mediqAuthToken } returns mockk {
-            every { isVerified() } returns true
-        }
-
-        val result = runBlocking { icdQuery.searchIcdLinearization("hello!", authContext = authContext) }
-
-        assertEquals(mockkIcdSearchResult, result)
-    }
-
-    @Test
     fun icd() {
         val mockkIcdFoundationEntity = mockk<GraphQLIcdFoundationEntity>()
         val icdQuery = IcdQuery(client)
