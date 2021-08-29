@@ -772,7 +772,7 @@ type Query {
         flexiSearch: Boolean
         query: String!
     ): IcdSearchResult!
-    searchIcdLinearization(
+    searchIcdFoundation(
         flatResults: Boolean
         linearizationName: String
         query: String!
