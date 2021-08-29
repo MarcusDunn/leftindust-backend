@@ -3,23 +3,16 @@ services:
     image: whoicd/icd-api
     environment:
       - acceptLicense=true
-    healthcheck:
-      test: "apk add curl; curl -X GET \"http://127.0.0.1:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - saveAnalytics=true
   mockingbird-postgres:
     environment:
       POSTGRES_DB: mediq
       POSTGRES_USER: mediq
       POSTGRES_PASSWORD: mediq
     image: postgres
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U mediq" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
   mockingbird:
+    ports:
+      - 8080:8080
     environment:
       - WHO_ICD_API=http://mockingbird-icd-api:80/icd
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
@@ -29,21 +22,3 @@ services:
     build:
       context: .
       dockerfile: mockingbird.Dockerfile
-    depends_on:
-      mockingbird-postgres:
-        condition: service_healthy
-      mockingbird-icd-api:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl mockingbird:8080/sdl" ]
-  gladio:
-    environment:
-      - MOCKINGBIRD_URL=http://mockingbird:8080
-    ports:
-      - 4000:4000
-    build:
-      context: .
-      dockerfile: gladio.Dockerfile
-    depends_on:
-      mockingbird:
-        condition: service_healthy

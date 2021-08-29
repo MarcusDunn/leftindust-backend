@@ -13,11 +13,12 @@ import org.springframework.web.reactive.function.server.ServerRequest
  */
 @Component
 class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
-    override suspend fun generateContext(request: ServerRequest): GraphQLAuthContext? {
+    override suspend fun generateContext(request: ServerRequest): GraphQLAuthContext {
         return if (request.method() == HttpMethod.OPTIONS) {
-            return null
+            GraphQLAuthContext(VerifiedFirebaseToken(null), request)
         } else {
-            val token = request.headers().firstHeader("mediq-auth-token") ?: return null
+            val token = request.headers().firstHeader("mediq-auth-token")
+                ?: return GraphQLAuthContext(VerifiedFirebaseToken(null), request)
             GraphQLAuthContext(VerifiedFirebaseToken(token), request)
         }
     }
@@ -27,4 +28,5 @@ class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
  * the mediq specific data returned from the ContextFactory
  * @property mediqAuthToken the authentication token
  */
-data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) : SpringGraphQLContext(request)
+data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) :
+    SpringGraphQLContext(request)
