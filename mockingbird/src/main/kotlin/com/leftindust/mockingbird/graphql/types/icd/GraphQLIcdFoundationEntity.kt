@@ -18,7 +18,7 @@ data class GraphQLIcdFoundationEntity(
     val inclusion: List<GraphQLIcdTerm>?,
     val exclusion: List<GraphQLIcdTerm>?,
     val browserUrl: String?,
-): GraphQlIcdEntity {
+) {
     constructor(foundationEntity: IcdFoundationEntity) : this(
         context = foundationEntity.`@context`,
         id = foundationEntity.`@id`,
