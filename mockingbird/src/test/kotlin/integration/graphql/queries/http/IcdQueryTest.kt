@@ -66,6 +66,6 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             )
             .exchange()
             .debugPrint()
-            .verifyOnlyDataExists("searchIcdLinearization")
+            .verifyOnlyDataExists("searchIcdFoundation")
     }
 }
