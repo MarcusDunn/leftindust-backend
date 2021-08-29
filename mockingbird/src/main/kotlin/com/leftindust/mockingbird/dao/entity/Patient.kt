@@ -20,6 +20,7 @@ class Patient(
     phones: Set<Phone> = emptySet(),
     schedule: Set<Event> = emptySet(),
     user: MediqUser? = null,
+    thumbnail: String? = null,
     @Column(name = "sex", nullable = false)
     @Enumerated(EnumType.STRING)
     var sex: Sex,
@@ -41,12 +42,13 @@ class Patient(
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(
-    nameInfo,
-    addresses.toMutableSet(),
-    emails.toMutableSet(),
-    phones.toMutableSet(),
-    user,
-    schedule.toMutableSet()
+    nameInfo = nameInfo,
+    address = addresses.toMutableSet(),
+    email = emails.toMutableSet(),
+    phone = phones.toMutableSet(),
+    user = user,
+    events = schedule.toMutableSet(),
+    thumbnail = thumbnail
 ) {
 
     /**
@@ -65,6 +67,7 @@ class Patient(
         phones = graphQLPatientInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),
         addresses = graphQLPatientInput.addresses?.map { Address(it) }?.toSet() ?: emptySet(),
         emails = graphQLPatientInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
+        thumbnail = graphQLPatientInput.thumbnail,
     ) {
 
         contacts = graphQLPatientInput.emergencyContacts?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
@@ -116,6 +119,7 @@ class Patient(
         sex = patientInput.sex ?: sex
         gender = patientInput.gender ?: gender
         ethnicity = patientInput.ethnicity.onUndefined(ethnicity)
+        thumbnail = patientInput.thumbnail.onUndefined(thumbnail)
 
         if (patientInput.doctors != null) {
             doctors

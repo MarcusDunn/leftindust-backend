@@ -40,17 +40,9 @@ data class GraphQLPatientInput(
     val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("defaults to emptyList")
     val doctors: List<GraphQLDoctor.ID>? = null,
-) {
-    init {
-        if (emails != null) {
-            if (emails.all { it.email.contains("@") }) {
-                // valid email
-            } else {
-                throw IllegalArgumentException("not a valid email")
-            }
-        }
-    }
-}
+    @GraphQLDescription("base64 representation of an image. cannot be over 10 000 characters")
+    val thumbnail: String? = null
+)
 
 @GraphQLName("PatientEditInput")
 data class GraphQLPatientEditInput(
@@ -78,14 +70,6 @@ data class GraphQLPatientEditInput(
     val emergencyContacts: List<GraphQLEmergencyContactInput>? = null,
     @GraphQLDescription("setting doctors to null will have no effect on update. to remove, pass an emptyList")
     val doctors: List<GraphQLDoctor.ID>? = null,
-) {
-    init {
-        if (emails != null) {
-            if (emails.all { it.email.contains("@") }) {
-                // valid email
-            } else {
-                throw IllegalArgumentException("not a valid email")
-            }
-        }
-    }
-}
+    @GraphQLDescription("setting to null will delete prior thumbnail, leaving blank will keep old thumbail. Cannot be over 10 000 characters")
+    val thumbnail: OptionalInput<String> = OptionalInput.Undefined
+)
