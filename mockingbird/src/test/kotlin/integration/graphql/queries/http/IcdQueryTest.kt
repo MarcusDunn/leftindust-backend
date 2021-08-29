@@ -37,7 +37,7 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             .contentType(GRAPHQL_MEDIA_TYPE)
             .bodyValue(
                 //language=Graphql
-                """query { searchIcdLinearization(query: "hiv") { 
+                """query { searchIcdFoundation(query: "hiv") { 
                 |   words { 
                 |       label
                 |       }

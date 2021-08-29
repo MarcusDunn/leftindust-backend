@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.types
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
@@ -14,6 +15,8 @@ data class GraphQLEmergencyContact(
     override val phones: List<GraphQLPhone>,
     override val emails: List<GraphQLEmail>,
     private val authContext: GraphQLAuthContext,
+    @GraphQLDescription(GraphQLPerson.thumbnailDescription)
+    override val thumbnail: String? = null,
 ) : GraphQLPerson {
     constructor(emergencyContact: EmergencyContact, authContext: GraphQLAuthContext) : this(
         firstName = emergencyContact.nameInfo.firstName,

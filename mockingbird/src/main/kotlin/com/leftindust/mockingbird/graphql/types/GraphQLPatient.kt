@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.types
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
@@ -20,6 +21,8 @@ data class GraphQLPatient(
     override val lastName: String,
     override val phones: List<GraphQLPhone> = emptyList(),
     override val emails: List<GraphQLEmail> = emptyList(),
+    @GraphQLDescription(GraphQLPerson.thumbnailDescription)
+    override val thumbnail: String? = null,
     val pid: ID,
     val dateOfBirth: GraphQLDate,
     val addresses: List<GraphQLAddress> = emptyList(),
@@ -32,7 +35,6 @@ data class GraphQLPatient(
 
     @GraphQLName("PatientId")
     data class ID(val id: UUID)
-
 
     constructor(patient: Patient, authContext: GraphQLAuthContext) : this(
         pid = ID(patient.id!!),
@@ -48,6 +50,7 @@ data class GraphQLPatient(
         gender = patient.gender,
         ethnicity = patient.ethnicity,
         authContext = authContext,
+        thumbnail = patient.thumbnail
     )
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
