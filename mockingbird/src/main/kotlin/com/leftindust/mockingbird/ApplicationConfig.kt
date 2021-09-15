@@ -22,8 +22,7 @@ import javax.sql.DataSource
 
 @Configuration
 class ApplicationConfig {
-    companion object {
-
+    private companion object {
         object FireBaseConfig {
             const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/serviceAccountKey.json"
             const val DATABASE_URL = "https://mediq-backend.firebaseio.com"
@@ -96,7 +95,7 @@ class ApplicationConfig {
 
     @Bean
     fun icdApiClientConfigBean(): IcdApiClientConfigBean {
-        return IcdApiClientConfigBean (
+        return IcdApiClientConfigBean(
             BASE_URL = System.getenv("WHO_ICD_API") ?: "http://localhost:80/icd",
         )
     }
