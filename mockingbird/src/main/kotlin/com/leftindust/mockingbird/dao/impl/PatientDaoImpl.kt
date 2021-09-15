@@ -159,4 +159,8 @@ class PatientDaoImpl(
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
     }
+
+    override suspend fun getByUser(uid: String, requester: MediqToken): Patient? {
+        TODO("Not yet implemented $uid, $requester")
+    }
 }

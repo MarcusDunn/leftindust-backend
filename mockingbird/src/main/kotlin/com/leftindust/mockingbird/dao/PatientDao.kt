@@ -44,5 +44,8 @@ interface PatientDao {
     suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient>
 
     suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient>
+
     suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient>
+
+    suspend fun getByUser(uid: String, requester: MediqToken): Patient?
 }

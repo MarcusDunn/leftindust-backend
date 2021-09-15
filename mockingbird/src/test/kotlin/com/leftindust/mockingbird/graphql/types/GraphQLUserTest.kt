@@ -5,18 +5,23 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.AuthorizationDao
+import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
+import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 internal class GraphQLUserTest {
 
@@ -25,7 +30,7 @@ internal class GraphQLUserTest {
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
-        val userDao = mockk<UserDao>() {
+        val userDao = mockk<UserDao> {
             coEvery { findUserByUid("uid", any()) } returns mockk()
         }
 
@@ -38,7 +43,7 @@ internal class GraphQLUserTest {
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
-        val userDao = mockk<UserDao>() {
+        val userDao = mockk<UserDao> {
             coEvery { findUserByUid("uid", any()) } returns null
         }
 
@@ -51,7 +56,7 @@ internal class GraphQLUserTest {
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
-        val userDao = mockk<UserDao>() {
+        val userDao = mockk<UserDao> {
             coEvery { findUserByUid("uid", any()) } throws NotAuthorizedException(
                 authContext.mediqAuthToken,
                 Crud.READ to Tables.User
@@ -71,7 +76,7 @@ internal class GraphQLUserTest {
 
         val expected = mockk<UserRecord>(relaxed = true)
 
-        val userFetcher = mockk<UserFetcher>() {
+        val userFetcher = mockk<UserFetcher> {
             coEvery { getUserInfo("uid", authContext.mediqAuthToken) } returns expected
         }
         val result = runBlocking { GraphQLUser("uid", null, authContext).firebaseUserInfo(userFetcher) }
@@ -85,7 +90,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val authorizationDao = mockk<AuthorizationDao>() {
+        val authorizationDao = mockk<AuthorizationDao> {
             coEvery { getRolesForUserByUid("uid") } returns emptyList()
         }
 
@@ -100,8 +105,8 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val authorizationDao = mockk<AuthorizationDao>() {
-            coEvery { getRolesForUserByUid("uid") } returns listOf(mockk() {
+        val authorizationDao = mockk<AuthorizationDao> {
+            coEvery { getRolesForUserByUid("uid") } returns listOf(mockk {
                 every { action } returns Action(Crud.UPDATE to Tables.Patient)
             })
         }
@@ -114,5 +119,23 @@ internal class GraphQLUserTest {
         }
 
         assertEquals(true, result)
+    }
+
+    @Test
+    fun patient() {
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val expectedPatient = EntityStore.patient("GraphqlUserTest.patient")
+            .apply { id = UUID.nameUUIDFromBytes("GraphqlUserTest.patient".toByteArray()) }
+
+        val mockkPatientDao = mockk<PatientDao> {
+            coEvery { getByUser("uid", any()) } returns expectedPatient
+        }
+
+        val result = runBlocking { GraphQLUser("uid", null, authContext).patient(mockkPatientDao) }
+
+        assertEquals(GraphQLPatient(expectedPatient, authContext), result)
     }
 }

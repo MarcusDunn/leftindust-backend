@@ -4,10 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.AuthorizationDao
-import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.NameInfoDao
-import com.leftindust.mockingbird.dao.UserDao
+import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
@@ -46,6 +43,10 @@ data class GraphQLUser(
 
     suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
         return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
+    }
+
+    suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient? {
+        return patientDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLPatient(it, authContext) }
     }
 
     suspend fun hasPermission(
