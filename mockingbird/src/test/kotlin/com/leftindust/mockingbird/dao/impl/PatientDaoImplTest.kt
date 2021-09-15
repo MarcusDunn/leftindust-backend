@@ -1,13 +1,11 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLMonth
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
@@ -16,6 +14,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -164,7 +163,13 @@ internal class PatientDaoImplTest {
 
             )
 
-        val actual = runBlocking { patientDaoImpl.addDoctorToPatient(GraphQLPatient.ID(patientID), GraphQLDoctor.ID(doctorID), mockk()) }
+        val actual = runBlocking {
+            patientDaoImpl.addDoctorToPatient(
+                GraphQLPatient.ID(patientID),
+                GraphQLDoctor.ID(doctorID),
+                mockk()
+            )
+        }
 
         assertEquals(mockkPatient, actual)
     }
@@ -196,17 +201,20 @@ internal class PatientDaoImplTest {
     }
 
     @Test
-    fun removeByPID() {
-        // TODO: 2021-04-26  
-    }
+    fun getByUser() {
+        val expected = EntityStore.patient("PatientDaoImplTest.getByUser")
 
-    @Test
-    fun getMany() {
-        // TODO: 2021-04-26  
-    }
+        every { patientRepository.findByUserId("uid") } returns expected
 
-    @Test
-    fun getPatientsByPids() {
-        // TODO: 2021-04-26  
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val patientDaoImpl = PatientDaoImpl(
+            authorizer, patientRepository, doctorRepository,
+            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+        )
+
+        val actual = runBlocking { patientDaoImpl.getByUser("uid", mockk()) }
+
+        assertEquals(expected, actual)
     }
 }

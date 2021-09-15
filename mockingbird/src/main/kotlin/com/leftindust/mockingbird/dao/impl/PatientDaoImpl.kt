@@ -161,6 +161,11 @@ class PatientDaoImpl(
     }
 
     override suspend fun getByUser(uid: String, requester: MediqToken): Patient? {
-        TODO("Not yet implemented $uid, $requester")
+        if (requester can (Crud.READ to Tables.Patient)) {
+            return patientRepository.findByUserId(uid)
+        } else {
+            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+        }
+
     }
 }
