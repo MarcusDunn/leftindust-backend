@@ -204,7 +204,7 @@ internal class PatientDaoImplTest {
     fun getByUser() {
         val expected = EntityStore.patient("PatientDaoImplTest.getByUser")
 
-        every { patientRepository.findByUserId("uid") } returns expected
+        every { patientRepository.findByUser_UniqueId("uid") } returns expected
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
