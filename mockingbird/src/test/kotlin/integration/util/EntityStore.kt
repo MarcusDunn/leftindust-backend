@@ -159,4 +159,16 @@ object EntityStore {
             ),
             postalCode = "23efa",
     )
+
+    fun user(testName: String): MediqUser {
+        return MediqUser(
+            uniqueId = testName,
+                    group = MediqGroup(name = "group from + $testName"),
+                    nameInfo = NameInfo(
+                        firstName = "Yeet",
+                        middleName = "Ive",
+                        lastName = "McSkeet"
+                    ),
+        )
+    }
 }

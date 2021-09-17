@@ -4,7 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
-import com.leftindust.mockingbird.extensions.gqlID
+import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -24,6 +24,7 @@ import javax.transaction.Transactional
 class PatientTest(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
+    @Autowired private val userRepository: HibernateUserRepository,
     @Autowired private val sessionFactory: SessionFactory,
     @Autowired private val eventRepository: HibernateEventRepository,
 ) {
@@ -59,5 +60,16 @@ class PatientTest(
         val events = patientRepository.getById(patient.id!!).events
 
         assertEquals(1, events.size)
+    }
+
+    @Test
+    internal fun getUser() {
+        val user = userRepository.save(EntityStore.user("PatientTest.getUser"))
+        val patient = patientRepository.save(EntityStore.patient("PatientTest.getUser")
+            .apply { this.user = user }
+        )
+
+        val actual = patientRepository.findByUser_UniqueId(user.uniqueId)
+        assertEquals(patient, actual)
     }
 }
