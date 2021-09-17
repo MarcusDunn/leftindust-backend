@@ -4,10 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.ContactDao
-import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.VisitDao
+import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
@@ -66,6 +63,10 @@ data class GraphQLPatient(
         return visitDao
             .getByPatient(pid, authContext.mediqAuthToken)
             .map { visit -> GraphQLVisit(visit, authContext) }
+    }
+
+    suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? {
+        return userDao.findByPatient(pid, authContext.mediqAuthToken)?.let { GraphQLUser(it, authContext) }
     }
 
     suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {

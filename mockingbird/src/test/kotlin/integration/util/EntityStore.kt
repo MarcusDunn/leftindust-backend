@@ -1,5 +1,6 @@
 package integration.util
 
+import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
@@ -10,6 +11,7 @@ import com.leftindust.mockingbird.graphql.types.input.*
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDate
+import java.util.*
 
 object EntityStore {
     fun patient(testName: String) = Patient(
@@ -150,25 +152,44 @@ object EntityStore {
     )
 
     fun address(testName: String) = Address(
-            type = GraphQLAddressType.Other,
-            address = testName,
-            city = "East Vancouver",
-            countryState = CountryState(
-                country = GraphQLCountry.Canada,
-                province = GraphQLCanadianProvince.Provinces.Yukon.name
-            ),
-            postalCode = "23efa",
+        type = GraphQLAddressType.Other,
+        address = testName,
+        city = "East Vancouver",
+        countryState = CountryState(
+            country = GraphQLCountry.Canada,
+            province = GraphQLCanadianProvince.Provinces.Yukon.name
+        ),
+        postalCode = "23efa",
     )
 
     fun user(testName: String): MediqUser {
         return MediqUser(
             uniqueId = testName,
-                    group = MediqGroup(name = "group from + $testName"),
-                    nameInfo = NameInfo(
-                        firstName = "Yeet",
-                        middleName = "Ive",
-                        lastName = "McSkeet"
-                    ),
+            group = MediqGroup(name = "group from + $testName"),
+            nameInfo = NameInfo(
+                firstName = "Yeet",
+                middleName = "Ive",
+                lastName = "McSkeet"
+            ),
+        )
+    }
+
+    fun graphQLPatient(testName: String, authContext: GraphQLAuthContext): GraphQLPatient {
+        return GraphQLPatient(
+            pid = GraphQLPatient.ID(UUID.nameUUIDFromBytes("bytes!".encodeToByteArray())),
+            firstName = testName,
+            middleName = "middle name!",
+            lastName = "last name!",
+            phones = listOf(GraphQLPhone(number = "8828891111", type = GraphQLPhoneType.Home)),
+            dateOfBirth = GraphQLDate(Timestamp.valueOf("2020-01-02 09:00:00").toLocalDateTime().toLocalDate()),
+            addresses = emptyList(),
+            emails = emptyList(),
+            insuranceNumber = null,
+            sex = Sex.Male,
+            gender = "yeet",
+            ethnicity = Ethnicity.Asian,
+            authContext = authContext,
+            thumbnail = null,
         )
     }
 }
