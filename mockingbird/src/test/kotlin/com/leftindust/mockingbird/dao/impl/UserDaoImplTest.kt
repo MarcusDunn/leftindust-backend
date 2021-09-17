@@ -4,21 +4,26 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
+import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class UserDaoImplTest {
     private val authorizer = mockk<Authorizer>()
     private val userRepository = mockk<HibernateUserRepository>()
     private val groupRepository = mockk<HibernateGroupRepository>()
     private val doctorRepository = mockk<HibernateDoctorRepository>()
+    private val patientRepository = mockk<HibernatePatientRepository>()
 
     @Test
     fun getUserByUid() {
@@ -26,7 +31,7 @@ internal class UserDaoImplTest {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { userRepository.getByUniqueId("test uid") } returns mockkUser
 
-        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository)
+        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
         val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }
 
@@ -45,10 +50,29 @@ internal class UserDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository)
+        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
         val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }
 
         assertEquals(mockkMediqUser, actual)
+    }
+
+    @Test
+    fun findByPatient() {
+        val pid = GraphQLPatient.ID(UUID.nameUUIDFromBytes("kuyvl".toByteArray()))
+
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val expected = EntityStore.user("UserDaoImplTest.findByPatient")
+
+        every { patientRepository.getById(pid.id) } returns EntityStore.patient("UserDaoImplTest.findByPatient").apply {
+            user = expected
+        }
+
+        val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
+
+        val actual = runBlocking { userDaoImpl.findByPatient(pid, mockk()) }
+
+        assertEquals(expected, actual)
     }
 }

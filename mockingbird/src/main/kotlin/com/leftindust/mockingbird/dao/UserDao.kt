@@ -15,7 +15,5 @@ interface UserDao {
     suspend fun getUsers(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqUser>
     suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser
     suspend fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser?
-    suspend fun findByPatient(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
-        TODO("Not yet implemented")
-    }
+    suspend fun findByPatient(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser?
 }

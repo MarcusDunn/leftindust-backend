@@ -8,13 +8,13 @@ import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
+import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,6 +25,7 @@ class UserDaoImpl(
     private val userRepository: HibernateUserRepository,
     private val groupRepository: HibernateGroupRepository,
     private val doctorRepository: HibernateDoctorRepository,
+    private val patientRepository: HibernatePatientRepository,
 ) : UserDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun findUserByUid(uid: String, requester: MediqToken): MediqUser? {
@@ -98,10 +99,20 @@ class UserDaoImpl(
     }
 
     override suspend fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser? {
-        return if (requester can listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)) {
+        val permissions = listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)
+        return if (requester can permissions) {
             doctorRepository.getById(did.id).user
         } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.User)
+            throw NotAuthorizedException(requester, *permissions.toTypedArray())
+        }
+    }
+
+    override suspend fun findByPatient(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
+        val permissions = listOf(Crud.READ to Tables.User, Crud.READ to Tables.Patient)
+        if (requester can permissions) {
+            return patientRepository.getById(pid.id).user
+        } else {
+            throw NotAuthorizedException(requester, *permissions.toTypedArray())
         }
     }
 }
