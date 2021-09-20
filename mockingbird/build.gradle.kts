@@ -79,7 +79,7 @@ dependencies {
     testImplementation("com.expediagroup", "graphql-kotlin-spring-client", graphQLKotlinVersion)
 
     // spring testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         exclude(module = "mockito-core")
     }
@@ -101,7 +101,7 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            "changeLogFile" to "src/main/resources/dbchangelog_fresh.xml",
+            "changeLogFile" to "src/main/resources/dbchangelog.xml",
             "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",
