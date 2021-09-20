@@ -17,9 +17,9 @@ class MediqRecord(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val type: RecordType,
-    @Column(name = "json_blob", length = 10_000)
+    @Column(name = "json_blob", length = 10_000, nullable = false)
     @Basic(fetch = FetchType.LAZY)
-    val jsonBlob: String? = JsonObject().toString()
+    val jsonBlob: String
 ) : AbstractJpaPersistable() {
     constructor(record: GraphQLRecordInput, patient: Patient) : this(
         patient = patient,

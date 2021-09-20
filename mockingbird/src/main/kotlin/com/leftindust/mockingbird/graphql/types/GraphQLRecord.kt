@@ -14,6 +14,7 @@ data class GraphQLRecord(
     val rid: ID,
     val creationDate: GraphQLUtcTime,
     val type: RecordType,
+    val jsonBlob: String,
     private val patient: Patient,
     private val authContext: GraphQLAuthContext,
 ) {
@@ -23,16 +24,11 @@ data class GraphQLRecord(
     constructor(record: MediqRecord, graphQLAuthContext: GraphQLAuthContext) : this(
         rid = ID(record.id!!),
         creationDate = GraphQLUtcTime(record.creationDate),
+        jsonBlob = record.jsonBlob,
         type = record.type,
         patient = record.patient,
         authContext = graphQLAuthContext,
     )
 
     fun patient(): GraphQLPatient = GraphQLPatient(patient, authContext)
-
-    data class Measurement(
-        val name: String,
-        val magnitude: Float,
-        val unit: String,
-    )
 }
