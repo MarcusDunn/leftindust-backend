@@ -3,6 +3,7 @@ package integration.util
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
+import com.leftindust.mockingbird.dao.entity.enums.RecordType
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.extensions.gqlID
@@ -190,6 +191,15 @@ object EntityStore {
             ethnicity = Ethnicity.Asian,
             authContext = authContext,
             thumbnail = null,
+        )
+    }
+
+    fun record(testName: String, patient: Patient): MediqRecord {
+        return MediqRecord(
+            patient = patient,
+            jsonBlob = "{testName: $testName}",
+            type = RecordType.Form,
+            creationDate = Timestamp.valueOf("2020-01-02 09:00:00")
         )
     }
 }
