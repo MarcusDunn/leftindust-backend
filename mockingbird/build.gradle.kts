@@ -26,7 +26,7 @@ dependencies {
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
-    val springBootVersion = "2.5.0"
+    val springBootVersion = "2.5.4"
     val jsonFlattenerVersion = "0.12.0"
 
 
