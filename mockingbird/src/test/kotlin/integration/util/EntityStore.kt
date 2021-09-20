@@ -202,4 +202,12 @@ object EntityStore {
             creationDate = Timestamp.valueOf("2020-01-02 09:00:00")
         )
     }
+
+    fun graphQLRecordInput(testName: String): GraphQLRecordInput {
+        return GraphQLRecordInput(
+            patient = GraphQLPatient.ID(UUID.nameUUIDFromBytes("eb".toByteArray())),
+            jsonBlob = "{testName: \"$testName\"}",
+            recordType = RecordType.Blood
+        )
+    }
 }

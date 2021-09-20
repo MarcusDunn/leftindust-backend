@@ -11,6 +11,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRecordInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -34,11 +35,23 @@ class RecordDaoImpl(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<MediqRecord> {
-        if (requester can (Crud.READ to Tables.Record)) {
+        val readRecords = Crud.READ to Tables.Record
+        if (requester can readRecords) {
             val patient = patientRepository.getById(pid.id)
             return recordRepository.getAllByPatientId(patient.id!!)
         } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.Record)
+            throw NotAuthorizedException(requester, readRecords)
+        }
+    }
+
+    override suspend fun addRecord(record: GraphQLRecordInput, requester: MediqToken): MediqRecord {
+        val createRecords = Crud.CREATE to Tables.Record
+        if (requester can createRecords) {
+            val patient = patientRepository.getById(record.patient.id)
+            val recordEntity = MediqRecord(record, patient)
+            return recordRepository.save(recordEntity)
+        } else {
+            throw NotAuthorizedException(requester, createRecords)
         }
     }
 }

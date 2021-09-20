@@ -9,7 +9,5 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLRecordInput
 interface RecordDao {
     suspend fun getRecordByRecordId(rid: GraphQLRecord.ID, requester: MediqToken): MediqRecord
     suspend fun getRecordsByPatientPid(pid: GraphQLPatient.ID, requester: MediqToken): Collection<MediqRecord>
-    suspend fun addRecord(record: GraphQLRecordInput, requester: MediqToken): MediqRecord {
-        TODO("Not yet implemented")
-    }
+    suspend fun addRecord(record: GraphQLRecordInput, requester: MediqToken): MediqRecord
 }

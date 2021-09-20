@@ -8,6 +8,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
+import integration.util.EntityStore
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -20,10 +21,6 @@ internal class RecordDaoImplTest {
     private val recordRepository = mockk<HibernateRecordRepository>()
     private val patientRepository = mockk<HibernatePatientRepository>()
 
-    @AfterEach
-    internal fun tearDown() {
-        confirmVerified(authorizer, recordRepository, patientRepository)
-    }
 
     @Test
     fun getRecordByRecordId() {
@@ -37,13 +34,6 @@ internal class RecordDaoImplTest {
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
         val result = runBlocking { recordDaoImpl.getRecordByRecordId(GraphQLRecord.ID(recordId), mockk()) }
-
-        coVerifyAll {
-            authorizer.getAuthorization(any(), any())
-            recordRepository.getById(recordId)
-        }
-
-        confirmVerified(mockkRecord)
 
         assertEquals(mockkRecord, result)
     }
@@ -66,15 +56,25 @@ internal class RecordDaoImplTest {
 
         val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(GraphQLPatient.ID(patientID), mockk()) }
 
-        coVerifyAll {
-            authorizer.getAuthorization(any(), any())
-            patientRepository.getById(patientID)
-            recordRepository.getAllByPatientId(patientID)
-            mockkPatient.id
-        }
-
-        confirmVerified(mockkRecord, mockkPatient)
-
         assertEquals(listOf(mockkRecord), result)
+    }
+
+    @Test
+    fun addRecord() {
+        val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
+
+        val record = EntityStore.graphQLRecordInput("RecordDaoImplTest.addRecord")
+
+        val expected = MediqRecord(record, mockk())
+
+        every { recordRepository.save(any()) } returns expected
+
+        every { patientRepository.getById(record.patient.id) } returns mockk()
+
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val result = runBlocking { recordDaoImpl.addRecord(record, mockk()) }
+
+        assertEquals(expected, result)
     }
 }
