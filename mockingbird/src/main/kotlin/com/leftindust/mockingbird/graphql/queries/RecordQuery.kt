@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.queries
 
+import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.RecordDao
@@ -11,15 +12,21 @@ import org.springframework.stereotype.Component
 class RecordQuery(
     private val recordDao: RecordDao,
 ) : Query {
-    suspend fun getRecord(rid: GraphQLRecord.ID, authContext: GraphQLAuthContext): GraphQLRecord {
+    suspend fun getRecords(
+        pid: GraphQLPatient.ID? = null,
+        rids: List<GraphQLRecord.ID>? = null,
+        authContext: GraphQLAuthContext
+    ): List<GraphQLRecord> {
         val requester = authContext.mediqAuthToken
-        val record = recordDao.getRecordByRecordId(rid, requester)
-        return GraphQLRecord(record, authContext)
-    }
-
-    suspend fun getRecords(pid: GraphQLPatient.ID, authContext: GraphQLAuthContext): List<GraphQLRecord> {
-        val requester = authContext.mediqAuthToken
-        val record = recordDao.getRecordsByPatientPid(pid, requester)
-        return record.map { GraphQLRecord(it, authContext) }
+        return when {
+            pid == null && rids != null -> {
+                rids.map { recordDao.getRecordByRecordId(it, requester) }.map { GraphQLRecord(it, authContext) }
+            }
+            pid != null && rids == null -> {
+                val records = recordDao.getRecordsByPatientPid(pid, requester)
+                return records.map { GraphQLRecord(it, authContext) }
+            }
+            else -> throw GraphQLKotlinException("invalid argument combination to getRecords")
+        }
     }
 }

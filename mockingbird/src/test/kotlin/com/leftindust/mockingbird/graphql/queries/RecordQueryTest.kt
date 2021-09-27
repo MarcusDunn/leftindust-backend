@@ -3,8 +3,6 @@ package com.leftindust.mockingbird.graphql.queries
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.RecordDao
 import com.leftindust.mockingbird.dao.entity.MediqRecord
-import com.leftindust.mockingbird.extensions.Success
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
 import io.mockk.coEvery
@@ -32,10 +30,13 @@ internal class RecordQueryTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val result = runBlocking { recordQuery.getRecord(
-            GraphQLRecord.ID(recordID), mockkAuthContext) }
+        val result = runBlocking {
+            recordQuery.getRecords(
+                rids = listOf(GraphQLRecord.ID(recordID)), authContext = mockkAuthContext
+            )
+        }
 
-        assertEquals(GraphQLRecord(mockkRecord, mockkAuthContext), result)
+        assertEquals(GraphQLRecord(mockkRecord, mockkAuthContext), result.first())
     }
 
     @Test
@@ -53,7 +54,7 @@ internal class RecordQueryTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val result = runBlocking { recordQuery.getRecords(GraphQLPatient.ID(patientID), mockkAuthContext) }
+        val result = runBlocking { recordQuery.getRecords(pid = GraphQLPatient.ID(patientID), authContext = mockkAuthContext) }
 
         assertEquals(listOf(GraphQLRecord(mockkRecord, mockkAuthContext)), result)
     }
