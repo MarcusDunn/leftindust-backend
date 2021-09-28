@@ -1,11 +1,16 @@
 name: Integration Tests
 
-on: [ push, workflow_dispatch]
+on: [ push, workflow_dispatch ]
 
 jobs:
   Mockingbird_Integration:
     runs-on: ubuntu-latest
     steps:
+      - name: print secrets
+        run: echo $DEV_ENV_FILE >> src/main/resources/serviceAccountKey.json
+        shell: bash
+        env:
+          DEV_ENV_FILE : ${{secrets.SERVICE_ACCOUNT_KEY}}
       - uses: actions/checkout@v2
       - name: Gladio Integration Tests
         run: docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
