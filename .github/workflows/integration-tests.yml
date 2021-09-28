@@ -6,21 +6,10 @@ jobs:
   Mockingbird_Integration:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
       - uses: actions/checkout@v2
-      - name: where am I
-        run: ls --recursive
-        shell: bash
-      - name: secret to file
-        run: echo $DEV_ENV_FILE >> src/main/resources/serviceAccountKey.json
-        shell: bash
-        env:
-          DEV_ENV_FILE : ${{secrets.SERVICE_ACCOUNT_KEY}}
-      - name: Gladio Integration Tests
-        run: docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
-  Gladio_Integration:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Gladio Integration Tests
-        run: docker-compose -f gladio.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
+      - run: |
+        echo $DEV_ENV_FILE >> src/main/resources/serviceAccountKey.json
+        docker-compose -f mockingbird.test.docker-compose.yml up --force-recreate --build --abort-on-container-exit
+     shell: bash
+     env:
+        DEV_ENV_FILE : ${{secrets.SERVICE_ACCOUNT_KEY}}
