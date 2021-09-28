@@ -6,7 +6,10 @@ jobs:
   Mockingbird_Integration:
     runs-on: ubuntu-latest
     steps:
-      - name: print secrets
+      - name: where am I
+        run: ls --recursive
+        shell: bash
+      - name: secret to file
         run: echo $DEV_ENV_FILE >> src/main/resources/serviceAccountKey.json
         shell: bash
         env:
