@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.auth
 
 
-import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContext
 import com.expediagroup.graphql.server.spring.execution.SpringGraphQLContextFactory
 import com.leftindust.mockingbird.auth.impl.VerifiedFirebaseToken
 import org.springframework.http.HttpMethod
@@ -24,8 +23,3 @@ class ContextFactory : SpringGraphQLContextFactory<GraphQLAuthContext>() {
     }
 }
 
-/**
- * the mediq specific data returned from the ContextFactory
- * @property mediqAuthToken the authentication token
- */
-data class GraphQLAuthContext(val mediqAuthToken: MediqToken, val request: ServerRequest) : SpringGraphQLContext(request)
