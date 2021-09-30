@@ -31,7 +31,7 @@ internal class RecordQueryTest {
         }
 
         val result = runBlocking {
-            recordQuery.getRecords(
+            recordQuery.records(
                 rids = listOf(GraphQLRecord.ID(recordID)), authContext = mockkAuthContext
             )
         }
@@ -54,7 +54,7 @@ internal class RecordQueryTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val result = runBlocking { recordQuery.getRecords(pid = GraphQLPatient.ID(patientID), authContext = mockkAuthContext) }
+        val result = runBlocking { recordQuery.records(pid = GraphQLPatient.ID(patientID), authContext = mockkAuthContext) }
 
         assertEquals(listOf(GraphQLRecord(mockkRecord, mockkAuthContext)), result)
     }

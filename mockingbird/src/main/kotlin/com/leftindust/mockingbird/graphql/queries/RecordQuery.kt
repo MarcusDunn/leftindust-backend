@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class RecordQuery(
     private val recordDao: RecordDao,
 ) : Query {
-    suspend fun getRecords(
+    suspend fun records(
         pid: GraphQLPatient.ID? = null,
         rids: List<GraphQLRecord.ID>? = null,
         authContext: GraphQLAuthContext
