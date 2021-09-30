@@ -26,6 +26,3 @@ sealed class CustomResult<out S, out F> {
 // these are outside of the CustomResult class so we can directly use `is Success` instead of `is CustomResult.Success`
 data class Success<out Success>(val value: Success) : CustomResult<Success, Nothing>()
 data class Failure<out Failure>(val reason: Failure) : CustomResult<Nothing, Failure>()
-
-class CustomResultException(override val message: String? = null, override val cause: Throwable? = null) :
-    GraphQLKotlinException()
