@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
+import com.leftindust.mockingbird.dao.entity.enums.FileDataType
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import java.sql.Date
 import java.util.regex.Pattern
@@ -62,11 +63,6 @@ class FormField(
         Integer,
         Date,
         Float,
-    }
-
-    enum class FileDataType {
-        Image,
-        Pdf,
     }
 }
 

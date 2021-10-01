@@ -20,6 +20,8 @@ class MediqRecord(
     @Column(name = "json_blob", length = 10_000, nullable = false)
     @Basic(fetch = FetchType.LAZY)
     val jsonBlob: String
+    @OneToMany
+    val attachments: Set<Attechments>
 ) : AbstractJpaPersistable() {
     constructor(record: GraphQLRecordInput, patient: Patient) : this(
         patient = patient,
