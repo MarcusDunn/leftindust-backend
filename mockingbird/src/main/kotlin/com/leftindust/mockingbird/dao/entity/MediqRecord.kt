@@ -19,14 +19,15 @@ class MediqRecord(
     val type: RecordType,
     @Column(name = "json_blob", length = 10_000, nullable = false)
     @Basic(fetch = FetchType.LAZY)
-    val jsonBlob: String
+    val jsonBlob: String,
     @OneToMany
-    val attachments: Set<Attechments>
+    val attachments: Set<Attachment>
 ) : AbstractJpaPersistable() {
     constructor(record: GraphQLRecordInput, patient: Patient) : this(
         patient = patient,
         creationDate = Timestamp.from(Instant.now()),
         type = record.recordType,
         jsonBlob = record.jsonBlob,
+        attachments = emptySet(), // TODO allow explicit attachments in [GraphQLRecordInput]
     )
 }

@@ -199,7 +199,8 @@ object EntityStore {
             patient = patient,
             jsonBlob = "{testName: $testName}",
             type = RecordType.Form,
-            creationDate = Timestamp.valueOf("2020-01-02 09:00:00")
+            creationDate = Timestamp.valueOf("2020-01-02 09:00:00"),
+            attachments = emptySet()
         )
     }
 
