@@ -22,9 +22,9 @@ class FormField(
     val intUpperBound: Int?,
     @Column(name = "int_lower_bound", nullable = true)
     val intLowerBound: Int?,
-    @Column(name = "int_upper_bound", nullable = true)
+    @Column(name = "float_upper_bound", nullable = true)
     val floatUpperBound: Int?,
-    @Column(name = "int_lower_bound", nullable = true)
+    @Column(name = "float_lower_bound", nullable = true)
     val floatLowerBound: Int?,
     @Column(name = "date_upper_bound", nullable = true)
     val dateUpperBound: Date?,
