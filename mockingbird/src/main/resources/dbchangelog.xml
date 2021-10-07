@@ -945,27 +945,47 @@
         </createTable>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-17">
-        <addUniqueConstraint columnNames="fields_id" constraintName="UK_3k4o2g2pw79pnpmasayf4nw75" tableName="form_sections_fields"/>
+        <addUniqueConstraint columnNames="fields_id" constraintName="UK_3k4o2g2pw79pnpmasayf4nw75"
+                             tableName="form_sections_fields"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-18">
-        <addUniqueConstraint columnNames="fields_id" constraintName="UK_qyes453jb4ho6jt8bwjcdninr" tableName="form_fields"/>
+        <addUniqueConstraint columnNames="fields_id" constraintName="UK_qyes453jb4ho6jt8bwjcdninr"
+                             tableName="form_fields"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-19">
-        <addForeignKeyConstraint baseColumnNames="form_id" baseTableName="form_fields" constraintName="FK1wng9ijav5mar32b6bi2vwfk7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="form_id" baseTableName="form_fields"
+                                 constraintName="FK1wng9ijav5mar32b6bi2vwfk7" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-20">
-        <addForeignKeyConstraint baseColumnNames="fields_id" baseTableName="form_sections_fields" constraintName="FK3e2k90ywyxkvwtef91wseuddc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_field" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="fields_id" baseTableName="form_sections_fields"
+                                 constraintName="FK3e2k90ywyxkvwtef91wseuddc" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_field"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-21">
-        <addForeignKeyConstraint baseColumnNames="form_sections_id" baseTableName="form_sections_fields" constraintName="FK5xw75q35pobs2jw07i6n41l4v" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_sections" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="form_sections_id" baseTableName="form_sections_fields"
+                                 constraintName="FK5xw75q35pobs2jw07i6n41l4v" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="form_sections" validate="true"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-22">
-        <addForeignKeyConstraint baseColumnNames="fields_id" baseTableName="form_fields" constraintName="FKd52vqn1tracnrswltxhtr10lh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_sections" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="fields_id" baseTableName="form_fields"
+                                 constraintName="FKd52vqn1tracnrswltxhtr10lh" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="form_sections" validate="true"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-23">
-        <addForeignKeyConstraint baseColumnNames="form_field_id" baseTableName="form_field_multi_select_possibilities" constraintName="FKlswyntnlu6i2wc11hp4wwid1k" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_field" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="form_field_id" baseTableName="form_field_multi_select_possibilities"
+                                 constraintName="FKlswyntnlu6i2wc11hp4wwid1k" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_field"
+                                 validate="true"/>
     </changeSet>
     <changeSet author="marcusd (generated)" id="1633640973347-24">
-        <addForeignKeyConstraint baseColumnNames="form_section_id" baseTableName="form_field" constraintName="FKrrwulnccgo3t7eiqe7oc0ren6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="form_sections" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="form_section_id" baseTableName="form_field"
+                                 constraintName="FKrrwulnccgo3t7eiqe7oc0ren6" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="form_sections" validate="true"/>
     </changeSet>
 </databaseChangeLog>
