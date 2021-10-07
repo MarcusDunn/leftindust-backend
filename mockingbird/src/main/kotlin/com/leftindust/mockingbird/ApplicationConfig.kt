@@ -24,7 +24,7 @@ import javax.sql.DataSource
 class ApplicationConfig {
     private companion object {
         object FireBaseConfig {
-            const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/mediq-backend-firebase-adminsdk.json"
+            const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/serviceAccountKey.json"
             const val DATABASE_URL = "https://mediq-backend.firebaseio.com"
         }
 

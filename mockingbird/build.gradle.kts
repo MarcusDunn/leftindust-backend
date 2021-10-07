@@ -102,7 +102,7 @@ liquibase {
         arguments = mapOf(
             "logLevel" to "info",
             "changeLogFile" to "mockingbird/src/main/resources/dbchangelog.xml",
-            "url" to "jdbc:postgresql://127.0.0.1:49153/mediq",
+            "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",
