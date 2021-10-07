@@ -101,8 +101,8 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            "changeLogFile" to "src/main/resources/dbchangelog.xml",
-            "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
+            "changeLogFile" to "mockingbird/src/main/resources/dbchangelog.xml",
+            "url" to "jdbc:postgresql://127.0.0.1:49153/mediq",
             "username" to "mediq",
             "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",

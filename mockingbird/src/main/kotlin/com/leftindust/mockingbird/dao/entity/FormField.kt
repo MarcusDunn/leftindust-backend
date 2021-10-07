@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.leftindust.mockingbird.dao.entity.enums.FileDataType
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import java.sql.Date
 import java.util.regex.Pattern
@@ -33,8 +32,6 @@ class FormField(
     val dateLowerBound: Date?,
     @Column(name = "text_regex", nullable = true)
     val textRegex: String?,
-    @Column(name = "file_data_type", nullable = true)
-    val fileDataType: FileDataType?,
     @Column(name = "json_metadata", nullable = true, length = 5_000)
     val jsonMetaData: String?,
 ) : AbstractJpaPersistable() {
@@ -48,7 +45,6 @@ class FormField(
             DataType.Integer -> (intLowerBound ?: Int.MIN_VALUE) < (intUpperBound ?: Int.MAX_VALUE)
             DataType.Float -> (floatLowerBound ?: Int.MIN_VALUE) < (floatUpperBound ?: Int.MAX_VALUE)
             DataType.Date -> (dateUpperBound?.let { dateLowerBound?.before(it) } != false)
-            DataType.File -> fileDataType != null
         }
         if (!isValid) {
             throw Exception("invalid FormField")
@@ -58,7 +54,6 @@ class FormField(
     enum class DataType {
         SingleMuliSelect,
         MultiMuliSelect,
-        File,
         Text,
         Integer,
         Date,
