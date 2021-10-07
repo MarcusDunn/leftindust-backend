@@ -20,7 +20,7 @@ spring:
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:49153/mediq
+    url: jdbc:postgresql://127.0.0.1:5432/mediq
     username: mediq
     password: mediq
 # MAKE SURE ANY CHANGES YOU MAKE HERE IS ALSO APPLIED TO THE APPLICATION.YML IN TESTS
