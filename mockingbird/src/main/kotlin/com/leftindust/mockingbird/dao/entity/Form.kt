@@ -10,6 +10,6 @@ import javax.persistence.*
 class Form(
     val name: String,
     @OneToMany(fetch = FetchType.EAGER)
-    val fields: Set<FormSection>,
+    val sections: Set<FormSection>,
 ) : AbstractJpaPersistable()
 
