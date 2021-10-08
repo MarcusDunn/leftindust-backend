@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.graphql.types
 
-import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 
 @GraphQLName("CanadianProvince")
@@ -58,13 +57,3 @@ object GraphQLCanadianProvince : GraphQLProvince {
     }
 }
 
-interface GraphQLProvince {
-    fun asStrings(): List<String>
-    fun asShortStrings(): List<String>
-
-    @GraphQLIgnore
-    fun longToShort(province: String): String
-
-    @GraphQLIgnore
-    fun shortToLong(province: String): String
-}
