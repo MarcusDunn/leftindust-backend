@@ -10,6 +10,8 @@ import javax.persistence.*
  */
 @Entity(name = "form_field")
 class FormField(
+    val title: String,
+    val number: Int,
     @ManyToOne(targetEntity = FormSection::class, optional = false)
     @JoinColumn(name = "form_section_id", nullable = false)
     val form: FormSection,
@@ -17,23 +19,23 @@ class FormField(
     @Enumerated(value = EnumType.STRING)
     val dataType: DataType,
     @ElementCollection(fetch = FetchType.EAGER)
-    val multiSelectPossibilities: List<String>?,
+    val multiSelectPossibilities: List<String>? = null,
     @Column(name = "int_upper_bound", nullable = true)
-    val intUpperBound: Int?,
+    val intUpperBound: Int? = null,
     @Column(name = "int_lower_bound", nullable = true)
-    val intLowerBound: Int?,
+    val intLowerBound: Int? = null,
     @Column(name = "float_upper_bound", nullable = true)
-    val floatUpperBound: Int?,
+    val floatUpperBound: Int? = null,
     @Column(name = "float_lower_bound", nullable = true)
-    val floatLowerBound: Int?,
+    val floatLowerBound: Int? = null,
     @Column(name = "date_upper_bound", nullable = true)
-    val dateUpperBound: Date?,
+    val dateUpperBound: Date? = null,
     @Column(name = "date_lower_bound", nullable = true)
-    val dateLowerBound: Date?,
+    val dateLowerBound: Date? = null,
     @Column(name = "text_regex", nullable = true)
-    val textRegex: String?,
+    val textRegex: String? = null,
     @Column(name = "json_metadata", nullable = true, length = 5_000)
-    val jsonMetaData: String?,
+    val jsonMetaData: String? = null,
 ) : AbstractJpaPersistable() {
     init {
         val isValid = when (dataType) {

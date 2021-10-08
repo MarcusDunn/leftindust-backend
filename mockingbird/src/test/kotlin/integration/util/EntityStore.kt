@@ -11,6 +11,7 @@ import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.*
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDate
 import java.util.*
 
@@ -208,6 +209,62 @@ object EntityStore {
             patient = GraphQLPatient.ID(UUID.nameUUIDFromBytes("eb".toByteArray())),
             jsonBlob = "{testName: \"$testName\"}",
             recordType = RecordType.Blood
+        )
+    }
+
+    fun form(testName: String): Form {
+        return Form(
+            name = "$testName. find out what kind of harry potter house elf you are",
+            sections = setOf(
+                FormSection(
+                    name = "astrological sign",
+                    number = 1,
+                    formFieldCreators = setOf(
+                        FormSection.FormFieldCreator(
+                            title = "when were you born?",
+                            dataType = FormField.DataType.Date,
+                            dateUpperBound = Date(Instant.now().toEpochMilli()),
+                            number = 1,
+                        )
+                    )
+                ),
+                FormSection(
+                    name = "body type",
+                    number = 2,
+                    formFieldCreators = setOf(
+                        FormSection.FormFieldCreator(
+                            title = "u fat?",
+                            dataType = FormField.DataType.SingleMuliSelect,
+                            multiSelectPossibilities = listOf("yes", "no"),
+                            number = 1,
+                        ),
+                        FormSection.FormFieldCreator(
+                            title = "u tall?",
+                            dataType = FormField.DataType.SingleMuliSelect,
+                            multiSelectPossibilities = listOf("yes", "no"),
+                            number = 2,
+                        )
+                    )
+                ),
+                FormSection(
+                    name = "how much you like ice cream",
+                    number = 3,
+                    formFieldCreators = mutableSetOf(
+                        FormSection.FormFieldCreator(
+                            title = "how long have you had this opinion on ice cream",
+                            number = 1,
+                            dataType = FormField.DataType.Date,
+                            dateUpperBound = Date(Instant.now().toEpochMilli())
+                        ),
+                        FormSection.FormFieldCreator(
+                            title = "how long have you had this opinion on ice cream",
+                            dataType = FormField.DataType.Date,
+                            dateUpperBound = Date(Instant.now().toEpochMilli()),
+                            number = 2,
+                        )
+                    )
+                ),
+            )
         )
     }
 }
