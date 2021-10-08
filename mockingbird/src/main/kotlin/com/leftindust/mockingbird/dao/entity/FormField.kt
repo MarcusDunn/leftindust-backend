@@ -14,7 +14,7 @@ class FormField(
     val number: Int,
     @ManyToOne(targetEntity = FormSection::class, optional = false)
     @JoinColumn(name = "form_section_id", nullable = false)
-    val form: FormSection,
+    val formSection: FormSection,
     @Column(name = "data_type")
     @Enumerated(value = EnumType.STRING)
     val dataType: DataType,

@@ -38,6 +38,7 @@ data class GraphQLFormSection(
 
 data class GraphQlFormField(
     val dataType: FormField.DataType,
+    val number: Int,
     val multiSelectPossibilities: List<String>?,
     val intUpperBound: Int?,
     val intLowerBound: Int?,
@@ -50,6 +51,7 @@ data class GraphQlFormField(
     private val graphQLAuthContext: GraphQLAuthContext,
 ) {
     constructor(formField: FormField, graphQLAuthContext: GraphQLAuthContext) : this(
+        number = formField.number,
         dataType = formField.dataType,
         multiSelectPossibilities = formField.multiSelectPossibilities,
         intUpperBound = formField.intUpperBound,

@@ -43,7 +43,7 @@ class FormSection(
             return FormField(
                 title = title,
                 number = number,
-                form = formSection,
+                formSection = formSection,
                 dataType = this.dataType,
                 multiSelectPossibilities = this.multiSelectPossibilities,
                 intUpperBound = this.intUpperBound,
