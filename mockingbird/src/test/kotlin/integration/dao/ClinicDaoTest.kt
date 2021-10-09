@@ -13,7 +13,6 @@ import com.ninjasquad.springmockk.MockkBean
 import integration.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

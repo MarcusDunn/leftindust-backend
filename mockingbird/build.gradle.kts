@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
     kotlin("plugin.allopen")
+    id("info.solidsoft.pitest")
 
     // spring
     id("org.springframework.boot")
@@ -26,7 +27,7 @@ dependencies {
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.3.2"
     val coroutinesVersion = "1.4.3"
-    val springBootVersion = "2.5.4"
+    val springBootVersion = "2.5.5"
     val jsonFlattenerVersion = "0.12.0"
 
 
@@ -79,7 +80,7 @@ dependencies {
     testImplementation("com.expediagroup", "graphql-kotlin-spring-client", graphQLKotlinVersion)
 
     // spring testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         exclude(module = "mockito-core")
     }
@@ -150,6 +151,12 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "${JavaVersion.VERSION_1_8}"
         allWarningsAsErrors = true
     }
+}
+
+pitest {
+    outputFormats.set(listOf("html"))
+    targetClasses.set(listOf("com.leftindust.mockingbird.*"))
+    junit5PluginVersion.set("0.15")
 }
 
 kapt {

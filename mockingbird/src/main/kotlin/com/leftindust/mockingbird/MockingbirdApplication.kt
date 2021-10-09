@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean
 @SpringBootApplication
 @EnableConfigurationProperties
 class MockingbirdApplication {
-
     @Bean
     fun hooks() = CustomSchemaGeneratorHooks(emptyList())
 }

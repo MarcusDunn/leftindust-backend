@@ -64,4 +64,16 @@ internal class AuthorizerImplTest {
 
         coVerify { authorizationDao.getRolesForUserByUid("marcus") }
     }
+
+    @Test
+    fun getAuthorizationForAdmin() {
+        coEvery { authorizationDao.isAdmin(any())} returns true
+        val authorizer = AuthorizerImpl(authorizationDao)
+        val actual = runBlocking {
+            authorizer.getAuthorization(
+                action = mockk("subset"),
+                user = mockk("marcus user") { every { uid } returns "marcus" })
+        }
+        assertEquals(Authorization.Allowed, actual)
+    }
 }

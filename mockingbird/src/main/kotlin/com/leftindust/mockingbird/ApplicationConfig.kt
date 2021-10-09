@@ -15,7 +15,8 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import java.io.*
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.util.*
 import javax.sql.DataSource
 
@@ -45,10 +46,9 @@ class ApplicationConfig {
 
     @Bean
     fun firebaseInit(): FirebaseApp {
-        if (kotlin.runCatching {
-                FirebaseApp.getInstance()
-            }.isSuccess) return FirebaseApp.getInstance()
-        return try {
+        return if (runCatching { FirebaseApp.getInstance() }.isSuccess)
+            FirebaseApp.getInstance()
+        else try {
             with(FireBaseConfig) {
                 val serviceAccount = FileInputStream(SERVICE_ACCOUNT_KEY_PATH)
                 val options = FirebaseOptions.builder()
