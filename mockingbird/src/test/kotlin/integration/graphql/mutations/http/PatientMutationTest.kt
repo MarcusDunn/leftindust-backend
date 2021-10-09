@@ -4,8 +4,6 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.entity.Doctor
-import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -18,7 +16,6 @@ import integration.verifyOnlyDataExists
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag

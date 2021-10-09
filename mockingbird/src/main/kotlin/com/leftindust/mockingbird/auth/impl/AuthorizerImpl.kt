@@ -19,10 +19,12 @@ internal class AuthorizerImpl(
 ) : Authorizer {
 
     override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
-        return if (authorizationDao.isAdmin(user.uid ?: return Authorization.Denied)) {
+        val uid = user.uid ?: return Authorization.Denied
+        return if (authorizationDao.isAdmin(uid)) {
             Authorization.Allowed
         } else {
-            (getRoles(user) ?: return Authorization.Denied)
+            val roles = getRoles(user) ?: return Authorization.Denied
+            roles
                 .map { it.action }
                 .any { it.isSuperset(action) }
                 .toAuthorization()

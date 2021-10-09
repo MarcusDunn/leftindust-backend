@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.*
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic

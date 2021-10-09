@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.spring") version "1.5.30"
     kotlin("plugin.allopen") version "1.5.30"
     kotlin("plugin.jpa") version "1.5.30"
+    id("info.solidsoft.pitest") version "1.7.0"
 
     // spring
     id("org.springframework.boot") version "2.5.0"

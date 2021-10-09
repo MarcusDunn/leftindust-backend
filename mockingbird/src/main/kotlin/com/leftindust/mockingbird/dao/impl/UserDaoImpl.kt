@@ -14,7 +14,6 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

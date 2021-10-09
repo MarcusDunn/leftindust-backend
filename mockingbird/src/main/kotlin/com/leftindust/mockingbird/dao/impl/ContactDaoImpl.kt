@@ -8,9 +8,7 @@ import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.impl.repository.HibernateContactRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
 
 @Repository
 @Transactional
