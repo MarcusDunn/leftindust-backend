@@ -219,11 +219,12 @@ object EntityStore {
                 FormSection(
                     name = "$testName. astrological sign",
                     number = 1,
-                    formFieldCreators = setOf(
-                        FormSection.FormFieldCreator(
+                    fields = setOf(
+                        FormField(
                             title = "$testName. when were you born?",
                             dataType = FormField.DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
+                            dateLowerBound = null,
                             number = 1,
                         )
                     )
@@ -231,14 +232,14 @@ object EntityStore {
                 FormSection(
                     name = "$testName. body type",
                     number = 2,
-                    formFieldCreators = setOf(
-                        FormSection.FormFieldCreator(
+                    fields = setOf(
+                        FormField(
                             title = "$testName. u fat?",
                             dataType = FormField.DataType.SingleMuliSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
                             number = 1,
                         ),
-                        FormSection.FormFieldCreator(
+                        FormField(
                             title = "$testName. u tall?",
                             dataType = FormField.DataType.SingleMuliSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
@@ -249,18 +250,20 @@ object EntityStore {
                 FormSection(
                     name = "$testName. how much you like ice cream",
                     number = 3,
-                    formFieldCreators = mutableSetOf(
-                        FormSection.FormFieldCreator(
+                    fields = mutableSetOf(
+                        FormField(
                             title = "$testName. how long have you had this opinion on ice cream",
                             number = 1,
                             dataType = FormField.DataType.Date,
-                            dateUpperBound = Date(Instant.now().toEpochMilli())
+                            dateUpperBound = Date(Instant.now().toEpochMilli()),
+                            dateLowerBound =  null
                         ),
-                        FormSection.FormFieldCreator(
+                        FormField(
                             title = "$testName. how long have you had this opinion on ice cream",
                             dataType = FormField.DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
                             number = 2,
+                            dateLowerBound =  null
                         )
                     )
                 ),
@@ -268,11 +271,10 @@ object EntityStore {
         )
     }
 
-    fun formField(testName: String, formSection: FormSection) = FormField(
+    fun formField(testName: String) = FormField(
         title = "$testName. what is your least favorite way to say yes",
         dataType = FormField.DataType.SingleMuliSelect,
         multiSelectPossibilities = listOf("yes", "yee", "ye", "yeee"),
         number = 1,
-        formSection = formSection,
     )
 }
