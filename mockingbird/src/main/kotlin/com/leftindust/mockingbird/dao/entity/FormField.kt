@@ -2,19 +2,15 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import java.sql.Date
-import java.util.regex.Pattern
 import javax.persistence.*
 
 /**
  * describes a single field in a form. A field has a [dataType] that determines optional restrictions on the data
  */
 @Entity(name = "form_field")
-class FormField(
+class FormField private constructor(
     val title: String,
     val number: Int,
-    @ManyToOne(targetEntity = FormSection::class, optional = false)
-    @JoinColumn(name = "form_section_id", nullable = false)
-    val formSection: FormSection,
     @Column(name = "data_type")
     @Enumerated(value = EnumType.STRING)
     val dataType: DataType,
@@ -25,9 +21,9 @@ class FormField(
     @Column(name = "int_lower_bound", nullable = true)
     val intLowerBound: Int? = null,
     @Column(name = "float_upper_bound", nullable = true)
-    val floatUpperBound: Int? = null,
+    val floatUpperBound: Float? = null,
     @Column(name = "float_lower_bound", nullable = true)
-    val floatLowerBound: Int? = null,
+    val floatLowerBound: Float? = null,
     @Column(name = "date_upper_bound", nullable = true)
     val dateUpperBound: Date? = null,
     @Column(name = "date_lower_bound", nullable = true)
@@ -37,19 +33,104 @@ class FormField(
     @Column(name = "json_metadata", nullable = true, length = 5_000)
     val jsonMetaData: String? = null,
 ) : AbstractJpaPersistable() {
-    init {
-        val isValid = when (dataType) {
-            DataType.MultiMuliSelect -> multiSelectPossibilities != null
-            DataType.SingleMuliSelect -> multiSelectPossibilities != null
-            DataType.Text -> {
-                runCatching { Pattern.compile(textRegex ?: ".*") }.isSuccess
-            }
-            DataType.Integer -> (intLowerBound ?: Int.MIN_VALUE) < (intUpperBound ?: Int.MAX_VALUE)
-            DataType.Float -> (floatLowerBound ?: Int.MIN_VALUE) < (floatUpperBound ?: Int.MAX_VALUE)
-            DataType.Date -> (dateUpperBound?.let { dateLowerBound?.before(it) } != false)
+    constructor(
+        title: String,
+        number: Int,
+        dataType: DataType,
+        intUpperBound: Int?,
+        intLowerBound: Int?,
+        jsonMetaData: String? = null,
+    ) : this(
+        title = title,
+        number = number,
+        dataType = dataType,
+        intUpperBound = intUpperBound,
+        intLowerBound = intLowerBound,
+        textRegex = null,
+        jsonMetaData = jsonMetaData
+    ) {
+        if (dataType != DataType.Integer) {
+            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
-        if (!isValid) {
-            throw Exception("invalid FormField")
+    }
+
+    constructor(
+        title: String,
+        number: Int,
+        dataType: DataType,
+        textRegex: String?,
+        jsonMetaData: String? = null
+    ) : this(
+        title = title,
+        number = number,
+        dataType = dataType,
+        textRegex = textRegex,
+        jsonMetaData = jsonMetaData,
+        dateUpperBound = null,
+    ) {
+        if (dataType != DataType.Text) {
+            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
+        }
+    }
+
+    constructor(
+        title: String,
+        number: Int,
+        dataType: DataType,
+        dateUpperBound: Date?,
+        dateLowerBound: Date?,
+        jsonMetaData: String? = null,
+    ) : this(
+        title = title,
+        number = number,
+        dataType = dataType,
+        dateUpperBound = dateUpperBound,
+        dateLowerBound = dateLowerBound,
+        jsonMetaData = jsonMetaData,
+        textRegex = null,
+    ) {
+        if (dataType != DataType.Date) {
+            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
+        }
+    }
+
+    constructor(
+        title: String,
+        number: Int,
+        dataType: DataType,
+        multiSelectPossibilities: List<String>?,
+        jsonMetaData: String? = null,
+    ) : this(
+        title = title,
+        number = number,
+        dataType = dataType,
+        multiSelectPossibilities = multiSelectPossibilities,
+        jsonMetaData = jsonMetaData,
+        textRegex = null,
+    ) {
+        if (dataType != DataType.MultiMuliSelect && dataType != DataType.SingleMuliSelect) {
+            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
+        }
+    }
+
+    constructor(
+        title: String,
+        number: Int,
+        dataType: DataType,
+        floatUpperBound: Float?,
+        floatLowerBound: Float?,
+        jsonMetaData: String? = null,
+    ) : this(
+        title = title,
+        number = number,
+        dataType = dataType,
+        floatLowerBound = floatLowerBound,
+        floatUpperBound = floatUpperBound,
+        jsonMetaData = jsonMetaData,
+        dateUpperBound = null,
+    ) {
+        if (dataType != DataType.MultiMuliSelect) {
+            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
     }
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class GraphQlFormFieldTest {
     @Test
     internal fun `create GraphQLFormFieldTest from FormField Entity`() {
-        val formField = EntityStore.formField("GraphQlFormFieldTest.create GraphQLFormFieldTest from FormField Entity", mockk())
+        val formField = EntityStore.formField("GraphQlFormFieldTest.create GraphQLFormFieldTest from FormField Entity")
         val gqlFormField = GraphQlFormField(formField, mockk())
         assertEquals(formField.dataType, gqlFormField.dataType)
         assertEquals(formField.number, gqlFormField.number)

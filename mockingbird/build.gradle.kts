@@ -80,7 +80,7 @@ dependencies {
     testImplementation("com.expediagroup", "graphql-kotlin-spring-client", graphQLKotlinVersion)
 
     // spring testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+    testImplementation("org.springframework.boot", "spring-boot-starter-test", springBootVersion) {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         exclude(module = "mockito-core")
     }
