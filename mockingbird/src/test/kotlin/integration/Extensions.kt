@@ -4,15 +4,14 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
 
 fun WebTestClient.ResponseSpec.verifyOnlyDataExists(expectedQuery: String): WebTestClient.BodyContentSpec {
-    return try {
+    return runCatching {
         this.expectBody()
             .jsonPath("$DATA_JSON_PATH.$expectedQuery").exists()
             .jsonPath(ERRORS_JSON_PATH).doesNotExist()
             .jsonPath(EXTENSIONS_JSON_PATH).doesNotExist()
-    } catch (e: AssertionError) {
-        println(this.returnResult<String>())
-        throw e
-    }
+    }.onFailure {
+        this.debugPrint()
+    }.getOrThrow()
 }
 
 fun WebTestClient.ResponseSpec.debugPrint() : WebTestClient.ResponseSpec {

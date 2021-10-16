@@ -5,15 +5,13 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmergencyContactInput
 import javax.persistence.*
 
-@Entity(name = "emergency_contact")
+@Entity
 class EmergencyContact(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
-    @JoinColumn(name = "patient_id", referencedColumnName = "id")
     var patient: Patient,
     @Enumerated(EnumType.STRING)
     var relationship: Relationship,
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var phone: Set<Phone> = emptySet(),

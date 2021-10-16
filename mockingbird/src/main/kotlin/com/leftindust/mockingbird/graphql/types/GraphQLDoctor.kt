@@ -33,16 +33,16 @@ data class GraphQLDoctor(
         firstName = doctor.nameInfo.firstName,
         middleName = doctor.nameInfo.middleName,
         lastName = doctor.nameInfo.lastName,
-        phones = doctor.phone.map { GraphQLPhone(it) },
+        phones = doctor.phones.map { GraphQLPhone(it) },
         thumbnail = doctor.thumbnail,
         title = doctor.title,
         dateOfBirth = doctor.dateOfBirth?.let { GraphQLDate(it.toLocalDate()) },
-        addresses = doctor.address.map { GraphQLAddress(it) },
+        addresses = doctor.addresses.map { GraphQLAddress(it) },
         emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
     )
 
-    suspend fun clinic(@GraphQLIgnore @Autowired clinicDao: ClinicDao): GraphQLClinic {
+    fun clinic(@GraphQLIgnore @Autowired clinicDao: ClinicDao): GraphQLClinic {
         TODO("not yet implemented $clinicDao")
     }
 

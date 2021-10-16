@@ -25,7 +25,7 @@ dependencies {
     val graphQLKotlinVersion = "4.1.0"
     val ktorVersion = "1.5.0"
     val firebaseVersion = "7.0.1"
-    val liquibaseVersion = "4.3.2"
+    val liquibaseVersion = "4.5.0"
     val coroutinesVersion = "1.4.3"
     val springBootVersion = "2.5.5"
     val jsonFlattenerVersion = "0.12.0"
@@ -102,15 +102,12 @@ liquibase {
     activities.register("main") {
         arguments = mapOf(
             "logLevel" to "info",
-            "changeLogFile" to "mockingbird/src/main/resources/dbchangelog.xml",
+            "changeLogFile" to "dbchangelog.xml",
             "url" to "jdbc:postgresql://127.0.0.1:5432/mediq",
             "username" to "mediq",
             "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",
-            "referenceUrl" to "hibernate:spring:com.leftindust.mockingbird.dao.entity?" +
-                    "dialect=org.hibernate.dialect.PostgreSQLDialect&" +
-                    "hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&" +
-                    "hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+            "referenceUrl" to "hibernate:spring:com.leftindust.mockingbird.dao.entity?dialect=org.hibernate.dialect.PostgreSQLDialect"
         )
     }
     runList = "main"

@@ -23,7 +23,7 @@ abstract class AbstractJpaPersistable {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Type(type = "pg-uuid")
+    @Type(type = "org.hibernate.type.PostgresUUIDType")
     var id: UUID? = null
 
     override fun equals(other: Any?): Boolean {

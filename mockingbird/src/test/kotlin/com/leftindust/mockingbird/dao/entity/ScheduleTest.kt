@@ -1,13 +1,10 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.leftindust.mockingbird.dao.entity.superclasses.Person
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import integration.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
 
 internal class ScheduleTest {

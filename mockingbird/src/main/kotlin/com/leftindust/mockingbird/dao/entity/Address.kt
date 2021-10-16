@@ -6,18 +6,18 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLAddressEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLAddressInput
 import javax.persistence.*
 
-@Entity(name = "address")
+@Entity
 class Address(
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = true)
+    @Column(nullable = true)
     var type: GraphQLAddressType?,
-    @Column(name = "address", nullable = false)
+    @Column(nullable = false)
     var address: String, //todo validation
-    @Column(name = "city", nullable = false)
+    @Column(nullable = false)
     var city: String,
     @Embedded
     var countryState: CountryState,
-    @Column(name = "postal_code", nullable = false)
+    @Column(nullable = false)
     var postalCode: String, //todo validation
 ) : AbstractJpaPersistable() {
     constructor(graphQLAddress: GraphQLAddressInput) : this(

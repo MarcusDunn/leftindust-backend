@@ -133,17 +133,16 @@ internal class ClinicDaoImplTest {
 
         val mockkClinic = mockk<Clinic>()
 
-        val mockkDoctor = mockk<Doctor>()
+        val mockkDoctor = mockk<Doctor> {
+            every { clinics } returns mutableSetOf(mockkClinic)
+        }
 
         every { doctorRepository.getById(doctorID) } returns mockkDoctor
 
-        every { clinicRepository.getAllByDoctorsContains(mockkDoctor) } returns listOf(mockkClinic)
-
         val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
-
 
         val result = runBlocking { clinicDao.getByDoctor(GraphQLDoctor.ID(doctorID), requester) }
 
-        assertEquals(listOf(mockkClinic), result)
+        assertEquals(mutableSetOf(mockkClinic), result)
     }
 }

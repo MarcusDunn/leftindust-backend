@@ -8,11 +8,11 @@ import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
-@Entity(name = "phone")
+@Entity
 class Phone(
-    @Column(name = "number", nullable = false)
+    @Column(nullable = false)
     var number: String,
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var type: GraphQLPhoneType
 ) : AbstractJpaPersistable() {

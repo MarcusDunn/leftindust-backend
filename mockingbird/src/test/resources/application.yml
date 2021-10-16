@@ -9,14 +9,14 @@ spring:
     web-application-type: reactive
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
       naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
   liquibase:
     change-log: classpath:dbchangelog.xml
     enabled: true
   datasource: # this is overridden by environment variables when tested on push
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:mediq;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:mediq;DB_CLOSE_DELAY=-1;

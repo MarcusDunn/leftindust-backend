@@ -1,21 +1,20 @@
 package com.leftindust.mockingbird.dao.entity.superclasses
 
 import com.leftindust.mockingbird.dao.entity.*
-import org.hibernate.annotations.JoinFormula
 import java.sql.Timestamp
 import javax.persistence.*
 
 @MappedSuperclass
 abstract class Person(
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "name_info_id", nullable = false)
+    @JoinColumn(name = "nameInfo_id", nullable = false)
     var nameInfo: NameInfo,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var address: MutableSet<Address> = mutableSetOf(),
+    var addresses: MutableSet<Address> = mutableSetOf(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     var email: MutableSet<Email> = mutableSetOf(),
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var phone: MutableSet<Phone> = mutableSetOf(),
+    var phones: MutableSet<Phone> = mutableSetOf(),
     @OneToOne
     var user: MediqUser? = null,
     @ManyToMany

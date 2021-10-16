@@ -37,9 +37,9 @@ data class GraphQLDoctorEditInput(
     val phones: List<GraphQLPhoneInput>? = emptyList(),
     val title: String? = null,
     @GraphQLDescription("setting to null will remove the doctor from the clinic")
-    val clinic: OptionalInput<GraphQLClinic.ID>? = null,
+    val clinics: List<GraphQLClinic.ID>? = null,
     val dateOfBirth: GraphQLDateInput? = null,
-    val addresses: List<GraphQLAddressInput>? = emptyList(),
-    val emails: List<GraphQLEmailInput>? = emptyList(),
-    val patients: List<GraphQLPatient.ID>? = emptyList(),
+    val addresses: List<GraphQLAddressInput>? = null,
+    val emails: List<GraphQLEmailInput>? = null,
+    val patients: List<GraphQLPatient.ID>? = null,
 )

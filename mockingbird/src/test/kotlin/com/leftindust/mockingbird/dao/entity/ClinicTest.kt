@@ -28,7 +28,7 @@ internal class ClinicTest {
                 ),
                 postalCode = "fe3232",
             ),
-            doctors = setOf(mockk())
+            doctors = mutableSetOf(mockk())
         )
 
         clinic.setByGqlInput(

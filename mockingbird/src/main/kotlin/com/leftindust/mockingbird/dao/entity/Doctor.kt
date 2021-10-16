@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
@@ -17,14 +16,13 @@ class Doctor(
     phones: Set<Phone> = emptySet(),
     user: MediqUser? = null,
     schedule: Set<Event> = emptySet(),
-    @Column(name = "title", nullable = true)
+    @Column(nullable = true)
     var title: String? = null,
-    @Column(name = "date_of_birth", nullable = true)
+    @Column(nullable = true)
     var dateOfBirth: Date? = null,
-    @ManyToOne
-    @JoinColumn(name = "clinic_id", nullable = true)
-    var clinic: Clinic? = null,
-    @OneToMany(mappedBy = "doctor", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @ManyToMany(cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST])
+    var clinics: MutableSet<Clinic> = mutableSetOf(),
+    @OneToMany(mappedBy = "patient", cascade = [CascadeType.ALL], orphanRemoval = true)
     var patients: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(
     nameInfo,
@@ -38,7 +36,7 @@ class Doctor(
         graphQLDoctorInput: GraphQLDoctorInput,
         user: MediqUser?,
         patients: Collection<Patient>,
-        clinic: Clinic? = null
+        clinics: Collection<Clinic> = emptySet()
     ) : this(
         nameInfo = NameInfo(graphQLDoctorInput.nameInfo),
         dateOfBirth = graphQLDoctorInput.dateOfBirth?.toDate(),
@@ -46,7 +44,7 @@ class Doctor(
         emails = graphQLDoctorInput.emails?.map { Email(it) }?.toSet() ?: emptySet(),
         phones = graphQLDoctorInput.phones?.map { Phone(it) }?.toSet() ?: emptySet(),
         user = user,
-        clinic = clinic,
+        clinics = clinics.toMutableSet(),
         title = graphQLDoctorInput.title,
     ) {
         patients.forEach { it.addDoctor(this) }
@@ -62,16 +60,13 @@ class Doctor(
     fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, newUser: MediqUser? = null) {
         nameInfo.setByGqlInput(graphQLDoctorEditInput.nameInfo)
         dateOfBirth = graphQLDoctorEditInput.dateOfBirth?.toDate() ?: dateOfBirth
-        address.replaceAllIfNotNull(graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet())
+        addresses.replaceAllIfNotNull(graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet())
         email.replaceAllIfNotNull(graphQLDoctorEditInput.emails?.map { Email(it) }?.toSet())
-        phone.replaceAllIfNotNull(graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phone)
+        phones.replaceAllIfNotNull(graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phones)
         user = newUser ?: user
         title = graphQLDoctorEditInput.title ?: title
-        clinic = when (val optionalInput = graphQLDoctorEditInput.clinic) {
-            OptionalInput.Undefined -> clinic
-            is OptionalInput.Defined -> optionalInput.value?.let { session.get(Clinic::class.java, it.id) }
-            null -> null
-        }
+        clinics.replaceAllIfNotNull(graphQLDoctorEditInput.clinics?.map { session.get(Clinic::class.java, it.id) }
+            ?.toSet() ?: clinics)
         if (graphQLDoctorEditInput.patients != null) {
             patients
                 .flatMap { doctorPatient -> doctorPatient.patient.doctors.filter { it.doctor.id == this.id } }

@@ -7,9 +7,7 @@ import javax.persistence.*
 
 @Embeddable
 class Reoccurrence(
-    @Column(name = "start_date")
     val startDate: LocalDate,
-    @Column(name = "end_date")
     val endDate: LocalDate,
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
