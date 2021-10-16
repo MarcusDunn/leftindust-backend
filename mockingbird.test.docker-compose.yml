@@ -22,10 +22,7 @@ services:
   mockingbird:
     environment:
       - WHO_ICD_API=http://icd-api:80/icd
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://mockingbird-postgres:5432/mediq
-      - SPRING_DATASOURCE_USERNAME=mediq
-      - SPRING_DATASOURCE_PASSWORD=mediq
     build:
       context: .
       dockerfile: mockingbird.Dockerfile
