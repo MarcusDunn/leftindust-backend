@@ -5,7 +5,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
 import javax.persistence.Column
 import javax.persistence.Entity
 
-@Entity(name = "mediq_group")
+@Entity
 class MediqGroup(
     @Column(nullable = false)
     val name: String,

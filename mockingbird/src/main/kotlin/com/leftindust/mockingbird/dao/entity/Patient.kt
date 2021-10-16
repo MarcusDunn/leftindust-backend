@@ -12,7 +12,7 @@ import org.hibernate.Session
 import java.sql.Date
 import javax.persistence.*
 
-@Entity(name = "patient")
+@Entity
 class Patient(
     nameInfo: NameInfo,
     addresses: Set<Address> = emptySet(),
@@ -21,17 +21,17 @@ class Patient(
     schedule: Set<Event> = emptySet(),
     user: MediqUser? = null,
     thumbnail: String? = null,
-    @Column(name = "sex", nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var sex: Sex,
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(nullable = false)
     var dateOfBirth: Date,
-    @Column(name = "gender", nullable = false)
+    @Column(nullable = false)
     var gender: String = sex.toString(),
-    @Column(name = "ethnicity", nullable = true)
+    @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     var ethnicity: Ethnicity? = null,
-    @Column(name = "insurance_number", nullable = true)
+    @Column(nullable = true)
     var insuranceNumber: String? = null,
     @OneToMany(
         mappedBy = "patient",
@@ -43,9 +43,9 @@ class Patient(
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
 ) : Person(
     nameInfo = nameInfo,
-    address = addresses.toMutableSet(),
+    addresses = addresses.toMutableSet(),
     email = emails.toMutableSet(),
-    phone = phones.toMutableSet(),
+    phones = phones.toMutableSet(),
     user = user,
     events = schedule.toMutableSet(),
     thumbnail = thumbnail
@@ -112,9 +112,9 @@ class Patient(
         if (patientInput.pid.id != this.id) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
         nameInfo.setByGqlInput(patientInput.nameInfo)
         dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
-        address.replaceAllIfNotNull(patientInput.addresses?.map { Address(it) }?.toSet())
+        addresses.replaceAllIfNotNull(patientInput.addresses?.map { Address(it) }?.toSet())
         email.replaceAllIfNotNull(patientInput.emails?.map { Email(it) }?.toSet())
-        phone.replaceAllIfNotNull(patientInput.phones?.map { Phone(it) }?.toSet())
+        phones.replaceAllIfNotNull(patientInput.phones?.map { Phone(it) }?.toSet())
         insuranceNumber = patientInput.insuranceNumber.onUndefined(insuranceNumber?.let { ID(it) })?.value
         sex = patientInput.sex ?: sex
         gender = patientInput.gender ?: gender

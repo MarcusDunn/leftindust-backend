@@ -7,13 +7,13 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import javax.persistence.Column
 import javax.persistence.Entity
 
-@Entity(name = "name_info")
+@Entity
 class NameInfo(
-    @Column(name = "first_name", nullable = false)
+    @Column(nullable = false)
     var firstName: String,
-    @Column(name = "last_name", nullable = false)
+    @Column(nullable = false)
     var lastName: String,
-    @Column(name = "middle_name", nullable = true)
+    @Column(nullable = true)
     var middleName: String?,
 ) : AbstractJpaPersistable() {
     constructor(graphQLNameInput: GraphQLNameInfoInput) : this(

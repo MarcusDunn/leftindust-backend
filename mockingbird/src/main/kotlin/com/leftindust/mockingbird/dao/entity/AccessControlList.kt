@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import javax.persistence.*
 
-@Entity(name = "access_control_list")
+@Entity
 class AccessControlList(
     @ManyToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     val group: MediqGroup? = null,

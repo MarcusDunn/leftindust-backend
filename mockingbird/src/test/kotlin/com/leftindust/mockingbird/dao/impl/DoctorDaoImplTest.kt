@@ -237,7 +237,7 @@ internal class DoctorDaoImplTest {
         val mockkDoctor = mockk<Doctor>()
 
         every { clinicRepository.getById(clinicId) } returns mockk() {
-            every { doctors } returns setOf(mockkDoctor)
+            every { doctors } returns mutableSetOf(mockkDoctor)
         }
 
         val doctorDaoImpl = DoctorDaoImpl(

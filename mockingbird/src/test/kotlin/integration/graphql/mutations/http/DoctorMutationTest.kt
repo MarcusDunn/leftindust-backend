@@ -124,7 +124,7 @@ class DoctorMutationTest(
         val result = doctorRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
-            .find { it.address.firstOrNull()?.address == "182 yeet st" }!!
+            .find { it.addresses.firstOrNull()?.address == "182 yeet st" }!!
 
         doctorRepository.deleteById(result.id!!)
     }

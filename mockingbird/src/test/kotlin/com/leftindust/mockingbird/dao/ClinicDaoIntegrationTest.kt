@@ -1,10 +1,9 @@
-package integration.dao
+package com.leftindust.mockingbird.dao
 
-import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.MediqToken
-import com.leftindust.mockingbird.dao.ClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
+import com.leftindust.mockingbird.dao.impl.ClinicDaoImpl
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.extensions.Authorization
@@ -19,13 +18,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import javax.transaction.Transactional
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
 
-    @SpringBootTest(classes = [MockingbirdApplication::class])
-    @Tag("Integration")
-@Transactional
-class ClinicDaoTest(
+@DataJpaTest(properties = ["spring.main.web-application-type=none"])
+@Import(ClinicDaoImpl::class)
+@Tag("Integration")
+class ClinicDaoIntegrationTest(
     @Autowired private val clinicDao: ClinicDao,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
     @Autowired private val clinicRepository: HibernateClinicRepository,
@@ -37,23 +36,29 @@ class ClinicDaoTest(
     internal fun `test get clinic by doctor`() {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val doctor = doctorRepository.save(
-            EntityStore.doctor("ClinicDaoTest.test get clinic by doctor"))
-
         val clinic = clinicRepository.save(
             Clinic(
                 name = "name",
                 address = EntityStore.address("ClinicDaoTest.test get clinic by doctor"),
-                doctors = setOf(doctor)
+                doctors = mutableSetOf()
             )
         )
+
+        val doctor = doctorRepository.save(EntityStore.doctor("ClinicDaoTest.test get clinic by doctor"))
+
+        doctor.clinics.add(clinic)
+        clinic.doctors.add(doctor)
 
         val requester = mockk<MediqToken>() {
             every { uid } returns "admin"
         }
 
+        assertEquals(doctor, doctorRepository.getById(doctor.id!!))
+        assertEquals(doctor.clinics, doctorRepository.getById(doctor.id!!).clinics)
+
         val result = runBlocking { clinicDao.getByDoctor(GraphQLDoctor.ID(doctor.id!!), requester) }
 
-        assertEquals(listOf(clinic), result)
+        assertEquals(doctor.clinics, result)
+        assertEquals(result.first().doctors, setOf(doctor))
     }
 }

@@ -12,7 +12,7 @@ import java.util.*
 interface HibernateEventRepository : JpaRepository<Event, UUID> {
     fun getAllByTitleEquals(title: String): List<Event>
 
-    @Query("select e from event e where (e.startTime between :rangeStart and :rangeEnd and e.endTime between :rangeStart and :rangeEnd) or e.reoccurrence is not null")
+    @Query("select e from Event e where (e.startTime between :rangeStart and :rangeEnd and e.endTime between :rangeStart and :rangeEnd) or e.reoccurrence is not null")
     fun getAllInRangeOrReoccurrenceIsNotNull(
         @Param("rangeStart") rangeStart: Timestamp,
         @Param("rangeEnd") rangeEnd: Timestamp

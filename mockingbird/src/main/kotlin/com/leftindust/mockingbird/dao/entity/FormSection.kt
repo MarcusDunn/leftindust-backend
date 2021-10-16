@@ -5,7 +5,7 @@ import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.OneToMany
 
-@Entity(name = "form_sections")
+@Entity
 class FormSection private constructor(
     @OneToMany(fetch = FetchType.EAGER)
     val fields: MutableSet<FormField>,

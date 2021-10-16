@@ -9,15 +9,12 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import java.sql.Timestamp
 import javax.persistence.*
 
-@Entity(name = "event")
+@Entity
 class Event(
     var title: String,
     var description: String?,
-    @Column(name = "start_time")
     var startTime: Timestamp,
-    @Column(name = "end_time")
     var endTime: Timestamp?,
-    @Column(name = "all_day")
     var allDay: Boolean = false,
     @ManyToMany(mappedBy = "events")
     val doctors: MutableSet<Doctor>,

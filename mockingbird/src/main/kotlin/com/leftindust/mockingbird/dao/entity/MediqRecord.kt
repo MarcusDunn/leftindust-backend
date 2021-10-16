@@ -8,16 +8,16 @@ import java.sql.Timestamp
 import java.time.Instant
 import javax.persistence.*
 
-@Entity(name = "mediq_record")
+@Entity
 class MediqRecord(
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var patient: Patient,
-    @Column(name = "creation_date", nullable = false)
+    @Column(nullable = false)
     val creationDate: Timestamp,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val type: RecordType,
-    @Column(name = "json_blob", length = 10_000, nullable = false)
+    @Column(length = 10_000, nullable = false)
     @Basic(fetch = FetchType.LAZY)
     val jsonBlob: String,
 ) : AbstractJpaPersistable() {

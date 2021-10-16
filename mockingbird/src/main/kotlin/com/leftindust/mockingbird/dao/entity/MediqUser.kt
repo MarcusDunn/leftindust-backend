@@ -4,14 +4,13 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
 import javax.persistence.*
 
-@Entity(name = "mediq_user")
+@Entity
 class MediqUser(
-    @Column(name = "unique_id", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     val uniqueId: String,
     @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
     var group: MediqGroup? = null,
     @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "name_info_id", nullable = false)
     var nameInfo: NameInfo,
 ) : AbstractJpaPersistable() {
     constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(

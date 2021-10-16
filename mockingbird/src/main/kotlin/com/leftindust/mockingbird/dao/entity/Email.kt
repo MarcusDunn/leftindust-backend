@@ -8,11 +8,11 @@ import javax.persistence.Column
 import javax.persistence.Entity
 
 
-@Entity(name = "email")
+@Entity
 class Email(
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     var type: GraphQLEmailType,
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false)
     var email: String,
 ) : AbstractJpaPersistable() {
     constructor(graphQLEmail: GraphQLEmailInput) : this(graphQLEmail.type, graphQLEmail.email)

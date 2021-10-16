@@ -96,7 +96,7 @@ class PatientMutationTest(
         val patientResult = patientRepository.findAll(PageRequest.of(0, 10))
             .iterator()
             .asSequence()
-            .find { it.address.firstOrNull()?.address == "1444 main st" }!!
+            .find { it.addresses.firstOrNull()?.address == "1444 main st" }!!
 
         patientRepository.delete(patientResult)
         doctorRepository.delete(doctor)

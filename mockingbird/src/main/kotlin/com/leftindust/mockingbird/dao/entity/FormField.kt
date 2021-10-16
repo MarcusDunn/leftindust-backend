@@ -7,30 +7,29 @@ import javax.persistence.*
 /**
  * describes a single field in a form. A field has a [dataType] that determines optional restrictions on the data
  */
-@Entity(name = "form_field")
+@Entity
 class FormField private constructor(
     val title: String,
     val number: Int,
-    @Column(name = "data_type")
     @Enumerated(value = EnumType.STRING)
     val dataType: DataType,
     @ElementCollection(fetch = FetchType.EAGER)
     val multiSelectPossibilities: List<String>? = null,
-    @Column(name = "int_upper_bound", nullable = true)
+    @Column(nullable = true)
     val intUpperBound: Int? = null,
-    @Column(name = "int_lower_bound", nullable = true)
+    @Column(nullable = true)
     val intLowerBound: Int? = null,
-    @Column(name = "float_upper_bound", nullable = true)
+    @Column(nullable = true)
     val floatUpperBound: Float? = null,
-    @Column(name = "float_lower_bound", nullable = true)
+    @Column(nullable = true)
     val floatLowerBound: Float? = null,
-    @Column(name = "date_upper_bound", nullable = true)
+    @Column(nullable = true)
     val dateUpperBound: Date? = null,
-    @Column(name = "date_lower_bound", nullable = true)
+    @Column(nullable = true)
     val dateLowerBound: Date? = null,
-    @Column(name = "text_regex", nullable = true)
+    @Column(nullable = true)
     val textRegex: String? = null,
-    @Column(name = "json_metadata", nullable = true, length = 5_000)
+    @Column(nullable = true, length = 5_000)
     val jsonMetaData: String? = null,
 ) : AbstractJpaPersistable() {
     constructor(
