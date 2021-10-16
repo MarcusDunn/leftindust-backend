@@ -9,11 +9,12 @@ spring:
     web-application-type: reactive
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:dbchangelog.xml
     enabled: true
