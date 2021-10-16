@@ -107,7 +107,10 @@ liquibase {
             "username" to "mediq",
             "password" to "mediq",
             "referenceDriver" to "liquibase.ext.hibernate.database.connection.HibernateDriver",
-            "referenceUrl" to "hibernate:spring:com.leftindust.mockingbird.dao.entity?dialect=org.hibernate.dialect.PostgreSQLDialect"
+            "referenceUrl" to "hibernate:spring:com.leftindust.mockingbird.dao.entity?" +
+                    "dialect=org.hibernate.dialect.PostgreSQLDialect&" +
+                    "hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&" +
+                    "hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
         )
     }
     runList = "main"

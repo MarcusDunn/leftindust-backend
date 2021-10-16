@@ -10,9 +10,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
