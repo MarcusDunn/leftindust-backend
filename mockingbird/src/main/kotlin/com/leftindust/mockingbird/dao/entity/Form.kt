@@ -8,7 +8,7 @@ import javax.persistence.*
  */
 @Entity
 class Form(
-    val name: String,
+    var name: String,
     @OneToMany(fetch = FetchType.EAGER, targetEntity = FormSection::class)
     val sections: Set<FormSection>,
 ) : AbstractJpaPersistable()

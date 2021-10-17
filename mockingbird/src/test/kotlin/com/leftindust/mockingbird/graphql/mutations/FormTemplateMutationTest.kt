@@ -20,4 +20,15 @@ class FormTemplateMutationTest(
         val result = formRepository.getById(form.id!!)
         assertEquals(form, result)
     }
+
+    @Test
+    internal fun `update form template`() {
+        val form = formRepository.save(EntityStore.form("FormTemplateMutationTest.test insert form template"))
+        val newName = form.name + "new name!!"
+        form.name = newName
+        val updatedForm = formRepository.save(form)
+        val result = formRepository.getById(form.id!!)
+        assertEquals(updatedForm, result)
+        assertEquals(updatedForm.name, newName)
+    }
 }
