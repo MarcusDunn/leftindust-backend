@@ -9,7 +9,7 @@ import javax.persistence.OneToMany
 class FormSection private constructor(
     @OneToMany(fetch = FetchType.EAGER)
     val fields: MutableSet<FormField>,
-    val name: String,
+    var name: String,
     val number: Int,
 ) : AbstractJpaPersistable() {
     constructor(

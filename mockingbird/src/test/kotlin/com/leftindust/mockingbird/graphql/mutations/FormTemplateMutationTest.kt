@@ -22,7 +22,7 @@ class FormTemplateMutationTest(
     }
 
     @Test
-    internal fun `update form template`() {
+    internal fun `update form template name`() {
         val form = formRepository.save(EntityStore.form("FormTemplateMutationTest.test insert form template"))
         val newName = form.name + "new name!!"
         form.name = newName
@@ -30,5 +30,16 @@ class FormTemplateMutationTest(
         val result = formRepository.getById(form.id!!)
         assertEquals(updatedForm, result)
         assertEquals(updatedForm.name, newName)
+    }
+
+    @Test
+    internal fun `update form template section name`() {
+        val form = formRepository.save(EntityStore.form("FormTemplateMutationTest.test insert form template"))
+        val newName = "new name!"
+        form.sections.find { it.number == 1 }!!.name = newName
+        val updatedForm = formRepository.save(form)
+        val result = formRepository.getById(form.id!!)
+        assertEquals(updatedForm, result)
+        assertEquals(updatedForm.sections.find { it.number == 1 }!!.name, newName)
     }
 }
