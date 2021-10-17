@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean
 import org.springframework.web.cors.reactive.CorsUtils
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
@@ -17,8 +16,6 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.util.*
-import javax.sql.DataSource
 
 
 @Configuration
@@ -35,12 +32,6 @@ class ApplicationConfig {
             const val ALLOWED_METHODS = "POST, OPTIONS"
             const val ALLOWED_ORIGIN = "*"
             const val MAX_AGE = "3600"
-        }
-
-        object HibernateConfig {
-            const val ENTITY_PACKAGE = "com.leftindust.mockingbird.dao.entity"
-            const val HBM2DDL_AUTO = "none"
-            const val DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         }
     }
 
@@ -98,20 +89,6 @@ class ApplicationConfig {
         return IcdApiClientConfigBean(
             BASE_URL = System.getenv("WHO_ICD_API") ?: "http://localhost:80/icd",
         )
-    }
-
-    @Bean(name = ["entityManagerFactory"])
-    fun sessionFactory(dataSource: DataSource): LocalSessionFactoryBean {
-        return with(HibernateConfig) {
-            LocalSessionFactoryBean().apply {
-                setDataSource(dataSource)
-                setPackagesToScan(ENTITY_PACKAGE)
-                hibernateProperties = Properties().apply {
-                    setProperty("hibernate.hbm2ddl.auto", HBM2DDL_AUTO)
-                    setProperty("hibernate.dialect", DIALECT)
-                }
-            }
-        }
     }
 }
 

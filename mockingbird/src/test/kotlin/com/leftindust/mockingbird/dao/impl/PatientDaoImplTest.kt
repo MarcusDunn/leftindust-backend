@@ -23,6 +23,7 @@ import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
+import javax.persistence.EntityManager
 
 internal class PatientDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -30,7 +31,7 @@ internal class PatientDaoImplTest {
     private val doctorRepository = mockk<HibernateDoctorRepository>()
     private val doctorPatientRepository = mockk<HibernateDoctorPatientRepository>()
     private val visitRepository = mockk<HibernateVisitRepository>()
-    private val sessionFactory = mockk<SessionFactory>()
+    private val entityManager = mockk<EntityManager>()
     private val eventRepository = mockk<HibernateEventRepository>()
 
     @Test
@@ -43,7 +44,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
         val actual = runBlocking { patientDaoImpl.getByPID(GraphQLPatient.ID(patientID), mockk()) }
 
@@ -64,11 +65,10 @@ internal class PatientDaoImplTest {
         val mockkPatient = mockk<Patient>()
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { patientRepository.save(any()) } returns mockkPatient
-        every { sessionFactory.currentSession } returns mockk()
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
 
             )
 
@@ -90,7 +90,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
 
         val actual = runBlocking { patientDaoImpl.removeByPID(GraphQLPatient.ID(patientID), mockk()) }
@@ -113,7 +113,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
 
         val actual = runBlocking { patientDaoImpl.getByDoctor(GraphQLDoctor.ID(doctorID), mockk()) }
@@ -135,7 +135,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
 
         val actual = runBlocking { patientDaoImpl.getByVisit(GraphQLVisit.ID(visitID), mockk()) }
@@ -159,7 +159,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
 
             )
 
@@ -184,11 +184,9 @@ internal class PatientDaoImplTest {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
         every { patientRepository.getById(patientID) } returns mockkPatient
 
-        every { sessionFactory.currentSession } returns mockk()
-
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
 
         val patientInput = mockk<GraphQLPatientEditInput> {
@@ -210,7 +208,7 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, sessionFactory,
+            doctorPatientRepository, eventRepository, visitRepository, entityManager,
         )
 
         val actual = runBlocking { patientDaoImpl.getByUser("uid", mockk()) }

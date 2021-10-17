@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
@@ -23,7 +24,7 @@ import javax.transaction.Transactional
 class DoctorTest(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val doctorRepository: HibernateDoctorRepository,
-    @Autowired private val sessionFactory: SessionFactory,
+    @Autowired private val entityManager: EntityManager
 ) {
 
     @Test
@@ -41,7 +42,7 @@ class DoctorTest(
             patients = listOf(GraphQLPatient.ID(newPatient.id!!))
         )
 
-        doctor.setByGqlInput(gqlInput, sessionFactory.currentSession)
+        doctor.setByGqlInput(gqlInput, entityManager)
 
         assertEquals(newPatient, doctor.patients.firstOrNull()?.patient)
         assertEquals(0, attachedPatient.doctors.size)

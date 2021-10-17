@@ -57,7 +57,7 @@ class Doctor(
         return this
     }
 
-    fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, session: Session, newUser: MediqUser? = null) {
+    fun setByGqlInput(graphQLDoctorEditInput: GraphQLDoctorEditInput, entityManager: EntityManager, newUser: MediqUser? = null) {
         nameInfo.setByGqlInput(graphQLDoctorEditInput.nameInfo)
         dateOfBirth = graphQLDoctorEditInput.dateOfBirth?.toDate() ?: dateOfBirth
         addresses.replaceAllIfNotNull(graphQLDoctorEditInput.addresses?.map { Address(it) }?.toSet())
@@ -65,20 +65,20 @@ class Doctor(
         phones.replaceAllIfNotNull(graphQLDoctorEditInput.phones?.map { Phone(it) }?.toSet() ?: phones)
         user = newUser ?: user
         title = graphQLDoctorEditInput.title ?: title
-        clinics.replaceAllIfNotNull(graphQLDoctorEditInput.clinics?.map { session.get(Clinic::class.java, it.id) }
+        clinics.replaceAllIfNotNull(graphQLDoctorEditInput.clinics?.map { entityManager.find(Clinic::class.java, it.id) }
             ?.toSet() ?: clinics)
         if (graphQLDoctorEditInput.patients != null) {
             patients
                 .flatMap { doctorPatient -> doctorPatient.patient.doctors.filter { it.doctor.id == this.id } }
                 .forEach {
                     it.removeFromLists()
-                    session.delete(it)
+                    entityManager.remove(it)
                 }
 
             assert(this.patients.isEmpty())
 
             graphQLDoctorEditInput.patients
-                .map { session.get(Patient::class.java, it.id) }
+                .map { entityManager.find(Patient::class.java, it.id) }
                 .forEach { this.addPatient(it) }
         }
     }

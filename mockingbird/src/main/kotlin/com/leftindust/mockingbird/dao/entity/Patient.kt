@@ -4,6 +4,7 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.extensions.onUndefined
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -56,7 +57,7 @@ class Patient(
      */
     constructor(
         graphQLPatientInput: GraphQLPatientInput,
-        session: Session
+        entityManager: EntityManager,
     ) : this(
         nameInfo = NameInfo(graphQLPatientInput.nameInfo),
         dateOfBirth = graphQLPatientInput.dateOfBirth.toDate(),
@@ -73,7 +74,7 @@ class Patient(
         contacts = graphQLPatientInput.emergencyContacts?.map { EmergencyContact(it, this) }?.toSet() ?: emptySet()
 
         graphQLPatientInput.doctors
-            ?.map { did -> session.get(Doctor::class.java, did.id) }
+            ?.map { did -> entityManager.find(Doctor::class.java, did.id) }
             ?.forEach { it.addPatient(this) }
     }
 
@@ -108,7 +109,7 @@ class Patient(
 
 
     @Throws(IllegalArgumentException::class)
-    fun setByGqlInput(patientInput: GraphQLPatientEditInput, session: Session) {
+    fun setByGqlInput(patientInput: GraphQLPatientEditInput, entityManager: EntityManager) {
         if (patientInput.pid.id != this.id) throw IllegalArgumentException("pid does not match entity, expected ${this.id} got ${patientInput.pid}")
         nameInfo.setByGqlInput(patientInput.nameInfo)
         dateOfBirth = patientInput.dateOfBirth?.toDate() ?: dateOfBirth
@@ -126,13 +127,13 @@ class Patient(
                 .flatMap { doctorPatient -> doctorPatient.doctor.patients.filter { it.patient.id == this.id } }
                 .forEach {
                     it.removeFromLists()
-                    session.delete(it)
+                    entityManager.remove(it)
                 }
 
             assert(this.doctors.isEmpty())
 
             patientInput.doctors
-                .map { session.get(Doctor::class.java, it.id) }
+                .map { entityManager.find(Doctor::class.java, it.id) }
                 .forEach { it.addPatient(this) }
         }
     }

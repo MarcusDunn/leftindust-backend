@@ -9,11 +9,6 @@ spring:
   main:
     web-application-type: reactive
   jpa:
-    hibernate:
-      naming:
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-      ddl-auto: validate
     show-sql: true
   liquibase:
     change-log: classpath:dbchangelog.xml
