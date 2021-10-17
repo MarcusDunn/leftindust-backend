@@ -23,6 +23,7 @@ import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 
 @Repository
 @Transactional
@@ -33,7 +34,7 @@ class DoctorDaoImpl(
     @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired private val eventRepository: HibernateEventRepository,
     @Autowired private val clinicRepository: HibernateClinicRepository,
-    @Autowired private val sessionFactory: SessionFactory,
+    @Autowired private val entityManager: EntityManager,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
     override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
@@ -82,7 +83,7 @@ class DoctorDaoImpl(
         val updateDoctor = Crud.UPDATE to Tables.Doctor
         if (requester can updateDoctor) {
             val doctorEntity = doctorRepository.getById(doctor.did.id)
-            doctorEntity.setByGqlInput(doctor, sessionFactory.currentSession)
+            doctorEntity.setByGqlInput(doctor, entityManager)
             return doctorEntity
         } else {
             throw NotAuthorizedException(requester, updateDoctor)
@@ -119,9 +120,8 @@ class DoctorDaoImpl(
 
     override suspend fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor> {
         if (requester can (Crud.READ to Tables.Doctor)) {
-            val session = sessionFactory.currentSession
 
-            val criteriaBuilder = session.criteriaBuilder
+            val criteriaBuilder = entityManager.criteriaBuilder
             val criteriaQuery = criteriaBuilder.createQuery(Doctor::class.java)
             val root = criteriaQuery.from(Doctor::class.java)
 
@@ -129,7 +129,7 @@ class DoctorDaoImpl(
 
             criteriaQuery.where(predicate)
 
-            return session.createQuery(criteriaQuery.where(predicate)).resultList
+            return entityManager.createQuery(criteriaQuery.where(predicate)).resultList
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor)
         }

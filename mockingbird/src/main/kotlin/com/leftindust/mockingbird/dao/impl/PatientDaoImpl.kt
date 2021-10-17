@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 
 
 @Transactional
@@ -33,7 +34,7 @@ class PatientDaoImpl(
     @Autowired private val doctorPatientRepository: HibernateDoctorPatientRepository,
     @Autowired private val eventRepository: HibernateEventRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
-    @Autowired private val sessionFactory: SessionFactory,
+    @Autowired private val entityManager: EntityManager,
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
@@ -49,7 +50,7 @@ class PatientDaoImpl(
         requester: MediqToken
     ): Patient {
         if (requester can listOf(Crud.CREATE to Tables.Patient, Crud.UPDATE to Tables.Doctor)) {
-            val newPatient = Patient(patient, sessionFactory.currentSession)
+            val newPatient = Patient(patient, entityManager)
             return patientRepository.save(newPatient)
         } else {
             throw NotAuthorizedException(requester, Crud.CREATE to Tables.Patient, Crud.UPDATE to Tables.Doctor)
@@ -118,7 +119,7 @@ class PatientDaoImpl(
         return if (requester can (Crud.UPDATE to Tables.Patient)) {
             val patient = patientRepository.getById(patientInput.pid.id)
             patient.apply {
-                setByGqlInput(patientInput, sessionFactory.currentSession)
+                setByGqlInput(patientInput, entityManager)
             }
         } else {
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
@@ -144,9 +145,8 @@ class PatientDaoImpl(
 
     override suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient> {
         if (requester can (Crud.READ to Tables.Patient)) {
-            val session = sessionFactory.currentSession
 
-            val criteriaBuilder = session.criteriaBuilder
+            val criteriaBuilder = entityManager.criteriaBuilder
             val criteriaQuery = criteriaBuilder.createQuery(Patient::class.java)
             val root = criteriaQuery.from(Patient::class.java)
 
@@ -154,7 +154,7 @@ class PatientDaoImpl(
 
             criteriaQuery.where(predicate)
 
-            return session.createQuery(criteriaQuery.where(predicate)).resultList
+            return entityManager.createQuery(criteriaQuery.where(predicate)).resultList
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }

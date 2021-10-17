@@ -9,21 +9,19 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @Tag("Integration")
 @Transactional
 internal class PhoneTest(
-    @Autowired private val sessionFactory: SessionFactory
+    @Autowired private val entityManager: EntityManager
 ) {
-
-    val session: Session
-        get() = sessionFactory.currentSession
 
     @Test
     internal fun `insert phone`() {
         val phone = Phone(number = "(604) 823 8781", type = GraphQLPhoneType.Other)
-        session.save(phone)
+        entityManager.persist(phone)
     }
 }
