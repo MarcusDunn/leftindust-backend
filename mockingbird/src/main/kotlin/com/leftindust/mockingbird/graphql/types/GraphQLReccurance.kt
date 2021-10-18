@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.dao.entity.Reoccurrence
-import java.util.*
 
 @GraphQLName("Recurrence")
 data class GraphQLRecurrence(

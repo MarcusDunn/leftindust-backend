@@ -2,18 +2,17 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.FormField
-import java.sql.Date
 
 data class GraphQlFormField(
-    val dataType: FormField.DataType,
+    val dataType: DataType,
     val number: Int,
     val multiSelectPossibilities: List<String>?,
     val intUpperBound: Int?,
     val intLowerBound: Int?,
     val floatUpperBound: Float?,
     val floatLowerBound: Float?,
-    val dateUpperBound: Date?,
-    val dateLowerBound: Date?,
+    val dateUpperBound: GraphQLDate?,
+    val dateLowerBound: GraphQLDate?,
     val textRegex: String?,
     val jsonMetaData: String?,
     private val graphQLAuthContext: GraphQLAuthContext,
@@ -26,8 +25,8 @@ data class GraphQlFormField(
         intLowerBound = formField.intLowerBound,
         floatUpperBound = formField.floatUpperBound,
         floatLowerBound = formField.floatLowerBound,
-        dateUpperBound = formField.dateUpperBound,
-        dateLowerBound = formField.dateLowerBound,
+        dateUpperBound = formField.dateUpperBound?.toLocalDate()?.let { GraphQLDate(it) },
+        dateLowerBound = formField.dateLowerBound?.toLocalDate()?.let { GraphQLDate(it) },
         textRegex = formField.textRegex,
         jsonMetaData = formField.jsonMetaData,
         graphQLAuthContext = graphQLAuthContext,

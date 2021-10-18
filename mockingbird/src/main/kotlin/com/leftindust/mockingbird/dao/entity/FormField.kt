@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.graphql.types.DataType
 import java.sql.Date
 import javax.persistence.*
 
@@ -131,15 +132,6 @@ class FormField private constructor(
         if (dataType != DataType.MultiMuliSelect) {
             throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
-    }
-
-    enum class DataType {
-        SingleMuliSelect,
-        MultiMuliSelect,
-        Text,
-        Integer,
-        Date,
-        Float,
     }
 }
 

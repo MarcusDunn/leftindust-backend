@@ -222,7 +222,7 @@ object EntityStore {
                     fields = setOf(
                         FormField(
                             title = "$testName. when were you born?",
-                            dataType = FormField.DataType.Date,
+                            dataType = DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
                             dateLowerBound = null,
                             number = 1,
@@ -235,13 +235,13 @@ object EntityStore {
                     fields = setOf(
                         FormField(
                             title = "$testName. u fat?",
-                            dataType = FormField.DataType.SingleMuliSelect,
+                            dataType = DataType.SingleMuliSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
                             number = 1,
                         ),
                         FormField(
                             title = "$testName. u tall?",
-                            dataType = FormField.DataType.SingleMuliSelect,
+                            dataType = DataType.SingleMuliSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
                             number = 2,
                         )
@@ -254,13 +254,13 @@ object EntityStore {
                         FormField(
                             title = "$testName. how long have you had this opinion on ice cream",
                             number = 1,
-                            dataType = FormField.DataType.Date,
+                            dataType = DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
                             dateLowerBound =  null
                         ),
                         FormField(
                             title = "$testName. how long have you had this opinion on ice cream",
-                            dataType = FormField.DataType.Date,
+                            dataType = DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
                             number = 2,
                             dateLowerBound =  null
@@ -273,7 +273,7 @@ object EntityStore {
 
     fun formField(testName: String) = FormField(
         title = "$testName. what is your least favorite way to say yes",
-        dataType = FormField.DataType.SingleMuliSelect,
+        dataType = DataType.SingleMuliSelect,
         multiSelectPossibilities = listOf("yes", "yee", "ye", "yeee"),
         number = 1,
     )
