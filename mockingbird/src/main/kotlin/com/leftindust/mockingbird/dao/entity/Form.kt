@@ -10,13 +10,14 @@ import javax.persistence.OneToMany
  * describes the format of a form. it DOES NOT hold data. It's instead a template for a record form.
  */
 @Entity
-class Form(
+class Form private constructor(
     var name: String,
     @OneToMany(
         fetch = FetchType.EAGER,
-        targetEntity = FormSection::class,
         orphanRemoval = true,
         cascade = [CascadeType.ALL]
     )
-    val sections: Set<FormSection>,
-) : AbstractJpaPersistable()
+    val sections: MutableSet<FormSection>,
+) : AbstractJpaPersistable() {
+    constructor(sections: Set<FormSection>, name: String) : this(name = name, sections = sections.toMutableSet())
+}

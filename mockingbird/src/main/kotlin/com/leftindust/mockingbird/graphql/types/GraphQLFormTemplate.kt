@@ -1,18 +1,25 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.entity.FormField
 import com.leftindust.mockingbird.dao.entity.FormSection
 import java.sql.Date
+import java.util.*
 
 data class GraphQLFormTemplate(
+    val id: ID,
     val name: String,
     val sections: List<GraphQLFormSection>,
     private val graphQLAuthContext: GraphQLAuthContext
 ) {
+    @GraphQLName("FormTemplateId")
+    data class ID(val id: UUID)
+
     constructor(form: Form, graphQLAuthContext: GraphQLAuthContext) : this(
+        id = ID(form.id!!),
         name = form.name,
         sections = form.sections
             .map { GraphQLFormSection(it, graphQLAuthContext) }
@@ -64,9 +71,4 @@ data class GraphQlFormField(
         jsonMetaData = formField.jsonMetaData,
         graphQLAuthContext = graphQLAuthContext,
     )
-
-    fun formSection(): GraphQLFormSection {
-        TODO()
-    }
-
 }

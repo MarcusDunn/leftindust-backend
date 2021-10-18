@@ -30,7 +30,7 @@ class FormField private constructor(
     @Column(nullable = true)
     val textRegex: String? = null,
     @Column(nullable = true, length = 5_000)
-    val jsonMetaData: String? = null,
+    var jsonMetaData: String? = null,
 ) : AbstractJpaPersistable() {
     constructor(
         title: String,
