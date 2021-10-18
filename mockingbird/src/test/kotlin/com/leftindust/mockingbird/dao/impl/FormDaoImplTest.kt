@@ -7,9 +7,7 @@ import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -77,6 +75,14 @@ internal class FormDaoImplTest {
     fun deleteForm() {
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
+        val expected = mockk<Form>()
+        every { formRepository.getById(any()) } returns expected
+        every { formRepository.delete(any()) } just runs
 
+        val formDao = FormDaoImpl(formRepository, authorizer)
+
+        val result = runBlocking { formDao.deleteForm(mockk { every { id } returns mockk() }, mockk()) }
+
+        assertEquals(expected, result)
     }
 }
