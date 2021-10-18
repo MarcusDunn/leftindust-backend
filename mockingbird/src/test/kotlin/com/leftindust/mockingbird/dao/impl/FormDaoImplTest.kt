@@ -3,10 +3,11 @@ package com.leftindust.mockingbird.dao.impl
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
-import com.leftindust.mockingbird.extensions.getByIds
-import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -24,6 +25,8 @@ internal class FormDaoImplTest {
 
     @Test
     fun getByIds() {
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
         val expected = mockk<Form>()
         every { formRepository.findAllById(any()) } returns listOf(expected)
 
@@ -37,6 +40,8 @@ internal class FormDaoImplTest {
 
     @Test
     fun getByGetMany() {
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
         val expected = mockk<Form>()
         every { formRepository.findAll(any<Pageable>()) } returns mockk {
             every { toList() } returns listOf(expected)
@@ -48,5 +53,30 @@ internal class FormDaoImplTest {
         }
 
         assertEquals(setOf(expected), result.toSet())
+    }
+
+    @Test
+    fun addForm() {
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+        val expected = mockk<Form>()
+
+        val mockkGqlForm = mockk<GraphQLFormTemplateInput>(relaxed = true)
+
+        every { formRepository.save(any()) } returns expected
+
+        val formDao = FormDaoImpl(formRepository, authorizer)
+
+        val result = runBlocking { formDao.addForm(mockkGqlForm, mockk()) }
+
+        assertEquals(expected, result)
+    }
+
+
+    @Test
+    fun deleteForm() {
+        coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
+
+
     }
 }
