@@ -13,5 +13,6 @@ enum class Tables {
     Event,
     IcdCode,
     Clinic,
+    Form,
     ;
 }

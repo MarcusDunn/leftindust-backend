@@ -7,7 +7,6 @@ import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 
 @GraphQLName("FormTemplateInput")
 data class GraphQLFormTemplateInput(
-    val id: GraphQLFormTemplate.ID,
     val name: String,
     val sections: List<GraphQLFormSectionInput>,
 )
@@ -22,6 +21,7 @@ data class GraphQLFormSectionInput(
 
 @GraphQLName("FormFieldInput")
 data class GraphQlFormFieldInput(
+    val title: String,
     val dataType: DataType,
     val number: Int,
     val multiSelectPossibilities: List<String>? = null,

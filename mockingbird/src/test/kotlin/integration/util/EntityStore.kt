@@ -256,14 +256,14 @@ object EntityStore {
                             number = 1,
                             dataType = DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
-                            dateLowerBound =  null
+                            dateLowerBound = null
                         ),
                         FormField(
                             title = "$testName. how long have you had this opinion on ice cream",
                             dataType = DataType.Date,
                             dateUpperBound = Date(Instant.now().toEpochMilli()),
                             number = 2,
-                            dateLowerBound =  null
+                            dateLowerBound = null
                         )
                     )
                 ),
@@ -277,4 +277,11 @@ object EntityStore {
         multiSelectPossibilities = listOf("yes", "yee", "ye", "yeee"),
         number = 1,
     )
+
+    fun graphQLFormInput(testName: String): GraphQLFormTemplateInput {
+        return GraphQLFormTemplateInput(
+            name = testName,
+            sections = emptyList(),
+        )
+    }
 }

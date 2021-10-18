@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.graphql.types.input.GraphQLFormSectionInput
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -21,5 +22,11 @@ class FormSection private constructor(
         name = name,
         number = number,
         fields = fields.toMutableSet(),
+    )
+
+    constructor(graphQLFormSectionInput: GraphQLFormSectionInput) : this(
+        name = graphQLFormSectionInput.name,
+        number = graphQLFormSectionInput.number,
+        fields = graphQLFormSectionInput.fields.map { FormField(it) }.toSet()
     )
 }

@@ -2,6 +2,7 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.DataType
+import com.leftindust.mockingbird.graphql.types.input.GraphQlFormFieldInput
 import java.sql.Date
 import javax.persistence.*
 
@@ -133,6 +134,21 @@ class FormField private constructor(
             throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
     }
+
+    constructor(graphQlFormFieldInput: GraphQlFormFieldInput) : this(
+        title = graphQlFormFieldInput.title,
+        number = graphQlFormFieldInput.number,
+        dataType = graphQlFormFieldInput.dataType,
+        multiSelectPossibilities = graphQlFormFieldInput.multiSelectPossibilities,
+        intUpperBound = graphQlFormFieldInput.intUpperBound,
+        intLowerBound = graphQlFormFieldInput.intLowerBound,
+        floatUpperBound = graphQlFormFieldInput.floatUpperBound,
+        floatLowerBound = graphQlFormFieldInput.floatLowerBound,
+        dateUpperBound = graphQlFormFieldInput.dateUpperBound?.toDate(),
+        dateLowerBound = graphQlFormFieldInput.dateLowerBound?.toDate(),
+        textRegex = graphQlFormFieldInput.textRegex,
+        jsonMetaData = graphQlFormFieldInput.jsonMetaData,
+    )
 }
 
 

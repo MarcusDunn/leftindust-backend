@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
+import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -20,4 +21,8 @@ class Form private constructor(
     val sections: MutableSet<FormSection>,
 ) : AbstractJpaPersistable() {
     constructor(sections: Set<FormSection>, name: String) : this(name = name, sections = sections.toMutableSet())
+    constructor(form: GraphQLFormTemplateInput) : this(
+        name = form.name,
+        sections = form.sections.map { FormSection(it) }.toSet()
+    )
 }

@@ -4,6 +4,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.FormField
 
 data class GraphQlFormField(
+    val title: String,
     val dataType: DataType,
     val number: Int,
     val multiSelectPossibilities: List<String>?,
@@ -18,6 +19,7 @@ data class GraphQlFormField(
     private val graphQLAuthContext: GraphQLAuthContext,
 ) {
     constructor(formField: FormField, graphQLAuthContext: GraphQLAuthContext) : this(
+        title = formField.title,
         number = formField.number,
         dataType = formField.dataType,
         multiSelectPossibilities = formField.multiSelectPossibilities,
