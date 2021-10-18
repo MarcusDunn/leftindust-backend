@@ -7,6 +7,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.stereotype.Component
 
 @Component
@@ -14,23 +15,20 @@ class FormTemplateQuery(
     private val formDao: FormDao
 ) : Query {
 
-    @GraphQLDescription("fetch form templates by one of the doctor who created them or the form id")
+    @GraphQLDescription("fetch form templates by one getting a range or the form id")
     suspend fun forms(
-        doctor: GraphQLDoctor.ID? = null,
-        form: GraphQLFormTemplate.ID? = null,
+        range: GraphQLRangeInput? = null,
+        forms: List<GraphQLFormTemplate.ID>? = null,
         authContext: GraphQLAuthContext
     ): List<GraphQLFormTemplate> {
         return when {
-            doctor == null && form != null -> {
-                val formEntity = formDao.getById(form, authContext.mediqAuthToken)
-                val gqlForm = GraphQLFormTemplate(formEntity, authContext)
-                listOf(gqlForm)
+            range == null && forms != null -> {
+                formDao.getByIds(forms, authContext.mediqAuthToken)
             }
-            doctor != null && form == null -> {
-                val formEntities = formDao.getByDoctorId(doctor, authContext.mediqAuthToken)
-                formEntities.map { GraphQLFormTemplate(it, authContext) }
+            range != null && forms == null -> {
+                formDao.getMany(range, authContext.mediqAuthToken)
             }
             else -> throw GraphQLKotlinException("invalid argument combination to forms")
-        }
+        }.map { GraphQLFormTemplate(it, authContext) }
     }
 }

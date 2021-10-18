@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -22,7 +23,7 @@ internal class FormTemplateQueryTest {
     fun `forms by id`() {
         val uuid  = GraphQLFormTemplate.ID(UUID.nameUUIDFromBytes("seat".toByteArray()))
         val form = mockk<Form>(relaxed = true)
-        coEvery { formDao.getById(uuid, any()) } returns form
+        coEvery { formDao.getByIds(listOf(uuid), any()) } returns listOf(form)
 
         val formTemplateQuery = FormTemplateQuery(formDao)
         val authContext = mockk<GraphQLAuthContext> {
@@ -30,7 +31,7 @@ internal class FormTemplateQueryTest {
         }
         val result = runBlocking {
             formTemplateQuery.forms(
-                form = uuid,
+                forms = listOf(uuid),
                 authContext = authContext
             )
         }
@@ -39,9 +40,8 @@ internal class FormTemplateQueryTest {
 
     @Test
     fun `forms by doctor`() {
-        val uuid  = GraphQLDoctor.ID(UUID.nameUUIDFromBytes("seat".toByteArray()))
         val form = mockk<Form>(relaxed = true)
-        coEvery { formDao.getByDoctorId(uuid, any()) } returns listOf(form)
+        coEvery { formDao.getMany(GraphQLRangeInput(0, 2), any()) } returns listOf(form)
         val formTemplateQuery = FormTemplateQuery(formDao)
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
@@ -49,7 +49,7 @@ internal class FormTemplateQueryTest {
 
         val result = runBlocking {
             formTemplateQuery.forms(
-                doctor = GraphQLDoctor.ID(UUID.nameUUIDFromBytes("seat".toByteArray())),
+                range = GraphQLRangeInput(0, 2),
                 authContext = authContext
             )
         }
@@ -67,8 +67,8 @@ internal class FormTemplateQueryTest {
         assertThrows<GraphQLKotlinException> {
             runBlocking {
                 formTemplateQuery.forms(
-                    GraphQLDoctor.ID(UUID.nameUUIDFromBytes("yeet".toByteArray())),
-                    GraphQLFormTemplate.ID(UUID.nameUUIDFromBytes("seat".toByteArray())),
+                    GraphQLRangeInput(0, 2),
+                    listOf(GraphQLFormTemplate.ID(UUID.nameUUIDFromBytes("seat".toByteArray()))),
                     mockk()
                 )
             }

@@ -5,8 +5,10 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
+import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
@@ -17,11 +19,11 @@ class FormDaoImpl(
     @Autowired private val formRepository: HibernateFormRepository,
     @Autowired authorizer: Authorizer
 ) : FormDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getById(id: GraphQLFormTemplate.ID, requester: MediqToken): Form {
-        TODO("Not yet implemented")
+    override suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> {
+        return formRepository.getByIds(ids.map { it.id })
     }
 
-    override suspend fun getByDoctorId(doctor: GraphQLDoctor.ID, requester: MediqToken): List<Form> {
-        TODO("Not yet implemented")
+    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form> {
+        return formRepository.findAll(range.toPageable()).toList()
     }
 }
