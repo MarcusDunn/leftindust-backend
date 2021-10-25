@@ -66,13 +66,13 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
                             value
                         }
                     }
-                } """.trimMargin()
+                }""".trimMargin()
             )
             .exchange()
             .expectStatus()
             .is2xxSuccessful
             .expectBody()
-            .jsonPath("error")
+            .jsonPath("errors")
             .isNotEmpty
     }
 }
