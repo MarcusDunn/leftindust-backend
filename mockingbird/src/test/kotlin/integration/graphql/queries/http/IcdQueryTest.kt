@@ -37,9 +37,9 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             .bodyValue(
                 //language=Graphql
                 """query {
-                    searchIcdFoundation(query: "aids") {
-                        longDefinition {
-                            value
+                    searchIcd(query: "aids") {
+                        destinationEntities {
+                            id
                         }
                     }
                 } """.trimMargin()
@@ -61,9 +61,9 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             .bodyValue(
                 //language=Graphql
                 """query {
-                    searchIcdFoundation(query: "") {
-                        longDefinition {
-                            value
+                    searchIcd(query: "") {
+                        destinationEntities {
+                            id
                         }
                     }
                 }""".trimMargin()
