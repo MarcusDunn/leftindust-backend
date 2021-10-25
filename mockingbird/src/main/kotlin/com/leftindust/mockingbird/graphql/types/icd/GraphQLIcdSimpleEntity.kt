@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("IcdSimpleEntity")
 data class GraphQLIcdSimpleEntity(
-    private val id: String?,
-    private val title: String?,
+    private val internalId: String?,
+    private val internalTitle: String?,
     val stemId: String?,
     val isLeaf: Boolean,
     val postcoordinationAvailability: GraphQLIcdPostcoordinationAvailability,
@@ -26,32 +26,35 @@ data class GraphQLIcdSimpleEntity(
     val entityType: GraphQLIcdEntityType,
     val important: Boolean,
     val descendants: List<GraphQLIcdSimpleEntity>,
-) {
+) : GraphQLIcdReallySimpleEntity {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
-        return icdFetcher.getDetails(GraphQLFoundationIcdCode(id ?: return null))
+        return icdFetcher.getDetails(GraphQLFoundationIcdCode(internalId ?: return null))
     }
 
-    fun id(asUrl: Boolean? = false): String? {
+    fun urlId(asUrl: Boolean? = false): String? {
         return if (asUrl == true) {
-            id
+            internalId
         } else {
-            id?.let { GraphQLFoundationIcdCode(it).code }
+            internalId?.let { GraphQLFoundationIcdCode(it).code }
         }
     }
 
-    fun title(withTags: Boolean? = true): String? {
+    fun tagTitle(withTags: Boolean? = true): String? {
         val nnWithTags = withTags ?: true
         return if (nnWithTags) {
-            title
+            internalTitle
         } else {
-            title?.replace(Regex("<[^>]*>"), "")
+            internalTitle?.replace(Regex("<[^>]*>"), "")
         }
     }
 
-    suspend fun linearization(
-        @Autowired @GraphQLIgnore icdFetcher: IcdFetcher,
-        linearizationName: String? = "mms"
-    ): GraphQLIcdMultiVersion? {
-        return id?.let { icdFetcher.linearization(linearizationName ?: "mms", GraphQLFoundationIcdCode(it)) }
-    }
+    override val id: String?
+        get() = urlId(true)
+
+    override val code: String?
+        get() = theCode
+    override val title: String?
+        get() = tagTitle(false)
+    override val description: String?
+        get() = null
 }

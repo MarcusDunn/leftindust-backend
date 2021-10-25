@@ -14,3 +14,10 @@ data class GraphQLIcdSearchResult(
     val words: List<GraphQLIcdGuessWord>?,
 )
 
+@GraphQLName("IcdReallySimpleEntity")
+interface GraphQLIcdReallySimpleEntity {
+    val id: String?
+    val code: String?
+    val title: String?
+    val description: String?
+}

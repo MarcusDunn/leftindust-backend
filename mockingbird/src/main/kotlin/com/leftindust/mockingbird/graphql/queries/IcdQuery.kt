@@ -9,8 +9,9 @@ import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
+import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,12 +20,9 @@ class IcdQuery(
 ) : Query {
     private val flexiSearchDefaultValue = true
     private val flatResultsDefaultValue = false
+    private val graphQLReleaseIdInputDefaultValue = GraphQLReleaseIdInput.R_2020_09
 
-    /**
-     * searches the ICD database for a given query
-     * @param query the string to look up against Icd code details
-     * @returns the [GraphQLIcdSearchResult] for the given query
-     */
+
     suspend fun searchIcd(
         @GraphQLDescription("Cannot be empty string")
         query: String,
@@ -40,7 +38,7 @@ class IcdQuery(
                     .search(query, nnFlexiSearch, nnFlatResults)
                     .let { searchResult ->
                         searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
-                            it.id(
+                            it.urlId(
                                 asUrl = true
                             )
                         })
@@ -51,20 +49,14 @@ class IcdQuery(
         } else throw GraphQLKotlinException("not authorized")
     }
 
-    suspend fun searchIcdFoundation(
-        query: String,
-        flexiSearch: Boolean? = flexiSearchDefaultValue,
-        flatResults: Boolean? = flatResultsDefaultValue,
-        authContext: GraphQLAuthContext
-    ): List<GraphQLIcdFoundationEntity?>? {
-        return searchIcd(query, flexiSearch, flatResults, authContext).destinationEntities?.map {
-            it.entity(client)
-        }
-    }
-
-    suspend fun icd(icdCode: String, authContext: GraphQLAuthContext): GraphQLIcdFoundationEntity {
+    suspend fun icd(
+        icdCode: String,
+        authContext: GraphQLAuthContext,
+        releaseId: GraphQLReleaseIdInput? = null
+    ): GraphQLIcdLinearizationEntity {
         return if (authContext.mediqAuthToken.isVerified()) {
-            client.getDetails(GraphQLFoundationIcdCode(icdCode))
+            val nnReleaseId = releaseId ?: graphQLReleaseIdInputDefaultValue
+            client.linearizationEntity(nnReleaseId, GraphQLFoundationIcdCode(icdCode))
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }

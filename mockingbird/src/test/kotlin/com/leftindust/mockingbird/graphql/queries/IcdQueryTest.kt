@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.graphql.queries
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
 import io.mockk.coEvery
 import io.mockk.every
@@ -38,10 +39,10 @@ internal class IcdQueryTest {
 
     @Test
     fun icd() {
-        val mockkIcdFoundationEntity = mockk<GraphQLIcdFoundationEntity>()
+        val mockkIcdFoundationEntity = mockk<GraphQLIcdLinearizationEntity>()
         val icdQuery = IcdQuery(client)
 
-        coEvery { client.getDetails(any()) } returns mockkIcdFoundationEntity
+        coEvery { client.linearizationEntity(any(), any()) } returns mockkIcdFoundationEntity
 
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true
