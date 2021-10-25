@@ -50,4 +50,28 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
             .exchange()
             .verifyOnlyDataExists("searchIcdFoundation")
     }
+
+    @Test
+    internal fun testIcdSearchEmptyString() {
+        coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
+            every { isVerified() } returns true
+        }, mockk(relaxed = true))
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=Graphql
+                """query {
+                    searchIcdFoundation(query: "") {
+                        longDefinition {
+                            value
+                        }
+                    }
+                } """.trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists("searchIcdFoundation")
+    }
 }
