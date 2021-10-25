@@ -4,10 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.ninjasquad.springmockk.MockkBean
-import integration.APPLICATION_JSON_MEDIA_TYPE
-import integration.GRAPHQL_ENDPOINT
-import integration.GRAPHQL_MEDIA_TYPE
-import integration.verifyOnlyDataExists
+import integration.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -72,6 +69,10 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
                 } """.trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists("searchIcdFoundation")
+            .expectStatus()
+            .is2xxSuccessful
+            .expectBody()
+            .jsonPath("error")
+            .isNotEmpty
     }
 }
