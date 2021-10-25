@@ -45,7 +45,7 @@ class IcdQueryTest(@Autowired private val testClient: WebTestClient) {
                 } """.trimMargin()
             )
             .exchange()
-            .verifyOnlyDataExists("searchIcdFoundation")
+            .verifyOnlyDataExists("searchIcd")
     }
 
     @Test
