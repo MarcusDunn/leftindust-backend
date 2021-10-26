@@ -68,6 +68,9 @@ class PatientQueryTest {
                 |    pid {
                 |        id
                 |    }
+                |    phones {
+                |        number
+                |    }
                 |  }
                 |}
                 |""".trimMargin()

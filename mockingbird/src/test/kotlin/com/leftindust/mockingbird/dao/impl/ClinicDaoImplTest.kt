@@ -15,16 +15,16 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
+import javax.persistence.EntityManager
 
 internal class ClinicDaoImplTest {
     private val clinicRepository = mockk<HibernateClinicRepository>()
     private val doctorRepository = mockk<HibernateDoctorRepository>()
-    private val sessionFactory = mockk<SessionFactory>()
+    private val entityManager = mockk<EntityManager>()
     private val authorizer = mockk<Authorizer>()
 
     @Test
@@ -36,9 +36,7 @@ internal class ClinicDaoImplTest {
 
         every { clinicRepository.save(any()) } returns mockkClinic
 
-        every { sessionFactory.currentSession } returns mockk() {
-            every { get(Doctor::class.java, doctorID) } returns mockk()
-        }
+        every { entityManager.find(Doctor::class.java, doctorID) } returns mockk()
 
 
         val requester = mockk<MediqToken>()
@@ -54,7 +52,7 @@ internal class ClinicDaoImplTest {
             doctors = listOf(GraphQLDoctor.ID(doctorID))
         )
 
-        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
+        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, entityManager, authorizer)
 
         val result = runBlocking { clinicDao.addClinic(mockkGqlClinicInput, requester) }
 
@@ -69,9 +67,7 @@ internal class ClinicDaoImplTest {
 
         every { clinicRepository.save(any()) } returns mockkClinic
 
-        every { sessionFactory.currentSession } returns mockk() {
-            every { get(Doctor::class.java, 10L) } returns mockk()
-        }
+        every { entityManager.find(Doctor::class.java, 10L) } returns mockk()
 
         val mockkGqlClinicInput = GraphQLClinicInput(
             name = "name",
@@ -86,7 +82,7 @@ internal class ClinicDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), requester) } returns Authorization.Denied
 
-        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
+        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, entityManager, authorizer)
 
         assertThrows<NotAuthorizedException> {
             runBlocking { clinicDao.addClinic(mockkGqlClinicInput, requester) }
@@ -108,15 +104,13 @@ internal class ClinicDaoImplTest {
             },
         )
 
-        every { sessionFactory.currentSession } returns mockk()
-
         val mockkClinic = mockk<Clinic> {
             every { setByGqlInput(mockkGqlClinicInput, any()) } just runs
         }
 
         every { clinicRepository.getById(clinicId) } returns mockkClinic
 
-        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
+        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, entityManager, authorizer)
 
         val result = runBlocking { clinicDao.editClinic(mockkGqlClinicInput, requester) }
 
@@ -139,7 +133,7 @@ internal class ClinicDaoImplTest {
 
         every { doctorRepository.getById(doctorID) } returns mockkDoctor
 
-        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, sessionFactory, authorizer)
+        val clinicDao = ClinicDaoImpl(clinicRepository, doctorRepository, entityManager, authorizer)
 
         val result = runBlocking { clinicDao.getByDoctor(GraphQLDoctor.ID(doctorID), requester) }
 

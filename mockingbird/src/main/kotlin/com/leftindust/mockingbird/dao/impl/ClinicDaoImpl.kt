@@ -16,6 +16,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import javax.persistence.EntityManager
 
 
 @Repository
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class ClinicDaoImpl(
     private val clinicRepository: HibernateClinicRepository,
     private val doctorRepository: HibernateDoctorRepository,
-    private val sessionFactory: SessionFactory,
+    private val entityManager: EntityManager,
     authorizer: Authorizer
 ) : ClinicDao,
     AbstractHibernateDao(authorizer) {
@@ -31,7 +32,7 @@ class ClinicDaoImpl(
         val createClinic = Crud.CREATE to Tables.Clinic
         return if (requester can createClinic) {
             clinicRepository.save(
-                Clinic(clinic, sessionFactory.currentSession)
+                Clinic(clinic, entityManager)
             )
         } else {
             throw NotAuthorizedException(requester, createClinic)
@@ -42,7 +43,7 @@ class ClinicDaoImpl(
         val createClinic = Crud.UPDATE to Tables.Clinic
         if (requester can createClinic) {
             val clinicEntity = clinicRepository.getById(clinic.cid.id)
-            clinicEntity.setByGqlInput(clinic, sessionFactory.currentSession)
+            clinicEntity.setByGqlInput(clinic, entityManager)
             return clinicEntity
         } else {
             throw NotAuthorizedException(requester, createClinic)

@@ -16,16 +16,15 @@ class Clinic(
     @ManyToMany(mappedBy = "clinics")
     var doctors: MutableSet<Doctor>,
 ) : AbstractJpaPersistable() {
-    fun setByGqlInput(clinic: GraphQLClinicEditInput, session: Session) {
+    fun setByGqlInput(clinic: GraphQLClinicEditInput, entityManager: EntityManager) {
         name = clinic.name ?: name
         clinic.address?.let { address.setByGqlInput(it) }
-        doctors = clinic.doctors?.map { session.get(Doctor::class.java, it.id) }?.toMutableSet() ?: doctors
+        doctors = clinic.doctors?.map { entityManager.find(Doctor::class.java, it.id) }?.toMutableSet() ?: doctors
     }
 
-    constructor(gqlClinicInput: GraphQLClinicInput, session: Session) : this(
+    constructor(gqlClinicInput: GraphQLClinicInput, entityManager: EntityManager) : this(
         name = gqlClinicInput.name,
         address = Address(gqlClinicInput.address),
-        doctors = gqlClinicInput.doctors?.map { session.get(Doctor::class.java, it.id) }?.toMutableSet()
-            ?: mutableSetOf(),
+        doctors = gqlClinicInput.doctors?.map { entityManager.find(Doctor::class.java, it.id) }?.toMutableSet() ?: mutableSetOf(),
     )
 }
