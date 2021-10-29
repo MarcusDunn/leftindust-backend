@@ -4,10 +4,7 @@ import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.ninjasquad.springmockk.MockkBean
-import integration.APPLICATION_JSON_MEDIA_TYPE
-import integration.GRAPHQL_ENDPOINT
-import integration.GRAPHQL_MEDIA_TYPE
-import integration.verifyOnlyDataExists
+import integration.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -43,13 +40,17 @@ class IcdQueryIntegrationTest(
                 """query {
                     searchIcd(query: "aids") {
                         destinationEntities {
+                            code
                             id
                         }
                     }
                 } """.trimMargin()
             )
             .exchange()
+            .debugPrint()
             .verifyOnlyDataExists("searchIcd")
+            .jsonPath("data.searchIcd.destinationEntities[0].code")
+            .isNotEmpty
     }
 
     @Test

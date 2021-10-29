@@ -2,7 +2,6 @@ package performance
 
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.external.icd.IcdFetcher
-import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -24,7 +23,6 @@ class IcdPerfTest {
                     query = "covid",
                     flatResults = false,
                     linearizationName = "mms",
-                    releaseId = GraphQLReleaseIdInput.R_2020_09
                 )
             }
         }

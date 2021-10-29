@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.external.icd.IcdFetcher
-import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdFoundationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
 import io.mockk.coEvery
@@ -24,7 +23,7 @@ internal class IcdQueryTest {
 
         every { mockkIcdSearchResult.copy(any(), any(), any(), any(), any(), any()) } returns mockkIcdSearchResult
 
-        coEvery { client.search(any(), any(), any()) } returns mockkIcdSearchResult
+        coEvery { client.linearizationSearch(any(), any(), any()) } returns mockkIcdSearchResult
 
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true
@@ -42,7 +41,7 @@ internal class IcdQueryTest {
         val mockkIcdFoundationEntity = mockk<GraphQLIcdLinearizationEntity>()
         val icdQuery = IcdQuery(client)
 
-        coEvery { client.linearizationEntity(any(), any()) } returns mockkIcdFoundationEntity
+        coEvery { client.linearizationEntity(any()) } returns mockkIcdFoundationEntity
 
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true

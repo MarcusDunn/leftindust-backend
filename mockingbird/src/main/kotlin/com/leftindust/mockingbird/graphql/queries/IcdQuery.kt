@@ -31,11 +31,10 @@ class IcdQuery(
         authContext: GraphQLAuthContext
     ): GraphQLIcdSearchResult {
         if (authContext.mediqAuthToken.isVerified()) {
-            val nnFlexiSearch = flexiSearch ?: flexiSearchDefaultValue
             val nnFlatResults = flatResults ?: flatResultsDefaultValue
             return if (query.isNotEmpty()) {
                 client
-                    .search(query, nnFlexiSearch, nnFlatResults)
+                    .linearizationSearch(query, "mms", nnFlatResults)
                     .let { searchResult ->
                         searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
                             it.urlId(
@@ -51,12 +50,10 @@ class IcdQuery(
 
     suspend fun icd(
         icdCode: String,
-        authContext: GraphQLAuthContext,
-        releaseId: GraphQLReleaseIdInput? = null
+        authContext: GraphQLAuthContext
     ): GraphQLIcdLinearizationEntity {
         return if (authContext.mediqAuthToken.isVerified()) {
-            val nnReleaseId = releaseId ?: graphQLReleaseIdInputDefaultValue
-            client.linearizationEntity(nnReleaseId, GraphQLFoundationIcdCode(icdCode))
+            client.linearizationEntity(GraphQLFoundationIcdCode(icdCode))
         } else {
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }
