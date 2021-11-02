@@ -32,9 +32,16 @@ class IcdQuery(
     ): GraphQLIcdSearchResult {
         if (authContext.mediqAuthToken.isVerified()) {
             val nnFlatResults = flatResults ?: flatResultsDefaultValue
+            val nnFlexiSearch = flexiSearch ?: flexiSearchDefaultValue
+
             return if (query.isNotEmpty()) {
                 client
-                    .linearizationSearch(query, "mms", nnFlatResults)
+                    .linearizationSearch(
+                        query,
+                        linearizationName = "mms",
+                        flatResults = nnFlatResults,
+                        flexiSearch = nnFlexiSearch
+                    )
                     .let { searchResult ->
                         searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id })
                     }
