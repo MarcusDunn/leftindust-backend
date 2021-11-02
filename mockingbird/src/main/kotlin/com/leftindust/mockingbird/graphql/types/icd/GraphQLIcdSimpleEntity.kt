@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("IcdSimpleEntity")
 data class GraphQLIcdSimpleEntity(
+    override val id: String,
     private val internalId: String?,
     private val internalTitle: String?,
     val stemId: String?,
@@ -26,6 +27,7 @@ data class GraphQLIcdSimpleEntity(
     val entityType: GraphQLIcdEntityType,
     val important: Boolean,
     val descendants: List<GraphQLIcdSimpleEntity>,
+    override val title: String?,
 ) : GraphQLIcdReallySimpleEntity {
     suspend fun entity(@Autowired @GraphQLIgnore icdFetcher: IcdFetcher): GraphQLIcdFoundationEntity? {
         return icdFetcher.getDetails(GraphQLFoundationIcdCode(internalId ?: return null))
@@ -48,13 +50,8 @@ data class GraphQLIcdSimpleEntity(
         }
     }
 
-    override val id: String?
-        get() = urlId(true)
-
     override val code: String?
         get() = theCode
-    override val title: String?
-        get() = tagTitle(false)
     override val description: String?
         get() = null
 }

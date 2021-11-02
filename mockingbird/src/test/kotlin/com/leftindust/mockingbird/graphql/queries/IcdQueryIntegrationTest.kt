@@ -51,6 +51,10 @@ class IcdQueryIntegrationTest(
             .verifyOnlyDataExists("searchIcd")
             .jsonPath("data.searchIcd.destinationEntities[0].code")
             .isNotEmpty
+            .jsonPath("data.searchIcd.destinationEntities[0].title")
+            .isNotEmpty
+            .jsonPath("data.searchIcd.destinationEntities[0].id")
+            .isNotEmpty
     }
 
     @Test
