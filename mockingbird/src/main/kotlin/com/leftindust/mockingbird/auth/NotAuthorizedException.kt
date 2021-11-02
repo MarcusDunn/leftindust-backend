@@ -11,5 +11,10 @@ class NotAuthorizedException(requester: MediqToken, vararg actions: Action) :
             .map { Action(it) }
             .toTypedArray()
     )
+
+    constructor(requester: MediqToken, createFormsAndUpdatePatients: List<Pair<Crud, Tables>>) : this(
+        requester,
+        *createFormsAndUpdatePatients.toTypedArray()
+    )
 }
 

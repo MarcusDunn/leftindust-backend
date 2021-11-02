@@ -56,7 +56,7 @@ class AddGetDeleteForm(
             .bodyValue(
                 //language=graphql
                 """
-                    | mutation { addForm(form: {
+                    | mutation { addFormTemplate(form: {
                     | name: "myForm",
                     | sections: [
                     |  {
@@ -94,9 +94,9 @@ class AddGetDeleteForm(
             ).exchange()
             .debugPrint()
             .expectBody()
-            .jsonPath("data.addForm.name")
+            .jsonPath("data.addFormTemplate.name")
             .isEqualTo("myForm")
-            .jsonPath("data.addForm.sections")
+            .jsonPath("data.addFormTemplate.sections")
             .isArray
 
         formRepository.deleteAll()

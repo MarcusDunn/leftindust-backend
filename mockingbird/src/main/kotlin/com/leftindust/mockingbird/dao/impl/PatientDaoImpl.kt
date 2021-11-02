@@ -12,12 +12,11 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
-import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import org.hibernate.Hibernate
-import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
@@ -35,6 +34,7 @@ class PatientDaoImpl(
     @Autowired private val eventRepository: HibernateEventRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val entityManager: EntityManager,
+    @Autowired private val formDataRepository: HibernateFormDataRepository,
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
@@ -162,7 +162,6 @@ class PatientDaoImpl(
 
     override suspend fun getByUser(uid: String, requester: MediqToken): Patient? {
         if (requester can (Crud.READ to Tables.Patient)) {
-
             return patientRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)

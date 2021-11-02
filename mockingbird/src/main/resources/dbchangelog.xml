@@ -731,4 +731,21 @@
                                  initiallyDeferred="false" referencedColumnNames="id" referencedTableName="mediq_user"
                                  validate="true"/>
     </changeSet>
+    <changeSet id="1634421256180" author="marcus">
+        <createTable tableName="form_data">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="data" type="varchar(50000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="form_data"
+                                 constraintName="form_data_references_patient_id" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
+                                 validate="true"/>
+    </changeSet>
 </databaseChangeLog>

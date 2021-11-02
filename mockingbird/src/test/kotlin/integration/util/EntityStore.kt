@@ -1,5 +1,6 @@
 package integration.util
 
+import com.google.gson.JsonObject
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.*
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
@@ -283,5 +284,11 @@ object EntityStore {
             name = testName,
             sections = emptyList(),
         )
+    }
+
+    fun formData(testName: String, patient: Patient): FormData {
+        return FormData(JsonObject().apply {
+            addProperty("hello", testName)
+        }, patient)
     }
 }
