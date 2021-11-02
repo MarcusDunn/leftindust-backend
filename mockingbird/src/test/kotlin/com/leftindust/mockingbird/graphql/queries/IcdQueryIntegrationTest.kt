@@ -42,6 +42,7 @@ class IcdQueryIntegrationTest(
                         destinationEntities {
                             code
                             id
+                            title
                         }
                     }
                 } """.trimMargin()
