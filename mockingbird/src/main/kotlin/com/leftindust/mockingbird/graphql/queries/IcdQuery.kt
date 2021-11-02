@@ -19,7 +19,7 @@ class IcdQuery(
     private val client: IcdFetcher,
 ) : Query {
     private val flexiSearchDefaultValue = true
-    private val flatResultsDefaultValue = false
+    private val flatResultsDefaultValue = true
     private val graphQLReleaseIdInputDefaultValue = GraphQLReleaseIdInput.R_2020_09
 
 
@@ -36,11 +36,7 @@ class IcdQuery(
                 client
                     .linearizationSearch(query, "mms", nnFlatResults)
                     .let { searchResult ->
-                        searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy {
-                            it.urlId(
-                                asUrl = true
-                            )
-                        })
+                        searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id })
                     }
             } else {
                 throw GraphQLKotlinException("cannot query with empty string")

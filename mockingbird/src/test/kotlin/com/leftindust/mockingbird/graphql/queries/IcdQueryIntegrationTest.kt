@@ -8,6 +8,7 @@ import integration.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +39,7 @@ class IcdQueryIntegrationTest(
             .bodyValue(
                 //language=Graphql
                 """query {
-                    searchIcd(query: "aids") {
+                    searchIcd(query: "aids", flatResults: true) {
                         destinationEntities {
                             code
                             id
@@ -56,6 +57,8 @@ class IcdQueryIntegrationTest(
             .isNotEmpty
             .jsonPath("data.searchIcd.destinationEntities[0].id")
             .isNotEmpty
+            .jsonPath("data.searchIcd.destinationEntities.length()")
+            .value({assertTrue(it > 5)}, Int::class.java)
     }
 
     @Test
