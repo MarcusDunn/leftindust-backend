@@ -3,7 +3,4 @@
 ![unit tests](https://github.com/leftindust/leftindust-backend/actions/workflows/unit-tests.yml/badge.svg)
 
 
-This is a project containing all microservices within the backend, its structured as a gradle project, although not 
-everything is JVM based (such as Gladio). 
-
-you can find details on individual services by reading the README in the module root 
+This is the backend for [leftindust's](https://leftindust.com) EMR.
