@@ -220,6 +220,7 @@ object EntityStore {
                 FormSection(
                     name = "$testName. astrological sign",
                     number = 1,
+                    description = null,
                     fields = setOf(
                         FormField(
                             title = "$testName. when were you born?",
@@ -233,6 +234,7 @@ object EntityStore {
                 FormSection(
                     name = "$testName. body type",
                     number = 2,
+                    description = null,
                     fields = setOf(
                         FormField(
                             title = "$testName. u fat?",
@@ -251,6 +253,7 @@ object EntityStore {
                 FormSection(
                     name = "$testName. how much you like ice cream",
                     number = 3,
+                    description = null,
                     fields = mutableSetOf(
                         FormField(
                             title = "$testName. how long have you had this opinion on ice cream",

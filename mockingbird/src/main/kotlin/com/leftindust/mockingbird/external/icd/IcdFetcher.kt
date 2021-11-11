@@ -15,7 +15,7 @@ interface IcdFetcher {
     suspend fun linearizationSearch(
         query: String,
         linearizationName: String,
-        flatResults: Boolean,
-        flexiSearch: Boolean,
+        flatResults: Boolean = true,
+        flexiSearch: Boolean = true,
     ): GraphQLIcdSearchResult
 }

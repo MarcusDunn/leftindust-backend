@@ -23,7 +23,7 @@ internal class IcdQueryTest {
 
         every { mockkIcdSearchResult.copy(any(), any(), any(), any(), any(), any()) } returns mockkIcdSearchResult
 
-        coEvery { client.linearizationSearch(any(), any(), any()) } returns mockkIcdSearchResult
+        coEvery { client.linearizationSearch(any(), any(), any(), any()) } returns mockkIcdSearchResult
 
         every { authContext.mediqAuthToken } returns mockk {
             every { isVerified() } returns true

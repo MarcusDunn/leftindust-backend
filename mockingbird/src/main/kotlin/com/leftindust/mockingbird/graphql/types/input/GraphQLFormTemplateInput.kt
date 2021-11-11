@@ -15,6 +15,8 @@ data class GraphQLFormTemplateInput(
 data class GraphQLFormSectionInput(
     val name: String,
     val number: Int,
+    @GraphQLDescription("Max 50 000 chars")
+    val description: String? = null,
     @GraphQLDescription("Note that I do not provide a stable order to these fields")
     val fields: List<GraphQlFormFieldInput>,
 )

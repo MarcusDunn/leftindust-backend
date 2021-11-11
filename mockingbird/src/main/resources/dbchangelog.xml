@@ -748,4 +748,9 @@
                                  initiallyDeferred="false" referencedColumnNames="id" referencedTableName="patient"
                                  validate="true"/>
     </changeSet>
+    <changeSet id="1634421256181" author="marcus">
+        <addColumn tableName="form_section">
+            <column name="description" type="varchar(50000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
