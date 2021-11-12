@@ -14,7 +14,7 @@ class FormTemplateQuery(
     private val formDao: FormDao
 ) : Query {
 
-    @GraphQLDescription("fetch form templates by one getting a range or the form id")
+    @GraphQLDescription("fetch survey templates by one getting a range or the survey id")
     suspend fun surveys(
         range: GraphQLRangeInput? = null,
         surveys: List<GraphQLFormTemplate.ID>? = null,
@@ -27,7 +27,7 @@ class FormTemplateQuery(
             range != null && surveys == null -> {
                 formDao.getMany(range, authContext.mediqAuthToken)
             }
-            else -> throw GraphQLKotlinException("invalid argument combination to forms")
+            else -> throw GraphQLKotlinException("invalid argument combination to surveys")
         }.map { GraphQLFormTemplate(it, authContext) }
     }
 }

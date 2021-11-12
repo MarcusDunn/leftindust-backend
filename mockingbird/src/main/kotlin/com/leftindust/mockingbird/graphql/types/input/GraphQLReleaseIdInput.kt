@@ -12,6 +12,10 @@ enum class GraphQLReleaseIdInput {
     R_2019_04,
     R_2018;
 
+    companion object {
+        val CURRENT = R_2021_05
+    }
+
     override fun toString(): String {
         return when (this) {
             R_2018 -> "2018"

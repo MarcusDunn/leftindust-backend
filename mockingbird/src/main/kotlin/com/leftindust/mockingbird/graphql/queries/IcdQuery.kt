@@ -18,9 +18,11 @@ import org.springframework.stereotype.Component
 class IcdQuery(
     private val client: IcdFetcher,
 ) : Query {
-    private val flexiSearchDefaultValue = true
-    private val flatResultsDefaultValue = true
-    private val graphQLReleaseIdInputDefaultValue = GraphQLReleaseIdInput.R_2020_09
+    private companion object {
+        const val flexiSearchDefaultValue = true
+        const val flatResultsDefaultValue = true
+    }
+
 
 
     suspend fun searchIcd(

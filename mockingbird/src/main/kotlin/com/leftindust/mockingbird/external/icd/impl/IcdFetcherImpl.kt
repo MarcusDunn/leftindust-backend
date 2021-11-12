@@ -40,7 +40,7 @@ class IcdFetcherImpl(
         flatResults: Boolean,
         flexiSearch: Boolean,
     ): GraphQLIcdSearchResult {
-        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.R_2020_09}/$linearizationName/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
+        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.CURRENT}/$linearizationName/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
         return getUrlWithIcdHeaders(url)
     }
 
@@ -63,7 +63,7 @@ class IcdFetcherImpl(
     override suspend fun linearizationEntity(
         code: GraphQLFoundationIcdCode
     ): GraphQLIcdLinearizationEntity {
-        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.R_2020_09}/mms/${code.code}"
+        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.CURRENT}/mms/${code.code}"
         return GraphQLIcdLinearizationEntity(getUrlWithIcdHeaders(url))
     }
 
