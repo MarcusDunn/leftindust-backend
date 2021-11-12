@@ -322,7 +322,7 @@ type Mutation {
   addClinic(clinic: ClinicInput!): Clinic!
   addDoctor(doctor: DoctorInput!): Doctor!
   addEvent(event: EventInput!): Event!
-  addSurveyTemplate(survey: FormTemplateInput!): GraphQLFormTemplate!
+  addSurveyTemplate(surveyTemplate: FormTemplateInput!): GraphQLFormTemplate!
   addGroup(group: GroupInput!): Group!
   """
   adds a new patient and connects them to already existing doctors and contacts

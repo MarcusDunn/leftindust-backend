@@ -58,7 +58,7 @@ class AddGetDeleteForm(
             .bodyValue(
                 //language=graphql
                 """
-                    | mutation { $functionName(survey: {
+                    | mutation { $functionName(surveyTemplate: {
                     | name: "myForm",
                     | sections: [
                     |  {
