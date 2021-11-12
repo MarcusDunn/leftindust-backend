@@ -62,6 +62,51 @@ class IcdQueryIntegrationTest(
     }
 
     @Test
+    internal fun `test IcdSearch then get details`() {
+        coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
+            every { isVerified() } returns true
+        }, mockk(relaxed = true))
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=Graphql
+                """query {
+                    searchIcd(query: "aids", flatResults: true) {
+                        destinationEntities {
+                            code
+                            id
+                            title
+                        }
+                    }
+                } """.trimMargin()
+            )
+            .exchange()
+            .verifyOnlyDataExists("searchIcd")
+            .jsonPath("data.searchIcd.destinationEntities[0].id")
+            .value<String> { it ->
+                testClient.post()
+                    .uri(GRAPHQL_ENDPOINT)
+                    .accept(APPLICATION_JSON_MEDIA_TYPE)
+                    .contentType(GRAPHQL_MEDIA_TYPE)
+                    .bodyValue(
+                        //language=Graphql
+                        """query { icd(icdCode: "$it") {
+                            id
+                            }
+                        }
+                    """.trimIndent())
+                    .exchange()
+                    .debugPrint()
+                    .verifyOnlyDataExists("icd")
+                    .jsonPath("data.icd.id")
+                    .isEqualTo(it)
+            }
+    }
+
+    @Test
     internal fun testIcdSearchEmptyString() {
         coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
             every { isVerified() } returns true
