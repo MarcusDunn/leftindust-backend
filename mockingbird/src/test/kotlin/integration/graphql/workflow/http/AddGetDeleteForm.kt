@@ -48,6 +48,8 @@ class AddGetDeleteForm(
 
         coEvery { contextFactory.generateContext(any()) } returns graphQLAuthContext
 
+        val functionName = "addSurveyTemplate"
+
         testClient
             .post()
             .uri(GRAPHQL_ENDPOINT)
@@ -56,7 +58,7 @@ class AddGetDeleteForm(
             .bodyValue(
                 //language=graphql
                 """
-                    | mutation { addSurveyTemplate(survey: {
+                    | mutation { $functionName(survey: {
                     | name: "myForm",
                     | sections: [
                     |  {
@@ -94,9 +96,9 @@ class AddGetDeleteForm(
             ).exchange()
             .debugPrint()
             .expectBody()
-            .jsonPath("data.addFormTemplate.name")
+            .jsonPath("data.$functionName.name")
             .isEqualTo("myForm")
-            .jsonPath("data.addFormTemplate.sections")
+            .jsonPath("data.$functionName.sections")
             .isArray
 
         formRepository.deleteAll()
