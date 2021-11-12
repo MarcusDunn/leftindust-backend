@@ -3,7 +3,7 @@ services:
     image: whoicd/icd-api
     environment:
       - acceptLicense=true
-      - include=2020-09_en
+      - include=2021-05_en
     healthcheck:
       test: "apk add curl; curl -X GET \"http://localhost:80/icd/entity/search?q=aids&flatResults=true\" -H  \"accept: application/json\" -H  \"API-Version: v2\" -H  \"Accept-Language: en\""
       interval: 10s
