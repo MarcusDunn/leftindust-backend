@@ -322,7 +322,7 @@ type Mutation {
   addClinic(clinic: ClinicInput!): Clinic!
   addDoctor(doctor: DoctorInput!): Doctor!
   addEvent(event: EventInput!): Event!
-  addFormTemplate(form: FormTemplateInput!): GraphQLFormTemplate!
+  addSurveyTemplate(survey: FormTemplateInput!): GraphQLFormTemplate!
   addGroup(group: GroupInput!): Group!
   """
   adds a new patient and connects them to already existing doctors and contacts
@@ -341,7 +341,7 @@ type Mutation {
   editRecurringEvent(event: EventEditInput!, recurrenceSettings: RecurrenceEditSettingsInput!): Event!
   editUser(user: UserEditInput!): User!
   editVisit(visit: GraphQLVisitEditInput!): Visit!
-  submitForm(formJson: String!, patient: PatientIdInput!): GraphQLFormData!
+  submitSurvey(surveyJson: String!, patient: PatientIdInput!): GraphQLFormData!
   "updates a patient by their pid, only the not null fields are updated, pid MUST be defined"
   updatePatient(patient: PatientEditInput!): Patient!
 }
@@ -418,7 +418,7 @@ type Query @extends {
   """
   firebaseUsers(filterRegistered: Boolean, range: RangeInput): [FirebaseInfo!]!
   "fetch form templates by one getting a range or the form id"
-  forms(forms: [FormTemplateIdInput!], range: RangeInput): [GraphQLFormTemplate!]!
+  surveys(surveys: [FormTemplateIdInput!], range: RangeInput): [GraphQLFormTemplate!]!
   getContactsByPatient(pid: PatientIdInput!): [Person!]!
   groups(gids: [GroupIdInput!], range: RangeInput): [Group!]!
   icd(icdCode: String!): IcdLinearizationEntity!
