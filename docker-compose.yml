@@ -4,7 +4,7 @@ services:
     environment:
       - acceptLicense=true
       - saveAnalytics=true
-      - include=2020-05_en
+      - include=2021-05_en
   mockingbird-postgres:
     environment:
       POSTGRES_DB: mediq

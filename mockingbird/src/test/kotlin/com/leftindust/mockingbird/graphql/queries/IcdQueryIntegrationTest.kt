@@ -58,7 +58,7 @@ class IcdQueryIntegrationTest(
             .jsonPath("data.searchIcd.destinationEntities[0].id")
             .isNotEmpty
             .jsonPath("data.searchIcd.destinationEntities.length()")
-            .value({assertTrue(it > 5)}, Int::class.java)
+            .value({ assertTrue(it > 5) }, Int::class.java)
     }
 
     @Test
@@ -97,9 +97,9 @@ class IcdQueryIntegrationTest(
                             id
                             }
                         }
-                    """.trimIndent())
+                    """.trimIndent()
+                    )
                     .exchange()
-                    .debugPrint()
                     .verifyOnlyDataExists("icd")
                     .jsonPath("data.icd.id")
                     .isEqualTo(it)
@@ -132,5 +132,34 @@ class IcdQueryIntegrationTest(
             .expectBody()
             .jsonPath("errors")
             .isNotEmpty
+    }
+
+    @Test
+    internal fun `reproduce issue 18`() {
+        coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
+            every { isVerified() } returns true
+        }, mockk(relaxed = true))
+
+        testClient.post()
+            .uri(GRAPHQL_ENDPOINT)
+            .accept(APPLICATION_JSON_MEDIA_TYPE)
+            .contentType(GRAPHQL_MEDIA_TYPE)
+            .bodyValue(
+                //language=Graphql
+                """query {
+                    searchIcd(query: "c") {
+                        destinationEntities {
+                            id,
+                            title,
+                            code,
+                            description,
+                            __typename
+                        }
+                    }
+                }""".trimMargin()
+            )
+            .exchange()
+            .debugPrint()
+            .verifyOnlyDataExists("searchIcd")
     }
 }
