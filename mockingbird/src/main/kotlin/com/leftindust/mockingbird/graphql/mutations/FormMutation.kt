@@ -13,17 +13,17 @@ import org.springframework.stereotype.Component
 
 @Component
 class FormMutation(private val formDao: FormDao, private val formDataDao: FormDataDao) : Mutation {
-    suspend fun addFormTemplate(form: GraphQLFormTemplateInput, authContext: GraphQLAuthContext): GraphQLFormTemplate {
-        return GraphQLFormTemplate(formDao.addForm(form, authContext.mediqAuthToken), authContext)
+    suspend fun addSurveyTemplate(surveyTemplate: GraphQLFormTemplateInput, authContext: GraphQLAuthContext): GraphQLFormTemplate {
+        return GraphQLFormTemplate(formDao.addForm(surveyTemplate, authContext.mediqAuthToken), authContext)
     }
 
-    suspend fun submitForm(
+    suspend fun submitSurvey(
         patient: GraphQLPatient.ID,
-        formJson: String,
+        surveyJson: String,
         authContext: GraphQLAuthContext
     ): GraphQLFormData {
-        val attachedForm = formDataDao.attachForm(patient, form = parseString(formJson), authContext.mediqAuthToken)
-        return GraphQLFormData(attachedForm.toString(), patient, authContext)
+        val attachedForm = formDataDao.attachForm(patient, form = parseString(surveyJson), authContext.mediqAuthToken)
+        return GraphQLFormData(attachedForm.data.toString(), patient, authContext)
     }
 }
 

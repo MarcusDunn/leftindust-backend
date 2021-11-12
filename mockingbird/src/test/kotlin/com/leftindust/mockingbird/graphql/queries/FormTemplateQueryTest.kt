@@ -4,7 +4,6 @@ import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.entity.Form
-import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
@@ -30,8 +29,8 @@ internal class FormTemplateQueryTest {
             every { mediqAuthToken } returns mockk()
         }
         val result = runBlocking {
-            formTemplateQuery.forms(
-                forms = listOf(uuid),
+            formTemplateQuery.surveys(
+                surveys = listOf(uuid),
                 authContext = authContext
             )
         }
@@ -48,7 +47,7 @@ internal class FormTemplateQueryTest {
         }
 
         val result = runBlocking {
-            formTemplateQuery.forms(
+            formTemplateQuery.surveys(
                 range = GraphQLRangeInput(0, 2),
                 authContext = authContext
             )
@@ -61,12 +60,12 @@ internal class FormTemplateQueryTest {
         val formTemplateQuery = FormTemplateQuery(formDao)
         assertThrows<GraphQLKotlinException> {
             runBlocking {
-                formTemplateQuery.forms(null, null, mockk())
+                formTemplateQuery.surveys(null, null, mockk())
             }
         }
         assertThrows<GraphQLKotlinException> {
             runBlocking {
-                formTemplateQuery.forms(
+                formTemplateQuery.surveys(
                     GraphQLRangeInput(0, 2),
                     listOf(GraphQLFormTemplate.ID(UUID.nameUUIDFromBytes("seat".toByteArray()))),
                     mockk()
