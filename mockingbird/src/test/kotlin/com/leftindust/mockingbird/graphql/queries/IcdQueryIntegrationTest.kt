@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.graphql.queries
 import com.leftindust.mockingbird.MockingbirdApplication
 import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
+import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSimpleEntity
 import com.ninjasquad.springmockk.MockkBean
 import integration.*
 import io.mockk.coEvery
@@ -84,25 +85,33 @@ class IcdQueryIntegrationTest(
                 } """.trimMargin()
             )
             .exchange()
+            .debugPrint()
             .verifyOnlyDataExists("searchIcd")
-            .jsonPath("data.searchIcd.destinationEntities[0].id")
-            .value<String> { it ->
+            .jsonPath("data.searchIcd.destinationEntities[0]")
+            .value<LinkedHashMap<String, Any>> { simpleEntity ->
                 testClient.post()
                     .uri(GRAPHQL_ENDPOINT)
                     .accept(APPLICATION_JSON_MEDIA_TYPE)
                     .contentType(GRAPHQL_MEDIA_TYPE)
                     .bodyValue(
                         //language=Graphql
-                        """query { icd(icdCode: "$it") {
+                        """query { icd(icdCode: "${simpleEntity["id"]}") {
                             id
+                            code
+                            title
                             }
                         }
                     """.trimIndent()
                     )
                     .exchange()
+                    .debugPrint()
                     .verifyOnlyDataExists("icd")
                     .jsonPath("data.icd.id")
-                    .isEqualTo(it)
+                    .isEqualTo(simpleEntity["id"]!!)
+                    .jsonPath("data.icd.code")
+                    .isEqualTo(simpleEntity["code"]!!)
+                    .jsonPath("data.icd.title")
+                    .isEqualTo(simpleEntity["title"]!!)
             }
     }
 
