@@ -47,7 +47,7 @@ data class GraphQLPatient(
         gender = patient.gender,
         ethnicity = patient.ethnicity,
         authContext = authContext,
-        thumbnail = patient.thumbnail
+        thumbnail = patient.thumbnail,
     )
 
     suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> =
@@ -73,5 +73,10 @@ data class GraphQLPatient(
         val byPatient = eventDao.getByPatient(pid, authContext.mediqAuthToken)
         return byPatient
             .map { event -> GraphQLEvent(event, authContext) }
+    }
+
+    suspend fun assignedForms(@GraphQLIgnore @Autowired formDao: FormDao): List<GraphQLAssignedForm> {
+        return formDao.getByPatientAssigned(pid, authContext.mediqAuthToken)
+            .map { GraphQLAssignedForm(it, authContext) }
     }
 }

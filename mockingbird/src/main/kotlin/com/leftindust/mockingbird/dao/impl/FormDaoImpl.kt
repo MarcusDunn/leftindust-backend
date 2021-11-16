@@ -6,10 +6,13 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +23,7 @@ import javax.transaction.Transactional
 @Transactional
 class FormDaoImpl(
     @Autowired private val formRepository: HibernateFormRepository,
+    @Autowired private val patientRepository: HibernatePatientRepository,
     @Autowired authorizer: Authorizer
 ) : FormDao, AbstractHibernateDao(authorizer) {
     override suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> {
@@ -57,6 +61,15 @@ class FormDaoImpl(
             return formEntity
         } else {
             throw NotAuthorizedException(requester, deleteForms)
+        }
+    }
+
+    override suspend fun getByPatientAssigned(patient: GraphQLPatient.ID, requester: MediqToken): Collection<AssignedForm> {
+        val readPatient = Crud.READ to Tables.Patient
+        if (requester can readPatient) {
+            return patientRepository.getById(patient.id).assignedForms
+        } else {
+            throw NotAuthorizedException(requester, readPatient)
         }
     }
 }

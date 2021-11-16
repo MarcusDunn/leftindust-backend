@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.dao.impl
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
@@ -16,6 +17,8 @@ import java.util.*
 
 internal class FormDaoImplTest {
     private val formRepository = mockk<HibernateFormRepository>()
+    private val patientRepository = mockk<HibernatePatientRepository>()
+
     private val authorizer = mockk<Authorizer>()
 
     private val uuid = UUID.nameUUIDFromBytes("seat".toByteArray())
@@ -28,7 +31,7 @@ internal class FormDaoImplTest {
         val expected = mockk<Form>()
         every { formRepository.findAllById(any()) } returns listOf(expected)
 
-        val formDao = FormDaoImpl(formRepository, authorizer)
+        val formDao = FormDaoImpl(formRepository, patientRepository, authorizer)
         val result = runBlocking {
             formDao.getByIds(listOf(GraphQLFormTemplate.ID(uuid)), mockk())
         }
@@ -45,7 +48,7 @@ internal class FormDaoImplTest {
             every { toList() } returns listOf(expected)
         }
 
-        val formDao = FormDaoImpl(formRepository, authorizer)
+        val formDao = FormDaoImpl(formRepository, patientRepository, authorizer)
         val result = runBlocking {
             formDao.getMany(GraphQLRangeInput(0, 2), mockk())
         }
@@ -63,7 +66,7 @@ internal class FormDaoImplTest {
 
         every { formRepository.save(any()) } returns expected
 
-        val formDao = FormDaoImpl(formRepository, authorizer)
+        val formDao = FormDaoImpl(formRepository, patientRepository, authorizer)
 
         val result = runBlocking { formDao.addForm(mockkGqlForm, mockk()) }
 
@@ -79,7 +82,7 @@ internal class FormDaoImplTest {
         every { formRepository.getById(any()) } returns expected
         every { formRepository.delete(any()) } just runs
 
-        val formDao = FormDaoImpl(formRepository, authorizer)
+        val formDao = FormDaoImpl(formRepository, patientRepository, authorizer)
 
         val result = runBlocking { formDao.deleteForm(mockk { every { id } returns mockk() }, mockk()) }
 
