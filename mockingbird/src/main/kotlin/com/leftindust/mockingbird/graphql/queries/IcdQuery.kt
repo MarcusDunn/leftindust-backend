@@ -7,11 +7,11 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.extensions.parallelMap
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdSearchResult
-import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.stereotype.Component
 
 @Component
@@ -22,7 +22,6 @@ class IcdQuery(
         const val flexiSearchDefaultValue = true
         const val flatResultsDefaultValue = true
     }
-
 
 
     suspend fun searchIcd(
@@ -63,4 +62,7 @@ class IcdQuery(
             throw NotAuthorizedException(authContext.mediqAuthToken, Crud.READ to Tables.IcdCode)
         }
     }
+
+    suspend fun icds(icdCodes: List<String>, authContext: GraphQLAuthContext) =
+        icdCodes.parallelMap { icd(it, authContext) }
 }
