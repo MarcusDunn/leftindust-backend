@@ -172,6 +172,8 @@ type GraphQLFormData {
 }
 
 type GraphQLFormSection {
+  "Max 50 000 chars"
+  description: String
   "Note that I do not provide a stable order to these fields"
   fields: [GraphQlFormField!]!
   name: String!
@@ -287,7 +289,7 @@ type IcdSimpleEntity implements IcdReallySimpleEntity {
   entityType: IcdEntityType!
   hasCodingNote: Boolean!
   hasMaternalChapterLink: Boolean!
-  id: String
+  id: String!
   important: Boolean!
   isLeaf: Boolean!
   isResidualOther: Boolean!
@@ -322,7 +324,6 @@ type Mutation {
   addClinic(clinic: ClinicInput!): Clinic!
   addDoctor(doctor: DoctorInput!): Doctor!
   addEvent(event: EventInput!): Event!
-  addSurveyTemplate(surveyTemplate: FormTemplateInput!): GraphQLFormTemplate!
   addGroup(group: GroupInput!): Group!
   """
   adds a new patient and connects them to already existing doctors and contacts
@@ -331,6 +332,7 @@ type Mutation {
   addPatient(patient: PatientInput!): Patient!
   addPermission(groupId: GroupIdInput, permission: GraphQLPermissionInput!, userUid: String): Permission!
   addRecord(record: GraphQLRecordInput!): Record!
+  addSurveyTemplate(surveyTemplate: FormTemplateInput!): GraphQLFormTemplate!
   addUser(user: UserInput!): User!
   addVisit(visit: VisitInput!): Visit!
   editClinic(clinic: ClinicEditInput!): Clinic!
@@ -341,7 +343,7 @@ type Mutation {
   editRecurringEvent(event: EventEditInput!, recurrenceSettings: RecurrenceEditSettingsInput!): Event!
   editUser(user: UserEditInput!): User!
   editVisit(visit: GraphQLVisitEditInput!): Visit!
-  submitSurvey(surveyJson: String!, patient: PatientIdInput!): GraphQLFormData!
+  submitSurvey(patient: PatientIdInput!, surveyJson: String!): GraphQLFormData!
   "updates a patient by their pid, only the not null fields are updated, pid MUST be defined"
   updatePatient(patient: PatientEditInput!): Patient!
 }
@@ -417,8 +419,6 @@ type Query @extends {
   to true (defaults to false)
   """
   firebaseUsers(filterRegistered: Boolean, range: RangeInput): [FirebaseInfo!]!
-  "fetch form templates by one getting a range or the form id"
-  surveys(surveys: [FormTemplateIdInput!], range: RangeInput): [GraphQLFormTemplate!]!
   getContactsByPatient(pid: PatientIdInput!): [Person!]!
   groups(gids: [GroupIdInput!], range: RangeInput): [Group!]!
   icd(icdCode: String!): IcdLinearizationEntity!
@@ -432,6 +432,8 @@ type Query @extends {
     "Cannot be empty string"
     query: String!
   ): IcdSearchResult!
+  "fetch survey templates by one getting a range or the survey id"
+  surveys(range: RangeInput, surveys: [FormTemplateIdInput!]): [GraphQLFormTemplate!]!
   "attempts to find the mediq-registered user by uid, if the user does not exist in the DB"
   user(uid: ID!): User!
   "returns a list of users, only one argument should be specified"
@@ -832,6 +834,8 @@ input FormFieldInput {
 }
 
 input FormSectionInput {
+  "Max 50 000 chars"
+  description: String
   "Note that I do not provide a stable order to these fields"
   fields: [FormFieldInput!]!
   name: String!
