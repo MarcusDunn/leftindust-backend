@@ -2,6 +2,7 @@ package integration
 
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
+import java.util.*
 
 fun WebTestClient.ResponseSpec.verifyOnlyDataExists(expectedQuery: String): WebTestClient.BodyContentSpec {
     return runCatching {
@@ -45,3 +46,5 @@ fun WebTestClient.ResponseSpec.verifyError(expectedError: String): WebTestClient
         throw e
     }
 }
+
+fun makeUUID(string: String = "string"): UUID = UUID.nameUUIDFromBytes(string.encodeToByteArray())

@@ -753,4 +753,28 @@
             <column name="description" type="varchar(50000)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1634421256182" author="marcus">
+        <createTable tableName="assigned_form">
+            <column type="uuid" name="id">
+                <constraints primaryKey="true"/>
+            </column>
+            <column type="uuid" name="patient_id">
+                <constraints nullable="false"/>
+            </column>
+            <column type="uuid" name="form_template_id">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="patient_assigned_forms">
+            <column type="uuid" name="id">
+                <constraints primaryKey="true"/>
+            </column>
+            <column type="uuid" name="patient_id">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned_forms_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

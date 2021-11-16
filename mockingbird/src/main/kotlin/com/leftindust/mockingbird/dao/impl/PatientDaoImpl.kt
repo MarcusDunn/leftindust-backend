@@ -6,12 +6,11 @@ import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.*
-import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
-import com.leftindust.mockingbird.graphql.types.GraphQLEvent
-import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.GraphQLVisit
+import com.leftindust.mockingbird.extensions.getByIds
+import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -34,7 +33,7 @@ class PatientDaoImpl(
     @Autowired private val eventRepository: HibernateEventRepository,
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val entityManager: EntityManager,
-    @Autowired private val formDataRepository: HibernateFormDataRepository,
+    @Autowired private val formRepository: HibernateFormRepository,
 ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
@@ -165,6 +164,24 @@ class PatientDaoImpl(
             return patientRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+        }
+    }
+
+    override suspend fun assignForms(
+        patients: List<GraphQLPatient.ID>,
+        survey: GraphQLFormTemplate.ID,
+        requester: MediqToken
+    ): Collection<Patient> {
+        val updatePatients = Crud.UPDATE to Tables.Patient
+        if (requester can updatePatients) {
+            val form = formRepository.getById(survey.id)
+            val patientEntities = patientRepository.getByIds(patients.map { it.id })
+            for (patient in patientEntities) {
+                patient.assignedForms.add(AssignedForm(form, patient))
+            }
+            return patientEntities
+        } else {
+            throw NotAuthorizedException(requester, updatePatients)
         }
     }
 }

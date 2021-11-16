@@ -2,10 +2,7 @@ package com.leftindust.mockingbird.dao
 
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
-import com.leftindust.mockingbird.graphql.types.GraphQLEvent
-import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.graphql.types.GraphQLVisit
+import com.leftindust.mockingbird.graphql.types.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -48,4 +45,9 @@ interface PatientDao {
     suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient>
 
     suspend fun getByUser(uid: String, requester: MediqToken): Patient?
+    suspend fun assignForms(
+        patients: List<GraphQLPatient.ID>,
+        survey: GraphQLFormTemplate.ID,
+        requester: MediqToken
+    ): Collection<Patient>
 }

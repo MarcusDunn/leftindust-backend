@@ -4,12 +4,10 @@ import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.entity.superclasses.Person
-import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
 import com.leftindust.mockingbird.extensions.onUndefined
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
-import org.hibernate.Session
 import java.sql.Date
 import javax.persistence.*
 
@@ -42,6 +40,8 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
+    @OneToMany
+    var assignedForms: MutableCollection<AssignedForm> = mutableSetOf(),
 ) : Person(
     nameInfo = nameInfo,
     addresses = addresses.toMutableSet(),
@@ -151,11 +151,13 @@ class Patient(
         other as Patient
 
         if (sex != other.sex) return false
+        if (dateOfBirth != other.dateOfBirth) return false
         if (gender != other.gender) return false
         if (ethnicity != other.ethnicity) return false
         if (insuranceNumber != other.insuranceNumber) return false
         if (contacts != other.contacts) return false
         if (doctors != other.doctors) return false
+        if (assignedForms != other.assignedForms) return false
 
         return true
     }
