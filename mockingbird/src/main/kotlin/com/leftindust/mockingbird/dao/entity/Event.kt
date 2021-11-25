@@ -21,7 +21,7 @@ class Event(
     @ManyToMany(mappedBy = "events")
     val patients: MutableSet<Patient>,
     @OneToOne(optional = true, mappedBy = "event")
-    val visit: Visit? = null,
+    var visit: Visit? = null,
     @Embedded
     var reoccurrence: Reoccurrence? = null,
 ) : AbstractJpaPersistable() {
