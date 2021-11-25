@@ -777,4 +777,7 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="1634421256183" author="marcus">
+        <addUniqueConstraint tableName="assigned_form" columnNames="id, patient_id, form_template_id"/>
+    </changeSet>
 </databaseChangeLog>

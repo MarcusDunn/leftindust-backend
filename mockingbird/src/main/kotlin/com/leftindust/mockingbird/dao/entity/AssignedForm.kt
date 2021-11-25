@@ -2,13 +2,17 @@ package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import javax.persistence.Entity
+import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
+import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 @Entity
+@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["id", "patient_id", "form_template_id"])])
 class AssignedForm(
     @OneToOne
     val formTemplate: Form,
-    @OneToOne
+    @ManyToOne
     val patient: Patient,
 ) : AbstractJpaPersistable() {
     override fun equals(other: Any?): Boolean {
