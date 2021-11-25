@@ -73,6 +73,16 @@ type Address {
   province: String!
 }
 
+type AssignedSurvey {
+  id: AssignedSurveyId!
+  patient: Patient!
+  surveyTemplate: GraphQLFormTemplate!
+}
+
+type AssignedSurveyId {
+  id: UUID!
+}
+
 type CanadianProvince implements GraphQLProvince {
   asShortStrings: [String!]!
   asStrings: [String!]!
@@ -335,6 +345,7 @@ type Mutation {
   addSurveyTemplate(surveyTemplate: FormTemplateInput!): GraphQLFormTemplate!
   addUser(user: UserInput!): User!
   addVisit(visit: VisitInput!): Visit!
+  assignSurvey(patients: [PatientIdInput!]!, survey: FormTemplateIdInput!): [Patient!]!
   editClinic(clinic: ClinicEditInput!): Clinic!
   editDoctor(doctor: DoctorEditInput!): Doctor!
   "edits the event referenced by eid"
@@ -356,6 +367,7 @@ type NameInfo {
 
 type Patient implements Person {
   addresses: [Address!]!
+  assignedForms: [AssignedSurvey!]!
   contacts: [Person!]!
   dateOfBirth: Date!
   doctors: [Doctor!]!
@@ -422,6 +434,7 @@ type Query @extends {
   getContactsByPatient(pid: PatientIdInput!): [Person!]!
   groups(gids: [GroupIdInput!], range: RangeInput): [Group!]!
   icd(icdCode: String!): IcdLinearizationEntity!
+  icds(icdCodes: [String!]!): [IcdLinearizationEntity!]!
   mockingbirdIsAlive: Boolean!
   patients(example: PatientExampleInput, pids: [PatientIdInput!], range: RangeInput, sortedBy: SortableField): [Patient!]!
   permissions(uid: String!): Permissions!
