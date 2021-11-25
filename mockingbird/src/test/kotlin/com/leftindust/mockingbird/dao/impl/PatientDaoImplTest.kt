@@ -249,6 +249,8 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
+        every { assignedFormRepository.save(any()) } returns AssignedForm(form, patient).apply { id = makeUUID("yeet") }
+
         runBlocking {
             patientDaoImpl.assignForms(
                 listOf(GraphQLPatient.ID(makeUUID("qwsdq"))),
