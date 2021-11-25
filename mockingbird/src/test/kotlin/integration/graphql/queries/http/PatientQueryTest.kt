@@ -15,6 +15,7 @@ import integration.verifyOnlyDataExists
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -192,5 +193,6 @@ class PatientQueryTest {
 
         hibernateEventRepository.delete(hibernateEventRepository.findAll(Pageable.ofSize(10)).find { it.title == "MY EVENT + PatientQueryTest.search patient" }!!)
         patientRepository.delete(patient)
+        assertEquals(0, patientRepository.count())
     }
 }
