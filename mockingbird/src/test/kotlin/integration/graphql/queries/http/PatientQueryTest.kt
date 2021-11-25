@@ -6,6 +6,7 @@ import com.leftindust.mockingbird.auth.ContextFactory
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.ninjasquad.springmockk.MockkBean
 import integration.APPLICATION_JSON_MEDIA_TYPE
@@ -39,6 +40,9 @@ class PatientQueryTest {
 
     @Autowired
     private lateinit var hibernateEventRepository: HibernateEventRepository
+
+    @Autowired
+    private lateinit var hibernateVisitRepository: HibernateVisitRepository
 
     @MockkBean
     private lateinit var authorizer: Authorizer
@@ -191,8 +195,10 @@ class PatientQueryTest {
             .jsonPath("data.patients[0].pid.id")
             .isEqualTo(patient.id!!.toString())
 
-        hibernateEventRepository.delete(hibernateEventRepository.findAll(Pageable.ofSize(10)).find { it.title == "MY EVENT + PatientQueryTest.search patient" }!!)
+        hibernateVisitRepository.delete(hibernateVisitRepository.findByEvent_Id(event.id!!)!!)
         patientRepository.delete(patient)
-        assertEquals(0, patientRepository.count())
+        assertEquals(0, patientRepository.count()) { patientRepository.findAll().toString() }
+        assertEquals(0, hibernateVisitRepository.count()) { hibernateVisitRepository.findAll().toString() }
+        assertEquals(0, hibernateEventRepository.count()) { hibernateEventRepository.findAll().toString() }
     }
 }
