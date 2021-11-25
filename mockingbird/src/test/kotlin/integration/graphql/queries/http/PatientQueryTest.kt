@@ -191,5 +191,6 @@ class PatientQueryTest {
             .isEqualTo(patient.id!!.toString())
 
         hibernateEventRepository.delete(hibernateEventRepository.findAll(Pageable.ofSize(10)).find { it.title == "MY EVENT + PatientQueryTest.search patient" }!!)
+        patientRepository.deleteAllInBatch()
     }
 }
