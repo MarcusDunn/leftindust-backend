@@ -195,10 +195,14 @@ class PatientQueryTest {
             .jsonPath("data.patients[0].pid.id")
             .isEqualTo(patient.id!!.toString())
 
-        hibernateVisitRepository.delete(hibernateVisitRepository.findByEvent_Id(event.id!!)!!)
-        patientRepository.delete(patient)
+        hibernateVisitRepository.deleteAll()
+        event.visit = null
+        patient.events.clear()
+        hibernateEventRepository.deleteAll()
+        patientRepository.deleteAll()
         assertEquals(0, patientRepository.count()) { patientRepository.findAll().toString() }
         assertEquals(0, hibernateVisitRepository.count()) { hibernateVisitRepository.findAll().toString() }
         assertEquals(0, hibernateEventRepository.count()) { hibernateEventRepository.findAll().toString() }
+        patientRepository.flush()
     }
 }

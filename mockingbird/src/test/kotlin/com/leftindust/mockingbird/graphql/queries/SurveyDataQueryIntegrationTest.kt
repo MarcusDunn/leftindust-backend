@@ -48,6 +48,9 @@ class SurveyDataQueryIntegrationTest(
 
     @Test
     fun `check can get patient assigned forms survey template`() {
+        patientRepository.deleteAll()
+        assertEquals(0, patientRepository.count()) {patientRepository.findAll().map { it.nameInfo.firstName + it.nameInfo.lastName }.toString()}
+
         coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
             every { isVerified() } returns true
         }, mockk(relaxed = true))
@@ -86,6 +89,7 @@ class SurveyDataQueryIntegrationTest(
             assignedFormRepository.delete(assignedForm)
             formRepository.delete(form)
             patientRepository.delete(patient)
+            patientRepository.flush()
             assertEquals(0, assignedFormRepository.count()) {assignedFormRepository.findAll().toString()}
             assertEquals(0, formDataRepository.count()) { formDataRepository.findAll().toString()}
             assertEquals(0, patientRepository.count()) {patientRepository.findAll().map { it.nameInfo.firstName + it.nameInfo.lastName }.toString()}
