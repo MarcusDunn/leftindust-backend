@@ -34,7 +34,8 @@ class PatientDaoImpl(
     @Autowired private val visitRepository: HibernateVisitRepository,
     @Autowired private val entityManager: EntityManager,
     @Autowired private val formRepository: HibernateFormRepository,
-) : PatientDao, AbstractHibernateDao(authorizer) {
+    @Autowired private val assignedFormRepository: HibernateAssignedFormRepository,
+    ) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
         if (requester can (Crud.READ to Tables.Patient)) {
@@ -177,7 +178,8 @@ class PatientDaoImpl(
             val form = formRepository.getById(survey.id)
             val patientEntities = patientRepository.getByIds(patients.map { it.id })
             for (patient in patientEntities) {
-                patient.assignedForms.add(AssignedForm(form, patient))
+                val assignedForm = assignedFormRepository.save(AssignedForm(form, patient))
+                patient.assignedForms.add(assignedForm)
             }
             return patientEntities
         } else {

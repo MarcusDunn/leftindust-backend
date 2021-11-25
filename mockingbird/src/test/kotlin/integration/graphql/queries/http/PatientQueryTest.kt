@@ -23,13 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Pageable
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.sql.Timestamp
 import javax.transaction.Transactional
 
 @SpringBootTest(classes = [MockingbirdApplication::class])
 @AutoConfigureWebTestClient
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Tag("Integration")
 class PatientQueryTest {
     @Autowired
@@ -40,9 +43,6 @@ class PatientQueryTest {
 
     @Autowired
     private lateinit var hibernateEventRepository: HibernateEventRepository
-
-    @Autowired
-    private lateinit var hibernateVisitRepository: HibernateVisitRepository
 
     @MockkBean
     private lateinit var authorizer: Authorizer
@@ -83,8 +83,7 @@ class PatientQueryTest {
             .exchange()
             .verifyOnlyDataExists("addPatient")
 
-        val patient = patientRepository.findAll(Pageable.ofSize(10))
-            .find { it.nameInfo.firstName == "Lillian" && it.nameInfo.lastName == "joe" }!!
+        val patient = patientRepository.findAll().first()
 
         val start = Timestamp.valueOf("2018-09-01 09:01:15")
         val end = Timestamp.valueOf("2018-09-01 10:01:15")
@@ -114,8 +113,7 @@ class PatientQueryTest {
             .exchange()
             .verifyOnlyDataExists("addEvent")
 
-        val event = patientRepository.findAll(Pageable.ofSize(10))
-            .find { it.nameInfo.firstName == "Lillian" && it.nameInfo.lastName == "joe" }!!.events.first()
+        val event = hibernateEventRepository.findAll().first()
 
         testClient.post()
             .uri(GRAPHQL_ENDPOINT)
@@ -195,14 +193,6 @@ class PatientQueryTest {
             .jsonPath("data.patients[0].pid.id")
             .isEqualTo(patient.id!!.toString())
 
-        hibernateVisitRepository.deleteAll()
-        event.visit = null
-        patient.events.clear()
-        hibernateEventRepository.deleteAll()
         patientRepository.deleteAll()
-        assertEquals(0, patientRepository.count()) { patientRepository.findAll().toString() }
-        assertEquals(0, hibernateVisitRepository.count()) { hibernateVisitRepository.findAll().toString() }
-        assertEquals(0, hibernateEventRepository.count()) { hibernateEventRepository.findAll().toString() }
-        patientRepository.flush()
     }
 }

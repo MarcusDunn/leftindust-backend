@@ -48,8 +48,7 @@ class SurveyDataQueryIntegrationTest(
 
     @Test
     fun `check can get patient assigned forms survey template`() {
-        patientRepository.deleteAll()
-        assertEquals(0, patientRepository.count()) {patientRepository.findAll().map { it.nameInfo.firstName + it.nameInfo.lastName }.toString()}
+        assertEquals(0, patientRepository.count()) {patientRepository.findAll().map { it.nameInfo.firstName + it.nameInfo.middleName + it.nameInfo.lastName }.toString()}
 
         coEvery { contextFactory.generateContext(any()) } returns GraphQLAuthContext(mockk {
             every { isVerified() } returns true

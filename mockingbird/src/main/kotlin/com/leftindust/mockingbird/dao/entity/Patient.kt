@@ -40,7 +40,7 @@ class Patient(
     var contacts: Set<EmergencyContact> = emptySet(),
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
-    @OneToMany
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
     var assignedForms: MutableCollection<AssignedForm> = mutableSetOf(),
 ) : Person(
     nameInfo = nameInfo,

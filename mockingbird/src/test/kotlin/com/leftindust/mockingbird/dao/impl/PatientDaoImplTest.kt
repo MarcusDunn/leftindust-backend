@@ -5,9 +5,19 @@ import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Sex
-import com.leftindust.mockingbird.dao.impl.repository.*
+import com.leftindust.mockingbird.dao.impl.repository.HibernateAssignedFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.graphql.types.*
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.GraphQLMonth
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -32,6 +42,7 @@ internal class PatientDaoImplTest {
     private val entityManager = mockk<EntityManager>()
     private val eventRepository = mockk<HibernateEventRepository>()
     private val formRepository = mockk<HibernateFormRepository>()
+    private val assignedFormRepository = mockk<HibernateAssignedFormRepository>()
 
 
     @Test
@@ -44,7 +55,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
         val actual = runBlocking { patientDaoImpl.getByPID(GraphQLPatient.ID(patientID), mockk()) }
 
@@ -68,8 +80,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
-
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }
@@ -90,7 +102,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking { patientDaoImpl.removeByPID(GraphQLPatient.ID(patientID), mockk()) }
@@ -113,7 +126,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking { patientDaoImpl.getByDoctor(GraphQLDoctor.ID(doctorID), mockk()) }
@@ -135,7 +149,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking { patientDaoImpl.getByVisit(GraphQLVisit.ID(visitID), mockk()) }
@@ -159,8 +174,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
-
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking {
@@ -186,7 +201,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val patientInput = mockk<GraphQLPatientEditInput> {
@@ -208,7 +224,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         val actual = runBlocking { patientDaoImpl.getByUser("uid", mockk()) }
@@ -228,7 +245,8 @@ internal class PatientDaoImplTest {
 
         val patientDaoImpl = PatientDaoImpl(
             authorizer, patientRepository, doctorRepository,
-            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository
+            doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
+            assignedFormRepository
         )
 
         runBlocking {
