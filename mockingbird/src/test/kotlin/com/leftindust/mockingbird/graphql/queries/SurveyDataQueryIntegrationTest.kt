@@ -86,8 +86,9 @@ class SurveyDataQueryIntegrationTest(
             assignedFormRepository.delete(assignedForm)
             formRepository.delete(form)
             patientRepository.delete(patient)
-            assertEquals(formDataRepository.count(), 0)
-            assertEquals(patientRepository.count(), 0)
+            assertEquals(0, assignedFormRepository.count()) {assignedFormRepository.findAll().toString()}
+            assertEquals(0, formDataRepository.count()) { formDataRepository.findAll().toString()}
+            assertEquals(0, patientRepository.count()) {patientRepository.findAll().toString()}
         }
     }
 }
