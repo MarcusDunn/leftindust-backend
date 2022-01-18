@@ -1,17 +1,17 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import org.hibernate.annotations.Check
 import java.sql.Timestamp
 import java.time.Instant
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.ManyToOne
+import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 // note that for the sake of persisting updates we treat the doctor as owning this table.
 @Entity
-@Check(constraints = "UNIQUE(patient_id, doctor_id)")
+@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["patient", "doctor"])])
 class DoctorPatient(
     @ManyToOne(fetch = FetchType.LAZY)
     var patient: Patient,
