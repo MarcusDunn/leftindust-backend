@@ -780,7 +780,7 @@
     <changeSet id="1634421256183" author="marcus">
         <addUniqueConstraint tableName="assigned_form" columnNames="id, patient_id, form_template_id"/>
     </changeSet>
-    <changeSet id="1634421256183" author="marcus">
+    <changeSet id="1634421256184" author="marcus">
         <addUniqueConstraint tableName="doctor_patient" columnNames="doctor_id, patient_id"/>
     </changeSet>
 </databaseChangeLog>
