@@ -11,6 +11,8 @@ import com.leftindust.mockingbird.dao.entity.FormData
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormDataRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -27,21 +29,23 @@ class FormDataDaoImpl(
         val createForms = Crud.CREATE to Tables.Form
     }
 
-    override suspend fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData {
-        val createFormsAndUpdatePatients = listOf(createForms, Crud.UPDATE to Tables.Patient)
-        if (requester can createFormsAndUpdatePatients) {
-            return formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
-        } else {
-            throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
+    override suspend fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData =
+        withContext(Dispatchers.IO) {
+            val createFormsAndUpdatePatients = listOf(createForms, Crud.UPDATE to Tables.Patient)
+            if (requester can createFormsAndUpdatePatients) {
+                formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
+            } else {
+                throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
+            }
         }
-    }
 
-    override suspend fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> {
-        val readFormsAndPatient = listOf(readForms, Crud.READ to Tables.Patient)
-        if (requester can readFormsAndPatient) {
-            return formDataRepository.getByPatient_Id(patient.id)
-        } else {
-            throw NotAuthorizedException(requester, readFormsAndPatient)
+    override suspend fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> =
+        withContext(Dispatchers.IO) {
+            val readFormsAndPatient = listOf(readForms, Crud.READ to Tables.Patient)
+            if (requester can readFormsAndPatient) {
+                formDataRepository.getByPatient_Id(patient.id)
+            } else {
+                throw NotAuthorizedException(requester, readFormsAndPatient)
+            }
         }
-    }
 }

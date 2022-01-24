@@ -8,13 +8,25 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.dao.impl.repository.*
+import com.leftindust.mockingbird.dao.impl.repository.HibernateAssignedFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
 import com.leftindust.mockingbird.extensions.getByIds
-import com.leftindust.mockingbird.graphql.types.*
+import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
+import com.leftindust.mockingbird.graphql.types.GraphQLEvent
+import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
+import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
@@ -35,7 +47,7 @@ class PatientDaoImpl(
     @Autowired private val entityManager: EntityManager,
     @Autowired private val formRepository: HibernateFormRepository,
     @Autowired private val assignedFormRepository: HibernateAssignedFormRepository,
-    ) : PatientDao, AbstractHibernateDao(authorizer) {
+) : PatientDao, AbstractHibernateDao(authorizer) {
 
     override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
         if (requester can (Crud.READ to Tables.Patient)) {
@@ -135,13 +147,14 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient> {
-        return if (requester can (Crud.READ to Tables.Patient)) {
-            patientRepository.findAllById(pids.map { it.id })
-        } else {
-            throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+    override suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient> =
+        withContext(Dispatchers.IO) {
+            if (requester can (Crud.READ to Tables.Patient)) {
+                patientRepository.findAllById(pids.map { it.id })
+            } else {
+                throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
+            }
         }
-    }
 
     override suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient> {
         if (requester can (Crud.READ to Tables.Patient)) {
@@ -160,9 +173,9 @@ class PatientDaoImpl(
         }
     }
 
-    override suspend fun getByUser(uid: String, requester: MediqToken): Patient? {
+    override suspend fun getByUser(uid: String, requester: MediqToken): Patient? = withContext(Dispatchers.IO) {
         if (requester can (Crud.READ to Tables.Patient)) {
-            return patientRepository.findByUser_UniqueId(uid)
+            patientRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
         }
@@ -172,7 +185,7 @@ class PatientDaoImpl(
         patients: List<GraphQLPatient.ID>,
         survey: GraphQLFormTemplate.ID,
         requester: MediqToken
-    ): Collection<Patient> {
+    ): Collection<Patient> = withContext(Dispatchers.IO) {
         val updatePatients = Crud.UPDATE to Tables.Patient
         if (requester can updatePatients) {
             val form = formRepository.getById(survey.id)
@@ -181,7 +194,7 @@ class PatientDaoImpl(
                 val assignedForm = assignedFormRepository.save(AssignedForm(form, patient))
                 patient.assignedForms.add(assignedForm)
             }
-            return patientEntities
+            patientEntities
         } else {
             throw NotAuthorizedException(requester, updatePatients)
         }

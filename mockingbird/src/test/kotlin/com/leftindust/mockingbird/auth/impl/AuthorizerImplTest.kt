@@ -2,7 +2,6 @@ package com.leftindust.mockingbird.auth.impl
 
 import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.extensions.Success
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -27,7 +26,9 @@ internal class AuthorizerImplTest {
                 every { action.isSuperset(any()) } returns false
             }
         )
-        coEvery { authorizationDao.isAdmin(any())} returns false
+        coEvery { authorizationDao.isAdmin(any()) } returns false
+        coEvery { authorizationDao.isPatient(any()) } returns false
+
 
         val authorizer = AuthorizerImpl(authorizationDao)
 
@@ -44,7 +45,9 @@ internal class AuthorizerImplTest {
 
     @Test
     fun `get authorization when user has superset of required permissions`() {
-        coEvery { authorizationDao.isAdmin(any())} returns false
+        coEvery { authorizationDao.isAdmin(any()) } returns false
+        coEvery { authorizationDao.isPatient(any()) } returns false
+
 
         coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns listOf(
             mockk("superset") {
@@ -67,7 +70,7 @@ internal class AuthorizerImplTest {
 
     @Test
     fun getAuthorizationForAdmin() {
-        coEvery { authorizationDao.isAdmin(any())} returns true
+        coEvery { authorizationDao.isAdmin(any()) } returns true
         val authorizer = AuthorizerImpl(authorizationDao)
         val actual = runBlocking {
             authorizer.getAuthorization(
