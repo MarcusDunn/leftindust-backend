@@ -7,7 +7,6 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
     kotlin("plugin.allopen")
-    id("info.solidsoft.pitest")
 
     // spring
     id("org.springframework.boot")
@@ -27,8 +26,10 @@ dependencies {
     val firebaseVersion = "7.0.1"
     val liquibaseVersion = "4.5.0"
     val coroutinesVersion = "1.4.3"
-    val springBootVersion = "2.5.5"
+    val springBootVersion = "2.6.3"
     val jsonFlattenerVersion = "0.12.0"
+    val testContainersVersion = "1.16.3"
+    val jpamodelgenVersion = "5.6.5.Final"
 
 
     // spring
@@ -56,15 +57,17 @@ dependencies {
     implementation("io.ktor", "ktor-client-gson", ktorVersion)
 
     // hibernate model code generation
-    implementation("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
-    kapt("org.hibernate", "hibernate-jpamodelgen", "5.4.12.Final")
+    implementation("org.hibernate", "hibernate-jpamodelgen", jpamodelgenVersion)
+    kapt("org.hibernate", "hibernate-jpamodelgen", jpamodelgenVersion)
 
     // firebase
     implementation("com.google.firebase", "firebase-admin", firebaseVersion)
 
     // database drivers
     implementation("org.postgresql", "postgresql")
-    testImplementation("com.h2database", "h2")
+    testImplementation("org.testcontainers", "testcontainers", testContainersVersion)
+    testImplementation("org.testcontainers", "postgresql", testContainersVersion)
+
 
     // liquibase
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
@@ -151,12 +154,6 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "${JavaVersion.VERSION_1_8}"
         allWarningsAsErrors = true
     }
-}
-
-pitest {
-    outputFormats.set(listOf("html"))
-    targetClasses.set(listOf("com.leftindust.mockingbird.*"))
-    junit5PluginVersion.set("0.15")
 }
 
 kapt {
