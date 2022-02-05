@@ -23,7 +23,6 @@ class ApplicationConfig {
     private companion object {
         object FireBaseConfig {
             const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/serviceAccountKey.json"
-            const val DATABASE_URL = "https://mediq-backend.firebaseio.com"
         }
 
         object CorsConfig {
@@ -44,13 +43,12 @@ class ApplicationConfig {
                 val serviceAccount = FileInputStream(SERVICE_ACCOUNT_KEY_PATH)
                 val options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl(DATABASE_URL)
                     .build()
                 FirebaseApp.initializeApp(options)
             }
         } catch (e: FileNotFoundException) {
             throw FileNotFoundException(
-                "you are missing serviceAccountKey.json for firebase authentication, this is not" +
+                "you are missing ${FireBaseConfig.SERVICE_ACCOUNT_KEY_PATH} for firebase authentication, this is not" +
                         "available in the public repository, you must make your own. See " +
                         "https://firebase.google.com/docs/admin/setup for details."
             )

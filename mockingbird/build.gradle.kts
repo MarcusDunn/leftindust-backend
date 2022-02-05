@@ -30,6 +30,7 @@ dependencies {
     val jsonFlattenerVersion = "0.12.0"
     val testContainersVersion = "1.16.3"
     val jpamodelgenVersion = "5.6.5.Final"
+    val postgressqlVersion = "42.3.2"
 
 
     // spring
@@ -64,7 +65,7 @@ dependencies {
     implementation("com.google.firebase", "firebase-admin", firebaseVersion)
 
     // database drivers
-    implementation("org.postgresql", "postgresql")
+    implementation("org.postgresql", "postgresql", postgressqlVersion)
     testImplementation("org.testcontainers", "testcontainers", testContainersVersion)
     testImplementation("org.testcontainers", "postgresql", testContainersVersion)
 

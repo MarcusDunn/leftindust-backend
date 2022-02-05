@@ -9,12 +9,8 @@ spring:
     web-application-type: reactive
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: create-drop
   liquibase:
-    change-log: classpath:dbchangelog.xml
-    enabled: true
+    enabled: false
   datasource: # this is overridden by environment variables when tested on push
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:tc:postgresql:///
+    url: jdbc:tc:postgresql:14:///
