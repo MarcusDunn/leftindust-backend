@@ -9,7 +9,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLUserInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

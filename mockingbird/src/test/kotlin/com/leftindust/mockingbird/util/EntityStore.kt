@@ -1,4 +1,4 @@
-package integration.util
+package com.leftindust.mockingbird.util
 
 import com.google.gson.JsonObject
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.util.*
 
 object EntityStore {
-    fun patient(testName: String) = Patient(
+    fun patient(testName: String = "no name given") = Patient(
         nameInfo = NameInfo(
             firstName = "marcus",
             middleName = testName,

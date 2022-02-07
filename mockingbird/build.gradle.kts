@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -34,8 +35,7 @@ dependencies {
 
 
     // spring
-    implementation("org.springframework.boot", "spring-boot-starter", springBootVersion)
-    implementation("org.springframework.boot", "spring-boot-starter-log4j2", springBootVersion)
+    implementation("org.springframework.boot", "spring-boot-starter-webflux", springBootVersion)
     implementation("org.springframework.boot", "spring-boot-starter-jdbc", springBootVersion)
     implementation("org.springframework.boot", "spring-boot-starter-data-jpa", springBootVersion)
 
@@ -68,6 +68,7 @@ dependencies {
     implementation("org.postgresql", "postgresql", postgressqlVersion)
     testImplementation("org.testcontainers", "testcontainers", testContainersVersion)
     testImplementation("org.testcontainers", "postgresql", testContainersVersion)
+    testImplementation("org.testcontainers", "junit-jupiter", testContainersVersion)
 
 
     // liquibase
@@ -92,15 +93,6 @@ dependencies {
     testImplementation("com.ninja-squad", "springmockk", "3.0.1")
 }
 
-
-// remove logback in favor of slf4j
-configurations {
-    all {
-        exclude(module = "spring-boot-starter-logging")
-        exclude(module = "logback-classic")
-    }
-}
-
 // liquibase plugin config
 liquibase {
     activities.register("main") {
@@ -122,31 +114,16 @@ liquibase {
 
 // test properties
 tasks.withType<Test> {
-    useJUnitPlatform {
-        excludeTags("Integration", "Performance")
-    }
-
+    useJUnitPlatform()
     testLogging {
         events(
             TestLogEvent.FAILED,
             TestLogEvent.STANDARD_ERROR
         )
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        exceptionFormat = FULL
         showExceptions = true
         showCauses = true
         showStackTraces = true
-    }
-}
-
-val integrationTest = task<Test>("integrationTest") {
-    useJUnitPlatform {
-        includeTags("Integration")
-    }
-}
-
-val performanceTest = task<Test>("performanceTest") {
-    useJUnitPlatform {
-        includeTags("Performance")
     }
 }
 

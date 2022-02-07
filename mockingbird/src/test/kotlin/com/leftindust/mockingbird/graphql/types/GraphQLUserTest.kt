@@ -9,16 +9,14 @@ import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
-import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*

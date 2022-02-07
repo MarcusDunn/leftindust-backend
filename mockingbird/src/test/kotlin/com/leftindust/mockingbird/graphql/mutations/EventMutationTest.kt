@@ -4,10 +4,9 @@ import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.EventDao
 import com.leftindust.mockingbird.dao.entity.Event
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach

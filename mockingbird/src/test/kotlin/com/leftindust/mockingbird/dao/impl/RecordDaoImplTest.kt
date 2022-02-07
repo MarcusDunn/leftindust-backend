@@ -8,10 +8,9 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*

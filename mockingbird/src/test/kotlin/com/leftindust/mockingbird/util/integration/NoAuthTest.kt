@@ -1,4 +1,4 @@
-package integration.util
+package com.leftindust.mockingbird.util.integration
 
 import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.ContextFactory
@@ -10,7 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 
-abstract class NoAuthTest {
+abstract class NoAuthIntegrationTest : IntegrationTest() {
     @MockkBean
     private lateinit var contextFactory: ContextFactory
 

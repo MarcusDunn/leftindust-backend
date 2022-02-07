@@ -22,8 +22,8 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
-import integration.makeUUID
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.makeUUID
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

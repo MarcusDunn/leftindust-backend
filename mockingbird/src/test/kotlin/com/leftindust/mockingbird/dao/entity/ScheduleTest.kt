@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals

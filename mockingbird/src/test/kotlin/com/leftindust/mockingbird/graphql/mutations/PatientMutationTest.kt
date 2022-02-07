@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -19,7 +18,6 @@ import java.util.*
 internal class PatientMutationTest {
     private val authContext = mockk<GraphQLAuthContext>()
     private val patientDao = mockk<PatientDao>()
-
 
     @Test
     fun addDoctorToPatient() {

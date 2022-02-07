@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.RecordDao
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

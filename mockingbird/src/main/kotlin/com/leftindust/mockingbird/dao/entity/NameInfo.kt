@@ -14,7 +14,7 @@ class NameInfo(
     @Column(nullable = false)
     var lastName: String,
     @Column(nullable = true)
-    var middleName: String?,
+    var middleName: String? = null,
 ) : AbstractJpaPersistable() {
     constructor(graphQLNameInput: GraphQLNameInfoInput) : this(
         firstName = graphQLNameInput.firstName,

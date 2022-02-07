@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoEditInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.mockk
 import io.mockk.spyk
 import org.junit.jupiter.api.Assertions.assertEquals

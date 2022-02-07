@@ -10,8 +10,8 @@ import com.leftindust.mockingbird.dao.entity.FormData
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import integration.makeUUID
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.makeUUID
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -24,7 +24,6 @@ internal class FormMutationTest {
     private val formDao = mockk<FormDao>()
     private val formDataDao = mockk<FormDataDao>()
     private val patientDao = mockk<PatientDao>()
-
 
     @Test
     fun addForm() {

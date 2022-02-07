@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.expediagroup.graphql.generator.execution.OptionalInput
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*

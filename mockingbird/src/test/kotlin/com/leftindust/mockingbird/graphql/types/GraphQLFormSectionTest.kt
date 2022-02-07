@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.graphql.types
 
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

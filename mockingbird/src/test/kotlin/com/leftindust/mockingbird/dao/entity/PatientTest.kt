@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
-import integration.util.EntityStore
+import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk

@@ -1,4 +1,4 @@
-package integration
+package com.leftindust.mockingbird.util
 
 import org.springframework.http.MediaType
 
