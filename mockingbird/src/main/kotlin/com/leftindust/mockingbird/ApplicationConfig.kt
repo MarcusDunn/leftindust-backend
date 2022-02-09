@@ -14,15 +14,15 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 
 
 @Configuration
 class ApplicationConfig {
+
     private companion object {
         object FireBaseConfig {
-            const val SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/serviceAccountKey.json"
+            const val SERVICE_ACCOUNT_KEY_PATH = "serviceAccountKey.json"
         }
 
         object CorsConfig {
@@ -40,7 +40,7 @@ class ApplicationConfig {
             FirebaseApp.getInstance()
         else try {
             with(FireBaseConfig) {
-                val serviceAccount = FileInputStream(SERVICE_ACCOUNT_KEY_PATH)
+                val serviceAccount = this::class.java.classLoader.getResourceAsStream(SERVICE_ACCOUNT_KEY_PATH)
                 val options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build()
