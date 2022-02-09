@@ -436,7 +436,9 @@ type Query @extends {
   icd(icdCode: String!): IcdLinearizationEntity!
   icds(icdCodes: [String!]!): [IcdLinearizationEntity!]!
   mockingbirdIsAlive: Boolean!
-  patients(example: PatientExampleInput, pids: [PatientIdInput!], range: RangeInput, sortedBy: SortableField): [Patient!]!
+  patientsByExample(example: PatientExampleInput!): [Patient!]!
+  patientsByPid(pids: [PatientIdInput!]!, sortedBy: SortableField): [Patient!]!
+  patientsByRange(range: RangeInput!, sortedBy: SortableField): [Patient!]!
   permissions(uid: String!): Permissions!
   records(pid: PatientIdInput, rids: [RecordIdInput!]): [Record!]!
   searchIcd(
