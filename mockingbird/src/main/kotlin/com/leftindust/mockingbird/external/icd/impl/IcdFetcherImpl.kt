@@ -68,6 +68,7 @@ class IcdFetcherImpl(
     }
 
     private suspend inline fun <reified T> getUrlWithIcdHeaders(url: String): T {
+        println(url)
         return client.get {
             url(url)
             header("Accept", "application/json")

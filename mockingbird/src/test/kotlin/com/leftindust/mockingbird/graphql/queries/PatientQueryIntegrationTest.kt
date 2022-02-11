@@ -9,13 +9,14 @@ import com.leftindust.mockingbird.util.verifyOnlyDataExists
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient
+@ResourceLock("database", mode = READ_WRITE)
 class PatientQueryIntegrationTest(
     @Autowired private val webTestClient: WebTestClient
 ) : NoAuthIntegrationTest() {
@@ -31,13 +32,12 @@ class PatientQueryIntegrationTest(
         @BeforeAll
         @JvmStatic
         fun setup(@Autowired patientRepository: HibernatePatientRepository) {
-            patient = patientRepository.saveAndFlush(EntityStore.patient())
+            patient = patientRepository.save(EntityStore.patient())
         }
     }
 
 
     @Test
-    @ResourceLock("database", mode = ResourceAccessMode.READ)
     internal fun `get patients by range`() {
         webTestClient.gqlRequest(
             // language=graphql
@@ -55,7 +55,6 @@ class PatientQueryIntegrationTest(
     }
 
     @Test
-    @ResourceLock("database", mode = ResourceAccessMode.READ)
     internal fun `get patients by id`() {
         webTestClient.gqlRequest(
             // language=graphql
