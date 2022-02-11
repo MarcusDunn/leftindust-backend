@@ -1,6 +1,8 @@
 package com.leftindust.mockingbird.util.integration
 
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,6 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @AutoConfigureTestDatabase(replace = NONE)
 @Testcontainers
 @ContextConfiguration(initializers = [IntegrationTest.Initialize::class])
+@Execution(CONCURRENT)
 @Tag("Integration")
 abstract class IntegrationTest {
 
@@ -31,6 +34,7 @@ abstract class IntegrationTest {
             addEnv("acceptLicense", "true")
             addEnv("include", "2021-05_en")
             addExposedPort(80)
+            withLogConsumer { frame -> println(frame.utf8String) }
             start()
         }
     }
@@ -42,7 +46,7 @@ abstract class IntegrationTest {
                 "spring.datasource.url=${postgres.jdbcUrl}",
                 "spring.datasource.username=${postgres.username}",
                 "spring.datasource.password=${postgres.password}",
-                "icd.api.url=${icdApi.host}:${icdApi.firstMappedPort}/icd"
+                "icd.client.url=http://${icdApi.host}:${icdApi.firstMappedPort}/icd"
             )
         }
     }
