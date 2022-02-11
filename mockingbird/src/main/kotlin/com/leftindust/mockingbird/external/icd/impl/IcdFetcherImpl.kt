@@ -1,6 +1,6 @@
 package com.leftindust.mockingbird.external.icd.impl
 
-import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
+import com.leftindust.mockingbird.external.icd.IcdApiClient
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.*
 import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class IcdFetcherImpl(
-    @Autowired private val config: IcdApiClientConfigBean,
+    @Autowired private val config: IcdApiClient,
 ) : IcdFetcher {
 
     private val client = HttpClient(CIO) {
@@ -30,7 +30,7 @@ class IcdFetcherImpl(
         linearizationName: String,
         code: GraphQLFoundationIcdCode
     ): GraphQLIcdMultiVersion {
-        val url = "${config.BASE_URL}/release/11/$linearizationName/${code.code}"
+        val url = "${config.url}/release/11/$linearizationName/${code.code}"
         return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
     }
 
@@ -40,14 +40,14 @@ class IcdFetcherImpl(
         flatResults: Boolean,
         flexiSearch: Boolean,
     ): GraphQLIcdSearchResult {
-        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.CURRENT}/$linearizationName/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
+        val url = "${config.url}/release/11/${GraphQLReleaseIdInput.CURRENT}/$linearizationName/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
         return getUrlWithIcdHeaders(url)
     }
 
     override suspend fun getDetails(
         code: GraphQLFoundationIcdCode,
     ): GraphQLIcdFoundationEntity {
-        val url = "${config.BASE_URL}/entity/${code.code}"
+        val url = "${config.url}/entity/${code.code}"
         return GraphQLIcdFoundationEntity(getUrlWithIcdHeaders(url))
     }
 
@@ -56,14 +56,14 @@ class IcdFetcherImpl(
         flexiSearch: Boolean,
         flatResults: Boolean
     ): GraphQLIcdSearchResult {
-        val url = "${config.BASE_URL}/entity/search?q=$query&useFlexisearch=$flexiSearch&flatResults=$flatResults"
+        val url = "${config.url}/entity/search?q=$query&useFlexisearch=$flexiSearch&flatResults=$flatResults"
         return getUrlWithIcdHeaders(url)
     }
 
     override suspend fun linearizationEntity(
         code: GraphQLFoundationIcdCode
     ): GraphQLIcdLinearizationEntity {
-        val url = "${config.BASE_URL}/release/11/${GraphQLReleaseIdInput.CURRENT}/mms/${code.code}"
+        val url = "${config.url}/release/11/${GraphQLReleaseIdInput.CURRENT}/mms/${code.code}"
         return GraphQLIcdLinearizationEntity(getUrlWithIcdHeaders(url))
     }
 
