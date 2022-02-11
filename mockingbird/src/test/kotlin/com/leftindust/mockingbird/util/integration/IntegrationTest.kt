@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.support.TestPropertySourceUtils
+import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -24,15 +25,24 @@ abstract class IntegrationTest {
             waitingFor(LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"))
             start()
         }
+
+        val icdApi = GenericContainer("whoicd/icd-api").apply {
+            setWaitStrategy(LogMessageWaitStrategy().withRegEx(".*ICD-11 Container is Running!.*"))
+            addEnv("acceptLicense", "true")
+            addEnv("include", "2021-05_en")
+            addExposedPort(80)
+            start()
+        }
     }
 
     object Initialize : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(it: ConfigurableApplicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                 it,
-                "spring.datasource.url=" + postgres.jdbcUrl,
-                "spring.datasource.username=" + postgres.username,
-                "spring.datasource.password=" + postgres.password
+                "spring.datasource.url=${postgres.jdbcUrl}",
+                "spring.datasource.username=${postgres.username}",
+                "spring.datasource.password=${postgres.password}",
+                "icd.api.url=${icdApi.host}:${icdApi.firstMappedPort}/icd"
             )
         }
     }
