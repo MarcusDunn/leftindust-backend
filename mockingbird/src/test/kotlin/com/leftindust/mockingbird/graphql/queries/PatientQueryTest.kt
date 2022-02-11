@@ -84,6 +84,6 @@ internal class PatientQueryTest {
                 authContext = authContext
             )
         }
-        assertEquals((0 until 5).map { graphQLPatient }, result)
+        assertEquals((0 until 1).map { graphQLPatient }, result)
     }
 }

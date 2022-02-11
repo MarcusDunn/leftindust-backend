@@ -118,7 +118,7 @@ tasks.withType<Test> {
     testLogging {
         events(
             TestLogEvent.FAILED,
-            TestLogEvent.STANDARD_ERROR
+            TestLogEvent.STANDARD_ERROR,
         )
         exceptionFormat = FULL
         showExceptions = true

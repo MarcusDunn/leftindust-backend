@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.graphql.queries
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.util.EntityStore
-import com.leftindust.mockingbird.util.debugPrint
 import com.leftindust.mockingbird.util.gqlRequest
 import com.leftindust.mockingbird.util.integration.NoAuthIntegrationTest
 import com.leftindust.mockingbird.util.verifyOnlyDataExists
@@ -44,14 +43,14 @@ class PatientQueryIntegrationTest(
             // language=graphql
             """
             query {
-                patients(range: {from: 0, to: 10}) {
+                patientsByRange(range: {from: 0, to: 10}) {
                     firstName
                 }
             }
         """.trimIndent()
         )
-            .verifyOnlyDataExists("patients")
-            .jsonPath("data.patients[*].firstName")
+            .verifyOnlyDataExists("patientsByRange")
+            .jsonPath("data.patientsByRange[*].firstName")
             .exists()
     }
 
@@ -62,14 +61,14 @@ class PatientQueryIntegrationTest(
             // language=graphql
             """
             query {
-                patients(pids: [{id: "${patient.id}"}]) {
+                patientsByPid(pids: [{id: "${patient.id}"}]) {
                     pid { id }
                 }
             }
         """.trimIndent()
         )
-            .verifyOnlyDataExists("patients")
-            .jsonPath("data.patients[*].pid.id")
+            .verifyOnlyDataExists("patientsByPid")
+            .jsonPath("data.patientsByPid[*].pid.id")
             .isEqualTo(patient.id.toString())
     }
 }
