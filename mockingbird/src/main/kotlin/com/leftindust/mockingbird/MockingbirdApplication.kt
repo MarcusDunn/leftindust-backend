@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird
 
 
+import com.leftindust.mockingbird.external.icd.IcdApiClient
 import com.leftindust.mockingbird.graphql.hooks.CustomSchemaGeneratorHooks
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -9,7 +10,7 @@ import org.springframework.context.annotation.Bean
 
 
 @SpringBootApplication
-@EnableConfigurationProperties
+@EnableConfigurationProperties(IcdApiClient::class)
 class MockingbirdApplication {
     @Bean
     fun hooks() = CustomSchemaGeneratorHooks(emptyList())

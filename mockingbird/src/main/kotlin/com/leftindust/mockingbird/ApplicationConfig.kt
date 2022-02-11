@@ -4,7 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.leftindust.mockingbird.external.icd.IcdApiClientConfigBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -80,13 +79,6 @@ class ApplicationConfig {
             }
         }
         return@WebFilter chain.filter(ctx)
-    }
-
-    @Bean
-    fun icdApiClientConfigBean(): IcdApiClientConfigBean {
-        return IcdApiClientConfigBean(
-            BASE_URL = System.getenv("WHO_ICD_API") ?: "http://localhost:80/icd",
-        )
     }
 }
 
