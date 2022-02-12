@@ -1,8 +1,6 @@
 package com.leftindust.mockingbird.util.integration
 
 import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.parallel.Execution
-import org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @AutoConfigureTestDatabase(replace = NONE)
 @Testcontainers
 @ContextConfiguration(initializers = [IntegrationTest.Initialize::class])
-@Execution(CONCURRENT)
 @Tag("Integration")
 abstract class IntegrationTest {
 
