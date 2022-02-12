@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
     kotlin("plugin.allopen")
+    id("org.jetbrains.kotlinx.kover") version "0.5.0"
 
     // spring
     id("org.springframework.boot")
@@ -115,6 +116,10 @@ liquibase {
 // test properties
 tasks.withType<Test> {
     useJUnitPlatform()
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+        isDisabled = false
+        includes = listOf("com.leftindust.mockingbird.*")
+    }
     testLogging {
         events(
             TestLogEvent.FAILED,
@@ -125,6 +130,11 @@ tasks.withType<Test> {
         showCauses = true
         showStackTraces = true
     }
+}
+
+tasks.koverMergedXmlReport {
+    isEnabled = true
+    xmlReportFile.set(layout.buildDirectory.file("coverage.xml"))
 }
 
 tasks.withType<KotlinCompile> {
