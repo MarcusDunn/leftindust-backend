@@ -11,6 +11,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -24,7 +26,7 @@ class GroupDaoImpl(
     override suspend fun addGroup(group: GraphQLGroupInput, requester: MediqToken): MediqGroup {
         if (requester can (Crud.CREATE to Tables.Group)) {
             val groupEntity = MediqGroup(group)
-            return groupRepository.save(groupEntity)
+            return withContext(Dispatchers.IO) { groupRepository.save(groupEntity) }
         } else {
             throw NotAuthorizedException(requester, Crud.CREATE to Tables.Group)
         }
@@ -32,7 +34,7 @@ class GroupDaoImpl(
 
     override suspend fun getGroupById(gid: GraphQLUser.Group.ID, requester: MediqToken): MediqGroup {
         if (requester can (Crud.READ to Tables.Group)) {
-            return groupRepository.getById(gid.id)
+            return withContext(Dispatchers.IO) { groupRepository.getById(gid.id) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
         }
@@ -40,7 +42,7 @@ class GroupDaoImpl(
 
     override suspend fun getRange(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqGroup> {
         if (requester can (Crud.READ to Tables.Group)) {
-            return groupRepository.findAll(range.toPageable()).content
+            return withContext(Dispatchers.IO) { groupRepository.findAll(range.toPageable()).content }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
         }
