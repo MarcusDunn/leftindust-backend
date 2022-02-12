@@ -24,28 +24,22 @@ class FormDataDaoImpl(
 ) : FormDataDao, AbstractHibernateDao(authorizer) {
     private companion object {
         val readForms = Crud.READ to Tables.Form
-        val updateForms = Crud.UPDATE to Tables.Form
-        val deleteForms = Crud.DELETE to Tables.Form
         val createForms = Crud.CREATE to Tables.Form
+        val createFormsAndUpdatePatients = listOf(createForms, Crud.UPDATE to Tables.Patient)
+        val readFormsAndPatient = listOf(readForms, Crud.READ to Tables.Patient)
     }
 
     override suspend fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData =
-        withContext(Dispatchers.IO) {
-            val createFormsAndUpdatePatients = listOf(createForms, Crud.UPDATE to Tables.Patient)
-            if (requester can createFormsAndUpdatePatients) {
-                formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
-            } else {
-                throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
-            }
+        if (requester can createFormsAndUpdatePatients) withContext(Dispatchers.IO) {
+            formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
+        } else {
+            throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
         }
 
     override suspend fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> =
-        withContext(Dispatchers.IO) {
-            val readFormsAndPatient = listOf(readForms, Crud.READ to Tables.Patient)
-            if (requester can readFormsAndPatient) {
-                formDataRepository.getByPatient_Id(patient.id)
-            } else {
-                throw NotAuthorizedException(requester, readFormsAndPatient)
-            }
+        if (requester can readFormsAndPatient) withContext(Dispatchers.IO) {
+            formDataRepository.getByPatient_Id(patient.id)
+        } else {
+            throw NotAuthorizedException(requester, readFormsAndPatient)
         }
 }
