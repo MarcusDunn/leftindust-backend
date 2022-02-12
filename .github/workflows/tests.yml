@@ -33,9 +33,8 @@ jobs:
       
       - name: Build with Gradle
         run: ./gradlew mockingbird:build
-        
-      - name: codecov
-        run: |
-           - curl -Os https://uploader.codecov.io/latest/linux/codecov
-           - chmod +x codecov
-           - ./codecov
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ./mockingbird/build/coverage.xml
+          fail_ci_if_error: true # optional (default = false)
+          verbose: true # optional (default = false)
