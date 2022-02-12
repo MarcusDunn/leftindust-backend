@@ -27,20 +27,20 @@ class IcdFetcherImpl(
     }
 
     override suspend fun linearization(
-        linearizationName: String,
-        code: GraphQLFoundationIcdCode
+        code: GraphQLFoundationIcdCode,
+        linearization: IcdFetcher.Linearization
     ): GraphQLIcdMultiVersion {
-        val url = "${config.url}/release/11/$linearizationName/${code.code}"
+        val url = "${config.url}/release/11/${linearization.value}/${code.code}"
         return GraphQLIcdMultiVersion(getUrlWithIcdHeaders(url))
     }
 
     override suspend fun linearizationSearch(
         query: String,
-        linearizationName: String,
+        linearization: IcdFetcher.Linearization,
         flatResults: Boolean,
         flexiSearch: Boolean,
     ): GraphQLIcdSearchResult {
-        val url = "${config.url}/release/11/${GraphQLReleaseIdInput.CURRENT}/$linearizationName/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
+        val url = "${config.url}/release/11/${GraphQLReleaseIdInput.CURRENT}/${linearization.value}/search?q=$query&flatResult=$flatResults&useFlexisearch=$flexiSearch"
         return getUrlWithIcdHeaders(url)
     }
 

@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.graphql.queries
 
+import com.leftindust.mockingbird.util.debugPrint
 import com.leftindust.mockingbird.util.gqlRequest
 import com.leftindust.mockingbird.util.integration.NoAuthIntegrationTest
 import org.junit.jupiter.api.Test
@@ -23,6 +24,7 @@ class IcdQueryIntegrationTest(
             }
         """.trimIndent()
         )
+            .debugPrint()
             .expectBody()
             .jsonPath("data.searchIcd.error")
             .isEqualTo(false)
