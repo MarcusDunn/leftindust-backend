@@ -33,3 +33,9 @@ jobs:
       
       - name: Build with Gradle
         run: ./gradlew mockingbird:build
+        
+      - name: codecov
+        run: |
+           - curl -Os https://uploader.codecov.io/latest/linux/codecov
+           - chmod +x codecov
+           - ./codecov
