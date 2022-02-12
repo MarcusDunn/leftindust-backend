@@ -26,6 +26,7 @@ abstract class IntegrationTest {
     companion object {
         val postgres = PostgreSQLContainer(PostgreSQLContainer.IMAGE).apply {
             waitingFor(LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"))
+            withReuse(true)
             start()
         }
 
@@ -34,15 +35,15 @@ abstract class IntegrationTest {
             addEnv("acceptLicense", "true")
             addEnv("include", "2021-05_en")
             addExposedPort(80)
-            withLogConsumer { frame -> println(frame.utf8String) }
+            withReuse(true)
             start()
         }
     }
 
     object Initialize : ApplicationContextInitializer<ConfigurableApplicationContext> {
-        override fun initialize(it: ConfigurableApplicationContext) {
+        override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                it,
+                configurableApplicationContext,
                 "spring.datasource.url=${postgres.jdbcUrl}",
                 "spring.datasource.username=${postgres.username}",
                 "spring.datasource.password=${postgres.password}",

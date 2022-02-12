@@ -21,28 +21,30 @@ class IcdQuery(
     private companion object {
         const val flexiSearchDefaultValue = true
         const val flatResultsDefaultValue = true
+        val linearizationDefaultValue = IcdFetcher.Linearization.DEFAULT
     }
 
 
     suspend fun searchIcd(
         @GraphQLDescription("Cannot be empty string")
         query: String,
+        linearization: IcdFetcher.Linearization? = linearizationDefaultValue,
         flexiSearch: Boolean? = flexiSearchDefaultValue,
         flatResults: Boolean? = flatResultsDefaultValue,
         authContext: GraphQLAuthContext
     ): GraphQLIcdSearchResult {
         if (authContext.mediqAuthToken.isVerified()) {
+            val nnLinearization = linearization ?: linearizationDefaultValue
             val nnFlatResults = flatResults ?: flatResultsDefaultValue
             val nnFlexiSearch = flexiSearch ?: flexiSearchDefaultValue
 
             return if (query.isNotEmpty()) {
-                client
-                    .linearizationSearch(
-                        query,
-                        linearizationName = "mms",
-                        flatResults = nnFlatResults,
-                        flexiSearch = nnFlexiSearch
-                    )
+                client.linearizationSearch(
+                    query,
+                    linearization = nnLinearization,
+                    flatResults = nnFlatResults,
+                    flexiSearch = nnFlexiSearch
+                )
                     .let { searchResult ->
                         searchResult.copy(destinationEntities = searchResult.destinationEntities?.distinctBy { it.id })
                     }
