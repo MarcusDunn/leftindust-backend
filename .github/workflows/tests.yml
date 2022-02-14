@@ -35,6 +35,7 @@ jobs:
         run: ./gradlew mockingbird:build
       - uses: codecov/codecov-action@v2
         with:
+          version: "v0.1.15"
           files: ./mockingbird/build/coverage.xml
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
