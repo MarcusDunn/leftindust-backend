@@ -8,7 +8,7 @@ import com.leftindust.mockingbird.dao.GroupDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
-import com.leftindust.mockingbird.graphql.types.GraphQLUser
+import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +32,7 @@ class GroupDaoImpl(
         }
     }
 
-    override suspend fun getGroupById(gid: GraphQLUser.Group.ID, requester: MediqToken): MediqGroup {
+    override suspend fun getGroupById(gid: GraphQLUserGroup.ID, requester: MediqToken): MediqGroup {
         if (requester can (Crud.READ to Tables.Group)) {
             return withContext(Dispatchers.IO) { groupRepository.getById(gid.id) }
         } else {
