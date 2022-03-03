@@ -9,23 +9,21 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.NameInfoDao
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
-import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("User")
 data class GraphQLUser(
     val uid: String,
-    val group: Group? = null,
+    val group: GraphQLUserGroup? = null, // TODO: 2022-03-02 make sure this does not cause a lazy initialization exception when accessed as a feild
     private val authContext: GraphQLAuthContext
 ) {
     constructor(mediqUser: MediqUser, graphQLAuthContext: GraphQLAuthContext) : this(
         uid = mediqUser.uniqueId,
-        group = mediqUser.group?.let { Group(it) },
+        group = mediqUser.group?.let { GraphQLUserGroup(it) },
         authContext = graphQLAuthContext,
     )
 
@@ -97,20 +95,6 @@ data class GraphQLUser(
         @GraphQLIgnore @Autowired authorizationDao: AuthorizationDao,
         perm: GraphQLPermissionInput
     ): Boolean = authorizationDao.getRolesForUserByUid(uid).any { it.action.isSuperset(Action(perm)) }
-
-
-    data class Group(
-        val gid: ID,
-        val name: String
-    ) {
-        @GraphQLName("GroupId")
-        data class ID(val id: UUID)
-
-        constructor(group: MediqGroup) : this(
-            gid = ID(group.id!!),
-            name = group.name
-        )
-    }
 }
 
 

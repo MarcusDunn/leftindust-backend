@@ -4,7 +4,7 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.graphql.types.GraphQLUser
+import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLGroupInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import io.mockk.coEvery
@@ -39,7 +39,7 @@ internal class GroupDaoImplTest {
             every { getById(any()) } returns mediqGroup
         }
         val groupDaoImpl = GroupDaoImpl(lenientAuthorizer, groupRepository)
-        val result = groupDaoImpl.getGroupById(GraphQLUser.Group.ID(UUID.randomUUID()), mockk())
+        val result = groupDaoImpl.getGroupById(GraphQLUserGroup.ID(UUID.randomUUID()), mockk())
         assertEquals(mediqGroup, result)
     }
 

@@ -11,7 +11,7 @@ import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.graphql.types.GraphQLUser
+import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -44,7 +44,7 @@ class PermissionDaoImpl(
     }
 
     override suspend fun addGroupPermission(
-        gid: GraphQLUser.Group.ID,
+        gid: GraphQLUserGroup.ID,
         permission: GraphQLPermissionInput,
         requester: MediqToken
     ): AccessControlList = if (requester can createAcl) withContext(Dispatchers.IO) {

@@ -10,7 +10,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.extensions.Authorization
-import com.leftindust.mockingbird.graphql.types.GraphQLUser
+import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import io.mockk.coEvery
 import io.mockk.every
@@ -62,7 +62,7 @@ internal class PermissionDaoImplTest {
         }
         val permissionDao = PermissionDaoImpl(groupRepository, aclRepository, userRepository, authorizer)
         val result =
-            permissionDao.addGroupPermission(GraphQLUser.Group.ID(uuid), GraphQLPermissionInput(User, CREATE), mockk())
+            permissionDao.addGroupPermission(GraphQLUserGroup.ID(uuid), GraphQLPermissionInput(User, CREATE), mockk())
         assertEquals(accessControlList, result)
     }
 }
