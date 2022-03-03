@@ -34,53 +34,59 @@ data class GraphQLUser(
         The name of the user.
     """
     )
-    suspend fun name(@GraphQLIgnore @Autowired nameInfoDao: NameInfoDao): GraphQLNameInfo? {
-        return nameInfoDao.findByUniqueId(uid, authContext.mediqAuthToken)?.let { GraphQLNameInfo(it) }
-    }
+    suspend fun name(
+        @GraphQLIgnore @Autowired nameInfoDao: NameInfoDao
+    ): GraphQLNameInfo? = nameInfoDao.findByUniqueId(uid, authContext.mediqAuthToken)?.let { GraphQLNameInfo(it) }
+
 
     @GraphQLDescription(
         """
-        Weather the user is regestered in mockingbird.
+        Weather the user is registered in mockingbird.
     """
     )
-    suspend fun isRegistered(@GraphQLIgnore @Autowired userDao: UserDao): Boolean {
-        return userDao.findUserByUid(uid, authContext.mediqAuthToken) != null
-    }
+    suspend fun isRegistered(
+        @GraphQLIgnore @Autowired userDao: UserDao
+    ): Boolean = userDao.findUserByUid(uid, authContext.mediqAuthToken) != null
+
 
     @GraphQLDescription(
         """
         The firebase-specific info for this user.
     """
     )
-    suspend fun firebaseUserInfo(@GraphQLIgnore @Autowired userFetcher: UserFetcher): GraphQLFirebaseInfo =
-        GraphQLFirebaseInfo(userFetcher.getUserInfo(uid, authContext.mediqAuthToken))
+    suspend fun firebaseUserInfo(
+        @GraphQLIgnore @Autowired userFetcher: UserFetcher
+    ): GraphQLFirebaseInfo = GraphQLFirebaseInfo(userFetcher.getUserInfo(uid, authContext.mediqAuthToken))
 
     @GraphQLDescription(
         """
         The permissions this user possesses
     """
     )
-    suspend fun permissions(@GraphQLIgnore @Autowired authorizationDao: AuthorizationDao): GraphQLPermissions {
-        return GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
-    }
+    suspend fun permissions(
+        @GraphQLIgnore @Autowired authorizationDao: AuthorizationDao
+    ): GraphQLPermissions = GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
+
 
     @GraphQLDescription(
         """
         The corresponding doctor for this user if it exists.
     """
     )
-    suspend fun doctor(@GraphQLIgnore @Autowired doctorDao: DoctorDao): GraphQLDoctor? {
-        return doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
-    }
+    suspend fun doctor(
+        @GraphQLIgnore @Autowired doctorDao: DoctorDao
+    ): GraphQLDoctor? = doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
+
 
     @GraphQLDescription(
         """
         The corresponding patient for this user if it exists.
     """
     )
-    suspend fun patient(@GraphQLIgnore @Autowired patientDao: ReadPatientDao): GraphQLPatient? {
-        return patientDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLPatient(it, authContext) }
-    }
+    suspend fun patient(
+        @GraphQLIgnore @Autowired patientDao: ReadPatientDao
+    ): GraphQLPatient? = patientDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLPatient(it, authContext) }
+
 
     @GraphQLDescription(
         """
