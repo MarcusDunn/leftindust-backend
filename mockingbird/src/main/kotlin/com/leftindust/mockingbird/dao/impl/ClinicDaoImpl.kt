@@ -27,43 +27,43 @@ class ClinicDaoImpl(
     private val doctorRepository: HibernateDoctorRepository,
     private val entityManager: EntityManager,
     authorizer: Authorizer
-) : ClinicDao,
-    AbstractHibernateDao(authorizer) {
-    override suspend fun addClinic(clinic: GraphQLClinicInput, requester: MediqToken): Clinic {
-        val createClinic = Crud.CREATE to Tables.Clinic
-        return if (requester can createClinic) withContext(Dispatchers.IO) {
+) : ClinicDao, AbstractHibernateDao(authorizer) {
+    companion object {
+        private val createClinic = Crud.CREATE to Tables.Clinic
+        private val readClinic = Crud.READ to Tables.Clinic
+    }
+
+    override suspend fun addClinic(clinic: GraphQLClinicInput, requester: MediqToken): Clinic =
+        if (requester can createClinic) withContext(Dispatchers.IO) {
             clinicRepository.save(Clinic(clinic, entityManager))
         } else {
             throw NotAuthorizedException(requester, createClinic)
         }
-    }
 
-    override suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic {
-        val createClinic = Crud.UPDATE to Tables.Clinic
-        return if (requester can createClinic) withContext(Dispatchers.IO) {
+
+    override suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic =
+        if (requester can createClinic) withContext(Dispatchers.IO) {
             val clinicEntity = clinicRepository.getById(clinic.cid.id)
             clinicEntity.setByGqlInput(clinic, entityManager)
             clinicEntity
         } else {
             throw NotAuthorizedException(requester, createClinic)
         }
-    }
 
-    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic> {
-        val readClinic = Crud.READ to Tables.Clinic
-        return if (requester can readClinic) withContext(Dispatchers.IO) {
+
+    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic> =
+        if (requester can readClinic) withContext(Dispatchers.IO) {
             doctorRepository.getById(did.id).clinics
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }
-    }
 
-    override suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic {
-        val readClinic = Crud.READ to Tables.Clinic
-        return if (requester can readClinic) withContext(Dispatchers.IO) {
+
+    override suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic =
+        if (requester can readClinic) withContext(Dispatchers.IO) {
             clinicRepository.getById(cid.id)
         } else {
             throw NotAuthorizedException(requester, readClinic)
         }
-    }
+
 }
