@@ -1,9 +1,8 @@
 package com.leftindust.mockingbird.graphql.queries
 
-import com.expediagroup.graphql.generator.scalars.ID
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.ClinicDao
+import com.leftindust.mockingbird.dao.clinic.ClinicDao
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import org.springframework.stereotype.Component
 

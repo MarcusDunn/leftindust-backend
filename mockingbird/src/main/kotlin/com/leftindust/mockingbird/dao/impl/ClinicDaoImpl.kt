@@ -4,7 +4,7 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.ClinicDao
+import com.leftindust.mockingbird.dao.clinic.ClinicDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository

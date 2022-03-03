@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.graphql.mutations
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.ClinicDao
+import com.leftindust.mockingbird.dao.clinic.ClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput

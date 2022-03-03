@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.graphql.mutations
 
 import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.ClinicDao
+import com.leftindust.mockingbird.dao.clinic.ClinicDao
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
