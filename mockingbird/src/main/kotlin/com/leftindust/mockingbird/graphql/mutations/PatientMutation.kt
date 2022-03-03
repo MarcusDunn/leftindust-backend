@@ -3,7 +3,8 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.server.operations.Mutation
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.patient.CreatePatientDao
+import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
@@ -11,12 +12,13 @@ import org.springframework.stereotype.Component
 
 @Component
 class PatientMutation(
-    private val patientDao: PatientDao,
+    private val updatePatientDao: UpdatePatientDao,
+    private val createPatientDao: CreatePatientDao,
 ) : Mutation {
 
     @GraphQLDescription("updates a patient by their pid, only the not null fields are updated, pid MUST be defined")
     suspend fun updatePatient(patient: GraphQLPatientEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
-        return patientDao
+        return updatePatientDao
             .update(patient, graphQLAuthContext.mediqAuthToken)
             .let { GraphQLPatient(it, graphQLAuthContext) } // safe nn assert as we just got from DB
     }
@@ -26,7 +28,7 @@ class PatientMutation(
         contacts and doctors default to empty lists"""
     )
     suspend fun addPatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
-        return patientDao
+        return createPatientDao
             .addNewPatient(patient, graphQLAuthContext.mediqAuthToken)
             .let { GraphQLPatient(it, graphQLAuthContext) }
     }

@@ -1,52 +1,79 @@
 package com.leftindust.mockingbird.graphql.queries
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.PatientDao
-import com.leftindust.mockingbird.dao.entity.Doctor
+import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import com.leftindust.mockingbird.graphql.types.GraphQLUtcTime
+import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
+import com.leftindust.mockingbird.util.makeUUID
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 internal class EventQueryTest {
     private val eventDao = mockk<EventDao>()
-    private val patientDao = mockk<PatientDao>()
-    private val doctorDao = mockk<DoctorDao>()
 
     @Test
     internal fun getByDoctor() {
         val doctorID = UUID.randomUUID()
-        val eventID = UUID.randomUUID()
 
-        val expected = mockk<Doctor> {
-            every { id } returns doctorID
 
-            every { events } returns mutableSetOf(mockk(relaxed = true) {
-                every { id } returns eventID
-            })
+        val events = listOf<Event>(mockk(relaxed = true), mockk(relaxed = true))
 
-        }
-        coEvery { doctorDao.getByDoctor(GraphQLDoctor.ID(doctorID), any()) } returns expected
+        coEvery { eventDao.getByDoctor(GraphQLDoctor.ID(doctorID), any()) } returns events
 
-        val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
+        val eventQuery = EventQuery(eventDao)
 
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
 
+        val result = runBlocking {
+            eventQuery.eventsByDoctor(
+                doctors = listOf(GraphQLDoctor.ID(doctorID)),
+                graphQLAuthContext = graphQLAuthContext
+            )
+        }
+
+        val expected = events.map { GraphQLEvent(it, graphQLAuthContext) }
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    internal fun getByPatient() {
+        val patientID = UUID.randomUUID()
+        val eventID = UUID.randomUUID()
+
+        val expected = mockk<Patient> {
+            every { id } returns patientID
+            every { events } returns mutableSetOf(mockk(relaxed = true) {
+                every { id } returns eventID
+            })
+
+        }
+        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns expected.events
+
+        val eventQuery = EventQuery(eventDao)
+
+        val graphQLAuthContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
         val result =
             runBlocking {
-                eventQuery.events(
-                    doctors = listOf(GraphQLDoctor.ID(doctorID)),
+                eventQuery.eventsByPatient(
+                    patients = listOf(GraphQLPatient.ID(patientID)),
                     graphQLAuthContext = graphQLAuthContext
                 )
             }
@@ -60,38 +87,70 @@ internal class EventQueryTest {
     }
 
     @Test
-    internal fun getByPatient() {
-        val patientID = UUID.randomUUID()
-        val eventID = UUID.randomUUID()
-
-        val expected = mockk<Patient> {
-            every { id } returns patientID
-                every { events } returns mutableSetOf(mockk(relaxed = true) {
-                    every { id } returns eventID
-                })
-
+    fun eventsByIds(): Unit = runBlocking {
+        val eventQuery = EventQuery(eventDao)
+        val graphQLAuthContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
         }
-        coEvery { patientDao.getByPID(GraphQLPatient.ID(patientID), any()) } returns expected
-        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns expected.events
 
-        val eventQuery = EventQuery(eventDao, patientDao, doctorDao)
+        val event1 = mockk<Event>(relaxed = true)
+        val event2 = mockk<Event>(relaxed = true)
+
+        val eventId1 = GraphQLEvent.ID(makeUUID("1"))
+        val eventId2 = GraphQLEvent.ID(makeUUID("2"))
+
+        coEvery { eventDao.getById(eventId1, graphQLAuthContext.mediqAuthToken) } returns event1
+        coEvery { eventDao.getById(eventId2, graphQLAuthContext.mediqAuthToken) } returns event2
+
+        val result = eventQuery.eventsByIds(listOf(eventId1, eventId2), graphQLAuthContext)
+        val expected = listOf(event1, event2).map { GraphQLEvent(it, graphQLAuthContext) }
+        assertEquals(expected, result)
+
+    }
+
+
+    @Test
+    fun eventsByRange(): Unit = runBlocking {
+        val eventQuery = EventQuery(eventDao)
 
         val graphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
-        val result =
-            runBlocking {
-                eventQuery.events(
-                    patients = listOf(GraphQLPatient.ID(patientID)),
-                    graphQLAuthContext = graphQLAuthContext
-                )
-            }
 
-        assertEquals(expected.events.map {
-            GraphQLEvent(
-                event = it,
-                authContext = graphQLAuthContext
-            )
-        }, result)
+        val rangeInput = GraphQLTimeRangeInput(
+            start = GraphQLUtcTime(Instant.now()),
+            end = GraphQLUtcTime(Instant.now() + Duration.ofDays(1))
+        )
+
+        val expected = listOf<Event>(mockk(relaxed = true), mockk(relaxed = true))
+
+        coEvery { eventDao.getBetween(rangeInput, graphQLAuthContext.mediqAuthToken) } returns expected
+
+        val result = eventQuery.eventsByTimeRange(rangeInput, graphQLAuthContext)
+
+        assertEquals(expected.map { GraphQLEvent(it, graphQLAuthContext) }, result)
+
+        coVerify(exactly = 1) { eventDao.getBetween(rangeInput, graphQLAuthContext.mediqAuthToken) }
+    }
+
+    @Test
+    fun eventsByDoctorsAndPatients(): Unit = runBlocking {
+        val eventQuery = EventQuery(eventDao)
+
+        val graphQLAuthContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val events = listOf<Event>(mockk(relaxed = true), mockk(relaxed = true))
+
+        val pid = GraphQLPatient.ID(makeUUID("1"))
+        coEvery { eventDao.getByPatient(pid, graphQLAuthContext.mediqAuthToken) } returns events
+
+        val did = GraphQLDoctor.ID(makeUUID("2"))
+        coEvery { eventDao.getByDoctor(did, graphQLAuthContext.mediqAuthToken) } returns events
+
+        val result = eventQuery.eventsByDoctorsAndPatients(listOf(pid), listOf(did), graphQLAuthContext)
+        assertEquals(events.map { GraphQLEvent(it, graphQLAuthContext) }, result)
+
     }
 }

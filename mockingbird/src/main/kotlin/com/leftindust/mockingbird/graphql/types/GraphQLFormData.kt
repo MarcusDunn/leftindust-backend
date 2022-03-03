@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.patient.PatientDao
 import org.springframework.beans.factory.annotation.Autowired
 
 data class GraphQLFormData(

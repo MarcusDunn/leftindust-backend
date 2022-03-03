@@ -4,7 +4,7 @@ import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.FormDataDao
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.entity.FormData
 import com.leftindust.mockingbird.dao.entity.Patient

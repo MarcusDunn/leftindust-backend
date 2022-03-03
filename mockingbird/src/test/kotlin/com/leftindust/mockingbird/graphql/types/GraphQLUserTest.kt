@@ -5,10 +5,12 @@ import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.AuthorizationDao
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.NameInfoDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
+import com.leftindust.mockingbird.dao.entity.NameInfo
+import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import com.leftindust.mockingbird.util.EntityStore
@@ -135,5 +137,22 @@ internal class GraphQLUserTest {
         val result = runBlocking { GraphQLUser("uid", null, authContext).patient(mockkPatientDao) }
 
         assertEquals(GraphQLPatient(expectedPatient, authContext), result)
+    }
+
+    @Test
+    internal fun names() {
+        val authContext = mockk<GraphQLAuthContext> {
+            every { mediqAuthToken } returns mockk()
+        }
+
+        val nameInfo = mockk<NameInfo>()
+
+        val nameInfoDao = mockk<NameInfoDao> {
+            coEvery { getByUniqueId("uid", any()) } returns nameInfo
+        }
+
+        val result = runBlocking { GraphQLUser("uid", null, authContext).name(nameInfoDao) }
+
+        assertEquals(nameInfo, result)
     }
 }

@@ -26,7 +26,10 @@ internal class AuthorizerImpl(
             Authorization.Allowed
         } else {
             val roles = getRoles(user) ?: return Authorization.Denied
-            roles.map { it.action }.any { it.isSuperset(action) }.toAuthorization()
+            roles
+                .map { it.action }
+                .any { it.isSuperset(action) }
+                .toAuthorization()
         }
     }
 

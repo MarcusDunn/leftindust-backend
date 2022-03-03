@@ -5,6 +5,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.*
 import com.leftindust.mockingbird.dao.entity.Doctor
+import com.leftindust.mockingbird.dao.patient.PatientDao
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
 import java.util.*
