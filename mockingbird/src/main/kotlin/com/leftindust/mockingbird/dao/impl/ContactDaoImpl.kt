@@ -9,6 +9,8 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.impl.repository.HibernateContactRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -24,7 +26,7 @@ class ContactDaoImpl(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<EmergencyContact> {
-        return if (requester can (Crud.READ to Tables.Patient)) {
+        return if (requester can (Crud.READ to Tables.Patient)) withContext(Dispatchers.IO) {
             contactRepository.getAllByPatient_Id(pid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)

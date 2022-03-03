@@ -5,6 +5,7 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.util.EntityStore
 import com.leftindust.mockingbird.util.gqlRequest
 import com.leftindust.mockingbird.util.integration.NoAuthIntegrationTest
+import com.leftindust.mockingbird.util.integration.Resource.DATABASE
 import com.leftindust.mockingbird.util.verifyOnlyDataExists
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -16,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient
-@ResourceLock("database", mode = READ_WRITE)
+@ResourceLock(DATABASE, mode = READ_WRITE)
 class PatientQueryIntegrationTest(
     @Autowired private val webTestClient: WebTestClient
 ) : NoAuthIntegrationTest() {

@@ -10,12 +10,13 @@ import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAssignedFormRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
-import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
@@ -48,7 +49,9 @@ class FormDaoImpl(
     override suspend fun addForm(form: GraphQLFormTemplateInput, requester: MediqToken): Form {
         val createForms = Crud.CREATE to Tables.Form
         if (requester can createForms) {
-            return formRepository.save(Form(form))
+            return withContext(Dispatchers.IO) {
+                formRepository.save(Form(form))
+            }
         } else {
             throw NotAuthorizedException(requester, createForms)
         }
@@ -56,10 +59,12 @@ class FormDaoImpl(
 
     override suspend fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form {
         val deleteForms = Crud.DELETE to Tables.Form
-        if (requester can deleteForms) {
-            val formEntity = formRepository.getById(form.id)
-            formRepository.delete(formEntity)
-            return formEntity
+        return if (requester can deleteForms) {
+            withContext(Dispatchers.IO) {
+                val formEntity = formRepository.getById(form.id)
+                formRepository.delete(formEntity)
+                formEntity
+            }
         } else {
             throw NotAuthorizedException(requester, deleteForms)
         }
@@ -70,8 +75,10 @@ class FormDaoImpl(
         requester: MediqToken
     ): Collection<AssignedForm> {
         val readPatient = Crud.READ to Tables.Patient
-        if (requester can readPatient) {
-            return assignedFormRepository.findAllByPatient_Id(patient.id)
+        return if (requester can readPatient) {
+            withContext(Dispatchers.IO) {
+                assignedFormRepository.findAllByPatient_Id(patient.id)
+            }
         } else {
             throw NotAuthorizedException(requester, readPatient)
         }

@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PatientQuery(
-    private val patientDao: PatientDao,
+    private val patientDao: ReadPatientDao,
 ) : Query {
     suspend fun patientsByRange(
         range: GraphQLRangeInput,

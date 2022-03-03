@@ -10,6 +10,9 @@ import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity
+@NamedEntityGraph(name = "Event.patients",
+    attributeNodes = [NamedAttributeNode("patients")]
+)
 class Event(
     var title: String,
     var description: String?,

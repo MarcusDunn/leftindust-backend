@@ -1,6 +1,7 @@
 package com.leftindust.mockingbird.dao.impl.repository
 
 import com.leftindust.mockingbird.dao.entity.Event
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -17,4 +18,8 @@ interface HibernateEventRepository : JpaRepository<Event, UUID> {
         @Param("rangeStart") rangeStart: Timestamp,
         @Param("rangeEnd") rangeEnd: Timestamp
     ): List<Event>
+
+    @Query("select e from Event e where e.id = ?1")
+    @EntityGraph(value = "Event.patients")
+    fun getByIdWithPatients(id: UUID): Event
 }

@@ -8,7 +8,11 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.impl.repository.*
+import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorPatientRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
+import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
@@ -18,8 +22,9 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLDoctorExample
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.hibernate.Hibernate
-import org.hibernate.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -38,7 +43,7 @@ class DoctorDaoImpl(
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
     override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) {
+        return if (requester can readDoctors) withContext(Dispatchers.IO) {
             val patient = patientRepository.getById(pid.id)
             doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
         } else {
@@ -48,7 +53,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) {
+        return if (requester can readDoctors) withContext(Dispatchers.IO) {
             eventRepository.getById(eid.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -57,7 +62,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) {
+        return if (requester can readDoctors) withContext(Dispatchers.IO) {
             doctorRepository.getById(did.id)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -73,7 +78,7 @@ class DoctorDaoImpl(
         return if (requester can createDoctor) {
             val patients = doctor.patients?.let { patientRepository.getByIds(it.map { pid -> pid.id }) } ?: emptySet()
             val doctorEntity = Doctor(doctor, user, patients)
-            doctorRepository.save(doctorEntity)
+            withContext(Dispatchers.IO) { doctorRepository.save(doctorEntity) }
         } else {
             throw NotAuthorizedException(requester, createDoctor)
         }
@@ -82,7 +87,7 @@ class DoctorDaoImpl(
     override suspend fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
         val updateDoctor = Crud.UPDATE to Tables.Doctor
         if (requester can updateDoctor) {
-            val doctorEntity = doctorRepository.getById(doctor.did.id)
+            val doctorEntity = withContext(Dispatchers.IO) { doctorRepository.getById(doctor.did.id) }
             doctorEntity.setByGqlInput(doctor, entityManager)
             return doctorEntity
         } else {
@@ -92,7 +97,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) {
+        return if (requester can readDoctors) withContext(Dispatchers.IO) {
             clinicRepository.getById(clinic.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -102,7 +107,7 @@ class DoctorDaoImpl(
     override suspend fun getByUser(uid: String, requester: MediqToken): Doctor? {
         val readDoctors = Crud.READ to Tables.Doctor
         val readUsers = Crud.READ to Tables.User
-        return if (requester can listOf(readDoctors, readUsers)) {
+        return if (requester can listOf(readDoctors, readUsers)) withContext(Dispatchers.IO) {
             doctorRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -111,7 +116,7 @@ class DoctorDaoImpl(
 
     override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) {
+        return if (requester can readDoctors) withContext(Dispatchers.IO) {
             doctorRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -129,7 +134,9 @@ class DoctorDaoImpl(
 
             criteriaQuery.where(predicate)
 
-            return entityManager.createQuery(criteriaQuery.where(predicate)).resultList
+            val doctorQuery =  entityManager.createQuery(criteriaQuery.where(predicate))
+
+            return withContext(Dispatchers.IO) { doctorQuery.resultList }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor)
         }

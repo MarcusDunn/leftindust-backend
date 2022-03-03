@@ -5,7 +5,7 @@ import com.google.gson.JsonParser.parseString
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.FormDataDao
-import com.leftindust.mockingbird.dao.PatientDao
+import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLFormData
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 class FormMutation(
     private val formDao: FormDao,
     private val formDataDao: FormDataDao,
-    private val patientDao: PatientDao
+    private val patientDao: UpdatePatientDao
 ) : Mutation {
     suspend fun addSurveyTemplate(
         surveyTemplate: GraphQLFormTemplateInput,
