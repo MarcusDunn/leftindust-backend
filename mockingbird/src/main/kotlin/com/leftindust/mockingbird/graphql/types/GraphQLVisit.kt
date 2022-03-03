@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLIcdLinearizationEntity
-import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 

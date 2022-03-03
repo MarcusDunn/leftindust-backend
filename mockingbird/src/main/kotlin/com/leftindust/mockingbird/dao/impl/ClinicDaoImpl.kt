@@ -4,8 +4,11 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.clinic.ClinicDao
 import com.leftindust.mockingbird.dao.Tables
+import com.leftindust.mockingbird.dao.clinic.CreateClinicDao
+import com.leftindust.mockingbird.dao.clinic.DeleteClinicDao
+import com.leftindust.mockingbird.dao.clinic.ReadClinicDao
+import com.leftindust.mockingbird.dao.clinic.UpdateClinicDao
 import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.dao.impl.repository.HibernateClinicRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateDoctorRepository
@@ -27,7 +30,7 @@ class ClinicDaoImpl(
     private val doctorRepository: HibernateDoctorRepository,
     private val entityManager: EntityManager,
     authorizer: Authorizer
-) : ClinicDao, AbstractHibernateDao(authorizer) {
+) : ReadClinicDao, CreateClinicDao, UpdateClinicDao, DeleteClinicDao, AbstractHibernateDao(authorizer) {
     companion object {
         private val createClinic = Crud.CREATE to Tables.Clinic
         private val readClinic = Crud.READ to Tables.Clinic
@@ -66,4 +69,8 @@ class ClinicDaoImpl(
             throw NotAuthorizedException(requester, readClinic)
         }
 
+    override fun necessaryPermissions() = ReadClinicDao.necessaryPermissions +
+            CreateClinicDao.necessaryPermissions +
+            UpdateClinicDao.necessaryPermissions +
+            DeleteClinicDao.necessaryPermissions
 }

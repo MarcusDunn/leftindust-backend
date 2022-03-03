@@ -3,9 +3,7 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.extensions.Success
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
-import com.sun.net.httpserver.Authenticator
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

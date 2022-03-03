@@ -34,45 +34,6 @@ class FormField private constructor(
     @Column(nullable = true, length = 5_000)
     var jsonMetaData: String? = null,
 ) : AbstractJpaPersistable() {
-    constructor(
-        title: String,
-        number: Int,
-        dataType: DataType,
-        intUpperBound: Int?,
-        intLowerBound: Int?,
-        jsonMetaData: String? = null,
-    ) : this(
-        title = title,
-        number = number,
-        dataType = dataType,
-        intUpperBound = intUpperBound,
-        intLowerBound = intLowerBound,
-        textRegex = null,
-        jsonMetaData = jsonMetaData
-    ) {
-        if (dataType != DataType.Integer) {
-            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
-        }
-    }
-
-    constructor(
-        title: String,
-        number: Int,
-        dataType: DataType,
-        textRegex: String?,
-        jsonMetaData: String? = null
-    ) : this(
-        title = title,
-        number = number,
-        dataType = dataType,
-        textRegex = textRegex,
-        jsonMetaData = jsonMetaData,
-        dateUpperBound = null,
-    ) {
-        if (dataType != DataType.Text) {
-            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
-        }
-    }
 
     constructor(
         title: String,
@@ -110,27 +71,6 @@ class FormField private constructor(
         textRegex = null,
     ) {
         if (dataType != DataType.MultiMuliSelect && dataType != DataType.SingleMuliSelect) {
-            throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
-        }
-    }
-
-    constructor(
-        title: String,
-        number: Int,
-        dataType: DataType,
-        floatUpperBound: Float?,
-        floatLowerBound: Float?,
-        jsonMetaData: String? = null,
-    ) : this(
-        title = title,
-        number = number,
-        dataType = dataType,
-        floatLowerBound = floatLowerBound,
-        floatUpperBound = floatUpperBound,
-        jsonMetaData = jsonMetaData,
-        dateUpperBound = null,
-    ) {
-        if (dataType != DataType.MultiMuliSelect) {
             throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
     }

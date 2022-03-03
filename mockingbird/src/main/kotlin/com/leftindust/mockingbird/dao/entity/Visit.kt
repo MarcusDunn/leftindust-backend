@@ -5,8 +5,13 @@ import com.leftindust.mockingbird.extensions.onUndefined
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import org.hibernate.Session
-import org.hibernate.annotations.Check
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.ElementCollection
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.OneToOne
+import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 @Entity
 @Table(

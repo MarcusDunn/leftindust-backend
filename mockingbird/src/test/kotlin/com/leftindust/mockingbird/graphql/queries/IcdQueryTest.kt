@@ -17,7 +17,7 @@ internal class IcdQueryTest {
 
     @Test
     fun searchIcd() {
-        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult>() {
+        val mockkIcdSearchResult = mockk<GraphQLIcdSearchResult> {
             every { destinationEntities } returns emptyList()
         }
 

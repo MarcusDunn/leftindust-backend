@@ -29,7 +29,7 @@ internal class PermissionDaoImplTest {
     fun `check addUserPermission success`(): Unit = runBlocking {
         val uuid = UUID.randomUUID()
         val mediqGroup = mockk<MediqGroup>()
-        val groupRepository = mockk<HibernateGroupRepository>() {
+        val groupRepository = mockk<HibernateGroupRepository> {
             every { getById(uuid) } returns mediqGroup
         }
         val accessControlList = mockk<AccessControlList>()

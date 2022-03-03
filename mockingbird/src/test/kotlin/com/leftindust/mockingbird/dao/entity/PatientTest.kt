@@ -18,7 +18,7 @@ internal class PatientTest {
     fun addDoctor() {
         val patient = EntityStore.patient("PatientTest.addDoctor")
 
-        val doctor = spyk<Doctor>() {
+        val doctor = spyk<Doctor> {
             patients = mutableSetOf()
         }
 
@@ -31,11 +31,11 @@ internal class PatientTest {
     @Test
     internal fun `create by GraphQLPatientInput`() {
         val graphQLPatientInput = EntityStore.graphQLPatientInput("PatientTest.create by GraphQLPatientInput")
-        val mockkSession = mockk<Session>() {
-            every { get(Doctor::class.java, 23L) } returns mockk() {
+        val mockkSession = mockk<Session> {
+            every { get(Doctor::class.java, 23L) } returns mockk {
                 every { addPatient(any()) } returns mockk()
             }
-            every { get(Doctor::class.java, 55L) } returns mockk() {
+            every { get(Doctor::class.java, 55L) } returns mockk {
                 every { addPatient(any()) } returns mockk()
             }
         }

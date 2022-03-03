@@ -1,12 +1,18 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.google.gson.JsonObject
 import com.leftindust.mockingbird.dao.entity.enums.RecordType
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecordInput
 import java.sql.Timestamp
 import java.time.Instant
-import javax.persistence.*
+import javax.persistence.Basic
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.FetchType
+import javax.persistence.ManyToOne
 
 @Entity
 class MediqRecord(

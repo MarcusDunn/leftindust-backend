@@ -18,7 +18,7 @@ internal class DoctorMutationTest {
     fun addDoctor() {
         val doctorID = UUID.randomUUID()
 
-        val mockkGraphQLAuthContext = mockk<GraphQLAuthContext>() {
+        val mockkGraphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
 
@@ -26,11 +26,11 @@ internal class DoctorMutationTest {
             every { id } returns doctorID
         }
 
-        val mockkDoctorDao = mockk<DoctorDao>() {
+        val mockkDoctorDao = mockk<DoctorDao> {
             coEvery { addDoctor(any(), any()) } returns mockkDoctor
         }
 
-        val mockkGraphQLDoctorInput = mockk<GraphQLDoctorInput>() {
+        val mockkGraphQLDoctorInput = mockk<GraphQLDoctorInput> {
             every { user } returns null
         }
 
@@ -46,7 +46,7 @@ internal class DoctorMutationTest {
     @Test
     fun updateDoctor() {
         val doctorID = UUID.randomUUID()
-        val mockkGraphQLAuthContext = mockk<GraphQLAuthContext>() {
+        val mockkGraphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
 
@@ -54,7 +54,7 @@ internal class DoctorMutationTest {
             every { id } returns doctorID
         }
 
-        val mockkDoctorDao = mockk<DoctorDao>() {
+        val mockkDoctorDao = mockk<DoctorDao> {
             coEvery { editDoctor(any(), any()) } returns mockkDoctor
         }
 

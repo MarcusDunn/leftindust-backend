@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface HibernateVisitRepository : JpaRepository<Visit, UUID> {
-    fun getByEvent_Id(event_id: UUID): Visit
     fun findByEvent_Id(event_id: UUID): Visit?
 }
