@@ -4,9 +4,9 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
-import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Event
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
@@ -52,7 +52,7 @@ data class GraphQLEvent(
             .map { GraphQLDoctor(it, authContext) }
     }
 
-    suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> {
+    suspend fun patients(@GraphQLIgnore @Autowired patientDao: ReadPatientDao): List<GraphQLPatient> {
         return patientDao.getByEvent(eid, authContext.mediqAuthToken)
             .map { GraphQLPatient(it, authContext) }
     }

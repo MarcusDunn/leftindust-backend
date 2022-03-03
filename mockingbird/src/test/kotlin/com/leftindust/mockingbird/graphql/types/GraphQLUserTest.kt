@@ -10,7 +10,7 @@ import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.NameInfo
-import com.leftindust.mockingbird.dao.patient.PatientDao
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import com.leftindust.mockingbird.util.EntityStore
@@ -130,7 +130,7 @@ internal class GraphQLUserTest {
         val expectedPatient = EntityStore.patient("GraphqlUserTest.patient")
             .apply { id = UUID.nameUUIDFromBytes("GraphqlUserTest.patient".toByteArray()) }
 
-        val mockkPatientDao = mockk<PatientDao> {
+        val mockkPatientDao = mockk<ReadPatientDao> {
             coEvery { getByUser("uid", any()) } returns expectedPatient
         }
 
