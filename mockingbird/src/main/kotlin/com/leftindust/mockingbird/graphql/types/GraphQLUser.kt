@@ -11,7 +11,7 @@ import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Action
 import com.leftindust.mockingbird.dao.entity.MediqGroup
 import com.leftindust.mockingbird.dao.entity.MediqUser
-import com.leftindust.mockingbird.dao.patient.PatientDao
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -78,7 +78,7 @@ data class GraphQLUser(
         The corresponding patient for this user if it exists.
     """
     )
-    suspend fun patient(@GraphQLIgnore @Autowired patientDao: PatientDao): GraphQLPatient? {
+    suspend fun patient(@GraphQLIgnore @Autowired patientDao: ReadPatientDao): GraphQLPatient? {
         return patientDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLPatient(it, authContext) }
     }
 

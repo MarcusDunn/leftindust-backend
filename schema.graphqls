@@ -5,27 +5,27 @@ schema {
 
 "Directs the executor to include this field or fragment only when the `if` argument is true"
 directive @include(
-    "Included when true."
-    if: Boolean!
-  ) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+  "Included when true."
+  if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 "Directs the executor to skip this field or fragment when the `if`'argument is true."
 directive @skip(
-    "Skipped when true."
-    if: Boolean!
-  ) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+  "Skipped when true."
+  if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 "Marks the field or enum value as deprecated"
 directive @deprecated(
-    "The reason for the deprecation"
-    reason: String = "No longer supported"
-  ) on FIELD_DEFINITION | ENUM_VALUE
+  "The reason for the deprecation"
+  reason: String = "No longer supported"
+) on FIELD_DEFINITION | ENUM_VALUE
 
 "Exposes a URL that specifies the behaviour of this scalar."
 directive @specifiedBy(
-    "The URL that specifies the behaviour of this scalar."
-    url: String!
-  ) on SCALAR
+  "The URL that specifies the behaviour of this scalar."
+  url: String!
+) on SCALAR
 
 "Marks target field as external meaning it will be resolved by federated schema"
 directive @external on FIELD_DEFINITION
@@ -337,7 +337,7 @@ type Mutation {
   addGroup(group: GroupInput!): Group!
   """
   adds a new patient and connects them to already existing doctors and contacts
-          contacts and doctors default to empty lists
+  contacts and doctors default to empty lists
   """
   addPatient(patient: PatientInput!): Patient!
   addPermission(groupId: GroupIdInput, permission: GraphQLPermissionInput!, userUid: String): Permission!
@@ -423,7 +423,26 @@ type Query @extends {
   country(country: Country!): GraphQLProvince!
   "only pass one variable"
   doctors(dids: [DoctorIdInput!], example: DoctorExampleInput, pid: PatientIdInput, range: RangeInput): [Doctor!]!
-  events(doctors: [DoctorIdInput!], events: [EventIdInput!], patients: [PatientIdInput!], range: TimeRangeInput): [Event!]!
+  eventsByDoctor(doctors: [DoctorIdInput!]!): [Event!]!
+  """
+
+  Gets a list of events shared by the doctors and patients. ie. all events where both the doctor and the patient attend.
+
+  """
+  eventsByDoctorsAndPatients(doctors: [DoctorIdInput!]!, patients: [PatientIdInput!]!): [Event!]!
+  """
+
+  Gets a list of events by a list of thier ID's. Will error if any of the ID's us not found.
+
+  """
+  eventsByIds(events: [EventIdInput!]!): [Event!]!
+  eventsByPatient(patients: [PatientIdInput!]!): [Event!]!
+  """
+
+  Gets a list of events by a range of time that returned the events will occur within.
+
+  """
+  eventsByTimeRange(range: TimeRangeInput!): [Event!]!
   """
   gets all users from firebase, you can
   filter out already registered
@@ -444,6 +463,7 @@ type Query @extends {
   searchIcd(
     flatResults: Boolean,
     flexiSearch: Boolean,
+    linearization: Linearization,
     "Cannot be empty string"
     query: String!
   ): IcdSearchResult!
@@ -480,13 +500,48 @@ type TimeZonedTime {
 }
 
 type User {
+  """
+
+  The corresponding doctor for this user if it exists.
+
+  """
   doctor: Doctor
+  """
+
+  The firebase-specific info for this user.
+
+  """
   firebaseUserInfo: FirebaseInfo!
   group: Group
+  """
+
+  Weather the user has permission do to a given action.
+
+  """
   hasPermission(perm: GraphQLPermissionInput!): Boolean!
+  """
+
+  Weather the user is regestered in mockingbird.
+
+  """
   isRegistered: Boolean!
-  names: NameInfo
+  """
+
+  The name of the user.
+
+  """
+  name: NameInfo
+  """
+
+  The corresponding patient for this user if it exists.
+
+  """
   patient: Patient
+  """
+
+  The permissions this user possesses
+
+  """
   permissions: Permissions!
   uid: String!
 }
@@ -496,8 +551,8 @@ type UtcTime {
   unixMilliseconds: Long!
   """
 
-          the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-          eg. America/Los_Angeles for British Columbia's time zone (generally referred to as PST)
+  the timezone string should follow the format from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  eg. America/Los_Angeles for British Columbia's time zone (generally referred to as PST)
 
   """
   withRespectTo(timeZone: String!): TimeZonedTime!
@@ -594,6 +649,10 @@ enum IcdPostcoordinationAvailability {
   One
   Three
   Two
+}
+
+enum Linearization {
+  MMS
 }
 
 enum Month {
@@ -791,9 +850,9 @@ input EmergencyContactInput {
 
 """
 
-    passing explicit nulls will unset the value (provided that leaves the event in a valid state) and not setting a value
-     will leave it unchanged. The same consistency rules around start/end/allDay still apply and it is the callers
-     responsibility to pass a valid series of arguments
+passing explicit nulls will unset the value (provided that leaves the event in a valid state) and not setting a value
+will leave it unchanged. The same consistency rules around start/end/allDay still apply and it is the callers
+responsibility to pass a valid series of arguments
 """
 input EventEditInput {
   " weather the event is all day or not. Cannot be null and must be false if and only if end is not null"
@@ -972,9 +1031,9 @@ input PatientIdInput {
 
 """
 
-   The input side of Patient. Note that relations to other types are passed as ID's
-   if you want to clear a list, pass an empty list, explicitly setting a list to null or leaving blank will have no effect on
-   update operations and will result in empty list for create operations.
+The input side of Patient. Note that relations to other types are passed as ID's
+if you want to clear a list, pass an empty list, explicitly setting a list to null or leaving blank will have no effect on
+update operations and will result in empty list for create operations.
 
 """
 input PatientInput {
@@ -1020,7 +1079,7 @@ input RecordIdInput {
 
 """
 the date range that the edits will effect the reoccurring event. This allows things such as editing a
-            single event of a reoccurring event or leaving the past events untouched but editing future ones
+single event of a reoccurring event or leaving the past events untouched but editing future ones
 """
 input RecurrenceEditSettingsInput {
   "the end of the events that the edit should take place on"

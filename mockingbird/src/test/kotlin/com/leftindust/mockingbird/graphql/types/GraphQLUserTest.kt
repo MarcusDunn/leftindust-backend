@@ -145,14 +145,14 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
 
-        val nameInfo = mockk<NameInfo>()
+        val nameInfo = mockk<NameInfo>(relaxed = true)
 
         val nameInfoDao = mockk<NameInfoDao> {
-            coEvery { getByUniqueId("uid", any()) } returns nameInfo
+            coEvery { findByUniqueId("uid", any()) } returns nameInfo
         }
 
         val result = runBlocking { GraphQLUser("uid", null, authContext).name(nameInfoDao) }
 
-        assertEquals(nameInfo, result)
+        assertEquals(GraphQLNameInfo(nameInfo), result)
     }
 }
