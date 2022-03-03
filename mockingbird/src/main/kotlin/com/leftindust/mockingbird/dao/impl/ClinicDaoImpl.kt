@@ -43,7 +43,7 @@ class ClinicDaoImpl(
         return if (requester can createClinic) withContext(Dispatchers.IO) {
             val clinicEntity = clinicRepository.getById(clinic.cid.id)
             clinicEntity.setByGqlInput(clinic, entityManager)
-             clinicEntity
+            clinicEntity
         } else {
             throw NotAuthorizedException(requester, createClinic)
         }
