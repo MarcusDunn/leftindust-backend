@@ -4,10 +4,10 @@ import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.FormDao
 import com.leftindust.mockingbird.dao.FormDataDao
-import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.entity.FormData
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.util.makeUUID
@@ -23,7 +23,7 @@ import java.util.*
 internal class FormMutationTest {
     private val formDao = mockk<FormDao>()
     private val formDataDao = mockk<FormDataDao>()
-    private val patientDao = mockk<PatientDao>()
+    private val patientDao = mockk<UpdatePatientDao>()
 
     @Test
     fun addForm() {

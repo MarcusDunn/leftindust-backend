@@ -1,11 +1,15 @@
 package com.leftindust.mockingbird.graphql.types
 
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.*
+import com.leftindust.mockingbird.dao.DoctorDao
+import com.leftindust.mockingbird.dao.EventDao
+import com.leftindust.mockingbird.dao.ReadClinicDao
+import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.Doctor
-import com.leftindust.mockingbird.dao.patient.PatientDao
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
 import java.util.*
@@ -43,35 +47,61 @@ data class GraphQLDoctor(
         authContext = authContext
     )
 
-    fun clinic(@GraphQLIgnore @Autowired clinicDao: ClinicDao): GraphQLClinic {
-        TODO("not yet implemented $clinicDao")
-    }
+    @GraphQLDescription(
+        """
+        The clinics this doctor is a member of.
+    """
+    )
+    suspend fun clinic(
+        @GraphQLIgnore @Autowired clinicDao: ReadClinicDao
+    ): List<GraphQLClinic> = clinicDao
+        .getByDoctor(did, authToken)
+        .map { GraphQLClinic(it, authContext) }
 
-    suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? {
-        return userDao
-            .findByDoctor(did, authContext.mediqAuthToken)
-            ?.let { GraphQLUser(it, authContext) }
-    }
+    @GraphQLDescription(
+        """
+        The user associated with this doctor, if it exists.
+    """
+    )
+    suspend fun user(
+        @GraphQLIgnore @Autowired userDao: UserDao
+    ): GraphQLUser? = userDao
+        .findByDoctor(did, authContext.mediqAuthToken)
+        ?.let { GraphQLUser(it, authContext) }
 
-    suspend fun patients(@GraphQLIgnore @Autowired patientDao: PatientDao): List<GraphQLPatient> {
-        return patientDao
-            .getByDoctor(did, authToken)
-            .map { GraphQLPatient(it, authContext) }
-    }
+    @GraphQLDescription(
+        """
+        The patients this doctor takes care of.
+    """
+    )
+    suspend fun patients(
+        @GraphQLIgnore @Autowired patientDao: ReadPatientDao
+    ): List<GraphQLPatient> = patientDao
+        .getByDoctor(did, authToken)
+        .map { GraphQLPatient(it, authContext) }
 
-    suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> {
-        return eventDao
-            .getByDoctor(did, authContext.mediqAuthToken)
-            .map { event -> GraphQLEvent(event, authContext) }
-    }
 
+    @GraphQLDescription(
+        """
+        The events this doctor is a part of
+    """
+    )
+    suspend fun events(
+        @GraphQLIgnore @Autowired eventDao: EventDao
+    ): List<GraphQLEvent> = eventDao
+        .getByDoctor(did, authContext.mediqAuthToken)
+        .map { event -> GraphQLEvent(event, authContext) }
+
+    @GraphQLDescription(
+        """
+        The events this doctor is a part of between two times
+    """
+    )
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
         from: GraphQLUtcTime,
         to: GraphQLUtcTime
-    ): List<GraphQLEvent> {
-        return doctorDao.getByDoctor(did, authToken)
-            .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
-            .map { GraphQLEvent(event = it, authContext = authContext) }
-    }
+    ): List<GraphQLEvent> = doctorDao.getByDoctor(did, authToken)
+        .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
+        .map { GraphQLEvent(event = it, authContext = authContext) }
 }

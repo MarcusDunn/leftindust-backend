@@ -4,7 +4,6 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Patient
@@ -15,6 +14,10 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateEventRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateVisitRepository
+import com.leftindust.mockingbird.dao.patient.CreatePatientDao
+import com.leftindust.mockingbird.dao.patient.DeletePatientDao
+import com.leftindust.mockingbird.dao.patient.ReadPatientDao
+import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.extensions.getByIds
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
@@ -46,7 +49,7 @@ class PatientDaoImpl(
     @Autowired private val entityManager: EntityManager,
     @Autowired private val formRepository: HibernateFormRepository,
     @Autowired private val assignedFormRepository: HibernateAssignedFormRepository,
-) : PatientDao, AbstractHibernateDao(authorizer) {
+) : ReadPatientDao, DeletePatientDao, UpdatePatientDao, CreatePatientDao, AbstractHibernateDao(authorizer) {
     companion object {
         private val updatePatients = Crud.UPDATE to Tables.Patient
         private val readPatients = Crud.READ to Tables.Patient
@@ -221,6 +224,11 @@ class PatientDaoImpl(
         } else {
             throw NotAuthorizedException(requester, updatePatients)
         }
+
+    override fun necessaryPermissions() = ReadPatientDao.necessaryPermissions +
+            CreatePatientDao.necessaryPermissions +
+            DeletePatientDao.necessaryPermissions +
+            UpdatePatientDao.necessaryPermissions
 }
 
 private operator fun Pair<Crud, Tables>.plus(other: Pair<Crud, Tables>): List<Pair<Crud, Tables>> = listOf(this, other)

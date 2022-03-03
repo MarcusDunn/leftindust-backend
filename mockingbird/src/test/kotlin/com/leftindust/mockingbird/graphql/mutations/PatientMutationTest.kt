@@ -1,8 +1,9 @@
 package com.leftindust.mockingbird.graphql.mutations
 
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.patient.PatientDao
 import com.leftindust.mockingbird.dao.entity.Patient
+import com.leftindust.mockingbird.dao.patient.CreatePatientDao
+import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
@@ -17,7 +18,8 @@ import java.util.*
 
 internal class PatientMutationTest {
     private val authContext = mockk<GraphQLAuthContext>()
-    private val patientDao = mockk<PatientDao>()
+    private val updatePatientDao = mockk<UpdatePatientDao>()
+    private val createPatientDao = mockk<CreatePatientDao>()
 
     @Test
     fun addDoctorToPatient() {
@@ -30,9 +32,9 @@ internal class PatientMutationTest {
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        coEvery { patientDao.update(any(), any()) } returns mockkPatient
+        coEvery { updatePatientDao.update(any(), any()) } returns mockkPatient
 
-        val patientMutation = PatientMutation(patientDao, patientDao)
+        val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 
         val result = runBlocking {
             patientMutation.updatePatient(
@@ -61,9 +63,9 @@ internal class PatientMutationTest {
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, authContext)
 
-        coEvery { patientDao.update(any(), any()) } returns mockkPatient
+        coEvery { updatePatientDao.update(any(), any()) } returns mockkPatient
 
-        val patientMutation = PatientMutation(patientDao, patientDao)
+        val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 
         val mockkGqlPatientInput = mockk<GraphQLPatientEditInput>()
 
@@ -84,9 +86,9 @@ internal class PatientMutationTest {
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, authContext)
 
-        coEvery { patientDao.addNewPatient(any(), any()) } returns mockkPatient
+        coEvery { createPatientDao.addNewPatient(any(), any()) } returns mockkPatient
 
-        val patientMutation = PatientMutation(patientDao, patientDao)
+        val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 
         val mockkGqlPatientInput = mockk<GraphQLPatientInput>()
 

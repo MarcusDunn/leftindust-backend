@@ -9,7 +9,7 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
 
-interface ReadClinic : GuardedDao {
+interface ReadClinicDao : GuardedDao {
     companion object {
         val necessaryPermissions = setOf(Action(Crud.READ to Tables.Clinic))
     }
@@ -20,7 +20,7 @@ interface ReadClinic : GuardedDao {
     suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic
 }
 
-interface CreateClinic : GuardedDao {
+interface CreateClinicDao : GuardedDao {
     companion object {
         val necessaryPermissions = setOf(Action(Crud.CREATE to Tables.Clinic))
     }
@@ -29,7 +29,7 @@ interface CreateClinic : GuardedDao {
     suspend fun addClinic(clinic: GraphQLClinicInput, requester: MediqToken): Clinic
 }
 
-interface UpdateClinic : GuardedDao {
+interface UpdateClinicDao : GuardedDao {
     companion object {
         val necessaryPermissions = setOf(Action(Crud.UPDATE to Tables.Clinic))
     }
@@ -38,18 +38,18 @@ interface UpdateClinic : GuardedDao {
     suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic
 }
 
-interface DeleteClinic : GuardedDao {
+interface DeleteClinicDao : GuardedDao {
     companion object {
         val necessaryPermissions = setOf(Action(Crud.DELETE to Tables.Clinic))
     }
 
-    override fun necessaryPermissions() = UpdateClinic.necessaryPermissions
+    override fun necessaryPermissions() = UpdateClinicDao.necessaryPermissions
 }
 
 @Deprecated("Prefer smaller interfaces")
-interface ClinicDao : ReadClinic, CreateClinic, UpdateClinic, DeleteClinic {
-    override fun necessaryPermissions() = ReadClinic.necessaryPermissions +
-            CreateClinic.necessaryPermissions +
-            UpdateClinic.necessaryPermissions +
-            DeleteClinic.necessaryPermissions
+interface ClinicDao : ReadClinicDao, CreateClinicDao, UpdateClinicDao, DeleteClinicDao {
+    override fun necessaryPermissions() = ReadClinicDao.necessaryPermissions +
+            CreateClinicDao.necessaryPermissions +
+            UpdateClinicDao.necessaryPermissions +
+            DeleteClinicDao.necessaryPermissions
 }
