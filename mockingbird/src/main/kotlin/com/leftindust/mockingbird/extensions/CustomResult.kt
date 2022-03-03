@@ -1,8 +1,5 @@
 package com.leftindust.mockingbird.extensions
 
-import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
-import org.apache.logging.log4j.LogManager
-
 /**
  * basis for all expected and recoverable errors throughout the application, essentially an enumeration over failure and
  * success.

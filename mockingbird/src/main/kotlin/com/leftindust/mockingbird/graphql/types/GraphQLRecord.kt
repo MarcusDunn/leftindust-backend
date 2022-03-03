@@ -6,7 +6,6 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.MediqRecord
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.RecordType
-import com.leftindust.mockingbird.extensions.gqlID
 import java.util.*
 
 @GraphQLName("Record")

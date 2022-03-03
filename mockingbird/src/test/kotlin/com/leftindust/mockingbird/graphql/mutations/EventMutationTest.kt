@@ -26,7 +26,7 @@ internal class EventMutationTest {
     fun addEvent() {
         val eventID = UUID.randomUUID()
 
-        val mockkContext = mockk<GraphQLAuthContext>() {
+        val mockkContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
         val mockkEvent = mockk<Event>(relaxed = true) {
@@ -67,7 +67,7 @@ internal class EventMutationTest {
         val eventID = UUID.randomUUID()
 
 
-        val mockkContext = mockk<GraphQLAuthContext>() {
+        val mockkContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
 
@@ -119,7 +119,7 @@ internal class EventMutationTest {
 
         val eventMutation = EventMutation(eventDao)
 
-        val graphQLAuthContext = mockk<GraphQLAuthContext>() {
+        val graphQLAuthContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
         }
 

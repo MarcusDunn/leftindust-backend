@@ -4,9 +4,13 @@ import com.leftindust.mockingbird.dao.entity.superclasses.Person
 import com.leftindust.mockingbird.extensions.replaceAllIfNotNull
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
-import org.hibernate.Session
 import java.sql.Date
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EntityManager
+import javax.persistence.ManyToMany
+import javax.persistence.OneToMany
 
 @Entity
 class Doctor(

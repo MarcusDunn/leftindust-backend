@@ -3,8 +3,13 @@ package com.leftindust.mockingbird.dao.entity
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
-import org.hibernate.Session
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EntityManager
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToMany
+import javax.persistence.OneToOne
 
 @Entity
 class Clinic(

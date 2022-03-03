@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.entity
 
-import com.leftindust.mockingbird.extensions.gqlID
 import com.leftindust.mockingbird.graphql.types.GraphQLAddressType
 import com.leftindust.mockingbird.graphql.types.GraphQLCanadianProvince
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic

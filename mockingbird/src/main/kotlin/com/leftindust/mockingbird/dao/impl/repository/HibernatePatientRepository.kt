@@ -7,6 +7,5 @@ import java.util.*
 
 @Transactional
 interface HibernatePatientRepository : JpaRepository<Patient, UUID> {
-    fun getPatientsById(id: UUID): Collection<Patient>
     fun findByUser_UniqueId(user_uniqueId: String): Patient?
 }

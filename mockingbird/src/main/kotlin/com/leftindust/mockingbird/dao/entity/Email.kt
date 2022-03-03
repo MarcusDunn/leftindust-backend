@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.dao.entity
 
 import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
-import com.leftindust.mockingbird.graphql.types.GraphQLEmail
 import com.leftindust.mockingbird.graphql.types.GraphQLEmailType
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEmailInput
 import javax.persistence.Column

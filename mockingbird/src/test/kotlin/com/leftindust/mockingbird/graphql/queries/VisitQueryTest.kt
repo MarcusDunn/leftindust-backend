@@ -29,7 +29,7 @@ internal class VisitQueryTest {
 
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
 
-        val mockkEvent = mockk<Event>() {
+        val mockkEvent = mockk<Event> {
             every { id } returns eventID
         }
 
@@ -116,15 +116,15 @@ internal class VisitQueryTest {
             every { id } returns visitID3
         }
 
-        val mockkEvent1 = mockk<Event>() {
+        val mockkEvent1 = mockk<Event> {
             every { id } returns eventID1
         }
 
-        val mockkEvent2 = mockk<Event>() {
+        val mockkEvent2 = mockk<Event> {
             every { id } returns eventID2
         }
 
-        val mockkEvent3 = mockk<Event>() {
+        val mockkEvent3 = mockk<Event> {
             every { id } returns eventID3
         }
 

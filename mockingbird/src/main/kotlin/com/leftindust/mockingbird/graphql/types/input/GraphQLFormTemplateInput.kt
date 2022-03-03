@@ -3,7 +3,6 @@ package com.leftindust.mockingbird.graphql.types.input
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.DataType
-import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 
 @GraphQLName("FormTemplateInput")
 data class GraphQLFormTemplateInput(

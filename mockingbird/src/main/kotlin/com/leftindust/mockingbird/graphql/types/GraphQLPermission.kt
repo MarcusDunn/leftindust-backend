@@ -1,11 +1,9 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.expediagroup.graphql.generator.scalars.ID
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.Action
-import com.leftindust.mockingbird.extensions.gqlID
 import java.util.*
 
 @GraphQLName("Permission")

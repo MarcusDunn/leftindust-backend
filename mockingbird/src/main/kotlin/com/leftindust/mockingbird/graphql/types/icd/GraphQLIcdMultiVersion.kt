@@ -1,14 +1,7 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
-import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
-import com.leftindust.mockingbird.external.icd.IcdFetcher
 import com.leftindust.mockingbird.external.icd.impl.IcdMultiVersion
-import com.leftindust.mockingbird.graphql.types.input.GraphQLReleaseIdInput
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("IcdMultiVersion")
 data class GraphQLIcdMultiVersion(
