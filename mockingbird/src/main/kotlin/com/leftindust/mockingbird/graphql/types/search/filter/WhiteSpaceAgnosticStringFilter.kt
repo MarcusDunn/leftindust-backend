@@ -27,7 +27,7 @@ class WhiteSpaceAgnosticStringFilter(
     strict = strict,
 ) {
 
-    override fun <X, Z> editColumn(
+    override fun <X, Z> normalizeColumn(
         criteriaBuilder: CriteriaBuilder,
         root: From<Z, X>,
         columnName: SingularAttribute<X, String>

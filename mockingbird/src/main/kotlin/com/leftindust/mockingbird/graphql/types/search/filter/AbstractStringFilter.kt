@@ -24,7 +24,7 @@ abstract class AbstractStringFilter(
         root: From<Z, X>,
         columnName: SingularAttribute<X, String>
     ): Predicate {
-        val column = editColumn(criteriaBuilder, root, columnName)
+        val column = normalizeColumn(criteriaBuilder, root, columnName)
         val predicates = listOfNotNull(
             eq?.let { criteriaBuilder.equal(column, eq) },
             ne?.let { criteriaBuilder.notEqual(column, ne) },
@@ -38,7 +38,7 @@ abstract class AbstractStringFilter(
         return combineWithStrict(criteriaBuilder, *predicates)
     }
 
-    abstract fun <X, Z> editColumn(
+    abstract fun <X, Z> normalizeColumn(
         criteriaBuilder: CriteriaBuilder,
         root: From<Z, X>,
         columnName: SingularAttribute<X, String>
