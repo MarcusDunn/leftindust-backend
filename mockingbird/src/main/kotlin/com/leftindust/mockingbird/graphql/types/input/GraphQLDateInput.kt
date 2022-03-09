@@ -3,9 +3,7 @@ package com.leftindust.mockingbird.graphql.types.input
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.GraphQLMonth
 import java.sql.Date
-import java.sql.Timestamp
 import java.time.LocalDate
-import java.time.ZoneId
 
 @GraphQLName("DateInput")
 data class GraphQLDateInput(
@@ -13,15 +11,7 @@ data class GraphQLDateInput(
     val month: GraphQLMonth,
     val year: Int,
 ) {
-    fun toLocalDate(): LocalDate {
-        return LocalDate.of(year, month.toJavaMonth(), day)
-    }
+    fun toLocalDate(): LocalDate = LocalDate.of(year, month.toJavaMonth(), day)
 
-    fun toTimeStamp(): Timestamp {
-        return Timestamp.from(toLocalDate().atStartOfDay(ZoneId.of("UTC")).toInstant())
-    }
-
-    fun toDate(): Date {
-        return Date.valueOf(LocalDate.of(year, month.toJavaMonth().value, day))
-    }
+    fun toDate(): Date = Date.valueOf(LocalDate.of(year, month.toJavaMonth().value, day))
 }
