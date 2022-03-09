@@ -10,15 +10,15 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import com.leftindust.mockingbird.util.makeUUID
 import com.leftindust.mockingbird.util.EntityStore
+import com.leftindust.mockingbird.util.makeUUID
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class FormMutationTest {
     private val formDao = mockk<FormDao>()
@@ -28,18 +28,18 @@ internal class FormMutationTest {
     @Test
     fun addForm() {
         val formMutation = FormMutation(formDao, formDataDao, patientDao)
-        val form = EntityStore.graphQLFormInput("FormMutationTest")
+        val graphQLFormTemplateInput = EntityStore.graphQLFormInput("FormMutationTest")
 
-        coEvery { formDao.addForm(form, any()) } returns Form(form).apply {
-            id = UUID.nameUUIDFromBytes("rfgvha".toByteArray())
-        }
+        val authContext = mockk<GraphQLAuthContext>(relaxed = true)
 
-        val authContext = mockk<GraphQLAuthContext> {
-            every { mediqAuthToken } returns mockk()
-        }
-        val result = runBlocking { formMutation.addSurveyTemplate(form, authContext = authContext) }
-        assertEquals(form.name, result.name)
-        assertEquals(form.sections.map { it.name }, result.sections.map { it.name })
+        val mockkForm = mockk<Form>(relaxed = true)
+        coEvery { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) } returns mockkForm
+
+        val result = runBlocking { formMutation.addSurveyTemplate(graphQLFormTemplateInput, authContext = authContext) }
+
+        assertEquals(GraphQLFormTemplate(mockkForm, authContext), result)
+
+        coVerify(exactly = 1) { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) }
     }
 
     @Test
