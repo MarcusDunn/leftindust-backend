@@ -13,11 +13,5 @@ internal class GraphQLFormTemplateTest {
             .apply { id = UUID.nameUUIDFromBytes("eruyfq".toByteArray()) }
         val gqlFormTemplate = GraphQLFormTemplate(entityForm, mockk())
         assertEquals(entityForm.name, gqlFormTemplate.name)
-        assertEquals(entityForm.sections.size, gqlFormTemplate.sections.size)
-        assertEquals(entityForm.sections.first().name, gqlFormTemplate.sections.first().name)
-        assertEquals(
-            entityForm.sections.first().fields.first().dataType,
-            gqlFormTemplate.sections.first().fields.first().dataType
-        )
     }
 }

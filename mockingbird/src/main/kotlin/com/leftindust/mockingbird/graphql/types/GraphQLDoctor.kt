@@ -106,7 +106,6 @@ data class GraphQLDoctor(
         .getDoctorPhones(did, authContext.mediqAuthToken)
         .map { GraphQLPhone(it) }
 
-
     override suspend fun emails(@GraphQLIgnore @Autowired emailDao: ReadEmailDao): List<GraphQLEmail> = emailDao
         .getDoctorEmails(did, authContext.mediqAuthToken)
         .map { GraphQLEmail(it) }

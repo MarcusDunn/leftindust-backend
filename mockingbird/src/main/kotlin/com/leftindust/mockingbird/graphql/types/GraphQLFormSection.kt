@@ -1,23 +1,36 @@
 package com.leftindust.mockingbird.graphql.types
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
+import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
+import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.FormSection
+import com.leftindust.mockingbird.dao.form.feild.ReadFormFieldDao
+import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
+@GraphQLName("FormSection")
 data class GraphQLFormSection(
+    val fsid: ID,
     val name: String,
     val number: Int,
     @GraphQLDescription("Max 50 000 chars")
     val description: String?,
-    @GraphQLDescription("Note that I do not provide a stable order to these fields")
-    val fields: List<GraphQlFormField>,
-    private val graphQLAuthContext: GraphQLAuthContext,
+    private val authContext: GraphQLAuthContext,
 ) {
+    @GraphQLName("FormSectionId")
+    data class ID(val id: UUID)
+
     constructor(section: FormSection, graphQLAuthContext: GraphQLAuthContext) : this(
+        fsid = ID(section.id!!),
         name = section.name,
         number = section.number,
         description = section.description,
-        fields = section.fields.map { GraphQlFormField(it, graphQLAuthContext) },
-        graphQLAuthContext = graphQLAuthContext,
+        authContext = graphQLAuthContext,
     )
+
+    @GraphQLDescription("Note that I do not provide a stable order to these fields")
+    suspend fun fields(@GraphQLIgnore @Autowired formFieldDao: ReadFormFieldDao): List<GraphQlFormField> = formFieldDao
+        .getSectionFields(fsid, authContext.mediqAuthToken)
+        .map { GraphQlFormField(it, authContext) }
 }
