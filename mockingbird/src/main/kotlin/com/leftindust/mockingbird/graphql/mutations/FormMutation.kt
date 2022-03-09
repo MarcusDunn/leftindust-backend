@@ -3,7 +3,7 @@ package com.leftindust.mockingbird.graphql.mutations
 import com.expediagroup.graphql.server.operations.Mutation
 import com.google.gson.JsonParser.parseString
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.CreateFormDao
 import com.leftindust.mockingbird.dao.FormDataDao
 import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLFormData
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class FormMutation(
-    private val formDao: FormDao,
+    private val createFormDao: CreateFormDao,
     private val formDataDao: FormDataDao,
     private val patientDao: UpdatePatientDao
 ) : Mutation {
@@ -22,7 +22,7 @@ class FormMutation(
         surveyTemplate: GraphQLFormTemplateInput,
         authContext: GraphQLAuthContext
     ): GraphQLFormTemplate {
-        return GraphQLFormTemplate(formDao.addForm(surveyTemplate, authContext.mediqAuthToken), authContext)
+        return GraphQLFormTemplate(createFormDao.addForm(surveyTemplate, authContext.mediqAuthToken), authContext)
     }
 
     suspend fun submitSurvey(

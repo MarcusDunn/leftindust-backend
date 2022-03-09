@@ -4,7 +4,9 @@ import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.auth.NotAuthorizedException
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.CreateFormDao
+import com.leftindust.mockingbird.dao.DeleteFormDao
+import com.leftindust.mockingbird.dao.ReadFormDao
 import com.leftindust.mockingbird.dao.Tables
 import com.leftindust.mockingbird.dao.entity.AssignedForm
 import com.leftindust.mockingbird.dao.entity.Form
@@ -27,39 +29,47 @@ class FormDaoImpl(
     @Autowired private val formRepository: HibernateFormRepository,
     @Autowired private val assignedFormRepository: HibernateAssignedFormRepository,
     @Autowired authorizer: Authorizer
-) : FormDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> {
-        val readForms = Crud.READ to Tables.Form
+) : ReadFormDao, DeleteFormDao, CreateFormDao, AbstractHibernateDao(authorizer) {
+    companion object {
+        private val readForms = Crud.READ to Tables.Form
+        private val createForms = Crud.CREATE to Tables.Form
+        private val deleteForms = Crud.DELETE to Tables.Form
+    }
+
+    override fun necessaryPermissions() =
+        ReadFormDao.necessaryPermissions +
+                DeleteFormDao.necessaryPermissions +
+                CreateFormDao.necessaryPermissions
+
+    override suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> =
         if (requester can readForms) {
-            return formRepository.getByIds(ids.map { it.id })
+            withContext(Dispatchers.IO) {
+                formRepository.getByIds(ids.map { it.id })
+            }
         } else {
             throw NotAuthorizedException(requester, readForms)
         }
-    }
 
-    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form> {
-        val readForms = Crud.READ to Tables.Form
+    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form> =
         if (requester can readForms) {
-            return formRepository.findAll(range.toPageable()).toList()
+            withContext(Dispatchers.IO) {
+                formRepository.findAll(range.toPageable()).toList()
+            }
         } else {
             throw NotAuthorizedException(requester, readForms)
         }
-    }
 
-    override suspend fun addForm(form: GraphQLFormTemplateInput, requester: MediqToken): Form {
-        val createForms = Crud.CREATE to Tables.Form
+    override suspend fun addForm(form: GraphQLFormTemplateInput, requester: MediqToken): Form =
         if (requester can createForms) {
-            return withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 formRepository.save(Form(form))
             }
         } else {
             throw NotAuthorizedException(requester, createForms)
         }
-    }
 
-    override suspend fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form {
-        val deleteForms = Crud.DELETE to Tables.Form
-        return if (requester can deleteForms) {
+    override suspend fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form =
+        if (requester can deleteForms) {
             withContext(Dispatchers.IO) {
                 val formEntity = formRepository.getById(form.id)
                 formRepository.delete(formEntity)
@@ -68,19 +78,14 @@ class FormDaoImpl(
         } else {
             throw NotAuthorizedException(requester, deleteForms)
         }
-    }
 
     override suspend fun getByPatientAssigned(
         patient: GraphQLPatient.ID,
         requester: MediqToken
-    ): Collection<AssignedForm> {
-        val readPatient = Crud.READ to Tables.Patient
-        return if (requester can readPatient) {
+    ): Collection<AssignedForm> =
+        if (requester can readForms) {
             withContext(Dispatchers.IO) {
                 assignedFormRepository.findAllByPatient_Id(patient.id)
             }
-        } else {
-            throw NotAuthorizedException(requester, readPatient)
-        }
-    }
+        } else throw NotAuthorizedException(requester, readForms)
 }

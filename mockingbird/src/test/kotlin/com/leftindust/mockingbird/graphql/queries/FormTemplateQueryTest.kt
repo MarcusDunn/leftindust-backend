@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.graphql.queries
 
 import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.ReadFormDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 internal class FormTemplateQueryTest {
-    private val formDao = mockk<FormDao>()
+    private val formDao = mockk<ReadFormDao>()
 
     @Test
     fun `forms by id`() {

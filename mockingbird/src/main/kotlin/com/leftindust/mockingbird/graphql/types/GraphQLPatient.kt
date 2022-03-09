@@ -7,7 +7,7 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.ReadFormDao
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.address.ReadAddressDao
@@ -72,7 +72,7 @@ data class GraphQLPatient(
         .getPatientEvents(pid, authContext.mediqAuthToken)
         .map { event -> GraphQLEvent(event, authContext) }
 
-    suspend fun assignedForms(@GraphQLIgnore @Autowired formDao: FormDao): List<GraphQLAssignedForm> = formDao
+    suspend fun assignedForms(@GraphQLIgnore @Autowired formDao: ReadFormDao): List<GraphQLAssignedForm> = formDao
         .getByPatientAssigned(pid, authContext.mediqAuthToken)
         .map { GraphQLAssignedForm(it, authContext) }
 
