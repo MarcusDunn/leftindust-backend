@@ -2,7 +2,7 @@ package com.leftindust.mockingbird.graphql.mutations
 
 import com.google.gson.JsonParser
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.CreateFormDao
 import com.leftindust.mockingbird.dao.FormDataDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.entity.FormData
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class FormMutationTest {
-    private val formDao = mockk<FormDao>()
+    private val formDao = mockk<CreateFormDao>()
     private val formDataDao = mockk<FormDataDao>()
     private val patientDao = mockk<UpdatePatientDao>()
 

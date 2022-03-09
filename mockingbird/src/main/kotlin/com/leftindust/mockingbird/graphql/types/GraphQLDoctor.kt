@@ -44,56 +44,27 @@ data class GraphQLDoctor(
         authContext = authContext
     )
 
-    @GraphQLDescription(
-        """
-        The clinics this doctor is a member of.
-    """
-    )
-    suspend fun clinic(
-        @GraphQLIgnore @Autowired clinicDao: ReadClinicDao
-    ): List<GraphQLClinic> = clinicDao
-        .getByDoctor(did, authToken)
-        .map { GraphQLClinic(it, authContext) }
-
-    @GraphQLDescription(
-        """
-        The user associated with this doctor, if it exists.
-    """
-    )
-    suspend fun user(
-        @GraphQLIgnore @Autowired userDao: UserDao
-    ): GraphQLUser? = userDao
+    @GraphQLDescription("The user associated with this doctor, if it exists.")
+    suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? = userDao
         .findByDoctor(did, authContext.mediqAuthToken)
         ?.let { GraphQLUser(it, authContext) }
 
-    @GraphQLDescription(
-        """
-        The patients this doctor takes care of.
-    """
-    )
-    suspend fun patients(
-        @GraphQLIgnore @Autowired patientDao: ReadPatientDao
-    ): List<GraphQLPatient> = patientDao
+    @GraphQLDescription("The clinics this doctor is a member of.")
+    suspend fun clinic(@GraphQLIgnore @Autowired clinicDao: ReadClinicDao): List<GraphQLClinic> = clinicDao
+        .getByDoctor(did, authToken)
+        .map { GraphQLClinic(it, authContext) }
+
+    @GraphQLDescription("The patients this doctor takes care of.")
+    suspend fun patients(@GraphQLIgnore @Autowired patientDao: ReadPatientDao): List<GraphQLPatient> = patientDao
         .getByDoctor(did, authToken)
         .map { GraphQLPatient(it, authContext) }
 
-
-    @GraphQLDescription(
-        """
-        The events this doctor is a part of
-    """
-    )
-    suspend fun events(
-        @GraphQLIgnore @Autowired eventDao: EventDao
-    ): List<GraphQLEvent> = eventDao
+    @GraphQLDescription("The events this doctor is a part of")
+    suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> = eventDao
         .getByDoctor(did, authContext.mediqAuthToken)
         .map { event -> GraphQLEvent(event, authContext) }
 
-    @GraphQLDescription(
-        """
-        The events this doctor is a part of between two times
-    """
-    )
+    @GraphQLDescription("The events this doctor is a part of between two times")
     suspend fun schedule(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao,
         from: GraphQLUtcTime,

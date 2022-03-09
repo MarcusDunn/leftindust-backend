@@ -4,14 +4,14 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
 import com.expediagroup.graphql.server.operations.Query
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
-import com.leftindust.mockingbird.dao.FormDao
+import com.leftindust.mockingbird.dao.ReadFormDao
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import org.springframework.stereotype.Component
 
 @Component
 class FormTemplateQuery(
-    private val formDao: FormDao
+    private val formDao: ReadFormDao
 ) : Query {
 
     @GraphQLDescription("fetch survey templates by one getting a range or the survey id")
