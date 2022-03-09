@@ -144,10 +144,11 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "${JavaVersion.VERSION_1_8}"
     targetCompatibility = "${JavaVersion.VERSION_1_8}"
+    sourceCompatibility = "${JavaVersion.VERSION_1_8}"
 }
 
 kapt {
+    includeCompileClasspath = false
     strictMode = true
 }

@@ -17,10 +17,10 @@ data class GraphQLDoctorExample(
     override val strict: Boolean
 ) : Example<Doctor> {
     override fun toPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Doctor>): Predicate {
-        val doctorNameInfoJoin = root.join(Doctor_.nameInfo)
+        val doctorNameInfo = root.join(Doctor_.nameInfo)
         val predicates = listOfNotNull(
-            firstName?.toPredicate(criteriaBuilder, doctorNameInfoJoin, NameInfo_.firstName),
-            lastName?.toPredicate(criteriaBuilder, doctorNameInfoJoin, NameInfo_.lastName),
+            firstName?.toPredicate(criteriaBuilder, doctorNameInfo, NameInfo_.firstName),
+            lastName?.toPredicate(criteriaBuilder, doctorNameInfo, NameInfo_.lastName),
         ).toTypedArray()
         return combineWithStrict(criteriaBuilder, *predicates)
     }

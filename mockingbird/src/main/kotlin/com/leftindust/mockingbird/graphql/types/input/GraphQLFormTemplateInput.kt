@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.graphql.types.input
 
-import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.graphql.types.DataType
 
@@ -14,9 +13,7 @@ data class GraphQLFormTemplateInput(
 data class GraphQLFormSectionInput(
     val name: String,
     val number: Int,
-    @GraphQLDescription("Max 50 000 chars")
     val description: String? = null,
-    @GraphQLDescription("Note that I do not provide a stable order to these fields")
     val fields: List<GraphQlFormFieldInput>,
 )
 
@@ -36,14 +33,13 @@ data class GraphQlFormFieldInput(
     val jsonMetaData: String? = null,
 ) {
     init {
-        val valid = when (dataType) {
-            DataType.SingleMuliSelect -> multiSelectPossibilities != null
-            DataType.MultiMuliSelect -> multiSelectPossibilities != null
-            else -> true
-        }
-        if (!valid) {
-            throw IllegalArgumentException("invalid form")
-        }
+        require(
+            when (dataType) {
+                DataType.SingleMuliSelect -> !multiSelectPossibilities.isNullOrEmpty()
+                DataType.MultiMuliSelect -> !multiSelectPossibilities.isNullOrEmpty()
+                else -> true
+            }
+        ) { "MultiSelect forms must have multiSelectPossibilities" }
     }
 }
 
