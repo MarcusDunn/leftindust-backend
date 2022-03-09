@@ -21,7 +21,6 @@ class VisitQuery(
         vids: List<GraphQLVisit.ID>? = null,
         pid: GraphQLPatient.ID? = null,
         did: GraphQLDoctor.ID? = null,
-        strict: Boolean = true,
         graphQLAuthContext: GraphQLAuthContext
     ): List<GraphQLVisit> {
         return when {
@@ -35,7 +34,7 @@ class VisitQuery(
                 (patientVisits + doctorVisits).distinctBy { it.vid }
             }
             pid != null -> eventDao
-                .getByPatient(pid, graphQLAuthContext.mediqAuthToken)
+                .getPatientEvents(pid, graphQLAuthContext.mediqAuthToken)
                 .mapNotNull { visitDao.findByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
                 .map { GraphQLVisit(it, graphQLAuthContext) }
             did != null -> eventDao

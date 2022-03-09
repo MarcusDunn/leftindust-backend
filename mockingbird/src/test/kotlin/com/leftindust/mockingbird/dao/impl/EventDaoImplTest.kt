@@ -97,7 +97,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getByPatient(GraphQLPatient.ID(uuid), mockk()) }
+            val result = runBlocking { eventDaoImpl.getPatientEvents(GraphQLPatient.ID(uuid), mockk()) }
 
             assertEquals(patientEvents, result)
         }
@@ -141,7 +141,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getByVisit(GraphQLVisit.ID(uuid), mockk()) }
+            val result = runBlocking { eventDaoImpl.getEventVisit(GraphQLVisit.ID(uuid), mockk()) }
 
             assertEquals(visitEvent, result)
         }

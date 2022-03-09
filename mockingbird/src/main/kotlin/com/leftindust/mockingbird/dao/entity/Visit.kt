@@ -8,7 +8,9 @@ import org.hibernate.Session
 import javax.persistence.CascadeType
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
-import javax.persistence.FetchType
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedSubgraph
 import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.UniqueConstraint
@@ -17,14 +19,21 @@ import javax.persistence.UniqueConstraint
 @Table(
     uniqueConstraints = [UniqueConstraint(columnNames = ["event_id"])]
 )
+@NamedEntityGraph(
+    name = "Visit.event.patients",
+    attributeNodes = [NamedAttributeNode("event", subgraph = "patients")],
+    subgraphs = [
+        NamedSubgraph(name = "patients", attributeNodes = [NamedAttributeNode("patients")])
+    ]
+)
 class Visit(
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER, optional = false)
+    @OneToOne(cascade = [CascadeType.MERGE], optional = false)
     var event: Event,
     var title: String? = null,
     var description: String? = null,
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     // stored as URLS to the code
-    var icds: Set<String>,
+    var icds: Set<String> = emptySet(),
 ) : AbstractJpaPersistable() {
     fun setByGqlInput(graphQLVisitEditInput: GraphQLVisitEditInput, session: Session) {
         graphQLVisitEditInput.eid?.let { event = session.get(Event::class.java, it.id) }

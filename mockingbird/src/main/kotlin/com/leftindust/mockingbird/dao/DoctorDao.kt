@@ -13,7 +13,7 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLDoctorExample
 
 interface DoctorDao {
-    suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor>
+    suspend fun getPatientDoctors(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor>
     suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor>
     suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor
     suspend fun addDoctor(doctor: GraphQLDoctorInput, requester: MediqToken, user: MediqUser? = null): Doctor

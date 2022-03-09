@@ -5,10 +5,10 @@ import javax.persistence.*
 
 @Entity
 class AccessControlList(
-    @ManyToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     val group: MediqGroup? = null,
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     val mediqUser: MediqUser? = null,
-    @ManyToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     val action: Action,
 ) : AbstractJpaPersistable()

@@ -1,6 +1,5 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.Crud.CREATE
 import com.leftindust.mockingbird.dao.Tables.User
 import com.leftindust.mockingbird.dao.entity.AccessControlList
@@ -9,10 +8,9 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateAclRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
-import io.mockk.coEvery
+import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -20,10 +18,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
 
-internal class PermissionDaoImplTest {
-    private val authorizer = mockk<Authorizer> {
-        coEvery { getAuthorization(any(), any()) } returns Authorization.Allowed
-    }
+internal class PermissionDaoImplTest : LenientAuthorizerUnitTest() {
 
     @Test
     fun `check addUserPermission success`(): Unit = runBlocking {

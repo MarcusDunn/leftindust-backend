@@ -26,14 +26,18 @@ class PatientQueryIntegrationTest(
 
         @AfterAll
         @JvmStatic
-        fun cleanup(@Autowired patientRepository: HibernatePatientRepository) {
+        fun cleanup(
+            @Autowired patientRepository: HibernatePatientRepository,
+        ) {
             patientRepository.deleteAll()
         }
 
         @BeforeAll
         @JvmStatic
-        fun setup(@Autowired patientRepository: HibernatePatientRepository) {
-            patient = patientRepository.save(EntityStore.patient())
+        fun setup(
+            @Autowired patientRepository: HibernatePatientRepository,
+        ) {
+            patient = patientRepository.save(EntityStore.patient("PatientQueryIntegrationTest.setup"))
         }
     }
 
@@ -57,6 +61,23 @@ class PatientQueryIntegrationTest(
 
     @Test
     internal fun `get patients by id`() {
+        webTestClient.gqlRequest(
+            // language=graphql
+            """
+            query {
+                patientsByPid(pids: [{id: "${patient.id}"}]) {
+                    pid { id }
+                }
+            }
+        """.trimIndent()
+        )
+            .verifyOnlyDataExists("patientsByPid")
+            .jsonPath("data.patientsByPid[*].pid.id")
+            .isEqualTo(patient.id.toString())
+    }
+
+    @Test
+    internal fun `get patients by visit`() {
         webTestClient.gqlRequest(
             // language=graphql
             """

@@ -28,7 +28,7 @@ internal class ContactDaoImplTest {
         every { patientRepository.getAllByPatient_Id(patientId) } returns setOf(emergencyContact)
 
         val contactDaoImpl = ContactDaoImpl(authorizer, patientRepository)
-        val actual = runBlocking { contactDaoImpl.getByPatient(GraphQLPatient.ID(patientId), mockk()) }
+        val actual = runBlocking { contactDaoImpl.getPatientContacts(GraphQLPatient.ID(patientId), mockk()) }
 
         assertIterableEquals(listOf(emergencyContact), actual)
     }

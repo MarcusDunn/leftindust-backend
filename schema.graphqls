@@ -562,6 +562,7 @@ type Visit {
   description: String
   event: Event!
   icds: [IcdLinearizationEntity!]!
+  patients: [Patient!]!
   title: String
   vid: VisitId!
 }

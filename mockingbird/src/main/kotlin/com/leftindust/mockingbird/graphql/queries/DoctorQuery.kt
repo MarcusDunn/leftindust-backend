@@ -26,7 +26,7 @@ class DoctorQuery(
             dids != null && pid == null && range == null && example == null -> dids
                 .map { doctorDao.getByDoctor(it, authContext.mediqAuthToken) }
             pid != null && dids == null && range == null && example == null -> doctorDao
-                .getByPatient(pid, authContext.mediqAuthToken)
+                .getPatientDoctors(pid, authContext.mediqAuthToken)
             range != null && dids == null && pid == null && example == null -> {
                 doctorDao.getMany(range, authContext.mediqAuthToken)
             }

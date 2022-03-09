@@ -63,7 +63,7 @@ internal class EventQueryTest {
             })
 
         }
-        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns expected.events
+        coEvery { eventDao.getPatientEvents(GraphQLPatient.ID(patientID), any()) } returns expected.events
 
         val eventQuery = EventQuery(eventDao)
 
@@ -144,7 +144,7 @@ internal class EventQueryTest {
         val events = listOf<Event>(mockk(relaxed = true), mockk(relaxed = true))
 
         val pid = GraphQLPatient.ID(makeUUID("1"))
-        coEvery { eventDao.getByPatient(pid, graphQLAuthContext.mediqAuthToken) } returns events
+        coEvery { eventDao.getPatientEvents(pid, graphQLAuthContext.mediqAuthToken) } returns events
 
         val did = GraphQLDoctor.ID(makeUUID("2"))
         coEvery { eventDao.getByDoctor(did, graphQLAuthContext.mediqAuthToken) } returns events

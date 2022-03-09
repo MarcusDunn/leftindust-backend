@@ -8,9 +8,9 @@ import javax.persistence.*
 class MediqUser(
     @Column(unique = true, nullable = false)
     val uniqueId: String,
-    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false, fetch = FetchType.LAZY)
+    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = false)
     var group: MediqGroup? = null,
-    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL])
     var nameInfo: NameInfo,
 ) : AbstractJpaPersistable() {
     constructor(graphQLUserInput: GraphQLUserInput, group: MediqGroup?) : this(

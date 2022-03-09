@@ -55,7 +55,7 @@ class EventQuery(
         patients: List<GraphQLPatient.ID>,
         graphQLAuthContext: GraphQLAuthContext,
     ): List<GraphQLEvent> = patients
-        .map { eventDao.getByPatient(it, graphQLAuthContext.mediqAuthToken) }
+        .map { eventDao.getPatientEvents(it, graphQLAuthContext.mediqAuthToken) }
         .flatMap { events -> events.map { GraphQLEvent(it, graphQLAuthContext) } }
 
     suspend fun eventsByDoctor(

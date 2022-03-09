@@ -5,5 +5,5 @@ import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 
 interface ContactDao {
-    suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<EmergencyContact>
+    suspend fun getPatientContacts(pid: GraphQLPatient.ID, requester: MediqToken): Collection<EmergencyContact>
 }

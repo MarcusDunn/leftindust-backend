@@ -4,15 +4,14 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import java.sql.Timestamp
 import java.time.Instant
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.ManyToOne
 
 // note that for the sake of persisting updates we treat the doctor as owning this table.
 @Entity
 class DoctorPatient(
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     var patient: Patient,
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     val doctor: Doctor,
     val dateCreated: Timestamp = Timestamp.from(Instant.now())
 ) : AbstractJpaPersistable() {

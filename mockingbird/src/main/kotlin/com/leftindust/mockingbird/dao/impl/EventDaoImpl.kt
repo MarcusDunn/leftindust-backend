@@ -71,7 +71,7 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
+    override suspend fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
             val byId = withContext(Dispatchers.IO) {
                 hibernatePatientRepository
@@ -95,7 +95,7 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event {
+    override suspend fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event {
         if (requester can listOf(Crud.READ to Tables.Visit, Crud.READ to Tables.Event)) {
             return withContext(Dispatchers.IO) {
                 hibernateVisitRepository.getById(vid.id)

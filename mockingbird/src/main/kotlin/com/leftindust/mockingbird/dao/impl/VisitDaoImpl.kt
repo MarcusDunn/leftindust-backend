@@ -75,7 +75,7 @@ class VisitDaoImpl(
             throw NotAuthorizedException(requester, readVisits)
         }
 
-    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit> =
+    override suspend fun getPatientVisits(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit> =
         if (requester can readEventsAndVisits) {
             withContext(Dispatchers.IO) {
                 patientRepository.getById(pid.id)

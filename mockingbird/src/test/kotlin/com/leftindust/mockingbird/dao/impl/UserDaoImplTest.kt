@@ -71,7 +71,7 @@ internal class UserDaoImplTest {
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
-        val actual = runBlocking { userDaoImpl.findByPatient(pid, mockk()) }
+        val actual = runBlocking { userDaoImpl.findPatientUser(pid, mockk()) }
 
         assertEquals(expected, actual)
     }

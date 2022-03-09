@@ -33,7 +33,7 @@ internal class VisitQueryTest {
             every { id } returns eventID
         }
 
-        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns listOf(mockkEvent)
+        coEvery { eventDao.getPatientEvents(GraphQLPatient.ID(patientID), any()) } returns listOf(mockkEvent)
 
         val mockkVisit = mockk<Visit>(relaxed = true) {
             every { id } returns visitID
@@ -128,7 +128,7 @@ internal class VisitQueryTest {
             every { id } returns eventID3
         }
 
-        coEvery { eventDao.getByPatient(GraphQLPatient.ID(patientID), any()) } returns listOf(mockkEvent1, mockkEvent3)
+        coEvery { eventDao.getPatientEvents(GraphQLPatient.ID(patientID), any()) } returns listOf(mockkEvent1, mockkEvent3)
 
         coEvery { visitDao.findByEvent(GraphQLEvent.ID(eventID1), any()) } returns mockkVisit1
 
