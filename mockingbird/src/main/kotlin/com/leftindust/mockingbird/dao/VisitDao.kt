@@ -12,6 +12,6 @@ interface VisitDao {
     suspend fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit
     suspend fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): Visit
     suspend fun findByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit?
-    suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit>
+    suspend fun getPatientVisits(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit>
     suspend fun editVisit(visit: GraphQLVisitEditInput, requester: MediqToken): Visit
 }

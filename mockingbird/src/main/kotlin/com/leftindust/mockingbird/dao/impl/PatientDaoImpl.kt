@@ -104,11 +104,11 @@ class PatientDaoImpl(
             throw NotAuthorizedException(requester, readPatients)
         }
 
-    override suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient> =
+    override suspend fun getVisitPatients(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient> =
         if (requester can readPatients) {
             withContext(Dispatchers.IO) {
-                visitRepository.getById(vid.id)
-            }.event.patients // todo check this is not an uninitialized exception
+                visitRepository.getByIdWithEventPatients(vid.id)
+            }.event.patients
         } else {
             throw NotAuthorizedException(requester, readPatients)
         }
@@ -158,15 +158,15 @@ class PatientDaoImpl(
         }
 
 
-    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient> {
-        return if (requester can readPatientsAndEvents) {
+    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient> =
+        if (requester can readPatientsAndEvents) {
             withContext(Dispatchers.IO) {
                 eventRepository.getByIdWithPatients(eid.id)
             }.patients
         } else {
             throw NotAuthorizedException(requester, readPatientsAndEvents)
         }
-    }
+
 
     override suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient> =
         if (requester can readPatients) {

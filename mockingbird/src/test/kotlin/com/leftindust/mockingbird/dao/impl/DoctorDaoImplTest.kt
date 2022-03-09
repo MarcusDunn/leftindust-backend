@@ -54,7 +54,7 @@ internal class DoctorDaoImplTest {
             patientRepository, eventRepository, clinicRepository, entityManager
         )
 
-        val actual = runBlocking { doctorDaoImpl.getByPatient(GraphQLPatient.ID(patientID), mockk()) }
+        val actual = runBlocking { doctorDaoImpl.getPatientDoctors(GraphQLPatient.ID(patientID), mockk()) }
 
         assertEquals(listOf(mockkDoctor), actual)
 

@@ -30,7 +30,7 @@ internal class DoctorQueryTest {
 
         val graphQLDoctor = GraphQLDoctor(doctor, authContext)
 
-        coEvery { doctorDao.getByPatient(GraphQLPatient.ID(patientID), authContext.mediqAuthToken) } returns listOf(doctor)
+        coEvery { doctorDao.getPatientDoctors(GraphQLPatient.ID(patientID), authContext.mediqAuthToken) } returns listOf(doctor)
 
         val doctorQuery = DoctorQuery(doctorDao)
 

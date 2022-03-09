@@ -41,7 +41,7 @@ class DoctorDaoImpl(
     @Autowired private val clinicRepository: HibernateClinicRepository,
     @Autowired private val entityManager: EntityManager,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
+    override suspend fun getPatientDoctors(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) withContext(Dispatchers.IO) {
             val patient = patientRepository.getById(pid.id)

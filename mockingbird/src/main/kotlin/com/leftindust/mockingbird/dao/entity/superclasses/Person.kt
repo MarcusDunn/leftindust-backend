@@ -6,14 +6,14 @@ import javax.persistence.*
 
 @MappedSuperclass
 abstract class Person(
-    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "nameInfo_id", nullable = false)
     var nameInfo: NameInfo,
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     var addresses: MutableSet<Address> = mutableSetOf(),
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     var email: MutableSet<Email> = mutableSetOf(),
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     var phones: MutableSet<Phone> = mutableSetOf(),
     @OneToOne
     var user: MediqUser? = null,

@@ -15,5 +15,5 @@ interface UserDao {
     suspend fun getUsers(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqUser>
     suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser
     suspend fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser?
-    suspend fun findByPatient(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser?
+    suspend fun findPatientUser(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser?
 }

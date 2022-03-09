@@ -21,7 +21,7 @@ interface ReadPatientDao : GuardedDao {
     override fun necessaryPermissions() = necessaryPermissions
     suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient
     suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Patient>
-    suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient>
+    suspend fun getVisitPatients(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient>
     suspend fun getMany(range: GraphQLRangeInput, sortedBy: Patient.SortableField = Patient.SortableField.PID, requester: MediqToken): Collection<Patient>
     suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient>
     suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient>

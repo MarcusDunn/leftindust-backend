@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 class FormSection private constructor(
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = [CascadeType.ALL])
+    @OneToMany(orphanRemoval = true, cascade = [CascadeType.ALL])
     val fields: MutableSet<FormField>,
     @Column(length = 50_000)
     val description: String?,

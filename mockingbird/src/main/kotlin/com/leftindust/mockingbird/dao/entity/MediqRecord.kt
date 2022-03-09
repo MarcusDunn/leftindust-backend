@@ -5,18 +5,16 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecordInput
 import java.sql.Timestamp
 import java.time.Instant
-import javax.persistence.Basic
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.FetchType
 import javax.persistence.ManyToOne
 
 @Entity
 class MediqRecord(
-    @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @ManyToOne(cascade = [CascadeType.ALL])
     var patient: Patient,
     @Column(nullable = false)
     val creationDate: Timestamp,
@@ -24,7 +22,6 @@ class MediqRecord(
     @Column(nullable = false)
     val type: RecordType,
     @Column(length = 10_000, nullable = false)
-    @Basic(fetch = FetchType.LAZY)
     val jsonBlob: String,
 ) : AbstractJpaPersistable() {
     constructor(record: GraphQLRecordInput, patient: Patient) : this(

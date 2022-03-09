@@ -35,12 +35,11 @@ class Patient(
     @OneToMany(
         mappedBy = "patient",
         cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY,
     )
     var contacts: Set<EmergencyContact> = emptySet(),
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "patient", orphanRemoval = true)
     var doctors: MutableSet<DoctorPatient> = mutableSetOf(),
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "patient", orphanRemoval = true)
     var assignedForms: MutableCollection<AssignedForm> = mutableSetOf(),
 ) : Person(
     nameInfo = nameInfo,

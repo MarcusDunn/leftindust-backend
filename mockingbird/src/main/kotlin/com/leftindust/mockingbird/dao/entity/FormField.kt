@@ -15,7 +15,7 @@ class FormField private constructor(
     val number: Int,
     @Enumerated(value = EnumType.STRING)
     val dataType: DataType,
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     val multiSelectPossibilities: List<String>? = null,
     @Column(nullable = true)
     val intUpperBound: Int? = null,

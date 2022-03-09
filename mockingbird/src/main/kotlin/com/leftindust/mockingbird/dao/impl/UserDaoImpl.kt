@@ -106,7 +106,7 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun findByPatient(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
+    override suspend fun findPatientUser(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
         val permissions = listOf(Crud.READ to Tables.User, Crud.READ to Tables.Patient)
         if (requester can permissions) {
             return patientRepository.getById(pid.id).user

@@ -22,7 +22,7 @@ class ContactDaoImpl(
     @Autowired private val contactRepository: HibernateContactRepository,
 ) : AbstractHibernateDao(authorizer), ContactDao {
 
-    override suspend fun getByPatient(
+    override suspend fun getPatientContacts(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<EmergencyContact> {

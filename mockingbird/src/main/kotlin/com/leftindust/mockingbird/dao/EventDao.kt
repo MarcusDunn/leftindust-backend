@@ -19,11 +19,11 @@ interface EventDao {
 
     suspend fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event
 
-    suspend fun getByPatient(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event>
+    suspend fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event>
 
     suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event>
 
-    suspend fun getByVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event
+    suspend fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event
 
     suspend fun editEvent(
         event: GraphQLEventEditInput,

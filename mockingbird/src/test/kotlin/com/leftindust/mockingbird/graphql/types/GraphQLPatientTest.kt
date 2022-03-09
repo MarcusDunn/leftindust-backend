@@ -27,7 +27,7 @@ internal class GraphQLPatientTest {
             .apply { group?.id = UUID.nameUUIDFromBytes("dawg".toByteArray()) }
 
         val userDao = mockk<UserDao> {
-            coEvery { findByPatient(gqlPatient.pid, any()) } returns expected
+            coEvery { findPatientUser(gqlPatient.pid, any()) } returns expected
         }
 
         val result = runBlocking { gqlPatient.user(userDao) }

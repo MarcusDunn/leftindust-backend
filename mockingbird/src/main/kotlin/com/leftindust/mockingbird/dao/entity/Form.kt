@@ -4,7 +4,6 @@ import com.leftindust.mockingbird.dao.entity.superclasses.AbstractJpaPersistable
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
 import javax.persistence.CascadeType
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.OneToMany
 
 /**
@@ -14,7 +13,6 @@ import javax.persistence.OneToMany
 class Form private constructor(
     var name: String,
     @OneToMany(
-        fetch = FetchType.EAGER,
         orphanRemoval = true,
         cascade = [CascadeType.ALL]
     )

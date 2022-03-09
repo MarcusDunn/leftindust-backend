@@ -6,10 +6,13 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.EventDao
-import com.leftindust.mockingbird.dao.clinic.ReadClinicDao
 import com.leftindust.mockingbird.dao.UserDao
+import com.leftindust.mockingbird.dao.address.ReadAddressDao
+import com.leftindust.mockingbird.dao.clinic.ReadClinicDao
+import com.leftindust.mockingbird.dao.email.ReadEmailDao
 import com.leftindust.mockingbird.dao.entity.Doctor
 import com.leftindust.mockingbird.dao.patient.ReadPatientDao
+import com.leftindust.mockingbird.dao.phone.ReadPhoneDao
 import org.springframework.beans.factory.annotation.Autowired
 import java.sql.Timestamp
 import java.util.*
@@ -20,12 +23,9 @@ data class GraphQLDoctor(
     override val firstName: String,
     override val middleName: String? = null,
     override val lastName: String,
-    override val phones: List<GraphQLPhone>,
     override val thumbnail: String?,
     val title: String? = null,
     val dateOfBirth: GraphQLDate? = null,
-    val addresses: List<GraphQLAddress> = emptyList(),
-    override val emails: List<GraphQLEmail> = emptyList(),
     private val authContext: GraphQLAuthContext
 ) : GraphQLPerson {
     private val authToken = authContext.mediqAuthToken
@@ -38,12 +38,9 @@ data class GraphQLDoctor(
         firstName = doctor.nameInfo.firstName,
         middleName = doctor.nameInfo.middleName,
         lastName = doctor.nameInfo.lastName,
-        phones = doctor.phones.map { GraphQLPhone(it) },
         thumbnail = doctor.thumbnail,
         title = doctor.title,
         dateOfBirth = doctor.dateOfBirth?.let { GraphQLDate(it.toLocalDate()) },
-        addresses = doctor.addresses.map { GraphQLAddress(it) },
-        emails = doctor.email.map { GraphQLEmail(it) },
         authContext = authContext
     )
 
@@ -104,4 +101,17 @@ data class GraphQLDoctor(
     ): List<GraphQLEvent> = doctorDao.getByDoctor(did, authToken)
         .getEventsBetween(Timestamp(from.unixMilliseconds), Timestamp(to.unixMilliseconds))
         .map { GraphQLEvent(event = it, authContext = authContext) }
+
+    override suspend fun phones(@GraphQLIgnore @Autowired phoneDao: ReadPhoneDao): List<GraphQLPhone> = phoneDao
+        .getDoctorPhones(did, authContext.mediqAuthToken)
+        .map { GraphQLPhone(it) }
+
+
+    override suspend fun emails(@GraphQLIgnore @Autowired emailDao: ReadEmailDao): List<GraphQLEmail> = emailDao
+        .getDoctorEmails(did, authContext.mediqAuthToken)
+        .map { GraphQLEmail(it) }
+
+    suspend fun addresses(@GraphQLIgnore @Autowired addressDao: ReadAddressDao): List<GraphQLAddress> = addressDao
+        .getDoctorAddresses(did, authContext.mediqAuthToken)
+        .map { GraphQLAddress(it) }
 }
