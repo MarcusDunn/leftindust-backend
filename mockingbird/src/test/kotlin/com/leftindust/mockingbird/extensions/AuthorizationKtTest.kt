@@ -16,4 +16,16 @@ internal class AuthorizationKtTest {
         val authorization = Authorization.Denied
         assertEquals(false, authorization.isAllowed())
     }
+
+    @Test
+    fun `is denied on allowed value returns false`() {
+        val authorization = Authorization.Allowed
+        assertEquals(false, authorization.isDenied())
+    }
+
+    @Test
+    fun `is denied on denied value returns true`() {
+        val authorization = Authorization.Denied
+        assertEquals(true, authorization.isDenied())
+    }
 }

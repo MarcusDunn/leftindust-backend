@@ -235,13 +235,13 @@ object EntityStore {
                     fields = setOf(
                         FormField(
                             title = "$testName. u fat?",
-                            dataType = DataType.SingleMuliSelect,
+                            dataType = DataType.SingleMultiSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
                             number = 1,
                         ),
                         FormField(
                             title = "$testName. u tall?",
-                            dataType = DataType.SingleMuliSelect,
+                            dataType = DataType.SingleMultiSelect,
                             multiSelectPossibilities = listOf("yes", "no"),
                             number = 2,
                         )
@@ -274,7 +274,7 @@ object EntityStore {
 
     fun formField(testName: String) = FormField(
         title = "$testName. what is your least favorite way to say yes",
-        dataType = DataType.SingleMuliSelect,
+        dataType = DataType.SingleMultiSelect,
         multiSelectPossibilities = listOf("yes", "yee", "ye", "yeee"),
         number = 1,
     )

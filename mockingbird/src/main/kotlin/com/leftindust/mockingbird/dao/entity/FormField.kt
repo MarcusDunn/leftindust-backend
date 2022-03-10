@@ -70,7 +70,7 @@ class FormField private constructor(
         jsonMetaData = jsonMetaData,
         textRegex = null,
     ) {
-        if (dataType != DataType.MultiMuliSelect && dataType != DataType.SingleMuliSelect) {
+        if (dataType != DataType.MultiMultiSelect && dataType != DataType.SingleMultiSelect) {
             throw IllegalArgumentException("illegal arguments for formFeild of type $dataType")
         }
     }

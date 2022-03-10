@@ -46,7 +46,7 @@ data class GraphQlFormField(
 
     @GraphQLDescription("The multiselect possibilities, is null unless the form dataType is SingleMuliSelect or MultiMuliSelect")
     suspend fun multiSelectPossibilities(@GraphQLIgnore @Autowired readFormFieldDao: ReadFormFieldDao): List<String>? =
-        if (dataType == DataType.SingleMuliSelect || dataType == DataType.MultiMuliSelect)
+        if (dataType == DataType.SingleMultiSelect || dataType == DataType.MultiMultiSelect)
             readFormFieldDao.getFormFieldMultiSelectPossibilities(ffid, authContext.mediqAuthToken)
         else {
             null

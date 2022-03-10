@@ -35,8 +35,8 @@ data class GraphQlFormFieldInput(
     init {
         require(
             when (dataType) {
-                DataType.SingleMuliSelect -> !multiSelectPossibilities.isNullOrEmpty()
-                DataType.MultiMuliSelect -> !multiSelectPossibilities.isNullOrEmpty()
+                DataType.SingleMultiSelect -> !multiSelectPossibilities.isNullOrEmpty()
+                DataType.MultiMultiSelect -> !multiSelectPossibilities.isNullOrEmpty()
                 else -> true
             }
         ) { "MultiSelect forms must have multiSelectPossibilities" }

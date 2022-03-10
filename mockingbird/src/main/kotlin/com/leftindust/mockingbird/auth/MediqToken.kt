@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.auth
 
 /**
- * a implementation agnostic wrapper around the auth service currently used
+ * an implementation agnostic wrapper around the auth service currently used
  * @property uid the uid of the user holding the token
  */
 interface MediqToken {

@@ -1,7 +1,7 @@
 package com.leftindust.mockingbird.extensions
 
 /**
- * class denoting the result of a authorization request
+ * class denoting the result of an authorization request
  */
 enum class Authorization {
     Allowed,
@@ -9,6 +9,13 @@ enum class Authorization {
 }
 
 fun Authorization.isAllowed(): Boolean {
+    return when (this) {
+        Authorization.Allowed -> true
+        Authorization.Denied -> false
+    }
+}
+
+fun Authorization.isDenied(): Boolean {
     return when (this) {
         Authorization.Allowed -> true
         Authorization.Denied -> false
