@@ -11,7 +11,7 @@ internal class GraphQlFormFieldInputTest {
         assertDoesNotThrow {
             GraphQlFormFieldInput(
                 title = "my form feild",
-                dataType = DataType.MultiMuliSelect,
+                dataType = DataType.MultiMultiSelect,
                 number = 1,
                 multiSelectPossibilities = listOf("my one possibility")
             )
@@ -35,7 +35,7 @@ internal class GraphQlFormFieldInputTest {
         assertThrows<IllegalArgumentException> {
             GraphQlFormFieldInput(
                 title = "my form feild",
-                dataType = DataType.SingleMuliSelect,
+                dataType = DataType.SingleMultiSelect,
                 number = 1,
                 multiSelectPossibilities = emptyList()
             )

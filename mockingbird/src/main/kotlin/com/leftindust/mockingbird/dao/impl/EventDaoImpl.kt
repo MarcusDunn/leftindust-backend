@@ -74,12 +74,9 @@ class EventDaoImpl(
     override suspend fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
             val byId = withContext(Dispatchers.IO) {
-                hibernatePatientRepository
-                    .getById(pid.id)
+                hibernatePatientRepository.getById(pid.id)
             }
-            return byId
-                .events
-                .also { Hibernate.initialize(it) }
+            return byId.events.onEach { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Patient, Crud.READ to Tables.Event)
         }
@@ -89,7 +86,7 @@ class EventDaoImpl(
         if (requester can listOf(Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)) {
             return withContext(Dispatchers.IO) {
                 hibernateDoctorRepository.getById(did.id)
-            }.events.also { Hibernate.initialize(it) }
+            }.events.onEach { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
@@ -134,7 +131,7 @@ class EventDaoImpl(
     // if the user only wants to edit part of the recurrence period, we create up to 3 events.
     // one for the edited event within the recurrenceSettings time period
     // one for the time before recurrenceSettings.editStart, that is unmodified except for that the recurrence now ends when the edited event begins
-    // and finally one for after the the edited period, this is also unchanged.
+    // and finally one for after the edited period, this is also unchanged.
     // keep in mind that recurrenceSettings can potentially cover only the tail or start of the event, in which case we end up with only 2 events
     override suspend fun editRecurringEvent(
         event: GraphQLEventEditInput,
@@ -174,7 +171,7 @@ class EventDaoImpl(
                 }
             }
 
-            if (currentStartDate.isBefore(recurrenceSettings.editStart.toLocalDate())) { // there will be a unedited event prior to the edited one
+            if (currentStartDate.isBefore(recurrenceSettings.editStart.toLocalDate())) { // there will be an unedited event prior to the edited one
                 val priorEntity = entity.clone().apply {
                     id = null
                     reoccurrence = Reoccurrence(

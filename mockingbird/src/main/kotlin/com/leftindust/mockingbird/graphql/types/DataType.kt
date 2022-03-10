@@ -1,8 +1,8 @@
 package com.leftindust.mockingbird.graphql.types
 
 enum class DataType {
-    SingleMuliSelect,
-    MultiMuliSelect,
+    SingleMultiSelect,
+    MultiMultiSelect,
     Text,
     Integer,
     Date,

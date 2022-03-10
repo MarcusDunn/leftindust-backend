@@ -12,6 +12,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateRecordRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecordInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +27,9 @@ class RecordDaoImpl(
 ) : AbstractHibernateDao(authorizer), RecordDao {
     override suspend fun getRecordByRecordId(rid: GraphQLRecord.ID, requester: MediqToken): MediqRecord {
         return if (requester can (Crud.READ to Tables.Record)) {
-            recordRepository.getById(rid.id)
+            withContext(Dispatchers.IO) {
+                recordRepository.getById(rid.id)
+            }
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Record)
         }
@@ -36,9 +40,11 @@ class RecordDaoImpl(
         requester: MediqToken
     ): Collection<MediqRecord> {
         val readRecords = Crud.READ to Tables.Record
-        if (requester can readRecords) {
-            val patient = patientRepository.getById(pid.id)
-            return recordRepository.getAllByPatientId(patient.id!!)
+        return if (requester can readRecords) {
+            withContext(Dispatchers.IO) {
+                val patient = patientRepository.getById(pid.id)
+                recordRepository.getAllByPatientId(patient.id!!)
+            }
         } else {
             throw NotAuthorizedException(requester, readRecords)
         }
@@ -46,10 +52,12 @@ class RecordDaoImpl(
 
     override suspend fun addRecord(record: GraphQLRecordInput, requester: MediqToken): MediqRecord {
         val createRecords = Crud.CREATE to Tables.Record
-        if (requester can createRecords) {
-            val patient = patientRepository.getById(record.patient.id)
-            val recordEntity = MediqRecord(record, patient)
-            return recordRepository.save(recordEntity)
+        return if (requester can createRecords) {
+            withContext(Dispatchers.IO) {
+                val patient = patientRepository.getById(record.patient.id)
+                val recordEntity = MediqRecord(record, patient)
+                recordRepository.save(recordEntity)
+            }
         } else {
             throw NotAuthorizedException(requester, createRecords)
         }

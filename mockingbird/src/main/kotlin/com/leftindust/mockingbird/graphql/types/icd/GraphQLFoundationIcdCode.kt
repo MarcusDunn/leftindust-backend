@@ -1,7 +1,6 @@
 package com.leftindust.mockingbird.graphql.types.icd
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import com.expediagroup.graphql.generator.annotations.GraphQLDirective
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.external.icd.IcdFetcher

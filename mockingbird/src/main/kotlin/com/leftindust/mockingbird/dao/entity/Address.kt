@@ -38,7 +38,7 @@ class Address(
         countryState = CountryState(
             country = gqlAddressInput.country ?: countryState.country,
             province = gqlAddressInput.province ?: countryState.province
-        ) // we recreate it here to verify country/province constancy as its checked in CountryState constructor
+        ) // we recreate it here to verify country/province constancy as it's checked in CountryState constructor
         postalCode = gqlAddressInput.postalCode ?: postalCode
     }
 
