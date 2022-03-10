@@ -44,7 +44,7 @@ internal class ClinicTest {
             Address(
                 type = GraphQLAddressType.Home,
                 address = "main st",
-                city = "tambie",
+                city = "New York",
                 countryState = CountryState(
                     GraphQLCountry.Canada,
                     GraphQLCanadianProvince.Provinces.NewBrunswick.name

@@ -17,7 +17,7 @@ fun Authorization.isAllowed(): Boolean {
 
 fun Authorization.isDenied(): Boolean {
     return when (this) {
-        Authorization.Allowed -> true
-        Authorization.Denied -> false
+        Authorization.Allowed -> false
+        Authorization.Denied -> true
     }
 }
