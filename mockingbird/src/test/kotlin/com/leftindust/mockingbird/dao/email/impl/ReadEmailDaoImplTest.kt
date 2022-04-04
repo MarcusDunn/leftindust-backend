@@ -1,14 +1,13 @@
 package com.leftindust.mockingbird.dao.email.impl
 
-import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.entity.Email
-import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEmergencyContact
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.util.makeUUID
-import io.mockk.coEvery
+import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
+import com.leftindust.mockingbird.util.unit.StrictAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -19,10 +18,7 @@ import org.junit.jupiter.api.assertThrows
 
 internal class ReadEmailDaoImplTest {
     @Nested
-    inner class Authenticated {
-        val authorizer = mockk<Authorizer>() {
-            coEvery { getAuthorization(any(), any()) } returns Authorization.Allowed
-        }
+    inner class Authenticated : LenientAuthorizerUnitTest() {
 
         @Test
         fun `check getDoctorEmails`() = runBlocking {
@@ -78,11 +74,7 @@ internal class ReadEmailDaoImplTest {
     }
 
     @Nested
-    inner class Unauthenticated {
-        val authorizer = mockk<Authorizer>() {
-            coEvery { getAuthorization(any(), any()) } returns Authorization.Denied
-        }
-
+    inner class Unauthenticated : StrictAuthorizerUnitTest() {
         @Test
         fun `check getDoctorEmails`(): Unit = runBlocking {
             val readEmailDaoImpl = ReadEmailDaoImpl(
