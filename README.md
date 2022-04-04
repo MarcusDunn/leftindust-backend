@@ -6,7 +6,7 @@ This is the backend for [leftindust's](https://leftindust.com) EMR.
 
 ## Setup
 
-This project should be a postgres DB and the correctly configure `application.properties` away from running
+This project should be a postgres DB and a correctly configured `application.properties` away from running
 with `./gradlew run`.
 
 For the sake of faster testing I would recommend putting `testcontainers.reuse.enable=true` in
