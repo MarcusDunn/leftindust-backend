@@ -81,7 +81,7 @@ data class GraphQLPatient(
         .map { GraphQLPhone(it) }
 
     override suspend fun emails(@GraphQLIgnore @Autowired emailDao: ReadEmailDao): List<GraphQLEmail> = emailDao
-        .getPatientEmails(pid, authContext)
+        .getPatientEmails(pid, authContext.mediqAuthToken)
         .map { GraphQLEmail(it) }
 
     suspend fun addresses(@GraphQLIgnore @Autowired addressDao: ReadAddressDao): List<GraphQLAddress> = addressDao
