@@ -78,11 +78,7 @@ internal class ReadEmailDaoImplTest {
         @Test
         fun `check getDoctorEmails`(): Unit = runBlocking {
             val readEmailDaoImpl = ReadEmailDaoImpl(
-                doctorRepository = mockk {
-                    every { getById(any()) } returns mockk {
-                        every { email } returns mutableSetOf()
-                    }
-                },
+                doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),
                 patientRepository = mockk(),
                 authorizer = authorizer
@@ -99,11 +95,7 @@ internal class ReadEmailDaoImplTest {
         fun `check getEmergencyContactEmails`(): Unit = runBlocking {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
-                emergencyContactRepository = mockk {
-                    every { getById(any()) } returns mockk {
-                        every { email } returns mutableSetOf()
-                    }
-                },
+                emergencyContactRepository = mockk(),
                 patientRepository = mockk(),
                 authorizer = authorizer
             )
@@ -120,11 +112,7 @@ internal class ReadEmailDaoImplTest {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),
-                patientRepository = mockk {
-                    every { getById(any()) } returns mockk {
-                        every { email } returns mutableSetOf()
-                    }
-                },
+                patientRepository = mockk(),
                 authorizer = authorizer
             )
             assertThrows<NotAuthorizedException> {
