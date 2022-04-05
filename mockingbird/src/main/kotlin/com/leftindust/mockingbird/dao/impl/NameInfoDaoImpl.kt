@@ -22,7 +22,7 @@ class NameInfoDaoImpl(
         private val readUsers = Crud.READ to Tables.User
     }
 
-    override suspend fun findByUniqueId(uid: String, requester: MediqToken): NameInfo? =
+    override fun findByUniqueId(uid: String, requester: MediqToken): NameInfo? =
         if (requester can readUsers) {
             hibernateUserRepository.findByUniqueId(uid)?.nameInfo
         } else {

@@ -10,7 +10,6 @@ import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
 import com.leftindust.mockingbird.util.unit.StrictAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -21,7 +20,7 @@ internal class ReadEmailDaoImplTest {
     inner class Authenticated : LenientAuthorizerUnitTest() {
 
         @Test
-        fun `check getDoctorEmails`() = runBlocking {
+        fun `check getDoctorEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk {
                     every { getById(any()) } returns mockk {
@@ -37,7 +36,7 @@ internal class ReadEmailDaoImplTest {
         }
 
         @Test
-        fun `check getEmergencyContactEmails`() = runBlocking {
+        fun `check getEmergencyContactEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk {
@@ -56,7 +55,7 @@ internal class ReadEmailDaoImplTest {
         }
 
         @Test
-        fun `check getPatientEmails`() = runBlocking {
+        fun `check getPatientEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),
@@ -76,7 +75,7 @@ internal class ReadEmailDaoImplTest {
     @Nested
     inner class Unauthenticated : StrictAuthorizerUnitTest() {
         @Test
-        fun `check getDoctorEmails`(): Unit = runBlocking {
+        fun `check getDoctorEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),
@@ -92,7 +91,7 @@ internal class ReadEmailDaoImplTest {
         }
 
         @Test
-        fun `check getEmergencyContactEmails`(): Unit = runBlocking {
+        fun `check getEmergencyContactEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),
@@ -108,7 +107,7 @@ internal class ReadEmailDaoImplTest {
         }
 
         @Test
-        fun `check getPatientEmails`(): Unit = runBlocking {
+        fun `check getPatientEmails`() {
             val readEmailDaoImpl = ReadEmailDaoImpl(
                 doctorRepository = mockk(),
                 emergencyContactRepository = mockk(),

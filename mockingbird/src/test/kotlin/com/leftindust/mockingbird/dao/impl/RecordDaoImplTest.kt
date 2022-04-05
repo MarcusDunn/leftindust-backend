@@ -9,11 +9,12 @@ import com.leftindust.mockingbird.extensions.Authorization
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLRecord
 import com.leftindust.mockingbird.util.EntityStore
-import io.mockk.*
-import kotlinx.coroutines.runBlocking
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class RecordDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -32,7 +33,7 @@ internal class RecordDaoImplTest {
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordByRecordId(GraphQLRecord.ID(recordId), mockk()) }
+        val result = recordDaoImpl.getRecordByRecordId(GraphQLRecord.ID(recordId), mockk())
 
         assertEquals(mockkRecord, result)
     }
@@ -53,7 +54,7 @@ internal class RecordDaoImplTest {
 
         val recordDaoImpl = RecordDaoImpl(authorizer, recordRepository, patientRepository)
 
-        val result = runBlocking { recordDaoImpl.getRecordsByPatientPid(GraphQLPatient.ID(patientID), mockk()) }
+        val result = recordDaoImpl.getRecordsByPatientPid(GraphQLPatient.ID(patientID), mockk())
 
         assertEquals(listOf(mockkRecord), result)
     }
@@ -72,7 +73,7 @@ internal class RecordDaoImplTest {
 
         coEvery { authorizer.getAuthorization(any(), any()) } returns Authorization.Allowed
 
-        val result = runBlocking { recordDaoImpl.addRecord(record, mockk()) }
+        val result = recordDaoImpl.addRecord(record, mockk())
 
         assertEquals(expected, result)
     }

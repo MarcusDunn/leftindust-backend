@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Action
@@ -12,5 +13,6 @@ interface DeleteFormDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form
+    @Blocking
+    fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form
 }

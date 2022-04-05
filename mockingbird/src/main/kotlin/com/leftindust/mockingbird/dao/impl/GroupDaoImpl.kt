@@ -21,7 +21,7 @@ class GroupDaoImpl(
     @Autowired authorizer: Authorizer,
     @Autowired private val groupRepository: HibernateGroupRepository,
 ) : GroupDao, AbstractHibernateDao(authorizer) {
-    override suspend fun addGroup(group: GraphQLGroupInput, requester: MediqToken): MediqGroup {
+    override fun addGroup(group: GraphQLGroupInput, requester: MediqToken): MediqGroup {
         if (requester can (Crud.CREATE to Tables.Group)) {
             val groupEntity = MediqGroup(group)
             return groupRepository.save(groupEntity)
@@ -30,14 +30,14 @@ class GroupDaoImpl(
         }
     }
 
-    override suspend fun getGroupById(gid: GraphQLUserGroup.ID, requester: MediqToken): MediqGroup =
+    override fun getGroupById(gid: GraphQLUserGroup.ID, requester: MediqToken): MediqGroup =
         if (requester can (Crud.READ to Tables.Group)) {
             groupRepository.getById(gid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Group)
         }
 
-    override suspend fun getRange(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqGroup> =
+    override fun getRange(range: GraphQLRangeInput, requester: MediqToken): Collection<MediqGroup> =
         if (requester can (Crud.READ to Tables.Group)) {
             groupRepository.findAll(range.toPageable()).content
         } else {

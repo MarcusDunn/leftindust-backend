@@ -8,8 +8,10 @@ import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.graphql.types.icd.GraphQLFoundationIcdCode
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("Visit")
 data class GraphQLVisit(
@@ -32,12 +34,15 @@ data class GraphQLVisit(
         TODO("")
     }
 
-    suspend fun event(@GraphQLIgnore @Autowired eventDao: EventDao): GraphQLEvent = eventDao
-        .getEventVisit(vid, authContext.mediqAuthToken)
-        .let { GraphQLEvent(it, authContext) }
+    suspend fun event(
+        @GraphQLIgnore @Autowired eventDao: EventDao
+    ): GraphQLEvent = withContext(Dispatchers.IO) {
+        eventDao.getEventVisit(vid, authContext.mediqAuthToken)
+    }.let { GraphQLEvent(it, authContext) }
 
-    suspend fun patients(@GraphQLIgnore @Autowired readPatientDao: ReadPatientDao): List<GraphQLPatient> =
-        readPatientDao
-            .getVisitPatients(vid, authContext.mediqAuthToken)
-            .map { GraphQLPatient(it, authContext) }
+    suspend fun patients(
+        @GraphQLIgnore @Autowired readPatientDao: ReadPatientDao
+    ): List<GraphQLPatient> = withContext(Dispatchers.IO) {
+        readPatientDao.getVisitPatients(vid, authContext.mediqAuthToken)
+    }.map { GraphQLPatient(it, authContext) }
 }

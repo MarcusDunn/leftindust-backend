@@ -7,6 +7,8 @@ import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,18 +18,20 @@ class DoctorMutation(private val doctorDao: DoctorDao, private val userDao: User
         graphQLAuthContext: GraphQLAuthContext,
     ): GraphQLDoctor {
         val user = if (doctor.user != null) {
-            userDao.findUserByUid(doctor.user.uid, graphQLAuthContext.mediqAuthToken)
-                ?: userDao.addUser(doctor.user, graphQLAuthContext.mediqAuthToken)
+            withContext(Dispatchers.IO) {
+                userDao.findUserByUid(doctor.user.uid, graphQLAuthContext.mediqAuthToken)
+                    ?: userDao.addUser(doctor.user, graphQLAuthContext.mediqAuthToken)
+            }
         } else null
 
-        return doctorDao
-            .addDoctor(doctor, graphQLAuthContext.mediqAuthToken, user = user)
-            .let { GraphQLDoctor(it, graphQLAuthContext) }
+        return withContext(Dispatchers.IO) {
+            doctorDao.addDoctor(doctor, graphQLAuthContext.mediqAuthToken, user = user)
+        }.let { GraphQLDoctor(it, graphQLAuthContext) }
     }
 
-    suspend fun editDoctor(doctor: GraphQLDoctorEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLDoctor {
-        return doctorDao
-            .editDoctor(doctor, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLDoctor(it, graphQLAuthContext) }
-    }
+    suspend fun editDoctor(
+        doctor: GraphQLDoctorEditInput, graphQLAuthContext: GraphQLAuthContext
+    ): GraphQLDoctor = withContext(Dispatchers.IO) {
+        doctorDao.editDoctor(doctor, graphQLAuthContext.mediqAuthToken)
+    }.let { GraphQLDoctor(it, graphQLAuthContext) }
 }

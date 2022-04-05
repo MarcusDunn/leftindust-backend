@@ -14,11 +14,10 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import java.util.UUID
 import org.hibernate.SessionFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class VisitDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -46,7 +45,7 @@ internal class VisitDaoImplTest {
             patientRepository
         )
 
-        val result = runBlocking { visitDaoImpl.getVisitByVid(GraphQLVisit.ID(visitID), mockk()) }
+        val result = visitDaoImpl.getVisitByVid(GraphQLVisit.ID(visitID), mockk())
 
         assertEquals(mockkVisit, result)
     }
@@ -83,7 +82,7 @@ internal class VisitDaoImplTest {
 
         every { visitRepository.save(any()) } returns mockkVisit
 
-        val result = runBlocking { visitDaoImpl.addVisit(visitInput, mockk()) }
+        val result = visitDaoImpl.addVisit(visitInput, mockk())
 
         assertEquals(mockkVisit, result)
     }

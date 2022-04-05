@@ -8,8 +8,10 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -30,10 +32,12 @@ class EventQuery(
         Gets a list of events by a range of time that returned the events will occur within.
     """
     )
-    suspend fun eventsByTimeRange(range: GraphQLTimeRangeInput, graphQLAuthContext: GraphQLAuthContext) =
-        eventDao
-            .getBetween(range, graphQLAuthContext.mediqAuthToken)
-            .map { GraphQLEvent(it, graphQLAuthContext) }
+    suspend fun eventsByTimeRange(
+        range: GraphQLTimeRangeInput,
+        graphQLAuthContext: GraphQLAuthContext
+    ): List<GraphQLEvent> = withContext(Dispatchers.IO) {
+        eventDao.getBetween(range, graphQLAuthContext.mediqAuthToken)
+    }.map { GraphQLEvent(it, graphQLAuthContext) }
 
     @GraphQLDescription(
         """

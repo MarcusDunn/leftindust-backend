@@ -34,7 +34,7 @@ class ReadEmailDaoImpl(
         private val readDoctor = READ to Doctor
     }
 
-    override suspend fun getDoctorEmails(
+    override fun getDoctorEmails(
         did: GraphQLDoctor.ID,
         mediqAuthToken: MediqToken
     ): List<Email> = if (mediqAuthToken can readDoctor) {
@@ -45,7 +45,7 @@ class ReadEmailDaoImpl(
         throw NotAuthorizedException(mediqAuthToken, readDoctor)
     }
 
-    override suspend fun getEmergencyContactEmails(
+    override fun getEmergencyContactEmails(
         ecid: GraphQLEmergencyContact.ID,
         mediqAuthToken: MediqToken
     ): List<Email> = if (mediqAuthToken can readEmergencyContact) {
@@ -56,7 +56,7 @@ class ReadEmailDaoImpl(
         throw NotAuthorizedException(mediqAuthToken, readEmergencyContact)
     }
 
-    override suspend fun getPatientEmails(
+    override fun getPatientEmails(
         pid: GraphQLPatient.ID,
         authContext: MediqToken
     ): List<Email> = if (authContext can readPatient) {

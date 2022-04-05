@@ -33,21 +33,16 @@ data class GraphQLIcdSimpleEntity(
         return icdFetcher.getDetails(GraphQLFoundationIcdCode(internalId ?: return null))
     }
 
-    fun urlId(asUrl: Boolean? = false): String? {
-        return if (asUrl == true) {
-            internalId
-        } else {
-            internalId?.let { GraphQLFoundationIcdCode(it).code }
-        }
+    fun urlId(asUrl: Boolean? = false): String? = if (asUrl == true) {
+        internalId
+    } else {
+        internalId?.let { GraphQLFoundationIcdCode(it).code }
     }
 
-    fun tagTitle(withTags: Boolean? = true): String? {
-        val nnWithTags = withTags ?: true
-        return if (nnWithTags) {
-            internalTitle
-        } else {
-            internalTitle?.replace(Regex("<[^>]*>"), "")
-        }
+    fun tagTitle(withTags: Boolean? = true): String? = if (withTags != false) {
+        internalTitle
+    } else {
+        internalTitle?.replace(Regex("<[^>]*>"), "")
     }
 
     override val code: String?

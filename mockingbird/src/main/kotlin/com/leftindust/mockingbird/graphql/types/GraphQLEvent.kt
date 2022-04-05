@@ -7,8 +7,10 @@ import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.dao.patient.ReadPatientDao
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("Event")
 data class GraphQLEvent(
@@ -47,17 +49,19 @@ data class GraphQLEvent(
 
     suspend fun doctors(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao
-    ): List<GraphQLDoctor> {
-        return doctorDao.getByEvent(eid, authContext.mediqAuthToken)
-            .map { GraphQLDoctor(it, authContext) }
-    }
+    ): List<GraphQLDoctor> = withContext(Dispatchers.IO) {
+        doctorDao.getByEvent(eid, authContext.mediqAuthToken)
+    }.map { GraphQLDoctor(it, authContext) }
 
-    suspend fun patients(@GraphQLIgnore @Autowired patientDao: ReadPatientDao): List<GraphQLPatient> {
-        return patientDao.getByEvent(eid, authContext.mediqAuthToken)
-            .map { GraphQLPatient(it, authContext) }
-    }
+    suspend fun patients(
+        @GraphQLIgnore @Autowired patientDao: ReadPatientDao
+    ): List<GraphQLPatient> = withContext(Dispatchers.IO) {
+        patientDao.getByEvent(eid, authContext.mediqAuthToken)
+    }.map { GraphQLPatient(it, authContext) }
 
-    suspend fun visit(@GraphQLIgnore @Autowired visitDao: VisitDao): GraphQLVisit? {
-        return visitDao.findByEvent(eid, authContext.mediqAuthToken)?.let { GraphQLVisit(it, authContext) }
-    }
+    suspend fun visit(
+        @GraphQLIgnore @Autowired visitDao: VisitDao
+    ): GraphQLVisit? = withContext(Dispatchers.IO) {
+        visitDao.findByEvent(eid, authContext.mediqAuthToken)
+    }?.let { GraphQLVisit(it, authContext) }
 }

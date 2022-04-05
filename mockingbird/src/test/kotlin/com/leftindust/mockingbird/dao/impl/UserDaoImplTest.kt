@@ -13,10 +13,9 @@ import com.leftindust.mockingbird.util.EntityStore
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class UserDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -33,7 +32,7 @@ internal class UserDaoImplTest {
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
-        val actual = runBlocking { userDaoImpl.getUserByUid("test uid", mockk()) }
+        val actual = userDaoImpl.getUserByUid("test uid", mockk())
 
         assertEquals(mockkUser, actual)
     }
@@ -52,7 +51,7 @@ internal class UserDaoImplTest {
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
-        val actual = runBlocking { userDaoImpl.addUser(mockkUser, mockk()) }
+        val actual = userDaoImpl.addUser(mockkUser, mockk())
 
         assertEquals(mockkMediqUser, actual)
     }
@@ -71,7 +70,7 @@ internal class UserDaoImplTest {
 
         val userDaoImpl = UserDaoImpl(authorizer, userRepository, groupRepository, doctorRepository, patientRepository)
 
-        val actual = runBlocking { userDaoImpl.findPatientUser(pid, mockk()) }
+        val actual = userDaoImpl.findPatientUser(pid, mockk())
 
         assertEquals(expected, actual)
     }

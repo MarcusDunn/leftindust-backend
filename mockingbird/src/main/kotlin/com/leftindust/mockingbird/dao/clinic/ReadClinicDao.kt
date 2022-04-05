@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.clinic
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -16,6 +17,8 @@ interface ReadClinicDao : GuardedDao {
 
     override fun necessaryPermissions() = necessaryPermissions
 
-    suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic>
-    suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic
+    @Blocking
+    fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic>
+    @Blocking
+    fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic
 }

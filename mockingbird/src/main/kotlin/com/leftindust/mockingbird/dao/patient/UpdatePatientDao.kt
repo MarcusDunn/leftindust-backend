@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.patient
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -17,8 +18,14 @@ interface UpdatePatientDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun addDoctorToPatient(pid: GraphQLPatient.ID, did: GraphQLDoctor.ID, requester: MediqToken): Patient
-    suspend fun update(patientInput: GraphQLPatientEditInput, requester: MediqToken): Patient
-    suspend fun assignForms(patients: List<GraphQLPatient.ID>, survey: GraphQLFormTemplate.ID, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun addDoctorToPatient(pid: GraphQLPatient.ID, did: GraphQLDoctor.ID, requester: MediqToken): Patient
+
+    @Blocking
+    fun update(patientInput: GraphQLPatientEditInput, requester: MediqToken): Patient
+
+    @Blocking
+    fun assignForms(patients: List<GraphQLPatient.ID>, survey: GraphQLFormTemplate.ID, requester: MediqToken): Collection<Patient>
 }
 

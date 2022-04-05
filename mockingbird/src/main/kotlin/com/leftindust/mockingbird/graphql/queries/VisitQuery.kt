@@ -9,6 +9,8 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLEvent
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
@@ -33,12 +35,14 @@ class VisitQuery(
                 val doctorVisits = visits(did = did, graphQLAuthContext = graphQLAuthContext)
                 (patientVisits + doctorVisits).distinctBy { it.vid }
             }
-            pid != null -> eventDao
-                .getPatientEvents(pid, graphQLAuthContext.mediqAuthToken)
+            pid != null -> withContext(Dispatchers.IO) {
+                eventDao.getPatientEvents(pid, graphQLAuthContext.mediqAuthToken)
+            }
                 .mapNotNull { visitDao.findByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
                 .map { GraphQLVisit(it, graphQLAuthContext) }
-            did != null -> eventDao
-                .getByDoctor(did, graphQLAuthContext.mediqAuthToken)
+            did != null -> withContext(Dispatchers.IO) {
+                eventDao.getByDoctor(did, graphQLAuthContext.mediqAuthToken)
+            }
                 .mapNotNull { visitDao.findByEvent(GraphQLEvent.ID(it.id!!), graphQLAuthContext.mediqAuthToken) }
                 .map { GraphQLVisit(it, graphQLAuthContext) }
             else -> throw GraphQLKotlinException("invalid arguments to visits")

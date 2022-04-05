@@ -21,8 +21,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSettings
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -37,7 +35,7 @@ class EventDaoImpl(
     @Autowired private val hibernateVisitRepository: HibernateVisitRepository,
     @Autowired authorizer: Authorizer
 ) : EventDao, AbstractHibernateDao(authorizer) {
-    override suspend fun addEvent(
+    override fun addEvent(
         event: GraphQLEventInput,
         requester: MediqToken
     ): Event {
@@ -59,14 +57,14 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event =
+    override fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event =
         if (requester can (Crud.READ to Tables.Event)) {
             hibernateEventRepository.getById(eid.id)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Event)
         }
 
-    override suspend fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
+    override fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event> {
         if (requester can listOf(Crud.READ to Tables.Patient, Crud.READ to Tables.Event)) {
             val byId = hibernatePatientRepository.getById(pid.id)
             return byId.events.onEach { Hibernate.initialize(it) }
@@ -75,21 +73,21 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event> =
+    override fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event> =
         if (requester can listOf(Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)) {
             hibernateDoctorRepository.getById(did.id).events.apply(Hibernate::initialize)
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
 
-    override suspend fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event =
+    override fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event =
         if (requester can listOf(Crud.READ to Tables.Visit, Crud.READ to Tables.Event)) {
             hibernateVisitRepository.getById(vid.id).event
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor, Crud.READ to Tables.Event)
         }
 
-    override suspend fun editEvent(
+    override fun editEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken
     ): Event {
@@ -118,7 +116,7 @@ class EventDaoImpl(
     // one for the time before recurrenceSettings.editStart, that is unmodified except for that the recurrence now ends when the edited event begins
     // and finally one for after the edited period, this is also unchanged.
     // keep in mind that recurrenceSettings can potentially cover only the tail or start of the event, in which case we end up with only 2 events
-    override suspend fun editRecurringEvent(
+    override fun editRecurringEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
         recurrenceSettings: GraphQLRecurrenceEditSettings
@@ -179,7 +177,7 @@ class EventDaoImpl(
         }
     }
 
-    override suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event> {
+    override fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): List<Event> {
         val readEvents = Crud.READ to Tables.Event
         return if (requester can readEvents) {
             hibernateEventRepository.getAllInRangeOrReoccurrenceIsNotNull(

@@ -22,16 +22,15 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDateInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLNameInfoInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
-import com.leftindust.mockingbird.util.makeUUID
 import com.leftindust.mockingbird.util.EntityStore
+import com.leftindust.mockingbird.util.makeUUID
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import java.util.UUID
+import javax.persistence.EntityManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
-import javax.persistence.EntityManager
 
 internal class PatientDaoImplTest {
     private val authorizer = mockk<Authorizer>()
@@ -58,7 +57,7 @@ internal class PatientDaoImplTest {
             doctorPatientRepository, eventRepository, visitRepository, entityManager, formRepository,
             assignedFormRepository
         )
-        val actual = runBlocking { patientDaoImpl.getByPID(GraphQLPatient.ID(patientID), mockk()) }
+        val actual = patientDaoImpl.getByPID(GraphQLPatient.ID(patientID), mockk())
 
         assertEquals(mockkPatient, actual)
 
@@ -84,7 +83,7 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking { patientDaoImpl.addNewPatient(graphQLPatientInput, mockk()) }
+        val actual = patientDaoImpl.addNewPatient(graphQLPatientInput, mockk())
 
         assertEquals(mockkPatient, actual)
     }
@@ -106,7 +105,7 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking { patientDaoImpl.removeByPID(GraphQLPatient.ID(patientID), mockk()) }
+        val actual = patientDaoImpl.removeByPID(GraphQLPatient.ID(patientID), mockk())
 
         assertEquals(mockkPatient, actual)
     }
@@ -130,7 +129,7 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking { patientDaoImpl.getByDoctor(GraphQLDoctor.ID(doctorID), mockk()) }
+        val actual = patientDaoImpl.getByDoctor(GraphQLDoctor.ID(doctorID), mockk())
 
         assertEquals(listOf(mockkPatient), actual)
     }
@@ -153,7 +152,7 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking { patientDaoImpl.getVisitPatients(GraphQLVisit.ID(visitID), mockk()) }
+        val actual = patientDaoImpl.getVisitPatients(GraphQLVisit.ID(visitID), mockk())
 
         assertEquals(listOf(mockkPatient), actual.toList())
     }
@@ -178,13 +177,12 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking {
-            patientDaoImpl.addDoctorToPatient(
-                GraphQLPatient.ID(patientID),
-                GraphQLDoctor.ID(doctorID),
-                mockk()
-            )
-        }
+        val actual = patientDaoImpl.addDoctorToPatient(
+            GraphQLPatient.ID(patientID),
+            GraphQLDoctor.ID(doctorID),
+            mockk()
+        )
+
 
         assertEquals(mockkPatient, actual)
     }
@@ -209,7 +207,7 @@ internal class PatientDaoImplTest {
             every { pid } returns GraphQLPatient.ID(patientID)
         }
 
-        val actual = runBlocking { patientDaoImpl.update(patientInput, mockk()) }
+        val actual = patientDaoImpl.update(patientInput, mockk())
 
         assertEquals(mockkPatient, actual)
     }
@@ -228,7 +226,7 @@ internal class PatientDaoImplTest {
             assignedFormRepository
         )
 
-        val actual = runBlocking { patientDaoImpl.getByUser("uid", mockk()) }
+        val actual = patientDaoImpl.getByUser("uid", mockk())
 
         assertEquals(expected, actual)
     }
@@ -251,13 +249,11 @@ internal class PatientDaoImplTest {
 
         every { assignedFormRepository.save(any()) } returns AssignedForm(form, patient).apply { id = makeUUID("yeet") }
 
-        runBlocking {
-            patientDaoImpl.assignForms(
-                listOf(GraphQLPatient.ID(makeUUID("qwsdq"))),
-                GraphQLFormTemplate.ID(makeUUID("d3f")),
-                mockk()
-            )
-        }
+        patientDaoImpl.assignForms(
+            listOf(GraphQLPatient.ID(makeUUID("qwsdq"))),
+            GraphQLFormTemplate.ID(makeUUID("d3f")),
+            mockk()
+        )
 
         assertEquals(
             patient.assignedForms.onEach { it.id = makeUUID("yeet") }.toList(),

@@ -27,14 +27,14 @@ class FormDataDaoImpl(
         val readFormsAndPatient = listOf(readForms, Crud.READ to Tables.Patient)
     }
 
-    override suspend fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData =
+    override fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData =
         if (requester can createFormsAndUpdatePatients) {
             formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
         } else {
             throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
         }
 
-    override suspend fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> =
+    override fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> =
         if (requester can readFormsAndPatient) {
             formDataRepository.getByPatient_Id(patient.id)
         } else {

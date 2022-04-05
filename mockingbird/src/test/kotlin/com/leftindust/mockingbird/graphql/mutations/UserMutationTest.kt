@@ -4,13 +4,12 @@ import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.UserDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class UserMutationTest {
     private val userDao = mockk<UserDao>()
@@ -31,7 +30,7 @@ internal class UserMutationTest {
 
         val mockkGraphQLUser = GraphQLUser(mockkUser, authContext)
 
-        coEvery { userDao.addUser(any(), any()) } returns mockkUser
+        every { userDao.addUser(any(), any()) } returns mockkUser
 
         val userMutation = UserMutation(userDao)
 

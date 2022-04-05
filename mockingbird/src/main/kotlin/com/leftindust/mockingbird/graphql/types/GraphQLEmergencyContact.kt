@@ -8,8 +8,10 @@ import com.leftindust.mockingbird.dao.email.ReadEmailDao
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.dao.entity.enums.Relationship
 import com.leftindust.mockingbird.dao.phone.ReadPhoneDao
-import org.springframework.beans.factory.annotation.Autowired
 import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("EmergencyContact")
 data class GraphQLEmergencyContact(
@@ -34,11 +36,15 @@ data class GraphQLEmergencyContact(
         authContext = authContext,
     )
 
-    override suspend fun phones(@GraphQLIgnore @Autowired phoneDao: ReadPhoneDao): List<GraphQLPhone> = phoneDao
-        .getEmergencyContactPhones(ecid, authContext.mediqAuthToken)
-        .map { GraphQLPhone(it) }
+    override suspend fun phones(
+        @GraphQLIgnore @Autowired phoneDao: ReadPhoneDao
+    ): List<GraphQLPhone> = withContext(Dispatchers.IO) {
+        phoneDao.getEmergencyContactPhones(ecid, authContext.mediqAuthToken)
+    }.map { GraphQLPhone(it) }
 
-    override suspend fun emails(@GraphQLIgnore @Autowired emailDao: ReadEmailDao): List<GraphQLEmail> = emailDao
-        .getEmergencyContactEmails(ecid, authContext.mediqAuthToken)
-        .map { GraphQLEmail(it) }
+    override suspend fun emails(
+        @GraphQLIgnore @Autowired emailDao: ReadEmailDao
+    ): List<GraphQLEmail> = withContext(Dispatchers.IO) {
+        emailDao.getEmergencyContactEmails(ecid, authContext.mediqAuthToken)
+    }.map { GraphQLEmail(it) }
 }

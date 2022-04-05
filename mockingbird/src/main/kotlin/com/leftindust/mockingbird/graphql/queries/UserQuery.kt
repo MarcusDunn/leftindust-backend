@@ -14,6 +14,8 @@ import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.GraphQLFirebaseInfo
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -25,7 +27,7 @@ class UserQuery(
     suspend fun user(uid: ID, graphQLAuthContext: GraphQLAuthContext): GraphQLUser {
         val strUid = uid.value
         if (strUid == "admin") throw GraphQLKotlinException("you trying to break something?")
-        val user = userDao.findUserByUid(strUid, graphQLAuthContext.mediqAuthToken)
+        val user = withContext(Dispatchers.IO) { userDao.findUserByUid(strUid, graphQLAuthContext.mediqAuthToken) }
         return if (user == null) {
             if (graphQLAuthContext.mediqAuthToken.isVerified()) {
                 val fireBaseUser = firebaseFetcher.getUserInfo(strUid, graphQLAuthContext.mediqAuthToken)
@@ -50,7 +52,7 @@ class UserQuery(
     ): List<GraphQLUser> {
         return when {
             uniqueIds != null -> uniqueIds.map { userDao.findUserByUid(it.value, graphQLAuthContext.mediqAuthToken)!! }
-            range != null -> userDao.getUsers(range, graphQLAuthContext.mediqAuthToken)
+            range != null -> withContext(Dispatchers.IO) { userDao.getUsers(range, graphQLAuthContext.mediqAuthToken) }
             else -> throw IllegalArgumentException("invalid argument combination to users")
         }.filter { it.uniqueId != "admin" }.map { GraphQLUser(it, graphQLAuthContext) }
     }

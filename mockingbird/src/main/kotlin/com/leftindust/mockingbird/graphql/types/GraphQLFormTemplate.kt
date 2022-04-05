@@ -6,8 +6,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.dao.form.section.ReadFormSectionDao
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 data class GraphQLFormTemplate(
     val tid: ID,
@@ -24,10 +26,11 @@ data class GraphQLFormTemplate(
     )
 
     @GraphQLDescription("The sections of the form sorted by number")
-    suspend fun sections(@GraphQLIgnore @Autowired formSectionDao: ReadFormSectionDao): List<GraphQLFormSection> =
-        formSectionDao
-            .getByTemplate(tid, graphQLAuthContext.mediqAuthToken)
-            .sortedBy { it.number }
-            .map { GraphQLFormSection(it, graphQLAuthContext) }
+    suspend fun sections(
+        @GraphQLIgnore @Autowired formSectionDao: ReadFormSectionDao
+    ): List<GraphQLFormSection> = withContext(Dispatchers.IO) {
+        formSectionDao.getByTemplate(tid, graphQLAuthContext.mediqAuthToken)
+    }.sortedBy { it.number }
+        .map { GraphQLFormSection(it, graphQLAuthContext) }
 }
 

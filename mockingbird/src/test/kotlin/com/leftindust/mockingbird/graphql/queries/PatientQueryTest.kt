@@ -7,13 +7,12 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
 import com.leftindust.mockingbird.graphql.types.search.filter.CaseAgnosticStringFilter
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class PatientQueryTest {
     private val readPatientDao = mockk<ReadPatientDao>()
@@ -26,7 +25,7 @@ internal class PatientQueryTest {
         val mockkPatient = mockk<Patient>(relaxed = true) {
             every { id } returns patientID
         }
-        coEvery { readPatientDao.getPatientsByPids(listOf(GraphQLPatient.ID(patientID)), any()) } returns listOf(
+        every { readPatientDao.getPatientsByPids(listOf(GraphQLPatient.ID(patientID)), any()) } returns listOf(
             mockkPatient
         )
         every { authContext.mediqAuthToken } returns mockk()
@@ -45,7 +44,7 @@ internal class PatientQueryTest {
             every { id } returns patientID
         }
         every { authContext.mediqAuthToken } returns mockk()
-        coEvery { readPatientDao.getMany(any(), any(), any()) } returns listOf(
+        every { readPatientDao.getMany(any(), any(), any()) } returns listOf(
             mockkPatient,
             mockkPatient,
             mockkPatient,
@@ -66,7 +65,7 @@ internal class PatientQueryTest {
             every { id } returns patientID
         }
         every { authContext.mediqAuthToken } returns mockk()
-        coEvery { readPatientDao.searchByExample(any(), any()) } returns listOf(
+        every { readPatientDao.searchByExample(any(), any()) } returns listOf(
             mockkPatient,
             mockkPatient,
             mockkPatient,

@@ -13,15 +13,14 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class PermissionDaoImplTest : LenientAuthorizerUnitTest() {
 
     @Test
-    fun `check addUserPermission success`(): Unit = runBlocking {
+    fun `check addUserPermission success`() {
         val uuid = UUID.randomUUID()
         val mediqGroup = mockk<MediqGroup>()
         val groupRepository = mockk<HibernateGroupRepository> {
@@ -41,7 +40,7 @@ internal class PermissionDaoImplTest : LenientAuthorizerUnitTest() {
     }
 
     @Test
-    fun `check addGroupPermission success`(): Unit = runBlocking {
+    fun `check addGroupPermission success`() {
         val mediqGroup = mockk<MediqGroup>()
         val groupRepository = mockk<HibernateGroupRepository> {
             every { getById(any()) } returns mediqGroup

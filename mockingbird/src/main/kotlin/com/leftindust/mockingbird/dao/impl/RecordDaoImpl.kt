@@ -28,7 +28,7 @@ class RecordDaoImpl(
         private val readRecords = Crud.READ to Tables.Record
     }
 
-    override suspend fun getRecordByRecordId(
+    override fun getRecordByRecordId(
         rid: GraphQLRecord.ID,
         requester: MediqToken
     ): MediqRecord = if (requester can (Crud.READ to Tables.Record)) {
@@ -37,7 +37,7 @@ class RecordDaoImpl(
         throw NotAuthorizedException(requester, Crud.READ to Tables.Record)
     }
 
-    override suspend fun getRecordsByPatientPid(
+    override fun getRecordsByPatientPid(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<MediqRecord> = if (requester can readRecords) {
@@ -47,7 +47,7 @@ class RecordDaoImpl(
         throw NotAuthorizedException(requester, readRecords)
     }
 
-    override suspend fun addRecord(
+    override fun addRecord(
         record: GraphQLRecordInput,
         requester: MediqToken
     ): MediqRecord = if (requester can createRecords) {

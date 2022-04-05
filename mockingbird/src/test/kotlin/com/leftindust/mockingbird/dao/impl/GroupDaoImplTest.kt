@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Pageable
@@ -17,7 +16,7 @@ import java.util.*
 internal class GroupDaoImplTest : LenientAuthorizerUnitTest() {
 
     @Test
-    fun `check addGroup success`(): Unit = runBlocking {
+    fun `check addGroup success`() {
         val mediqGroup = mockk<MediqGroup>()
         val groupRepository = mockk<HibernateGroupRepository> {
             every { save(any()) } returns mediqGroup
@@ -28,7 +27,7 @@ internal class GroupDaoImplTest : LenientAuthorizerUnitTest() {
     }
 
     @Test
-    fun `check getGroupById success`(): Unit = runBlocking {
+    fun `check getGroupById success`() {
         val mediqGroup = mockk<MediqGroup>()
         val groupRepository = mockk<HibernateGroupRepository> {
             every { getById(any()) } returns mediqGroup
@@ -39,7 +38,7 @@ internal class GroupDaoImplTest : LenientAuthorizerUnitTest() {
     }
 
     @Test
-    fun `check getRange success`(): Unit = runBlocking {
+    fun `check getRange success`() {
         val mediqGroup = mockk<MediqGroup>()
         val groupRepository = mockk<HibernateGroupRepository> {
             every { findAll(any<Pageable>()) } returns mockk {

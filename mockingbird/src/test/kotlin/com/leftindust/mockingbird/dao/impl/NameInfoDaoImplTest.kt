@@ -1,28 +1,24 @@
 package com.leftindust.mockingbird.dao.impl
 
-import com.leftindust.mockingbird.auth.Authorizer
 import com.leftindust.mockingbird.auth.NotAuthorizedException
 import com.leftindust.mockingbird.dao.NameInfoDao
 import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
-import com.leftindust.mockingbird.extensions.Authorization
-import io.mockk.coEvery
+import com.leftindust.mockingbird.util.unit.LenientAuthorizerUnitTest
+import com.leftindust.mockingbird.util.unit.StrictAuthorizerUnitTest
 import io.mockk.every
 import io.mockk.mockk
+import javax.persistence.EntityNotFoundException
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import javax.persistence.EntityNotFoundException
 
 internal class NameInfoDaoImplTest {
 
     @Nested
-    inner class Authorized {
-        private val authorizer = mockk<Authorizer> {
-            coEvery { getAuthorization(any(), any()) } returns Authorization.Allowed
-        }
+    inner class Authorized : LenientAuthorizerUnitTest() {
 
         @Nested
         inner class SuccessfullyFindUserByUniqueId {
@@ -34,14 +30,14 @@ internal class NameInfoDaoImplTest {
             @Test
             fun `check getByUniqueId success`() {
                 val nameInfoDao: NameInfoDao = NameInfoDaoImpl(hibernateUserRepository, authorizer)
-                val result = runBlocking { nameInfoDao.getByUniqueId("id", mockk()) }
+                val result = nameInfoDao.getByUniqueId("id", mockk())
                 assertEquals(mediqUser.nameInfo, result)
             }
 
             @Test
             fun `check findByUniqueId success`() {
                 val nameInfoDao = NameInfoDaoImpl(hibernateUserRepository, authorizer)
-                val result = runBlocking { nameInfoDao.findByUniqueId("id", mockk()) }
+                val result = nameInfoDao.findByUniqueId("id", mockk())
                 assertEquals(mediqUser.nameInfo, result)
             }
         }
@@ -54,14 +50,14 @@ internal class NameInfoDaoImplTest {
             private val nameInfoDao: NameInfoDao = NameInfoDaoImpl(hibernateUserRepository, authorizer)
 
             @Test
-            fun `check getByUniqueId failure`(): Unit = runBlocking {
+            fun `check getByUniqueId failure`() {
                 assertThrows<EntityNotFoundException> {
                     nameInfoDao.getByUniqueId("id", mockk())
                 }
             }
 
             @Test
-            fun `check findByUniqueId success`(): Unit = runBlocking {
+            fun `check findByUniqueId success`() {
                 val result = nameInfoDao.findByUniqueId("id", mockk())
                 assertEquals(null, result)
             }
@@ -69,10 +65,7 @@ internal class NameInfoDaoImplTest {
     }
 
     @Nested
-    inner class Unauthorized {
-        private val authorizer = mockk<Authorizer> {
-            coEvery { getAuthorization(any(), any()) } returns Authorization.Denied
-        }
+    inner class Unauthorized : StrictAuthorizerUnitTest() {
 
         @Nested
         inner class SuccessfullyFindUserByUniqueId {

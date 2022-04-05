@@ -5,8 +5,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.DoctorDao
 import com.leftindust.mockingbird.dao.entity.Clinic
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("Clinic")
 data class GraphQLClinic(
@@ -24,9 +26,9 @@ data class GraphQLClinic(
         authContext = authContext,
     )
 
-    suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> {
-        return doctorDao
-            .getByClinic(cid, authContext.mediqAuthToken)
-            .map { GraphQLDoctor(it, authContext) }
-    }
+    suspend fun doctors(
+        @GraphQLIgnore @Autowired doctorDao: DoctorDao
+    ): List<GraphQLDoctor> = withContext(Dispatchers.IO) {
+        doctorDao.getByClinic(cid, authContext.mediqAuthToken)
+    }.map { GraphQLDoctor(it, authContext) }
 }
