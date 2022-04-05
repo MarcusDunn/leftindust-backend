@@ -40,7 +40,7 @@ class VisitDaoImpl(
         )
     }
 
-    override suspend fun getVisitByVid(
+    override fun getVisitByVid(
         vid: GraphQLVisit.ID,
         requester: MediqToken
     ): Visit = if (requester can readVisits) {
@@ -50,7 +50,7 @@ class VisitDaoImpl(
     }
 
 
-    override suspend fun addVisit(
+    override fun addVisit(
         visitInput: GraphQLVisitInput,
         requester: MediqToken
     ): Visit = if (requester can requiredPermissions) {
@@ -61,7 +61,7 @@ class VisitDaoImpl(
     }
 
 
-    override suspend fun findByEvent(
+    override fun findByEvent(
         eid: GraphQLEvent.ID,
         requester: MediqToken
     ): Visit? = if (requester can readVisits) {
@@ -70,7 +70,7 @@ class VisitDaoImpl(
         throw NotAuthorizedException(requester, readVisits)
     }
 
-    override suspend fun getPatientVisits(
+    override fun getPatientVisits(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): List<Visit> = if (requester can readEventsAndVisits) {
@@ -81,7 +81,7 @@ class VisitDaoImpl(
     }
 
 
-    override suspend fun editVisit(
+    override fun editVisit(
         visit: GraphQLVisitEditInput,
         requester: MediqToken
     ): Visit = if (requester can editVisits) {

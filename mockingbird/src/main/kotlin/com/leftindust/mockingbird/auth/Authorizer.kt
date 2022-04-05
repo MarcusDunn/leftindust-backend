@@ -13,5 +13,5 @@ interface Authorizer {
      * @param user the token the user has sent
      * @returns either an Allowed or Denied
      */
-    suspend fun getAuthorization(action: Action, user: MediqToken): Authorization
+    fun getAuthorization(action: Action, user: MediqToken): Authorization
 }

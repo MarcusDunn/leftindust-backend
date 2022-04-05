@@ -13,17 +13,17 @@ class AuthorizationDaoImpl(
     private val aclRepository: HibernateAclRepository,
     private val userRepository: HibernateUserRepository
 ) : AuthorizationDao {
-    override suspend fun getRolesForUserByUid(uid: String): List<AccessControlList> {
+    override fun getRolesForUserByUid(uid: String): List<AccessControlList> {
         val user = userRepository.findByUniqueId(uid) ?: return emptyList()
         val userPerms = aclRepository.findAllByMediqUser(user)
         val groupPerms = user.group?.let { aclRepository.findAllByGroup(it) } ?: emptyList()
         return userPerms + groupPerms
     }
 
-    override suspend fun isAdmin(uid: String): Boolean =
+    override fun isAdmin(uid: String): Boolean =
         adminAlias.contains(userRepository.findByUniqueId(uid)?.group?.name)
 
-    override suspend fun isPatient(uid: String): Boolean =
+    override fun isPatient(uid: String): Boolean =
         patientAlias.contains(userRepository.findByUniqueId(uid)?.group?.name)
 
     val adminAlias = listOf("admin", "Administrator")

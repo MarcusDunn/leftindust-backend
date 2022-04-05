@@ -9,9 +9,9 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
 
 interface VisitDao {
-    suspend fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit
-    suspend fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): Visit
-    suspend fun findByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit?
-    suspend fun getPatientVisits(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit>
-    suspend fun editVisit(visit: GraphQLVisitEditInput, requester: MediqToken): Visit
+    fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit
+    fun addVisit(visitInput: GraphQLVisitInput, requester: MediqToken): Visit
+    fun findByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit?
+    fun getPatientVisits(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit>
+    fun editVisit(visit: GraphQLVisitEditInput, requester: MediqToken): Visit
 }

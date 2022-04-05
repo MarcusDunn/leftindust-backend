@@ -7,6 +7,6 @@ import com.leftindust.mockingbird.extensions.Authorization
 
 abstract class StrictAuthorizerUnitTest {
     val authorizer = object : Authorizer {
-        override suspend fun getAuthorization(action: Action, user: MediqToken) = Authorization.Denied
+        override fun getAuthorization(action: Action, user: MediqToken) = Authorization.Denied
     }
 }

@@ -9,15 +9,15 @@ import com.leftindust.mockingbird.extensions.isAllowed
 
 abstract class AbstractHibernateDao(private val authorizer: Authorizer) {
 
-    suspend infix fun MediqToken.can(action: Action): Boolean {
+    infix fun MediqToken.can(action: Action): Boolean {
         return authorizer.getAuthorization(action, this).isAllowed()
     }
 
-    suspend infix fun MediqToken.can(action: Pair<Crud, Tables>): Boolean {
+    infix fun MediqToken.can(action: Pair<Crud, Tables>): Boolean {
         return authorizer.getAuthorization(Action(action), this).isAllowed()
     }
 
-    suspend infix fun MediqToken.can(actions: List<Pair<Crud, Tables>>): Boolean {
+    infix fun MediqToken.can(actions: List<Pair<Crud, Tables>>): Boolean {
         return actions.all { authorizer.getAuthorization(Action(it), this).isAllowed() }
     }
 }
