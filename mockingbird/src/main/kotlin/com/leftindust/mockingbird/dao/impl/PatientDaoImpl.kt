@@ -28,13 +28,11 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLPatientExample
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import javax.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
 
 
 @Transactional
@@ -61,169 +59,155 @@ class PatientDaoImpl(
         private val readPatientsAndEvents = readPatients + readEvents
     }
 
-    override suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient =
-        if (requester can readPatients) withContext(Dispatchers.IO) {
-            patientRepository.getById(pid.id)
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
+    override suspend fun getByPID(
+        pid: GraphQLPatient.ID,
+        requester: MediqToken
+    ): Patient = if (requester can readPatients) {
+        patientRepository.getById(pid.id)
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
 
     override suspend fun addNewPatient(
         patient: GraphQLPatientInput,
         requester: MediqToken
-    ): Patient =
-        if (requester can listOf(createPatients)) {
-            val newPatient = Patient(patient, entityManager)
-            withContext(Dispatchers.IO) {
-                patientRepository.save(newPatient)
-            }
-        } else {
-            throw NotAuthorizedException(requester, createPatients, updatePatients)
-        }
-
-
-    override suspend fun removeByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient {
-        return if (requester can deletePatient) {
-            withContext(Dispatchers.IO) {
-                val toBeDeleted = patientRepository.getById(pid.id)
-                patientRepository.delete(toBeDeleted)
-                toBeDeleted
-            }
-        } else {
-            throw NotAuthorizedException(requester, Crud.DELETE to Tables.Patient)
-        }
+    ): Patient = if (requester can listOf(createPatients)) {
+        val newPatient = Patient(patient, entityManager)
+        patientRepository.save(newPatient)
+    } else {
+        throw NotAuthorizedException(requester, createPatients, updatePatients)
     }
 
-    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Patient> =
-        if (requester can readPatients) {
-            withContext(Dispatchers.IO) {
-                val doctor = doctorRepository.getById(did.id)
-                doctorPatientRepository.getAllByDoctorId(doctor.id!!).map { it.patient }
-            }
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
 
-    override suspend fun getVisitPatients(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient> =
-        if (requester can readPatients) {
-            withContext(Dispatchers.IO) {
-                visitRepository.getByIdWithEventPatients(vid.id)
-            }.event.patients
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
+    override suspend fun removeByPID(
+        pid: GraphQLPatient.ID,
+        requester: MediqToken
+    ): Patient = if (requester can deletePatient) {
+        val toBeDeleted = patientRepository.getById(pid.id)
+        patientRepository.delete(toBeDeleted)
+        toBeDeleted
+    } else {
+        throw NotAuthorizedException(requester, Crud.DELETE to Tables.Patient)
+    }
+
+    override suspend fun getByDoctor(
+        did: GraphQLDoctor.ID,
+        requester: MediqToken
+    ): Collection<Patient> = if (requester can readPatients) {
+        val doctor = doctorRepository.getById(did.id)
+        doctorPatientRepository.getAllByDoctorId(doctor.id!!).map { it.patient }
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
+
+    override suspend fun getVisitPatients(
+        vid: GraphQLVisit.ID,
+        requester: MediqToken
+    ): Collection<Patient> = if (requester can readPatients) {
+        visitRepository.getByIdWithEventPatients(vid.id).event.patients
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
 
 
     override suspend fun addDoctorToPatient(
         pid: GraphQLPatient.ID,
         did: GraphQLDoctor.ID,
         requester: MediqToken
-    ): Patient =
-        if (requester can updatePatientsAndDoctors) {
-            withContext(Dispatchers.IO) {
-                val patient = patientRepository.getById(pid.id)
-                val doctor = doctorRepository.getById(did.id)
-                patient.addDoctor(doctor)
-            }
-        } else {
-            throw NotAuthorizedException(requester, updatePatientsAndDoctors)
-        }
+    ): Patient = if (requester can updatePatientsAndDoctors) {
+        val patient = patientRepository.getById(pid.id)
+        val doctor = doctorRepository.getById(did.id)
+        patient.addDoctor(doctor)
+    } else {
+        throw NotAuthorizedException(requester, updatePatientsAndDoctors)
+    }
 
     override suspend fun getMany(
         range: GraphQLRangeInput,
         sortedBy: Patient.SortableField,
         requester: MediqToken
-    ): Collection<Patient> =
-        if (requester can readPatients) {
-            withContext(Dispatchers.IO) {
-                patientRepository.findAll(range.toPageable(Sort.by(sortedBy.fieldName))).content
-            }
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
+    ): Collection<Patient> = if (requester can readPatients) {
+        patientRepository.findAll(range.toPageable(Sort.by(sortedBy.fieldName))).content
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
 
     override suspend fun update(
         patientInput: GraphQLPatientEditInput,
         requester: MediqToken
-    ): Patient =
-        if (requester can updatePatients) {
-            val patient = withContext(Dispatchers.IO) {
-                patientRepository.getById(patientInput.pid.id)
-            }
-            patient.apply {
-                setByGqlInput(patientInput, entityManager)
-            }
-        } else {
-            throw NotAuthorizedException(requester, updatePatients)
+    ): Patient = if (requester can updatePatients) {
+        val patient = patientRepository.getById(patientInput.pid.id)
+        patient.apply {
+            setByGqlInput(patientInput, entityManager)
         }
+    } else {
+        throw NotAuthorizedException(requester, updatePatients)
+    }
 
 
-    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient> =
-        if (requester can readPatientsAndEvents) {
-            withContext(Dispatchers.IO) {
-                eventRepository.getByIdWithPatients(eid.id)
-            }.patients
-        } else {
-            throw NotAuthorizedException(requester, readPatientsAndEvents)
-        }
+    override suspend fun getByEvent(
+        eid: GraphQLEvent.ID,
+        requester: MediqToken
+    ): Collection<Patient> = if (requester can readPatientsAndEvents) {
+        eventRepository.getByIdWithPatients(eid.id).patients
+    } else {
+        throw NotAuthorizedException(requester, readPatientsAndEvents)
+    }
+
+    override suspend fun getPatientsByPids(
+        pids: List<GraphQLPatient.ID>,
+        requester: MediqToken
+    ): Collection<Patient> = if (requester can readPatients) {
+        patientRepository.findAllById(pids.map { it.id })
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
+
+    override suspend fun searchByExample(
+        example: GraphQLPatientExample,
+        requester: MediqToken
+    ): Collection<Patient> = if (requester can readPatients) {
+
+        val criteriaBuilder = entityManager.criteriaBuilder
+        val criteriaQuery = criteriaBuilder.createQuery(Patient::class.java)
+        val root = criteriaQuery.from(Patient::class.java)
+
+        val predicate = example.toPredicate(criteriaBuilder, root)
+
+        criteriaQuery.where(predicate)
+
+        val patientQuery = entityManager.createQuery(criteriaQuery.where(predicate))
+
+        patientQuery.resultList
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
 
 
-    override suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient> =
-        if (requester can readPatients) {
-            withContext(Dispatchers.IO) {
-                patientRepository.findAllById(pids.map { it.id })
-            }
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
-
-    override suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient> =
-        if (requester can readPatients) {
-
-            val criteriaBuilder = entityManager.criteriaBuilder
-            val criteriaQuery = criteriaBuilder.createQuery(Patient::class.java)
-            val root = criteriaQuery.from(Patient::class.java)
-
-            val predicate = example.toPredicate(criteriaBuilder, root)
-
-            criteriaQuery.where(predicate)
-
-            val patientQuery = entityManager.createQuery(criteriaQuery.where(predicate))
-
-            withContext(Dispatchers.IO) { patientQuery.resultList }
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
-
-
-    override suspend fun getByUser(uid: String, requester: MediqToken): Patient? =
-        if (requester can readPatients) {
-            withContext(Dispatchers.IO) {
-                patientRepository.findByUser_UniqueId(uid)
-            }
-        } else {
-            throw NotAuthorizedException(requester, readPatients)
-        }
-
+    override suspend fun getByUser(
+        uid: String,
+        requester: MediqToken
+    ): Patient? = if (requester can readPatients) {
+        patientRepository.findByUser_UniqueId(uid)
+    } else {
+        throw NotAuthorizedException(requester, readPatients)
+    }
 
     override suspend fun assignForms(
         patients: List<GraphQLPatient.ID>,
         survey: GraphQLFormTemplate.ID,
         requester: MediqToken
-    ): Collection<Patient> =
-        if (requester can updatePatients) {
-            withContext(Dispatchers.IO) {
-                val form = formRepository.getById(survey.id)
-                val patientEntities = patientRepository.getByIds(patients.map { it.id })
-                for (patient in patientEntities) {
-                    val assignedForm = assignedFormRepository.save(AssignedForm(form, patient))
-                    patient.assignedForms.add(assignedForm)
-                }
-                patientEntities
-            }
-        } else {
-            throw NotAuthorizedException(requester, updatePatients)
+    ): Collection<Patient> = if (requester can updatePatients) {
+        val form = formRepository.getById(survey.id)
+        val patientEntities = patientRepository.getByIds(patients.map { it.id })
+        for (patient in patientEntities) {
+            val assignedForm = assignedFormRepository.save(AssignedForm(form, patient))
+            patient.assignedForms.add(assignedForm)
         }
+        patientEntities
+    } else {
+        throw NotAuthorizedException(requester, updatePatients)
+    }
 
     override fun necessaryPermissions() = ReadPatientDao.necessaryPermissions +
             CreatePatientDao.necessaryPermissions +

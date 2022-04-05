@@ -37,7 +37,7 @@ class ClinicDaoImpl(
     }
 
     override suspend fun addClinic(clinic: GraphQLClinicInput, requester: MediqToken): Clinic =
-        if (requester can createClinic) withContext(Dispatchers.IO) {
+        if (requester can createClinic) {
             clinicRepository.save(Clinic(clinic, entityManager))
         } else {
             throw NotAuthorizedException(requester, createClinic)
@@ -45,7 +45,7 @@ class ClinicDaoImpl(
 
 
     override suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic =
-        if (requester can createClinic) withContext(Dispatchers.IO) {
+        if (requester can createClinic) {
             val clinicEntity = clinicRepository.getById(clinic.cid.id)
             clinicEntity.setByGqlInput(clinic, entityManager)
             clinicEntity
@@ -55,7 +55,7 @@ class ClinicDaoImpl(
 
 
     override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Clinic> =
-        if (requester can readClinic) withContext(Dispatchers.IO) {
+        if (requester can readClinic) {
             doctorRepository.getById(did.id).clinics
         } else {
             throw NotAuthorizedException(requester, readClinic)
@@ -63,7 +63,7 @@ class ClinicDaoImpl(
 
 
     override suspend fun getByCid(cid: GraphQLClinic.ID, requester: MediqToken): Clinic =
-        if (requester can readClinic) withContext(Dispatchers.IO) {
+        if (requester can readClinic) {
             clinicRepository.getById(cid.id)
         } else {
             throw NotAuthorizedException(requester, readClinic)

@@ -43,7 +43,7 @@ class DoctorDaoImpl(
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
     override suspend fun getPatientDoctors(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) withContext(Dispatchers.IO) {
+        return if (requester can readDoctors) {
             val patient = patientRepository.getById(pid.id)
             doctorPatientRepository.getAllByPatientId(patient.id!!).map { it.doctor }
         } else {
@@ -53,7 +53,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) withContext(Dispatchers.IO) {
+        return if (requester can readDoctors) {
             eventRepository.getById(eid.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -62,7 +62,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) withContext(Dispatchers.IO) {
+        return if (requester can readDoctors) {
             doctorRepository.getById(did.id)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -78,7 +78,7 @@ class DoctorDaoImpl(
         return if (requester can createDoctor) {
             val patients = doctor.patients?.let { patientRepository.getByIds(it.map { pid -> pid.id }) } ?: emptySet()
             val doctorEntity = Doctor(doctor, user, patients)
-            withContext(Dispatchers.IO) { doctorRepository.save(doctorEntity) }
+            doctorRepository.save(doctorEntity)
         } else {
             throw NotAuthorizedException(requester, createDoctor)
         }
@@ -87,7 +87,7 @@ class DoctorDaoImpl(
     override suspend fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
         val updateDoctor = Crud.UPDATE to Tables.Doctor
         if (requester can updateDoctor) {
-            val doctorEntity = withContext(Dispatchers.IO) { doctorRepository.getById(doctor.did.id) }
+            val doctorEntity = doctorRepository.getById(doctor.did.id)
             doctorEntity.setByGqlInput(doctor, entityManager)
             return doctorEntity
         } else {
@@ -97,7 +97,7 @@ class DoctorDaoImpl(
 
     override suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) withContext(Dispatchers.IO) {
+        return if (requester can readDoctors) {
             clinicRepository.getById(clinic.id).doctors.also { Hibernate.initialize(it) }
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -107,7 +107,7 @@ class DoctorDaoImpl(
     override suspend fun getByUser(uid: String, requester: MediqToken): Doctor? {
         val readDoctors = Crud.READ to Tables.Doctor
         val readUsers = Crud.READ to Tables.User
-        return if (requester can listOf(readDoctors, readUsers)) withContext(Dispatchers.IO) {
+        return if (requester can listOf(readDoctors, readUsers)) {
             doctorRepository.findByUser_UniqueId(uid)
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -116,7 +116,7 @@ class DoctorDaoImpl(
 
     override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
-        return if (requester can readDoctors) withContext(Dispatchers.IO) {
+        return if (requester can readDoctors) {
             doctorRepository.findAll(range.toPageable()).content
         } else {
             throw NotAuthorizedException(requester, readDoctors)
@@ -125,7 +125,6 @@ class DoctorDaoImpl(
 
     override suspend fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor> {
         if (requester can (Crud.READ to Tables.Doctor)) {
-
             val criteriaBuilder = entityManager.criteriaBuilder
             val criteriaQuery = criteriaBuilder.createQuery(Doctor::class.java)
             val root = criteriaQuery.from(Doctor::class.java)
@@ -136,7 +135,7 @@ class DoctorDaoImpl(
 
             val doctorQuery =  entityManager.createQuery(criteriaQuery.where(predicate))
 
-            return withContext(Dispatchers.IO) { doctorQuery.resultList }
+            return doctorQuery.resultList
         } else {
             throw NotAuthorizedException(requester, Crud.READ to Tables.Doctor)
         }

@@ -11,8 +11,6 @@ import com.leftindust.mockingbird.dao.entity.FormData
 import com.leftindust.mockingbird.dao.impl.repository.HibernateFormDataRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -30,14 +28,14 @@ class FormDataDaoImpl(
     }
 
     override suspend fun attachForm(patient: GraphQLPatient.ID, form: JsonElement, requester: MediqToken): FormData =
-        if (requester can createFormsAndUpdatePatients) withContext(Dispatchers.IO) {
+        if (requester can createFormsAndUpdatePatients) {
             formDataRepository.save(FormData(patient = patientRepository.getById(patient.id), data = form))
         } else {
             throw NotAuthorizedException(requester, createFormsAndUpdatePatients)
         }
 
     override suspend fun getForms(patient: GraphQLPatient.ID, requester: MediqToken): List<FormData> =
-        if (requester can readFormsAndPatient) withContext(Dispatchers.IO) {
+        if (requester can readFormsAndPatient) {
             formDataRepository.getByPatient_Id(patient.id)
         } else {
             throw NotAuthorizedException(requester, readFormsAndPatient)
