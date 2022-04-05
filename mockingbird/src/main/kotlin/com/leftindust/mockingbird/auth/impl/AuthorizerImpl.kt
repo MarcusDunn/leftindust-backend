@@ -18,7 +18,7 @@ internal class AuthorizerImpl(
     @Autowired private val authorizationDao: AuthorizationDao
 ) : Authorizer {
 
-    override suspend fun getAuthorization(action: Action, user: MediqToken): Authorization {
+    override fun getAuthorization(action: Action, user: MediqToken): Authorization {
         val uid = user.uid ?: return Authorization.Denied
         return if (authorizationDao.isAdmin(uid)) {
             Authorization.Allowed
@@ -33,7 +33,7 @@ internal class AuthorizerImpl(
         }
     }
 
-    private suspend fun getRoles(user: MediqToken): List<AccessControlList>? {
+    private fun getRoles(user: MediqToken): List<AccessControlList>? {
         return user.uid?.let { authorizationDao.getRolesForUserByUid(it) }
     }
 

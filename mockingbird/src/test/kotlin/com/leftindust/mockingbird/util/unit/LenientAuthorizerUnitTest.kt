@@ -7,6 +7,6 @@ import com.leftindust.mockingbird.extensions.Authorization
 
 abstract class LenientAuthorizerUnitTest {
     val authorizer = object : Authorizer {
-        override suspend fun getAuthorization(action: Action, user: MediqToken) = Authorization.Allowed
+        override fun getAuthorization(action: Action, user: MediqToken) = Authorization.Allowed
     }
 }
