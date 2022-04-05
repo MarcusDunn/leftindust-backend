@@ -3,6 +3,7 @@ package com.leftindust.mockingbird.graphql.queries
 import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.impl.repository.HibernatePatientRepository
 import com.leftindust.mockingbird.util.EntityStore
+import com.leftindust.mockingbird.util.debugPrint
 import com.leftindust.mockingbird.util.gqlRequest
 import com.leftindust.mockingbird.util.integration.NoAuthIntegrationTest
 import com.leftindust.mockingbird.util.integration.Resource.DATABASE
@@ -91,5 +92,26 @@ class PatientQueryIntegrationTest(
             .verifyOnlyDataExists("patientsByPid")
             .jsonPath("data.patientsByPid[*].pid.id")
             .isEqualTo(patient.id.toString())
+    }
+
+    @Test
+    internal fun `get patient emails`() {
+        webTestClient.gqlRequest(
+            // language=graphql
+            """
+            query {
+                patientsByPid(pids: [{id: "${patient.id}"}]) {
+                    emails {
+                        email
+                        type
+                    }
+                }
+            }
+        """.trimIndent()
+        )
+            .debugPrint()
+            .verifyOnlyDataExists("patientsByPid")
+            .jsonPath("data.patientsByPid[*].emails[*].email")
+            .isEqualTo(patient.email.first().email)
     }
 }

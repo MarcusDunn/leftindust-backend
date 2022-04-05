@@ -34,7 +34,7 @@ class PermissionDaoImpl(
         uid: String,
         permission: GraphQLPermissionInput,
         requester: MediqToken
-    ): AccessControlList = if (requester can createAcl) withContext(Dispatchers.IO) {
+    ): AccessControlList = if (requester can createAcl) {
         val user = userRepository.getByUniqueId(uid)
         val action = Action(permission)
         val acl = AccessControlList(mediqUser = user, action = action)
@@ -47,7 +47,7 @@ class PermissionDaoImpl(
         gid: GraphQLUserGroup.ID,
         permission: GraphQLPermissionInput,
         requester: MediqToken
-    ): AccessControlList = if (requester can createAcl) withContext(Dispatchers.IO) {
+    ): AccessControlList = if (requester can createAcl) {
         val group = groupRepository.getById(gid.id)
         val action = Action(permission)
         val acl = AccessControlList(group = group, action = action)

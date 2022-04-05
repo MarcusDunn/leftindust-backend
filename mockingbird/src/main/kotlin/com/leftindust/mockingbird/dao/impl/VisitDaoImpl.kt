@@ -15,8 +15,6 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -42,57 +40,56 @@ class VisitDaoImpl(
         )
     }
 
-    override suspend fun getVisitByVid(vid: GraphQLVisit.ID, requester: MediqToken): Visit =
-        if (requester can readVisits) {
-            withContext(Dispatchers.IO) {
-                visitRepository.getById(vid.id)
-            }
-        } else {
-            throw NotAuthorizedException(requester, readVisits)
-        }
+    override suspend fun getVisitByVid(
+        vid: GraphQLVisit.ID,
+        requester: MediqToken
+    ): Visit = if (requester can readVisits) {
+        visitRepository.getById(vid.id)
+    } else {
+        throw NotAuthorizedException(requester, readVisits)
+    }
 
 
     override suspend fun addVisit(
         visitInput: GraphQLVisitInput,
         requester: MediqToken
-    ): Visit =
-        if (requester can requiredPermissions) {
-            withContext(Dispatchers.IO) {
-                val event = eventRepository.getById(visitInput.eid.id)
-                visitRepository.save(Visit(visitInput, event))
-            }
-        } else {
-            throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
-        }
+    ): Visit = if (requester can requiredPermissions) {
+        val event = eventRepository.getById(visitInput.eid.id)
+        visitRepository.save(Visit(visitInput, event))
+    } else {
+        throw NotAuthorizedException(requester, *requiredPermissions.toTypedArray())
+    }
 
 
-    override suspend fun findByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Visit? =
-        if (requester can readVisits) {
-            withContext(Dispatchers.IO) {
-                visitRepository.findByEvent_Id(eid.id)
-            }
-        } else {
-            throw NotAuthorizedException(requester, readVisits)
-        }
+    override suspend fun findByEvent(
+        eid: GraphQLEvent.ID,
+        requester: MediqToken
+    ): Visit? = if (requester can readVisits) {
+        visitRepository.findByEvent_Id(eid.id)
+    } else {
+        throw NotAuthorizedException(requester, readVisits)
+    }
 
-    override suspend fun getPatientVisits(pid: GraphQLPatient.ID, requester: MediqToken): List<Visit> =
-        if (requester can readEventsAndVisits) {
-            withContext(Dispatchers.IO) {
-                patientRepository.getById(pid.id)
-            }.events.mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
-        } else {
-            throw NotAuthorizedException(requester, readEventsAndVisits)
-        }
+    override suspend fun getPatientVisits(
+        pid: GraphQLPatient.ID,
+        requester: MediqToken
+    ): List<Visit> = if (requester can readEventsAndVisits) {
+        patientRepository.getById(pid.id).events
+            .mapNotNull { visitRepository.findByEvent_Id(it.id!!) }
+    } else {
+        throw NotAuthorizedException(requester, readEventsAndVisits)
+    }
 
 
-    override suspend fun editVisit(visit: GraphQLVisitEditInput, requester: MediqToken): Visit =
-        if (requester can editVisits) {
-            val visitEntity = withContext(Dispatchers.IO) {
-                visitRepository.getById(visit.vid.id)
-            }
-            visitEntity.setByGqlInput(visit, sessionFactory.currentSession)
-            visitEntity
-        } else {
-            throw NotAuthorizedException(requester, editVisits)
-        }
+    override suspend fun editVisit(
+        visit: GraphQLVisitEditInput,
+        requester: MediqToken
+    ): Visit = if (requester can editVisits) {
+        val visitEntity =
+            visitRepository.getById(visit.vid.id)
+        visitEntity.setByGqlInput(visit, sessionFactory.currentSession)
+        visitEntity
+    } else {
+        throw NotAuthorizedException(requester, editVisits)
+    }
 }
