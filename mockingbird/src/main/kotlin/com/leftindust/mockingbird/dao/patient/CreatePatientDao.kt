@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.patient
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -14,6 +15,6 @@ interface CreatePatientDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun addNewPatient(patient: GraphQLPatientInput, requester: MediqToken): Patient
-
+    @Blocking
+    fun addNewPatient(patient: GraphQLPatientInput, requester: MediqToken): Patient
 }

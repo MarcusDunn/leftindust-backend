@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.patient
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -14,6 +15,6 @@ interface DeletePatientDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun removeByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient
-
+    @Blocking
+    fun removeByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient
 }

@@ -6,13 +6,13 @@ import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 
 interface PermissionDao {
-    suspend fun addUserPermission(
+    fun addUserPermission(
         uid: String,
         permission: GraphQLPermissionInput,
         requester: MediqToken
     ): AccessControlList
 
-    suspend fun addGroupPermission(
+    fun addGroupPermission(
         gid: GraphQLUserGroup.ID,
         permission: GraphQLPermissionInput,
         requester: MediqToken

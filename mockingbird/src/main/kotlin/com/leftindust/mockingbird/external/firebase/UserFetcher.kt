@@ -20,7 +20,7 @@ class UserFetcher(
     @Autowired private val firebaseAuth: FirebaseAuth
 ) {
 
-    suspend fun getUserInfo(
+    fun getUserInfo(
         uid: String,
         requester: MediqToken
     ): UserRecord {
@@ -33,7 +33,7 @@ class UserFetcher(
         }
     }
 
-    suspend fun getUsers(requester: MediqToken): MutableIterable<ExportedUserRecord> {
+    fun getUsers(requester: MediqToken): MutableIterable<ExportedUserRecord> {
         return if (authorizer.getAuthorization(Action(Crud.READ to Tables.User), requester).isAllowed()) {
             firebaseAuth.listUsers(null).iterateAll()!!
         } else {

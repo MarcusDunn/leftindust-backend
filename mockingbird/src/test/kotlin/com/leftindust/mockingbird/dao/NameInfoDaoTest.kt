@@ -16,13 +16,13 @@ class NameInfoDaoTest {
     inner class FoundEntity {
         private val nameInfo = mockk<NameInfo>()
         private val nameInfoDao = object : NameInfoDao {
-            override suspend fun findByUniqueId(uid: String, requester: MediqToken): NameInfo {
+            override fun findByUniqueId(uid: String, requester: MediqToken): NameInfo {
                 return nameInfo
             }
         }
 
         @Test
-        internal fun `test returns on get`(): Unit = runBlocking {
+        internal fun `test returns on get`() {
             assertEquals(nameInfo, nameInfoDao.getByUniqueId("uid", mockk()))
         }
 
@@ -35,7 +35,7 @@ class NameInfoDaoTest {
     @Nested
     inner class EntityNotFound {
         private val nameInfoDao = object : NameInfoDao {
-            override suspend fun findByUniqueId(uid: String, requester: MediqToken): NameInfo? = null
+            override fun findByUniqueId(uid: String, requester: MediqToken): NameInfo? = null
         }
 
         @Test

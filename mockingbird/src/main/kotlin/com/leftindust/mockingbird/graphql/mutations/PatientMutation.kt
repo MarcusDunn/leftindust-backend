@@ -8,6 +8,8 @@ import com.leftindust.mockingbird.dao.patient.UpdatePatientDao
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -17,19 +19,23 @@ class PatientMutation(
 ) : Mutation {
 
     @GraphQLDescription("updates a patient by their pid, only the not null fields are updated, pid MUST be defined")
-    suspend fun updatePatient(patient: GraphQLPatientEditInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
-        return updatePatientDao
+    suspend fun updatePatient(
+        patient: GraphQLPatientEditInput,
+        graphQLAuthContext: GraphQLAuthContext
+    ): GraphQLPatient = withContext(Dispatchers.IO) {
+        updatePatientDao
             .update(patient, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLPatient(it, graphQLAuthContext) } // safe nn assert as we just got from DB
-    }
+    }.let { GraphQLPatient(it, graphQLAuthContext) } // safe nn assert as we just got from DB
 
     @GraphQLDescription(
         """adds a new patient and connects them to already existing doctors and contacts
         contacts and doctors default to empty lists"""
     )
-    suspend fun addPatient(patient: GraphQLPatientInput, graphQLAuthContext: GraphQLAuthContext): GraphQLPatient {
-        return createPatientDao
+    suspend fun addPatient(
+        patient: GraphQLPatientInput,
+        graphQLAuthContext: GraphQLAuthContext
+    ): GraphQLPatient = withContext(Dispatchers.IO) {
+        createPatientDao
             .addNewPatient(patient, graphQLAuthContext.mediqAuthToken)
-            .let { GraphQLPatient(it, graphQLAuthContext) }
-    }
+    }.let { GraphQLPatient(it, graphQLAuthContext) }
 }

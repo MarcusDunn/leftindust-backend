@@ -33,7 +33,7 @@ internal class EventMutationTest {
             every { id } returns eventID
         }
 
-        coEvery { eventDao.addEvent(any(), any()) } returns mockkEvent
+        every { eventDao.addEvent(any(), any()) } returns mockkEvent
 
         val eventMutation = EventMutation(eventDao)
         val event = EntityStore.graphQLEventInput("EventMutationTest.addEvent")
@@ -44,7 +44,7 @@ internal class EventMutationTest {
             )
         }
 
-        coVerifyAll {
+        verifyAll {
             mockkContext.mediqAuthToken
             mockkEvent.id
             mockkEvent.title
@@ -77,7 +77,7 @@ internal class EventMutationTest {
             every { id } returns eventID
         }
 
-        coEvery { eventDao.editEvent(any(), any()) } returns mockkEvent
+        every { eventDao.editEvent(any(), any()) } returns mockkEvent
 
         val result = runBlocking {
             eventMutation.editEvent(
@@ -89,7 +89,7 @@ internal class EventMutationTest {
         }
 
 
-        coVerifyAll {
+        verifyAll {
             mockkContext.mediqAuthToken
             mockkEvent.id
             mockkEvent.title
@@ -115,7 +115,7 @@ internal class EventMutationTest {
             every { id } returns eventID
         }
 
-        coEvery { eventDao.editRecurringEvent(any(), any(), any()) } returns editedEvent
+        every { eventDao.editRecurringEvent(any(), any(), any()) } returns editedEvent
 
         val eventMutation = EventMutation(eventDao)
 
@@ -133,7 +133,7 @@ internal class EventMutationTest {
         }
 
 
-        coVerifyAll {
+        verifyAll {
             eventDao.editRecurringEvent(any(), any(), any())
             graphQLAuthContext.mediqAuthToken
             editedEvent.id

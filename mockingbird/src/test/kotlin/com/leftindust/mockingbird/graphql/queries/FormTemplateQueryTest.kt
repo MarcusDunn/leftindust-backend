@@ -6,14 +6,13 @@ import com.leftindust.mockingbird.dao.ReadFormDao
 import com.leftindust.mockingbird.dao.entity.Form
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.*
 
 internal class FormTemplateQueryTest {
     private val formDao = mockk<ReadFormDao>()
@@ -22,7 +21,7 @@ internal class FormTemplateQueryTest {
     fun `forms by id`() {
         val uuid  = GraphQLFormTemplate.ID(UUID.nameUUIDFromBytes("seat".toByteArray()))
         val form = mockk<Form>(relaxed = true)
-        coEvery { formDao.getByIds(listOf(uuid), any()) } returns listOf(form)
+        every { formDao.getByIds(listOf(uuid), any()) } returns listOf(form)
 
         val formTemplateQuery = FormTemplateQuery(formDao)
         val authContext = mockk<GraphQLAuthContext> {
@@ -40,7 +39,7 @@ internal class FormTemplateQueryTest {
     @Test
     fun `forms by doctor`() {
         val form = mockk<Form>(relaxed = true)
-        coEvery { formDao.getMany(GraphQLRangeInput(0, 2), any()) } returns listOf(form)
+        every { formDao.getMany(GraphQLRangeInput(0, 2), any()) } returns listOf(form)
         val formTemplateQuery = FormTemplateQuery(formDao)
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()

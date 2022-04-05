@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Event
 import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
@@ -12,29 +13,37 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLRecurrenceEditSetti
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 
 interface EventDao {
-    suspend fun addEvent(
+    @Blocking
+    fun addEvent(
         event: GraphQLEventInput,
         requester: MediqToken
     ): Event
 
-    suspend fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event
+    @Blocking
+    fun getById(eid: GraphQLEvent.ID, requester: MediqToken): Event
 
-    suspend fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event>
+    @Blocking
+    fun getPatientEvents(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Event>
 
-    suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event>
+    @Blocking
+    fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Event>
 
-    suspend fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event
+    @Blocking
+    fun getEventVisit(vid: GraphQLVisit.ID, requester: MediqToken): Event
 
-    suspend fun editEvent(
+    @Blocking
+    fun editEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
     ): Event
 
-    suspend fun editRecurringEvent(
+    @Blocking
+    fun editRecurringEvent(
         event: GraphQLEventEditInput,
         requester: MediqToken,
         recurrenceSettings: GraphQLRecurrenceEditSettings
     ): Event
 
-    suspend fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): Collection<Event>
+    @Blocking
+    fun getBetween(range: GraphQLTimeRangeInput, requester: MediqToken): Collection<Event>
 }

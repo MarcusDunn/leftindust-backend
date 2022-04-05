@@ -8,13 +8,12 @@ import com.leftindust.mockingbird.graphql.types.GraphQLDoctor
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPatientInput
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class PatientMutationTest {
     private val authContext = mockk<GraphQLAuthContext>()
@@ -32,7 +31,7 @@ internal class PatientMutationTest {
 
         every { authContext.mediqAuthToken } returns mockk()
 
-        coEvery { updatePatientDao.update(any(), any()) } returns mockkPatient
+        every { updatePatientDao.update(any(), any()) } returns mockkPatient
 
         val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 
@@ -63,7 +62,7 @@ internal class PatientMutationTest {
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, authContext)
 
-        coEvery { updatePatientDao.update(any(), any()) } returns mockkPatient
+        every { updatePatientDao.update(any(), any()) } returns mockkPatient
 
         val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 
@@ -86,7 +85,7 @@ internal class PatientMutationTest {
 
         val mockkGraphQLPatient = GraphQLPatient(mockkPatient, authContext)
 
-        coEvery { createPatientDao.addNewPatient(any(), any()) } returns mockkPatient
+        every { createPatientDao.addNewPatient(any(), any()) } returns mockkPatient
 
         val patientMutation = PatientMutation(updatePatientDao, createPatientDao)
 

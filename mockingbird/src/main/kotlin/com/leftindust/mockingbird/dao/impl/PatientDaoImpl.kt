@@ -59,7 +59,7 @@ class PatientDaoImpl(
         private val readPatientsAndEvents = readPatients + readEvents
     }
 
-    override suspend fun getByPID(
+    override fun getByPID(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Patient = if (requester can readPatients) {
@@ -68,7 +68,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatients)
     }
 
-    override suspend fun addNewPatient(
+    override fun addNewPatient(
         patient: GraphQLPatientInput,
         requester: MediqToken
     ): Patient = if (requester can listOf(createPatients)) {
@@ -79,7 +79,7 @@ class PatientDaoImpl(
     }
 
 
-    override suspend fun removeByPID(
+    override fun removeByPID(
         pid: GraphQLPatient.ID,
         requester: MediqToken
     ): Patient = if (requester can deletePatient) {
@@ -90,7 +90,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, Crud.DELETE to Tables.Patient)
     }
 
-    override suspend fun getByDoctor(
+    override fun getByDoctor(
         did: GraphQLDoctor.ID,
         requester: MediqToken
     ): Collection<Patient> = if (requester can readPatients) {
@@ -100,7 +100,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatients)
     }
 
-    override suspend fun getVisitPatients(
+    override fun getVisitPatients(
         vid: GraphQLVisit.ID,
         requester: MediqToken
     ): Collection<Patient> = if (requester can readPatients) {
@@ -110,7 +110,7 @@ class PatientDaoImpl(
     }
 
 
-    override suspend fun addDoctorToPatient(
+    override fun addDoctorToPatient(
         pid: GraphQLPatient.ID,
         did: GraphQLDoctor.ID,
         requester: MediqToken
@@ -122,7 +122,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, updatePatientsAndDoctors)
     }
 
-    override suspend fun getMany(
+    override fun getMany(
         range: GraphQLRangeInput,
         sortedBy: Patient.SortableField,
         requester: MediqToken
@@ -132,7 +132,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatients)
     }
 
-    override suspend fun update(
+    override fun update(
         patientInput: GraphQLPatientEditInput,
         requester: MediqToken
     ): Patient = if (requester can updatePatients) {
@@ -145,7 +145,7 @@ class PatientDaoImpl(
     }
 
 
-    override suspend fun getByEvent(
+    override fun getByEvent(
         eid: GraphQLEvent.ID,
         requester: MediqToken
     ): Collection<Patient> = if (requester can readPatientsAndEvents) {
@@ -154,7 +154,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatientsAndEvents)
     }
 
-    override suspend fun getPatientsByPids(
+    override fun getPatientsByPids(
         pids: List<GraphQLPatient.ID>,
         requester: MediqToken
     ): Collection<Patient> = if (requester can readPatients) {
@@ -163,7 +163,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatients)
     }
 
-    override suspend fun searchByExample(
+    override fun searchByExample(
         example: GraphQLPatientExample,
         requester: MediqToken
     ): Collection<Patient> = if (requester can readPatients) {
@@ -184,7 +184,7 @@ class PatientDaoImpl(
     }
 
 
-    override suspend fun getByUser(
+    override fun getByUser(
         uid: String,
         requester: MediqToken
     ): Patient? = if (requester can readPatients) {
@@ -193,7 +193,7 @@ class PatientDaoImpl(
         throw NotAuthorizedException(requester, readPatients)
     }
 
-    override suspend fun assignForms(
+    override fun assignForms(
         patients: List<GraphQLPatient.ID>,
         survey: GraphQLFormTemplate.ID,
         requester: MediqToken

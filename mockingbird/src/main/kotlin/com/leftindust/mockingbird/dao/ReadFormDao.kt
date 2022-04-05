@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.entity.Action
@@ -15,7 +16,13 @@ interface ReadFormDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form>
-    suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form>
-    suspend fun getByPatientAssigned(patient: GraphQLPatient.ID, requester: MediqToken): Collection<AssignedForm>
+
+    @Blocking
+    fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form>
+
+    @Blocking
+    fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form>
+
+    @Blocking
+    fun getByPatientAssigned(patient: GraphQLPatient.ID, requester: MediqToken): Collection<AssignedForm>
 }

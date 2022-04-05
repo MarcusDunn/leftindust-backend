@@ -2,12 +2,11 @@ package com.leftindust.mockingbird.auth.impl
 
 import com.leftindust.mockingbird.dao.AuthorizationDao
 import com.leftindust.mockingbird.extensions.Authorization
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -21,14 +20,13 @@ internal class AuthorizerImplTest {
 
     @Test
     fun `get authorization when user has subset of required permissions`() {
-        coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns listOf(
+        every { authorizationDao.getRolesForUserByUid("marcus") } returns listOf(
             mockk {
                 every { action.isSuperset(any()) } returns false
             }
         )
-        coEvery { authorizationDao.isAdmin(any()) } returns false
-        coEvery { authorizationDao.isPatient(any()) } returns false
-
+        every { authorizationDao.isAdmin(any()) } returns false
+        every { authorizationDao.isPatient(any()) } returns false
 
         val authorizer = AuthorizerImpl(authorizationDao)
 
@@ -40,16 +38,16 @@ internal class AuthorizerImplTest {
 
         assertEquals(Authorization.Denied, actual)
 
-        coVerify { authorizationDao.getRolesForUserByUid("marcus") }
+        verify { authorizationDao.getRolesForUserByUid("marcus") }
     }
 
     @Test
     fun `get authorization when user has superset of required permissions`() {
-        coEvery { authorizationDao.isAdmin(any()) } returns false
-        coEvery { authorizationDao.isPatient(any()) } returns false
+        every { authorizationDao.isAdmin(any()) } returns false
+        every { authorizationDao.isPatient(any()) } returns false
 
 
-        coEvery { authorizationDao.getRolesForUserByUid("marcus") } returns listOf(
+        every { authorizationDao.getRolesForUserByUid("marcus") } returns listOf(
             mockk("superset") {
                 every { action.isSuperset(any()) } returns true
             }
@@ -65,12 +63,12 @@ internal class AuthorizerImplTest {
 
         assertEquals(Authorization.Allowed, actual)
 
-        coVerify { authorizationDao.getRolesForUserByUid("marcus") }
+        verify { authorizationDao.getRolesForUserByUid("marcus") }
     }
 
     @Test
     fun getAuthorizationForAdmin() {
-        coEvery { authorizationDao.isAdmin(any()) } returns true
+        every { authorizationDao.isAdmin(any()) } returns true
         val authorizer = AuthorizerImpl(authorizationDao)
         val actual = runBlocking {
             authorizer.getAuthorization(

@@ -22,13 +22,11 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLDoctorInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
 import com.leftindust.mockingbird.graphql.types.search.example.GraphQLDoctorExample
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import javax.persistence.EntityManager
 import org.hibernate.Hibernate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.EntityManager
 
 @Repository
 @Transactional
@@ -41,7 +39,7 @@ class DoctorDaoImpl(
     @Autowired private val clinicRepository: HibernateClinicRepository,
     @Autowired private val entityManager: EntityManager,
 ) : DoctorDao, AbstractHibernateDao(authorizer) {
-    override suspend fun getPatientDoctors(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
+    override fun getPatientDoctors(pid: GraphQLPatient.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             val patient = patientRepository.getById(pid.id)
@@ -51,7 +49,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
+    override fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             eventRepository.getById(eid.id).doctors.also { Hibernate.initialize(it) }
@@ -60,7 +58,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor {
+    override fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Doctor {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             doctorRepository.getById(did.id)
@@ -69,7 +67,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun addDoctor(
+    override fun addDoctor(
         doctor: GraphQLDoctorInput,
         requester: MediqToken,
         user: MediqUser?
@@ -84,7 +82,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
+    override fun editDoctor(doctor: GraphQLDoctorEditInput, requester: MediqToken): Doctor {
         val updateDoctor = Crud.UPDATE to Tables.Doctor
         if (requester can updateDoctor) {
             val doctorEntity = doctorRepository.getById(doctor.did.id)
@@ -95,7 +93,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
+    override fun getByClinic(clinic: GraphQLClinic.ID, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             clinicRepository.getById(clinic.id).doctors.also { Hibernate.initialize(it) }
@@ -104,7 +102,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getByUser(uid: String, requester: MediqToken): Doctor? {
+    override fun getByUser(uid: String, requester: MediqToken): Doctor? {
         val readDoctors = Crud.READ to Tables.Doctor
         val readUsers = Crud.READ to Tables.User
         return if (requester can listOf(readDoctors, readUsers)) {
@@ -114,7 +112,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor> {
+    override fun getMany(range: GraphQLRangeInput, requester: MediqToken): Collection<Doctor> {
         val readDoctors = Crud.READ to Tables.Doctor
         return if (requester can readDoctors) {
             doctorRepository.findAll(range.toPageable()).content
@@ -123,7 +121,7 @@ class DoctorDaoImpl(
         }
     }
 
-    override suspend fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor> {
+    override fun searchByExample(example: GraphQLDoctorExample, requester: MediqToken): Collection<Doctor> {
         if (requester can (Crud.READ to Tables.Doctor)) {
             val criteriaBuilder = entityManager.criteriaBuilder
             val criteriaQuery = criteriaBuilder.createQuery(Doctor::class.java)

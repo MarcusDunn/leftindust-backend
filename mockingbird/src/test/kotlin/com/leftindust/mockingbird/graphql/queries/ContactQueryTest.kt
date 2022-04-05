@@ -5,13 +5,12 @@ import com.leftindust.mockingbird.dao.ContactDao
 import com.leftindust.mockingbird.dao.entity.EmergencyContact
 import com.leftindust.mockingbird.graphql.types.GraphQLEmergencyContact
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class ContactQueryTest {
     private val contactDao = mockk<ContactDao>()
@@ -28,7 +27,7 @@ internal class ContactQueryTest {
 
         val graphQLEmergencyContact = GraphQLEmergencyContact(mockkContact, authContext)
 
-        coEvery { contactDao.getPatientContacts(GraphQLPatient.ID(patientId), any()) } returns listOf(mockkContact)
+        every { contactDao.getPatientContacts(GraphQLPatient.ID(patientId), any()) } returns listOf(mockkContact)
 
         val contactQuery = ContactQuery(contactDao)
 

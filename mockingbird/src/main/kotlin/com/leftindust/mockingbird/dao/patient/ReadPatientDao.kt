@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.patient
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -19,12 +20,32 @@ interface ReadPatientDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient
-    suspend fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Patient>
-    suspend fun getVisitPatients(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient>
-    suspend fun getMany(range: GraphQLRangeInput, sortedBy: Patient.SortableField = Patient.SortableField.PID, requester: MediqToken): Collection<Patient>
-    suspend fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient>
-    suspend fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient>
-    suspend fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient>
-    suspend fun getByUser(uid: String, requester: MediqToken): Patient?
+
+    @Blocking
+    fun getByPID(pid: GraphQLPatient.ID, requester: MediqToken): Patient
+
+    @Blocking
+    fun getByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun getVisitPatients(vid: GraphQLVisit.ID, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun getMany(
+        range: GraphQLRangeInput,
+        sortedBy: Patient.SortableField = Patient.SortableField.PID,
+        requester: MediqToken
+    ): Collection<Patient>
+
+    @Blocking
+    fun getByEvent(eid: GraphQLEvent.ID, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun getPatientsByPids(pids: List<GraphQLPatient.ID>, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun searchByExample(example: GraphQLPatientExample, requester: MediqToken): Collection<Patient>
+
+    @Blocking
+    fun getByUser(uid: String, requester: MediqToken): Patient?
 }

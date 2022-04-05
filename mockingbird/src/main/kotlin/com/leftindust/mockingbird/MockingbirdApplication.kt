@@ -3,6 +3,7 @@ package com.leftindust.mockingbird
 
 import com.leftindust.mockingbird.external.icd.IcdApiClient
 import com.leftindust.mockingbird.graphql.hooks.CustomSchemaGeneratorHooks
+import kotlin.annotation.AnnotationTarget.FUNCTION
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
@@ -23,3 +24,6 @@ class MockingbirdApplication {
 fun main(args: Array<String>) {
     runApplication<MockingbirdApplication>(*args)
 }
+
+@Target(FUNCTION)
+annotation class Blocking

@@ -6,8 +6,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.FormSection
 import com.leftindust.mockingbird.dao.form.feild.ReadFormFieldDao
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("FormSection")
 data class GraphQLFormSection(
@@ -30,7 +32,9 @@ data class GraphQLFormSection(
     )
 
     @GraphQLDescription("Note that I do not provide a stable order to these fields")
-    suspend fun fields(@GraphQLIgnore @Autowired formFieldDao: ReadFormFieldDao): List<GraphQlFormField> = formFieldDao
-        .getSectionFields(fsid, authContext.mediqAuthToken)
-        .map { GraphQlFormField(it, authContext) }
+    suspend fun fields(
+        @GraphQLIgnore @Autowired formFieldDao: ReadFormFieldDao
+    ): List<GraphQlFormField> = withContext(Dispatchers.IO) {
+        formFieldDao.getSectionFields(fsid, authContext.mediqAuthToken)
+    }.map { GraphQlFormField(it, authContext) }
 }

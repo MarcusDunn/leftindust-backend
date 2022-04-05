@@ -30,7 +30,7 @@ class UserDaoImpl(
     private val patientRepository: HibernatePatientRepository,
 ) : UserDao, AbstractHibernateDao(authorizer) {
 
-    override suspend fun findUserByUid(uid: String, requester: MediqToken): MediqUser? {
+    override fun findUserByUid(uid: String, requester: MediqToken): MediqUser? {
         return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
             userRepository.findByUniqueId(uid)
         } else {
@@ -38,7 +38,7 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun getUserByUid(uid: String, requester: MediqToken): MediqUser {
+    override fun getUserByUid(uid: String, requester: MediqToken): MediqUser {
         return if (requester can (Crud.READ to Tables.User) || (uid == requester.uid && requester.isVerified())) {
             userRepository.getByUniqueId(uid)
         } else {
@@ -46,7 +46,7 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun addUser(
+    override fun addUser(
         user: GraphQLUserInput,
         requester: MediqToken
     ): MediqUser = if (requester can (Crud.CREATE to Tables.User)) {
@@ -62,7 +62,7 @@ class UserDaoImpl(
         throw NotAuthorizedException(requester, Crud.CREATE to Tables.User)
     }
 
-    override suspend fun getUsers(
+    override fun getUsers(
         range: GraphQLRangeInput,
         requester: MediqToken
     ): Collection<MediqUser> = if (requester can (Crud.READ to Tables.User)) {
@@ -71,7 +71,7 @@ class UserDaoImpl(
         throw NotAuthorizedException(requester, Crud.READ to Tables.Patient)
     }
 
-    override suspend fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser =
+    override fun updateUser(user: GraphQLUserEditInput, requester: MediqToken): MediqUser =
         if (requester can (Crud.UPDATE to Tables.User)) {
             val userEntity = userRepository.getByUniqueId(user.uid).apply {
                 group = when (user.group) {
@@ -96,7 +96,7 @@ class UserDaoImpl(
             throw NotAuthorizedException(requester, Crud.UPDATE to Tables.Patient)
         }
 
-    override suspend fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser? {
+    override fun findByDoctor(did: GraphQLDoctor.ID, requester: MediqToken): MediqUser? {
         val permissions = listOf(Crud.READ to Tables.User, Crud.READ to Tables.Doctor)
         return if (requester can permissions) {
             doctorRepository.getById(did.id).user
@@ -105,7 +105,7 @@ class UserDaoImpl(
         }
     }
 
-    override suspend fun findPatientUser(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
+    override fun findPatientUser(pid: GraphQLPatient.ID, requester: MediqToken): MediqUser? {
         val permissions = listOf(Crud.READ to Tables.User, Crud.READ to Tables.Patient)
         return if (requester can permissions) {
             patientRepository.getById(pid.id).user

@@ -13,6 +13,8 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 
 @GraphQLName("User")
@@ -34,7 +36,9 @@ data class GraphQLUser(
     )
     suspend fun name(
         @GraphQLIgnore @Autowired nameInfoDao: NameInfoDao
-    ): GraphQLNameInfo? = nameInfoDao.findByUniqueId(uid, authContext.mediqAuthToken)?.let { GraphQLNameInfo(it) }
+    ): GraphQLNameInfo? = withContext(Dispatchers.IO) {
+        nameInfoDao.findByUniqueId(uid, authContext.mediqAuthToken)
+    }?.let { GraphQLNameInfo(it) }
 
 
     @GraphQLDescription(
@@ -44,7 +48,9 @@ data class GraphQLUser(
     )
     suspend fun isRegistered(
         @GraphQLIgnore @Autowired userDao: UserDao
-    ): Boolean = userDao.findUserByUid(uid, authContext.mediqAuthToken) != null
+    ): Boolean = withContext(Dispatchers.IO) {
+        userDao.findUserByUid(uid, authContext.mediqAuthToken)
+    }.let { it != null }
 
 
     @GraphQLDescription(
@@ -54,7 +60,9 @@ data class GraphQLUser(
     )
     suspend fun firebaseUserInfo(
         @GraphQLIgnore @Autowired userFetcher: UserFetcher
-    ): GraphQLFirebaseInfo = GraphQLFirebaseInfo(userFetcher.getUserInfo(uid, authContext.mediqAuthToken))
+    ): GraphQLFirebaseInfo = withContext(Dispatchers.IO) {
+        userFetcher.getUserInfo(uid, authContext.mediqAuthToken)
+    }.let { GraphQLFirebaseInfo(it) }
 
     @GraphQLDescription(
         """
@@ -63,7 +71,9 @@ data class GraphQLUser(
     )
     suspend fun permissions(
         @GraphQLIgnore @Autowired authorizationDao: AuthorizationDao
-    ): GraphQLPermissions = GraphQLPermissions(authorizationDao.getRolesForUserByUid(uid))
+    ): GraphQLPermissions = withContext(Dispatchers.IO) {
+        authorizationDao.getRolesForUserByUid(uid)
+    }.let { GraphQLPermissions(it) }
 
 
     @GraphQLDescription(
@@ -73,7 +83,9 @@ data class GraphQLUser(
     )
     suspend fun doctor(
         @GraphQLIgnore @Autowired doctorDao: DoctorDao
-    ): GraphQLDoctor? = doctorDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLDoctor(it, authContext) }
+    ): GraphQLDoctor? = withContext(Dispatchers.IO) {
+        doctorDao.getByUser(uid, authContext.mediqAuthToken)
+    }?.let { GraphQLDoctor(it, authContext) }
 
 
     @GraphQLDescription(
@@ -83,7 +95,9 @@ data class GraphQLUser(
     )
     suspend fun patient(
         @GraphQLIgnore @Autowired patientDao: ReadPatientDao
-    ): GraphQLPatient? = patientDao.getByUser(uid, authContext.mediqAuthToken)?.let { GraphQLPatient(it, authContext) }
+    ): GraphQLPatient? = withContext(Dispatchers.IO) {
+        patientDao.getByUser(uid, authContext.mediqAuthToken)
+    }?.let { GraphQLPatient(it, authContext) }
 
 
     @GraphQLDescription(
@@ -94,7 +108,9 @@ data class GraphQLUser(
     suspend fun hasPermission(
         @GraphQLIgnore @Autowired authorizationDao: AuthorizationDao,
         perm: GraphQLPermissionInput
-    ): Boolean = authorizationDao.getRolesForUserByUid(uid).any { it.action.isSuperset(Action(perm)) }
+    ): Boolean = withContext(Dispatchers.IO) {
+        authorizationDao.getRolesForUserByUid(uid)
+    }.any { it.action.isSuperset(Action(perm)) }
 }
 
 

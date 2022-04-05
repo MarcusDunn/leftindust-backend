@@ -5,13 +5,12 @@ import com.leftindust.mockingbird.dao.VisitDao
 import com.leftindust.mockingbird.dao.entity.Visit
 import com.leftindust.mockingbird.graphql.types.GraphQLVisit
 import com.leftindust.mockingbird.graphql.types.input.GraphQLVisitInput
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class VisitMutationTest {
     private val visitDao = mockk<VisitDao>()
@@ -27,7 +26,7 @@ internal class VisitMutationTest {
             every { id } returns visitId
         }
 
-        coEvery { visitDao.addVisit(any(), any()) } returns mockkVisit
+        every { visitDao.addVisit(any(), any()) } returns mockkVisit
 
         val visitMutation = VisitMutation(visitDao)
 

@@ -10,6 +10,8 @@ import com.leftindust.mockingbird.graphql.types.GraphQLFormData
 import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.graphql.types.input.GraphQLFormTemplateInput
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,26 +23,24 @@ class FormMutation(
     suspend fun addSurveyTemplate(
         surveyTemplate: GraphQLFormTemplateInput,
         authContext: GraphQLAuthContext
-    ): GraphQLFormTemplate {
-        return GraphQLFormTemplate(createFormDao.addForm(surveyTemplate, authContext.mediqAuthToken), authContext)
-    }
+    ): GraphQLFormTemplate = withContext(Dispatchers.IO) {
+        createFormDao.addForm(surveyTemplate, authContext.mediqAuthToken)
+    }.let { GraphQLFormTemplate(it, authContext) }
 
     suspend fun submitSurvey(
         patient: GraphQLPatient.ID,
         surveyJson: String,
         authContext: GraphQLAuthContext
-    ): GraphQLFormData {
-        val attachedForm = formDataDao.attachForm(patient, form = parseString(surveyJson), authContext.mediqAuthToken)
-        return GraphQLFormData(attachedForm.data.toString(), patient, authContext)
-    }
+    ): GraphQLFormData = withContext(Dispatchers.IO) {
+        formDataDao.attachForm(patient, form = parseString(surveyJson), authContext.mediqAuthToken)
+    }.let { GraphQLFormData(it.data.toString(), patient, authContext) }
 
     suspend fun assignSurvey(
         patients: List<GraphQLPatient.ID>,
         survey: GraphQLFormTemplate.ID,
         authContext: GraphQLAuthContext,
-    ): List<GraphQLPatient> {
-        val patientEntities = patientDao.assignForms(patients, survey, authContext.mediqAuthToken)
-        return patientEntities.map { GraphQLPatient(it, authContext) }
-    }
+    ): List<GraphQLPatient> = withContext(Dispatchers.IO) {
+        patientDao.assignForms(patients, survey, authContext.mediqAuthToken)
+    }.map { GraphQLPatient(it, authContext) }
 }
 

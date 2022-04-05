@@ -17,8 +17,12 @@ import com.leftindust.mockingbird.graphql.types.input.GraphQLEventEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLEventInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLTimeRangeInput
 import com.leftindust.mockingbird.util.makeUUID
-import io.mockk.*
-import kotlinx.coroutines.runBlocking
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -55,7 +59,7 @@ internal class EventDaoImplTest {
             )
 
             val graphQLEventInput = mockk<GraphQLEventInput>(relaxed = true)
-            val result = runBlocking { eventDaoImpl.addEvent(graphQLEventInput, mockk()) }
+            val result = eventDaoImpl.addEvent(graphQLEventInput, mockk())
             assertEquals(savedEvent, result)
         }
 
@@ -75,7 +79,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getById(ID(uuid), mockk()) }
+            val result = eventDaoImpl.getById(ID(uuid), mockk())
 
             assertEquals(event, result)
         }
@@ -97,7 +101,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getPatientEvents(GraphQLPatient.ID(uuid), mockk()) }
+            val result = eventDaoImpl.getPatientEvents(GraphQLPatient.ID(uuid), mockk())
 
             assertEquals(patientEvents, result)
         }
@@ -119,7 +123,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getByDoctor(GraphQLDoctor.ID(uuid), mockk()) }
+            val result = eventDaoImpl.getByDoctor(GraphQLDoctor.ID(uuid), mockk())
 
             assertEquals(doctorEvents, result)
         }
@@ -141,7 +145,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getEventVisit(GraphQLVisit.ID(uuid), mockk()) }
+            val result = eventDaoImpl.getEventVisit(GraphQLVisit.ID(uuid), mockk())
 
             assertEquals(visitEvent, result)
         }
@@ -167,7 +171,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.editEvent(editInput, mockk()) }
+            val result = eventDaoImpl.editEvent(editInput, mockk())
 
             assertEquals(event, result)
 
@@ -193,7 +197,7 @@ internal class EventDaoImplTest {
                 authorizer = authorizer
             )
 
-            val result = runBlocking { eventDaoImpl.getBetween(rangeInput, mockk()) }
+            val result = eventDaoImpl.getBetween(rangeInput, mockk())
 
             assertEquals(events, result)
         }

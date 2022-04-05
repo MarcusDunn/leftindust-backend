@@ -1,5 +1,6 @@
 package com.leftindust.mockingbird.dao.clinic
 
+import com.leftindust.mockingbird.Blocking
 import com.leftindust.mockingbird.auth.Crud
 import com.leftindust.mockingbird.auth.MediqToken
 import com.leftindust.mockingbird.dao.GuardedDao
@@ -14,5 +15,6 @@ interface UpdateClinicDao : GuardedDao {
     }
 
     override fun necessaryPermissions() = necessaryPermissions
-    suspend fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic
+    @Blocking
+    fun editClinic(clinic: GraphQLClinicEditInput, requester: MediqToken): Clinic
 }

@@ -14,7 +14,6 @@ import com.leftindust.mockingbird.dao.patient.ReadPatientDao
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
 import com.leftindust.mockingbird.util.EntityStore
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -31,7 +30,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao> {
-            coEvery { findUserByUid("uid", any()) } returns mockk()
+            every { findUserByUid("uid", any()) } returns mockk()
         }
 
         val graphQLUser = runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
@@ -44,7 +43,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao> {
-            coEvery { findUserByUid("uid", any()) } returns null
+            every { findUserByUid("uid", any()) } returns null
         }
 
         val graphQLUser = runBlocking { GraphQLUser("uid", null, authContext).isRegistered(userDao) }
@@ -57,7 +56,7 @@ internal class GraphQLUserTest {
             every { mediqAuthToken } returns mockk()
         }
         val userDao = mockk<UserDao> {
-            coEvery { findUserByUid("uid", any()) } throws NotAuthorizedException(
+            every { findUserByUid("uid", any()) } throws NotAuthorizedException(
                 authContext.mediqAuthToken,
                 Crud.READ to Tables.User
             )
@@ -77,7 +76,7 @@ internal class GraphQLUserTest {
         val expected = mockk<UserRecord>(relaxed = true)
 
         val userFetcher = mockk<UserFetcher> {
-            coEvery { getUserInfo("uid", authContext.mediqAuthToken) } returns expected
+            every { getUserInfo("uid", authContext.mediqAuthToken) } returns expected
         }
         val result = runBlocking { GraphQLUser("uid", null, authContext).firebaseUserInfo(userFetcher) }
 
@@ -91,7 +90,7 @@ internal class GraphQLUserTest {
         }
 
         val authorizationDao = mockk<AuthorizationDao> {
-            coEvery { getRolesForUserByUid("uid") } returns emptyList()
+            every { getRolesForUserByUid("uid") } returns emptyList()
         }
 
         val result = runBlocking { GraphQLUser("uid", null, authContext).permissions(authorizationDao) }
@@ -106,7 +105,7 @@ internal class GraphQLUserTest {
         }
 
         val authorizationDao = mockk<AuthorizationDao> {
-            coEvery { getRolesForUserByUid("uid") } returns listOf(mockk {
+            every { getRolesForUserByUid("uid") } returns listOf(mockk {
                 every { action } returns Action(Crud.UPDATE to Tables.Patient)
             })
         }
@@ -131,7 +130,7 @@ internal class GraphQLUserTest {
             .apply { id = UUID.nameUUIDFromBytes("GraphqlUserTest.patient".toByteArray()) }
 
         val mockkPatientDao = mockk<ReadPatientDao> {
-            coEvery { getByUser("uid", any()) } returns expectedPatient
+            every { getByUser("uid", any()) } returns expectedPatient
         }
 
         val result = runBlocking { GraphQLUser("uid", null, authContext).patient(mockkPatientDao) }
@@ -148,7 +147,7 @@ internal class GraphQLUserTest {
         val nameInfo = mockk<NameInfo>(relaxed = true)
 
         val nameInfoDao = mockk<NameInfoDao> {
-            coEvery { findByUniqueId("uid", any()) } returns nameInfo
+            every { findByUniqueId("uid", any()) } returns nameInfo
         }
 
         val result = runBlocking { GraphQLUser("uid", null, authContext).name(nameInfoDao) }

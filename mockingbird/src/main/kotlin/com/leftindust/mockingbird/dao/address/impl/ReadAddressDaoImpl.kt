@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Repository
 class ReadAddressDaoImpl : ReadAddressDao {
-    override suspend fun getDoctorAddresses(did: GraphQLDoctor.ID, mediqAuthToken: MediqToken): List<Address> {
+    override fun getDoctorAddresses(did: GraphQLDoctor.ID, mediqAuthToken: MediqToken): List<Address> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getPatientAddresses(pid: GraphQLPatient.ID, authContext: GraphQLAuthContext): List<Address> {
+    override fun getPatientAddresses(pid: GraphQLPatient.ID, authContext: GraphQLAuthContext): List<Address> {
         TODO("Not yet implemented")
     }
 }

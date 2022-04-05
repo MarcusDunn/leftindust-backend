@@ -12,10 +12,9 @@ import com.leftindust.mockingbird.graphql.types.GraphQLFormTemplate
 import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import com.leftindust.mockingbird.util.EntityStore
 import com.leftindust.mockingbird.util.makeUUID
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -33,13 +32,13 @@ internal class FormMutationTest {
         val authContext = mockk<GraphQLAuthContext>(relaxed = true)
 
         val mockkForm = mockk<Form>(relaxed = true)
-        coEvery { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) } returns mockkForm
+        every { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) } returns mockkForm
 
         val result = runBlocking { formMutation.addSurveyTemplate(graphQLFormTemplateInput, authContext = authContext) }
 
         assertEquals(GraphQLFormTemplate(mockkForm, authContext), result)
 
-        coVerify(exactly = 1) { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) }
+        verify(exactly = 1) { formDao.addForm(graphQLFormTemplateInput, authContext.mediqAuthToken) }
     }
 
     @Test
@@ -52,7 +51,7 @@ internal class FormMutationTest {
         val mockkGqlPatient = mockk<GraphQLPatient>(relaxed = true)
         val mockkPatient = mockk<Patient>(relaxed = true)
 
-        coEvery { formDataDao.attachForm(mockkGqlPatient.pid, form, any()) } returns FormData(form, mockkPatient)
+        every { formDataDao.attachForm(mockkGqlPatient.pid, form, any()) } returns FormData(form, mockkPatient)
 
         val authContext = mockk<GraphQLAuthContext> {
             every { mediqAuthToken } returns mockk()
@@ -74,7 +73,7 @@ internal class FormMutationTest {
         val mockkPatientList = listOf(mockk<Patient>(relaxed = true))
         val mockkAuthContext = mockk<GraphQLAuthContext>(relaxed = true)
 
-        coEvery { patientDao.assignForms(any(), any(), any()) } returns mockkPatientList
+        every { patientDao.assignForms(any(), any(), any()) } returns mockkPatientList
 
         val result = runBlocking {
             formMutation.assignSurvey(
@@ -83,7 +82,6 @@ internal class FormMutationTest {
                 mockkAuthContext
             )
         }
-
 
         assertEquals(mockkPatientList.map { GraphQLPatient(it, mockkAuthContext) }, result)
     }

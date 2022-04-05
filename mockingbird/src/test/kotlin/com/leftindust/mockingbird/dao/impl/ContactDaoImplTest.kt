@@ -8,10 +8,9 @@ import com.leftindust.mockingbird.graphql.types.GraphQLPatient
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class ContactDaoImplTest {
 
@@ -28,7 +27,7 @@ internal class ContactDaoImplTest {
         every { patientRepository.getAllByPatient_Id(patientId) } returns setOf(emergencyContact)
 
         val contactDaoImpl = ContactDaoImpl(authorizer, patientRepository)
-        val actual = runBlocking { contactDaoImpl.getPatientContacts(GraphQLPatient.ID(patientId), mockk()) }
+        val actual = contactDaoImpl.getPatientContacts(GraphQLPatient.ID(patientId), mockk())
 
         assertIterableEquals(listOf(emergencyContact), actual)
     }

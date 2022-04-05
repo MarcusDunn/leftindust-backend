@@ -8,7 +8,6 @@ import com.leftindust.mockingbird.dao.entity.MediqUser
 import com.leftindust.mockingbird.external.firebase.UserFetcher
 import com.leftindust.mockingbird.graphql.types.GraphQLUser
 import com.leftindust.mockingbird.graphql.types.input.GraphQLRangeInput
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -26,7 +25,7 @@ internal class UserQueryTest {
             every { uniqueId } returns "uid"
             every { group } returns null
         }
-        coEvery { userDao.findUserByUid("uid", any()) } returns user
+        every { userDao.findUserByUid("uid", any()) } returns user
         val userQuery = UserQuery(userDao, firebaseFetcher)
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
 
@@ -40,7 +39,7 @@ internal class UserQueryTest {
             every { uniqueId } returns "uid"
             every { group } returns null
         }
-        coEvery { userDao.getUsers(any(), any()) } returns listOf(user)
+        every { userDao.getUsers(any(), any()) } returns listOf(user)
         val userQuery = UserQuery(userDao, firebaseFetcher)
         every { graphQLAuthContext.mediqAuthToken } returns mockk()
         val result = runBlocking { userQuery.users(GraphQLRangeInput(0, 3), graphQLAuthContext = graphQLAuthContext) }
@@ -55,13 +54,13 @@ internal class UserQueryTest {
             }
         }
 
-        coEvery { userDao.findUserByUid("uid0", any()) } returns mockk()
-        coEvery { userDao.findUserByUid("uid1", any()) } returns mockk()
-        coEvery { userDao.findUserByUid("uid2", any()) } returns mockk()
-        coEvery { userDao.findUserByUid("uid3", any()) } returns null
-        coEvery { userDao.findUserByUid("uid4", any()) } returns mockk()
+        every { userDao.findUserByUid("uid0", any()) } returns mockk()
+        every { userDao.findUserByUid("uid1", any()) } returns mockk()
+        every { userDao.findUserByUid("uid2", any()) } returns mockk()
+        every { userDao.findUserByUid("uid3", any()) } returns null
+        every { userDao.findUserByUid("uid4", any()) } returns mockk()
 
-        coEvery { firebaseFetcher.getUsers(any()) } returns mockk {
+        every { firebaseFetcher.getUsers(any()) } returns mockk {
             every { iterator() } returns mockk {
                 every { hasNext() } returnsMany listOf(true, true, true, true, true, false)
                 every { next() } returnsMany userRecords

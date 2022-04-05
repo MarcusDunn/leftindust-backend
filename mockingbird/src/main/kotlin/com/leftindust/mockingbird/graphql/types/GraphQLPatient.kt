@@ -16,8 +16,10 @@ import com.leftindust.mockingbird.dao.entity.Patient
 import com.leftindust.mockingbird.dao.entity.enums.Ethnicity
 import com.leftindust.mockingbird.dao.entity.enums.Sex
 import com.leftindust.mockingbird.dao.phone.ReadPhoneDao
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("Patient")
 data class GraphQLPatient(
@@ -52,39 +54,59 @@ data class GraphQLPatient(
         thumbnail = patient.thumbnail,
     )
 
-    suspend fun contacts(@GraphQLIgnore @Autowired contactDao: ContactDao): List<GraphQLPerson> = contactDao
-        .getPatientContacts(pid, authContext.mediqAuthToken)
-        .map { GraphQLEmergencyContact(it, authContext) }
+    suspend fun contacts(
+        @GraphQLIgnore @Autowired contactDao: ContactDao
+    ): List<GraphQLPerson> = withContext(Dispatchers.IO) {
+        contactDao.getPatientContacts(pid, authContext.mediqAuthToken)
+    }.map { GraphQLEmergencyContact(it, authContext) }
 
-    suspend fun doctors(@GraphQLIgnore @Autowired doctorDao: DoctorDao): List<GraphQLDoctor> = doctorDao
-        .getPatientDoctors(pid, authContext.mediqAuthToken)
-        .map { GraphQLDoctor(it, authContext) }
+    suspend fun doctors(
+        @GraphQLIgnore @Autowired doctorDao: DoctorDao
+    ): List<GraphQLDoctor> = withContext(Dispatchers.IO) {
+        doctorDao.getPatientDoctors(pid, authContext.mediqAuthToken)
+    }.map { GraphQLDoctor(it, authContext) }
 
-    suspend fun visits(@GraphQLIgnore @Autowired visitDao: VisitDao): List<GraphQLVisit> = visitDao
-        .getPatientVisits(pid, authContext.mediqAuthToken)
-        .map { visit -> GraphQLVisit(visit, authContext) }
+    suspend fun visits(
+        @GraphQLIgnore @Autowired visitDao: VisitDao
+    ): List<GraphQLVisit> = withContext(Dispatchers.IO) {
+        visitDao.getPatientVisits(pid, authContext.mediqAuthToken)
+    }.map { visit -> GraphQLVisit(visit, authContext) }
 
-    suspend fun user(@GraphQLIgnore @Autowired userDao: UserDao): GraphQLUser? = userDao
-        .findPatientUser(pid, authContext.mediqAuthToken)
-        ?.let { GraphQLUser(it, authContext) }
+    suspend fun user(
+        @GraphQLIgnore @Autowired userDao: UserDao
+    ): GraphQLUser? = withContext(Dispatchers.IO) {
+        userDao.findPatientUser(pid, authContext.mediqAuthToken)
+    }?.let { GraphQLUser(it, authContext) }
 
-    suspend fun events(@GraphQLIgnore @Autowired eventDao: EventDao): List<GraphQLEvent> = eventDao
-        .getPatientEvents(pid, authContext.mediqAuthToken)
-        .map { event -> GraphQLEvent(event, authContext) }
+    suspend fun events(
+        @GraphQLIgnore @Autowired eventDao: EventDao
+    ): List<GraphQLEvent> = withContext(Dispatchers.IO) {
+        eventDao
+            .getPatientEvents(pid, authContext.mediqAuthToken)
+    }.map { event -> GraphQLEvent(event, authContext) }
 
-    suspend fun assignedForms(@GraphQLIgnore @Autowired formDao: ReadFormDao): List<GraphQLAssignedForm> = formDao
-        .getByPatientAssigned(pid, authContext.mediqAuthToken)
-        .map { GraphQLAssignedForm(it, authContext) }
+    suspend fun assignedForms(
+        @GraphQLIgnore @Autowired formDao: ReadFormDao
+    ): List<GraphQLAssignedForm> = withContext(Dispatchers.IO) {
+        formDao.getByPatientAssigned(pid, authContext.mediqAuthToken)
+    }.map { GraphQLAssignedForm(it, authContext) }
 
-    override suspend fun phones(@GraphQLIgnore @Autowired phoneDao: ReadPhoneDao): List<GraphQLPhone> = phoneDao
-        .getPatientPhones(pid, authContext)
-        .map { GraphQLPhone(it) }
+    override suspend fun phones(
+        @GraphQLIgnore @Autowired phoneDao: ReadPhoneDao
+    ): List<GraphQLPhone> = withContext(Dispatchers.IO) {
+        phoneDao.getPatientPhones(pid, authContext)
+    }.map { GraphQLPhone(it) }
 
-    override suspend fun emails(@GraphQLIgnore @Autowired emailDao: ReadEmailDao): List<GraphQLEmail> = emailDao
-        .getPatientEmails(pid, authContext.mediqAuthToken)
-        .map { GraphQLEmail(it) }
+    override suspend fun emails(
+        @GraphQLIgnore @Autowired emailDao: ReadEmailDao
+    ): List<GraphQLEmail> = withContext(Dispatchers.IO) {
+        emailDao
+            .getPatientEmails(pid, authContext.mediqAuthToken)
+    }.map { GraphQLEmail(it) }
 
-    suspend fun addresses(@GraphQLIgnore @Autowired addressDao: ReadAddressDao): List<GraphQLAddress> = addressDao
-        .getPatientAddresses(pid, authContext)
-        .map { GraphQLAddress(it) }
+    suspend fun addresses(
+        @GraphQLIgnore @Autowired addressDao: ReadAddressDao
+    ): List<GraphQLAddress> = withContext(Dispatchers.IO) {
+        addressDao.getPatientAddresses(pid, authContext)
+    }.map { GraphQLAddress(it) }
 }

@@ -6,8 +6,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLName
 import com.leftindust.mockingbird.auth.GraphQLAuthContext
 import com.leftindust.mockingbird.dao.entity.FormField
 import com.leftindust.mockingbird.dao.form.feild.ReadFormFieldDao
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.*
 
 @GraphQLName("FormField")
 data class GraphQlFormField(
@@ -47,7 +49,9 @@ data class GraphQlFormField(
     @GraphQLDescription("The multiselect possibilities, is null unless the form dataType is SingleMuliSelect or MultiMuliSelect")
     suspend fun multiSelectPossibilities(@GraphQLIgnore @Autowired readFormFieldDao: ReadFormFieldDao): List<String>? =
         if (dataType == DataType.SingleMultiSelect || dataType == DataType.MultiMultiSelect)
-            readFormFieldDao.getFormFieldMultiSelectPossibilities(ffid, authContext.mediqAuthToken)
+            withContext(Dispatchers.IO) {
+                readFormFieldDao.getFormFieldMultiSelectPossibilities(ffid, authContext.mediqAuthToken)
+            }
         else {
             null
         }

@@ -39,28 +39,28 @@ class FormDaoImpl(
                 DeleteFormDao.necessaryPermissions +
                 CreateFormDao.necessaryPermissions
 
-    override suspend fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> =
+    override fun getByIds(ids: List<GraphQLFormTemplate.ID>, requester: MediqToken): Collection<Form> =
         if (requester can readForms) {
             formRepository.getByIds(ids.map { it.id })
         } else {
             throw NotAuthorizedException(requester, readForms)
         }
 
-    override suspend fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form> =
+    override fun getMany(range: GraphQLRangeInput, requester: MediqToken): List<Form> =
         if (requester can readForms) {
             formRepository.findAll(range.toPageable()).toList()
         } else {
             throw NotAuthorizedException(requester, readForms)
         }
 
-    override suspend fun addForm(form: GraphQLFormTemplateInput, requester: MediqToken): Form =
+    override fun addForm(form: GraphQLFormTemplateInput, requester: MediqToken): Form =
         if (requester can createForms) {
             formRepository.save(Form(form))
         } else {
             throw NotAuthorizedException(requester, createForms)
         }
 
-    override suspend fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form =
+    override fun deleteForm(form: GraphQLFormTemplate.ID, requester: MediqToken): Form =
         if (requester can deleteForms) {
             val formEntity = formRepository.getById(form.id)
             formRepository.delete(formEntity)
@@ -69,7 +69,7 @@ class FormDaoImpl(
             throw NotAuthorizedException(requester, deleteForms)
         }
 
-    override suspend fun getByPatientAssigned(
+    override fun getByPatientAssigned(
         patient: GraphQLPatient.ID,
         requester: MediqToken
     ): Collection<AssignedForm> =

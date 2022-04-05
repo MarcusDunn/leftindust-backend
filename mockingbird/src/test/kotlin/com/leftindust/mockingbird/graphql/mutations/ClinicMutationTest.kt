@@ -7,13 +7,12 @@ import com.leftindust.mockingbird.dao.entity.Clinic
 import com.leftindust.mockingbird.graphql.types.GraphQLClinic
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicEditInput
 import com.leftindust.mockingbird.graphql.types.input.GraphQLClinicInput
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class ClinicMutationTest {
     private val createClinicDao = mockk<CreateClinicDao>()
@@ -33,7 +32,7 @@ internal class ClinicMutationTest {
             every { id } returns clinicID
         }
 
-        coEvery { createClinicDao.addClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
+        every { createClinicDao.addClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
 
         val clinicMutation = ClinicMutation(createClinicDao, updateClinicDao)
 
@@ -56,7 +55,7 @@ internal class ClinicMutationTest {
             every { id } returns clinicID
         }
 
-        coEvery { updateClinicDao.editClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
+        every { updateClinicDao.editClinic(clinic, authContext.mediqAuthToken) } returns mockkClinic
 
         val clinicMutation = ClinicMutation(createClinicDao, updateClinicDao)
 

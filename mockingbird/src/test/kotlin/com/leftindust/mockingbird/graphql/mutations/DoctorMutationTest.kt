@@ -27,7 +27,7 @@ internal class DoctorMutationTest {
         }
 
         val mockkDoctorDao = mockk<DoctorDao> {
-            coEvery { addDoctor(any(), any()) } returns mockkDoctor
+            every { addDoctor(any(), any()) } returns mockkDoctor
         }
 
         val mockkGraphQLDoctorInput = mockk<GraphQLDoctorInput> {
@@ -55,7 +55,7 @@ internal class DoctorMutationTest {
         }
 
         val mockkDoctorDao = mockk<DoctorDao> {
-            coEvery { editDoctor(any(), any()) } returns mockkDoctor
+            every { editDoctor(any(), any()) } returns mockkDoctor
         }
 
         val mockkGraphQLDoctorInput = mockk<GraphQLDoctorEditInput>()

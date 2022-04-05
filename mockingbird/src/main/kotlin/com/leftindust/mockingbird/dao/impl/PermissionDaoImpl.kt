@@ -13,10 +13,8 @@ import com.leftindust.mockingbird.dao.impl.repository.HibernateGroupRepository
 import com.leftindust.mockingbird.dao.impl.repository.HibernateUserRepository
 import com.leftindust.mockingbird.graphql.types.GraphQLUserGroup
 import com.leftindust.mockingbird.graphql.types.input.GraphQLPermissionInput
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
+import org.springframework.stereotype.Repository
 
 @Transactional
 @Repository
@@ -30,7 +28,7 @@ class PermissionDaoImpl(
         private val createAcl = Crud.CREATE to Tables.AccessControlList
     }
 
-    override suspend fun addUserPermission(
+    override fun addUserPermission(
         uid: String,
         permission: GraphQLPermissionInput,
         requester: MediqToken
@@ -43,7 +41,7 @@ class PermissionDaoImpl(
         throw NotAuthorizedException(requester, createAcl)
     }
 
-    override suspend fun addGroupPermission(
+    override fun addGroupPermission(
         gid: GraphQLUserGroup.ID,
         permission: GraphQLPermissionInput,
         requester: MediqToken
