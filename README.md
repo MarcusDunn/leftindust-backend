@@ -1,3 +1,5 @@
+⚠️ This is a archive - project developement has moved to a private repository (hopfully to be open sourced in the furture) ⚠️
+
 # leftindust-backend
 
 ![tests](https://github.com/leftindust/leftindust-backend/actions/workflows/tests.yml/badge.svg) [![codecov](https://codecov.io/gh/MarcusDunn/leftindust-backend/branch/master/graph/badge.svg?token=9MLL11QYS9)](https://codecov.io/gh/MarcusDunn/leftindust-backend)
